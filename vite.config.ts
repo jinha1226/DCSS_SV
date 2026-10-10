@@ -1,1 +1,6 @@
-import {defineConfig} from 'vite'; export default defineConfig({base:'/DCSS_SV/'});
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  base: '/DCSS_SV/',
+  test: { include: ['tests/**/*.test.ts'], environment: 'node' },
+});
