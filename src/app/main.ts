@@ -1,17 +1,20 @@
 import '../styles/main.css';
+import { HERO } from '../data/hero';
 import { guardZoom } from '../input/guards';
 import { keyPush, watchKeys } from '../input/keys';
 import { makeStick } from '../input/stick';
 import { makeTestFloor } from '../sim/testFloor';
-import { makeWorld, stepWorld } from '../sim/world';
-import { makePanel } from '../ui/panel';
+import { STEP, makeWorld, stepWorld, type World } from '../sim/world';
+import { makeHud } from '../ui/hud';
 import { loadAtlas } from '../view/atlas';
+import { Fx } from '../view/fx';
 import { LOOK } from '../view/look';
-import { cellPixels, drawWorld } from '../view/render';
+import { drawWorld } from '../view/render';
+import { makeWalk } from '../view/walk';
 import { runLoop } from './loop';
-import { COLS, readSwitches, writeSwitches } from './switches';
+import { readSwitches } from './switches';
 
-/** Stage 1: the hero walks a hand-made floor. Nothing fights yet. */
+/** Stage 2: goblins come for the hero on a hand-made floor, and the axe swings by itself. */
 async function start(): Promise<void> {
   const root = document.querySelector<HTMLDivElement>('#app');
   if (!root) return;
@@ -24,30 +27,22 @@ async function start(): Promise<void> {
 
   const switches = readSwitches(location.search);
   const atlas = await loadAtlas();
-  const world = makeWorld(makeTestFloor(), switches.speed);
+  const heroWalk = makeWalk(atlas, 'hero/minotaur', HERO.walk);
   const stick = makeStick(canvas, root);
   const keys = watchKeys();
+  const fx = new Fx();
 
-  const remember = (): void => history.replaceState(null, '', location.pathname + writeSwitches(switches));
-  const panel = makePanel(root, (add) => {
-    add<number>({
-      title: '걷는 속도',
-      options: [3.5, 4.5, 5.5, 6.5].map((value) => ({ value, text: String(value) })),
-      get: () => switches.speed,
-      set: (value) => {
-        switches.speed = world.speed = value;
-        remember();
-      },
-    });
-    add<number>({
-      title: '가로 칸 수',
-      options: [COLS.normal, COLS.wide].map((value) => ({ value, text: `${value}칸` })),
-      get: () => switches.cols,
-      set: (value) => {
-        switches.cols = value;
-        remember();
-      },
-    });
+  // A seed in the address gives the same run every time; without one each run differs.
+  const begin = (): World =>
+    makeWorld(makeTestFloor(), { seed: switches.seed || (Date.now() & 0x7fffffff), speed: switches.speed });
+  let world = begin();
+  const debug: { world: World } | undefined = switches.debug ? { world } : undefined;
+  if (debug) Object.assign(window, { __sv: Object.assign(debug, { switches, stick, keys, heroWalk }) });
+
+  const hud = makeHud(root, () => {
+    world = begin();
+    fx.clear();
+    if (debug) debug.world = world;
   });
 
   let dpr = 1;
@@ -65,16 +60,16 @@ async function start(): Promise<void> {
     () => {
       const key = keyPush(keys);
       stepWorld(world, { mx: stick.x + key.x, my: stick.y + key.y });
+      fx.take(world.events);
+      fx.step(STEP);
     },
     (between) => {
       fit();
-      drawWorld(ctx, atlas, world, { cols: switches.cols, look: LOOK[switches.look] }, between);
-      const px = Math.round(cellPixels(canvas.width, switches.cols) / dpr);
-      panel.caption(`1단계 · 걷기 — 1초에 ${world.speed}칸, 한 칸 ${px}px`);
+      // A world that has stopped is drawn where it stopped, not between two steps.
+      drawWorld(ctx, atlas, world, { cols: switches.cols, look: LOOK[switches.look], dpr, heroWalk }, fx, world.over ? 1 : between);
+      hud.show(world);
     },
   );
-
-  if (switches.debug) Object.assign(window, { __sv: { world, switches, stick, keys } });
 }
 
 start().catch((error: unknown) => {

@@ -1,4 +1,4 @@
-import { HERO } from '../sim/world';
+import { HERO } from '../data/hero';
 import { LOOKS, type LookName } from '../view/look';
 
 /** What the address line can turn on. */
@@ -14,8 +14,8 @@ export interface Switches {
   debug: boolean;
 }
 
-/** Cells across the screen: 15 as a rule, 17 for a species that sees far. */
-export const COLS = { min: 9, max: 25, normal: 15, wide: 17 } as const;
+/** Cells across the screen. */
+export const COLS = { min: 9, max: 25, normal: 17 } as const;
 export const SPEED = { min: 1, max: 12, normal: HERO.speed } as const;
 
 function within(text: string | null, lo: number, hi: number, otherwise: number): number {

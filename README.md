@@ -15,6 +15,7 @@ npm run dev      # 개발 서버
 npm run check    # 린트, 타입 검사, 테스트
 npm run build    # 배포용 빌드
 npm run tiles    # 타일을 더하거나 뺀 뒤 한 장으로 다시 묶기
+npm run bench    # 봇이 여러 판을 돌려 난이도를 잰다
 ```
 
-주소 스위치: `?zoom=17` 한 화면 가로에 보이는 칸 수(기본 15), `?speed=5.5` 1초에 걷는 칸 수(기본 4.5), `?look=bright` 바닥과 벽 타일, `?seed=` 같은 판 다시 보기, `?debug` 안쪽 상태(`window.__sv`).
+주소 스위치: `?zoom=15` 한 화면 가로에 보이는 칸 수(기본 17), `?speed=5.5` 1초에 걷는 칸 수(기본 6.5), `?look=bright` 바닥과 벽 타일, `?seed=` 같은 판 다시 보기, `?debug` 안쪽 상태(`window.__sv`).

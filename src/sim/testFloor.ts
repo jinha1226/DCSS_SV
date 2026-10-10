@@ -1,24 +1,35 @@
 import { Cell, carve, makeGrid, setCell, type Grid } from './grid';
 import type { Point } from './collide';
 
+export interface Room {
+  readonly x: number;
+  readonly y: number;
+  readonly w: number;
+  readonly h: number;
+}
+
 export interface Floor {
   readonly grid: Grid;
   /** Where the hero arrives, in cells (the middle of a cell). */
   readonly start: Point;
+  /** The rooms, the hero's own first. */
+  readonly rooms: readonly Room[];
 }
 
 /**
- * The floor of stage 1, laid out by hand: five rooms, corridors two and three cells wide, and
- * two rings to walk round. Generated floors replace it in stage 3.
+ * The floor of stages 1 and 2, laid out by hand: five rooms, corridors two and three cells wide,
+ * and two rings to walk round. Generated floors replace it in stage 3.
  */
 export function makeTestFloor(): Floor {
   const grid = makeGrid(40, 46);
-
-  carve(grid, 4, 4, 11, 9); // A, top left: the start
-  carve(grid, 24, 3, 13, 9); // B, top right
-  carve(grid, 22, 20, 14, 12); // C, the hall on the right
-  carve(grid, 3, 22, 10, 9); // D, left
-  carve(grid, 14, 36, 9, 7); // E, bottom: the way down
+  const rooms: Room[] = [
+    { x: 4, y: 4, w: 11, h: 9 }, // A, top left: the start
+    { x: 24, y: 3, w: 13, h: 9 }, // B, top right
+    { x: 22, y: 20, w: 14, h: 12 }, // C, the hall on the right
+    { x: 3, y: 22, w: 10, h: 9 }, // D, left
+    { x: 14, y: 36, w: 9, h: 7 }, // E, bottom: the way down
+  ];
+  for (const r of rooms) carve(grid, r.x, r.y, r.w, r.h);
 
   carve(grid, 15, 6, 9, 3); // A to B, three wide
   carve(grid, 29, 12, 3, 8); // B to C, three wide
@@ -42,5 +53,5 @@ export function makeTestFloor(): Floor {
   setCell(grid, 5, 5, Cell.StairsUp);
   setCell(grid, 18, 41, Cell.StairsDown);
 
-  return { grid, start: { x: 6.5, y: 6.5 } };
+  return { grid, start: { x: 6.5, y: 6.5 }, rooms };
 }

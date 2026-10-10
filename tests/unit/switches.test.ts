@@ -5,20 +5,20 @@ import { STICK_REACH, stickPush } from '../../src/input/stick';
 import { cellPixels } from '../../src/view/render';
 
 describe('the address switches', () => {
-  const usual = { cols: 15, speed: 4.5, look: 'dcss', seed: 0, debug: false };
+  const usual = { cols: 17, speed: 6.5, look: 'dcss', seed: 0, debug: false };
 
   it('fall back to the usual values', () => {
     expect(readSwitches('')).toEqual(usual);
     expect(readSwitches('?zoom=abc&look=neon&seed=-4&speed=fast')).toEqual(usual);
-    expect(readSwitches('?zoom=3').cols).toBe(15);
-    expect(readSwitches('?zoom=99').cols).toBe(15);
-    expect(readSwitches('?speed=0').speed).toBe(4.5);
-    expect(readSwitches('?speed=').speed).toBe(4.5);
+    expect(readSwitches('?zoom=3').cols).toBe(17);
+    expect(readSwitches('?zoom=99').cols).toBe(17);
+    expect(readSwitches('?speed=0').speed).toBe(6.5);
+    expect(readSwitches('?speed=').speed).toBe(6.5);
   });
 
   it('read what is given', () => {
-    expect(readSwitches('?zoom=17&speed=5.5&look=bright&seed=42&debug')).toEqual({
-      cols: 17,
+    expect(readSwitches('?zoom=15&speed=5.5&look=bright&seed=42&debug')).toEqual({
+      cols: 15,
       speed: 5.5,
       look: 'bright',
       seed: 42,
@@ -28,9 +28,9 @@ describe('the address switches', () => {
 
   it('write back only what differs from the usual', () => {
     expect(writeSwitches(readSwitches(''))).toBe('');
-    expect(writeSwitches(readSwitches('?zoom=17'))).toBe('?zoom=17');
-    expect(writeSwitches(readSwitches('?zoom=15&speed=4.5'))).toBe('');
-    for (const text of ['?zoom=17&speed=3.5&look=bright&seed=42&debug', '?debug', '?look=bright']) {
+    expect(writeSwitches(readSwitches('?zoom=15'))).toBe('?zoom=15');
+    expect(writeSwitches(readSwitches('?zoom=17&speed=6.5'))).toBe('');
+    for (const text of ['?zoom=13&speed=3.5&look=bright&seed=42&debug', '?debug', '?look=bright']) {
       expect(readSwitches(writeSwitches(readSwitches(text)))).toEqual(readSwitches(text));
     }
   });

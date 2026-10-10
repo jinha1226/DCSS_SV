@@ -30,55 +30,94 @@ canvas {
   image-rendering: pixelated;
 }
 
-/* The strip of text and trial switches at the top. Only its buttons take touches; the rest lets
-   them through to the floor, so the stick can start anywhere. */
+/* The strip at the top: health, time, kills. It takes no touches, so the stick can start anywhere. */
 .top {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: calc(8px + env(safe-area-inset-top, 0px)) 12px 20px;
-  background: linear-gradient(rgba(0, 0, 0, 0.82) 55%, rgba(0, 0, 0, 0));
+  align-items: center;
+  gap: 12px;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) 12px 22px;
+  background: linear-gradient(rgba(0, 0, 0, 0.8) 45%, rgba(0, 0, 0, 0));
   pointer-events: none;
 }
 
-.caption {
-  font-size: 13px;
-  line-height: 1.4;
+.hp {
+  position: relative;
+  flex: 1;
+  height: 20px;
+  border: 1px solid #6d5a4a;
+  border-radius: 5px;
+  background: #1a1210;
+  overflow: hidden;
 }
 
-.choice {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.hp-fill {
+  height: 100%;
+  background: #a8392f;
 }
 
-.choice span {
-  width: 66px;
+.hp.low .hp-fill {
+  background: #d9542f;
+}
+
+.hp-text {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
   font-size: 12px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px #000;
+}
+
+.stats {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* The hero has fallen. */
+.over {
+  position: fixed;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.72);
+  text-align: center;
+}
+
+.over.on {
+  display: flex;
+}
+
+.over h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.over p {
+  margin: 0 0 14px;
+  font-size: 15px;
   color: #c9bfa8;
 }
 
-.choice button {
-  flex: 1;
-  min-height: 38px;
-  padding: 0 6px;
-  border: 1px solid #5d5444;
-  border-radius: 8px;
-  background: #1d1a15;
-  color: #d8cdb6;
-  font: inherit;
-  font-size: 14px;
-  pointer-events: auto;
-}
-
-.choice button.on {
-  border-color: #d9b866;
+.over button {
+  min-width: 200px;
+  min-height: 52px;
+  border: 1px solid #d9b866;
+  border-radius: 10px;
   background: #3a3020;
   color: #fff3d2;
+  font: inherit;
+  font-size: 17px;
 }
 
 /* The stick: placed by a transform from the top-left corner, shown only while held. */
