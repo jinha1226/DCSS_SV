@@ -7,43 +7,48 @@ export interface Choice<T> {
 }
 
 export interface Panel {
-  /** The line at the top of the screen. */
+  /** The line of text above the switches. */
   caption(text: string): void;
-  /** Marks the buttons that are on, after a value changed. */
-  refresh(): void;
 }
 
-/** The strip of switches at the bottom of the screen and the line of text at the top. */
-export function makePanel(root: HTMLElement, choices: readonly Choice<unknown>[]): Panel {
-  const top = document.createElement('div');
-  top.className = 'caption';
-  const bar = document.createElement('div');
-  bar.className = 'bar';
+/** Adds one row of buttons to `bar` and returns what re-marks the one that is on. */
+function addChoice<T>(bar: HTMLElement, choice: Choice<T>, refresh: () => void): () => void {
+  const row = document.createElement('div');
+  row.className = 'choice';
+  const title = document.createElement('span');
+  title.textContent = choice.title;
+  row.append(title);
   const marks: (() => void)[] = [];
-
-  for (const choice of choices) {
-    const row = document.createElement('div');
-    row.className = 'choice';
-    const title = document.createElement('span');
-    title.textContent = choice.title;
-    row.append(title);
-    for (const option of choice.options) {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.textContent = option.text;
-      button.addEventListener('click', () => {
-        choice.set(option.value);
-        for (const mark of marks) mark();
-      });
-      marks.push(() => button.classList.toggle('on', choice.get() === option.value));
-      row.append(button);
-    }
-    bar.append(row);
+  for (const option of choice.options) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = option.text;
+    button.addEventListener('click', () => {
+      choice.set(option.value);
+      refresh();
+    });
+    marks.push(() => button.classList.toggle('on', choice.get() === option.value));
+    row.append(button);
   }
-  root.append(top, bar);
-  const refresh = (): void => {
-    for (const mark of marks) mark();
-  };
+  bar.append(row);
+  return () => marks.forEach((mark) => mark());
+}
+
+/** The strip at the top of the screen: a line of text and the switches being tried out. */
+export function makePanel(root: HTMLElement, build: (add: <T>(choice: Choice<T>) => void) => void): Panel {
+  const top = document.createElement('div');
+  top.className = 'top';
+  const caption = document.createElement('div');
+  caption.className = 'caption';
+  top.append(caption);
+  const marks: (() => void)[] = [];
+  const refresh = (): void => marks.forEach((mark) => mark());
+  build((choice) => marks.push(addChoice(top, choice, refresh)));
+  root.append(top);
   refresh();
-  return { caption: (text) => (top.textContent = text), refresh };
+  return {
+    caption: (text) => {
+      if (caption.textContent !== text) caption.textContent = text;
+    },
+  };
 }
