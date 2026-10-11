@@ -11,7 +11,7 @@ export interface Switches {
   who: string;
 }
 
-export const COLS = { min: 17, max: 17, normal: 17 } as const;
+export const COLS = { min: 15, max: 15, normal: 15 } as const;
 export const SPEED = { min: 1, max: 12, normal: HERO.speed } as const;
 
 function within(text: string | null, lo: number, hi: number, otherwise: number): number {

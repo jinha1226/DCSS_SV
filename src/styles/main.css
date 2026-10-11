@@ -1015,3 +1015,125 @@ canvas {
   line-height: 18px;
   white-space: normal;
 }
+
+/* Compact portrait HUD: smaller map, three equal-height status bars, one skill/equipment row. */
+.hud-header {
+  grid-template-columns: 48px minmax(0, 1fr) 44px;
+  height: 48px;
+}
+
+.hud-minimap {
+  width: 48px;
+  height: 48px;
+}
+
+.hud-location {
+  padding-top: 2px;
+  gap: 2px;
+}
+
+.top .hp,
+.top .mana,
+.top .xp {
+  height: 12px;
+}
+
+.top .hp-text {
+  font-size: 10px;
+  line-height: 11px;
+}
+
+.top .mana-text {
+  font-size: 9px;
+}
+
+.top .level-row {
+  margin-top: 3px;
+  height: 12px;
+  gap: 5px;
+}
+
+.top .level-text {
+  line-height: 12px;
+}
+
+.hud-skill-slot {
+  width: 100%;
+  min-width: 0;
+  pointer-events: none;
+}
+
+.hud-skill-slot .skillbar {
+  position: static;
+  display: none;
+  width: 100%;
+  height: 29px;
+  pointer-events: none;
+}
+
+.hud-skill-slot .skillbar.on {
+  display: flex;
+}
+
+.hud-skill-slot .skillbar-rail,
+.hud-skill-slot .skillbar-equipment {
+  display: flex;
+  flex: 0 0 50%;
+  width: 50%;
+  min-width: 0;
+  height: 29px;
+  align-items: center;
+  gap: 3px;
+  overflow-x: auto;
+  padding: 1px;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  pointer-events: auto;
+}
+
+.hud-skill-slot .skillbar-equipment {
+  padding-left: 6px;
+  border-left: 1px solid #726650;
+}
+
+.hud-skill-slot .skillbar-equipment::-webkit-scrollbar {
+  display: none;
+}
+
+.hud-skill-slot .skillbar-chip,
+.hud-skill-slot .skillbar-gear {
+  position: relative;
+  flex: 0 0 27px;
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(187, 174, 141, 0.44);
+  border-radius: 5px;
+  background: rgba(17, 19, 23, 0.84);
+  color: #eae2cb;
+}
+
+.hud-skill-slot .skillbar-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.hud-skill-slot .skillbar-level {
+  right: 1px;
+  bottom: 0;
+  min-width: 10px;
+  font-size: 9px;
+  line-height: 10px;
+}
+
+.hud-skill-slot .skillbar-gear-icon {
+  position: static;
+  display: block;
+  width: 23px;
+  height: 23px;
+  image-rendering: pixelated;
+  touch-action: none;
+}

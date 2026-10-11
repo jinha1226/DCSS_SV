@@ -5,6 +5,7 @@ import type { World } from '../sim/world';
 export interface Hud {
   readonly minimap: HTMLCanvasElement;
   readonly menuSlot: HTMLElement;
+  readonly skillSlot: HTMLElement;
   show(w: World): void;
 }
 
@@ -29,8 +30,8 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
   const header = el('div', 'hud-header', top);
   const minimap = document.createElement('canvas');
   minimap.className = 'hud-minimap';
-  minimap.width = 144;
-  minimap.height = 144;
+  minimap.width = 120;
+  minimap.height = 120;
   minimap.setAttribute('aria-label', '탐험한 던전 미니맵');
   header.append(minimap);
 
@@ -68,7 +69,7 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
   const levelText = el('span', 'level-text', levelRow);
   const xp = el('div', 'xp', levelRow);
   const xpFill = el('div', 'xp-fill', xp);
-  // The current floor and time live in the middle of the uppermost row.
+  const skillSlot = el('div', 'hud-skill-slot', top);
 
   const over = el('div', 'over', root);
   const title = el('h1', '', over);
@@ -95,6 +96,7 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
   return {
     minimap,
     menuSlot,
+    skillSlot,
     show(w) {
       const hp = Math.ceil(w.hero.hp);
       const need = xpToNext(w.hero.level);

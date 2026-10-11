@@ -44,7 +44,6 @@ async function start(): Promise<void> {
   const hop = makeHopButton(root);
   const throwing = makeThrowButton(root);
   const picker = makeSkillPicker(root);
-  const skillBar = makeSkillBar(root);
   const gear = makeEquipmentPicker(root);
   const spellButtons = makeSpellButtons(root);
 
@@ -93,6 +92,7 @@ async function start(): Promise<void> {
     },
     chooseCharacter,
   );
+  const skillBar = makeSkillBar(hud.skillSlot, atlas);
   const timeMode = makeTimeModeButton(hud.menuSlot);
   const gameLog = makeGameLog(root);
 

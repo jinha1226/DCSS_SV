@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { listedSkills } from '../../src/ui/skillBar';
+import { displayedEquipment, listedSkills } from '../../src/ui/skillBar';
 import { makeWorld } from '../../src/sim/world';
 
 describe('skill summary bar', () => {
@@ -20,5 +20,15 @@ describe('skill summary bar', () => {
     expect(listedSkills(world).find((skill) => skill.id === 'fire')).toMatchObject({ name: '화염술', level: 2 });
     world.hero.skills.fire = 3;
     expect(listedSkills(world).find((skill) => skill.id === 'fire')?.level).toBe(3);
+  });
+  it('shows the equipped weapon and available throwing ammo without inventing unused slots', () => {
+    const world = makeWorld({ items: false, monsters: false });
+    const equipment = displayedEquipment(world);
+    expect(equipment[0]).toMatchObject({ id: world.weapon.uid, tile: world.weapon.tile });
+    if (world.openSkills.has('throwing')) {
+      expect(equipment[1]).toMatchObject({ id: 'boomerang', count: world.ammo });
+    }
+    world.ammo = 2;
+    if (world.openSkills.has('throwing')) expect(displayedEquipment(world)[1]?.count).toBe(2);
   });
 });

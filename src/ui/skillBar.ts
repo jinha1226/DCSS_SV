@@ -1,4 +1,6 @@
 import { SKILLS } from '../data/skills';
+import { drawTile, type Atlas } from '../view/atlas';
+import type { TileName } from '../data/tiles';
 import type { World } from '../sim/world';
 
 const ICONS: Readonly<Record<string, string>> = {
@@ -47,18 +49,39 @@ export function listedSkills(w: World, includeUntrained = false): SkillDisplay[]
     .sort((a, b) => (b.level > 0 ? 1 : 0) - (a.level > 0 ? 1 : 0));
 }
 
+export interface EquipmentDisplay {
+  readonly id: string;
+  readonly name: string;
+  readonly tile: TileName;
+  readonly count?: number;
+}
+
+export function displayedEquipment(w: World): EquipmentDisplay[] {
+  const entries: EquipmentDisplay[] = [
+    { id: w.weapon.uid, name: w.weapon.name, tile: w.weapon.tile },
+  ];
+  if (w.openSkills.has('throwing')) {
+    entries.push({ id: 'boomerang', name: '부메랑', tile: 'item/boomerang1', count: w.ammo });
+  }
+  return entries;
+}
+
 export interface SkillBar {
   show(w: World): void;
   close(): void;
 }
 
-export function makeSkillBar(root: HTMLElement): SkillBar {
+export function makeSkillBar(root: HTMLElement, atlas: Atlas): SkillBar {
   const bar = document.createElement('div');
   bar.className = 'skillbar';
   bar.setAttribute('aria-label', '현재 스킬 레벨');
   const rail = document.createElement('div');
   rail.className = 'skillbar-rail';
   bar.append(rail);
+  const equipment = document.createElement('div');
+  equipment.className = 'skillbar-equipment';
+  equipment.setAttribute('aria-label', '장착한 장비');
+  bar.append(equipment);
   root.append(bar);
 
   const backdrop = document.createElement('button');
@@ -88,6 +111,7 @@ export function makeSkillBar(root: HTMLElement): SkillBar {
   let open = false;
   let lastBarKey = '';
   let lastDetailKey = '';
+  let lastEquipmentKey = '';
 
   const setOpen = (value: boolean): void => {
     open = value;
@@ -138,11 +162,12 @@ export function makeSkillBar(root: HTMLElement): SkillBar {
         current = w;
         lastBarKey = '';
         lastDetailKey = '';
+        lastEquipmentKey = '';
         setOpen(false);
       }
       const skills = listedSkills(w);
       const key = skills.map((skill) => skill.id + ':' + skill.level).join('|');
-      bar.classList.toggle('on', skills.length > 0 && !w.over);
+      bar.classList.toggle('on', !w.over);
       if (w.over && open) setOpen(false);
       if (key !== lastBarKey) {
         lastBarKey = key;
@@ -160,6 +185,32 @@ export function makeSkillBar(root: HTMLElement): SkillBar {
           level.textContent = String(skill.level);
           chip.append(icon, level);
           rail.append(chip);
+        }
+      }
+      const gear = displayedEquipment(w);
+      const gearKey = gear.map((item) => item.id + ':' + (item.count ?? '')).join('|');
+      if (gearKey !== lastEquipmentKey) {
+        lastEquipmentKey = gearKey;
+        equipment.replaceChildren();
+        for (const item of gear) {
+          const chip = document.createElement('span');
+          chip.className = 'skillbar-gear';
+          chip.title = item.name + (item.count === undefined ? '' : ' ×' + item.count);
+          chip.setAttribute('aria-label', chip.title);
+          const icon = document.createElement('canvas');
+          icon.className = 'skillbar-gear-icon';
+          icon.width = 32;
+          icon.height = 32;
+          const ctx = icon.getContext('2d');
+          if (ctx) drawTile(ctx, atlas.image, item.tile, 0, 0, 32);
+          chip.append(icon);
+          if (item.count !== undefined) {
+            const count = document.createElement('span');
+            count.className = 'skillbar-level';
+            count.textContent = String(item.count);
+            chip.append(count);
+          }
+          equipment.append(chip);
         }
       }
       if (open) showDetails(w);
