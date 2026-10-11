@@ -1,0 +1,4 @@
+import skillsRaw from './json/skills.json';
+export const SKILL_EFFECTS=new Set(['axe.damage','axe.wide','axe.spin','axe.stun','axe.reset','fighting.hp','fighting.regen','fighting.healKill','fighting.desperate','fighting.lastStand','armour.reduce','armour.stone','armour.deflect','armour.unmoved','armour.thorns','shield.chance','shield.push','shield.missile','shield.stun','shield.reset','dodging.chance','dodging.speed','dodging.delay','dodging.squeeze','dodging.grace','throwing.power','throwing.pierce','throwing.double','throwing.slow','throwing.return']);
+export interface SkillData { readonly id:string; readonly name:string; readonly each:string; readonly aptitude:string; readonly effects:readonly string[] }
+export const SKILLS:readonly SkillData[]=skillsRaw.map((row)=>{ for(const effect of row.effects) if(!SKILL_EFFECTS.has(effect)) throw new Error(`skills.json: ${row.id}.effects: 코드에 없는 effect ${effect}`); return row; });

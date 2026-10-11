@@ -1,0 +1,5 @@
+[
+  {"id":"hand_axe","name":"손도끼","tile":"item/hand_axe1","kind":"axe","damage":7,"reach":1.2,"every":0.7,"knock":1.2},
+  {"id":"boomerang","name":"부메랑","tile":"item/boomerang1","kind":"throw","damage":8,"range":8,"speed":15,"every":1.4,"knock":3},
+  {"id":"stone","name":"돌","tile":"item/stone","kind":"missile"}
+]

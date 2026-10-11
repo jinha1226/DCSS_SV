@@ -1,4 +1,3 @@
-import { HERO } from '../data/hero';
 import type { World } from '../sim/world';
 
 export interface ThrowButton { readonly held: boolean; show(w: World): void }
@@ -28,7 +27,7 @@ export function makeThrowButton(root: HTMLElement): ThrowButton {
     show(w) {
       const remaining = Math.max(0, w.hero.throwing);
       cooldown.textContent = remaining > 0 ? remaining.toFixed(1) + '초' : '준비';
-      button.style.setProperty('--ready', String(1 - remaining / HERO.thrown.every));
+      button.style.setProperty('--ready', String(1 - remaining / w.heroDef.thrown.every));
     },
   };
 }

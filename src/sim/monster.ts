@@ -1,4 +1,3 @@
-import { HERO } from '../data/hero';
 import { monsterKind } from '../data/monsters';
 import { DUNGEON } from '../data/packs';
 import { hurtHero, wake } from './effects';
@@ -98,7 +97,7 @@ export function thinkMonster(w: World, m: Monster, dt: number): Stride {
     return { vx: m.fx * m.stats.speed, vy: m.fy * m.stats.speed };
   }
 
-  const strike = HERO.radius + m.stats.reach;
+  const strike = w.heroDef.radius + m.stats.reach;
   if (m.wind >= 0) {
     // Committed to the blow: it stands and swings, and misses if the hero has stepped away.
     m.wind -= dt;
@@ -122,7 +121,7 @@ export function thinkMonster(w: World, m: Monster, dt: number): Stride {
     m.wind = m.stats.windup;
     return still;
   }
-  if (d <= HERO.radius + m.stats.radius + 0.02) return still;
+  if (d <= w.heroDef.radius + m.stats.radius + 0.02) return still;
 
   if (inView && d < STRAIGHT) return { vx: (dx / d) * m.stats.speed, vy: (dy / d) * m.stats.speed };
   const way = downhill(w.flow, w.grid, m.x, m.y);

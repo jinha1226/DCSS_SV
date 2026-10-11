@@ -1,3 +1,4 @@
+import type { HeroDefinition } from '../data/hero';
 import type { MonsterKind, MonsterStats } from '../data/monsters';
 import type { Room } from './floor';
 import type { Flow } from './flow';
@@ -102,6 +103,7 @@ export interface World {
   seen: Uint8Array;
 
   readonly hero: Hero;
+  readonly heroDef: HeroDefinition;
   readonly monsters: Monster[];
   readonly shots: Shot[];
   readonly rng: Rng;

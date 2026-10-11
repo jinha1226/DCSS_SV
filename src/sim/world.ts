@@ -1,4 +1,4 @@
-import { HERO } from '../data/hero';
+import { heroFor } from '../data/hero';
 import { DUNGEON } from '../data/packs';
 import { moveCircle } from './collide';
 import { KNOCK_FADE, heroStrikes } from './combat';
@@ -26,6 +26,8 @@ export interface WorldOptions {
   readonly depth?: number;
   /** A floor laid out by hand, for tests; without one, floors are made from the seed. */
   readonly floor?: Floor;
+  readonly species?: string;
+  readonly job?: string;
   /** False for an empty floor to walk about on. */
   readonly monsters?: boolean;
 }
@@ -73,6 +75,7 @@ export function makeWorld(options: WorldOptions = {}): World {
   const seed = options.seed ?? 1;
   const depth = Math.min(DUNGEON.floors, Math.max(1, options.depth ?? 1));
   const floor = options.floor ?? makeFloor(floorSeed(seed, depth));
+  const heroDef = heroFor(options.species, options.job);
   const world: World = {
     grid: floor.grid,
     rooms: floor.rooms,
@@ -80,7 +83,8 @@ export function makeWorld(options: WorldOptions = {}): World {
     flow: makeFlow(floor.grid),
     visible: new Uint8Array(0),
     seen: new Uint8Array(0),
-    hero: { x: 0, y: 0, px: 0, py: 0, facing: -1, moving: false, hp: HERO.hp, maxHp: HERO.hp, swing: 0, butt: 0, hurt: 0, poison: 0, throwing: 0 },
+    hero: { x: 0, y: 0, px: 0, py: 0, facing: -1, moving: false, hp: heroDef.hp, maxHp: heroDef.hp, swing: 0, butt: 0, hurt: 0, poison: 0, throwing: 0 },
+    heroDef,
     monsters: [],
     shots: [],
     rng: makeRng(seed ^ 0x5bd1e995),
@@ -89,7 +93,7 @@ export function makeWorld(options: WorldOptions = {}): World {
     depth,
     time: 0,
     floorTime: 0,
-    speed: options.speed ?? HERO.speed,
+    speed: options.speed ?? heroDef.speed,
     kills: 0,
     nextPack: 1,
     nextBand: Infinity,
@@ -105,7 +109,7 @@ export function makeWorld(options: WorldOptions = {}): World {
 function look(w: World): void {
   const cx = Math.floor(w.hero.x);
   const cy = Math.floor(w.hero.y);
-  computeFov(w.grid, cx, cy, HERO.sight, w.visible);
+  computeFov(w.grid, cx, cy, w.heroDef.sight, w.visible);
   for (let i = 0; i < w.visible.length; i++) if (w.visible[i]) w.seen[i] = 1;
   updateFlow(w.flow, w.grid, cx, cy);
 }
@@ -120,7 +124,7 @@ function walkHero(w: World, input: Input, dt: number): void {
   }
   hero.moving = length > 0;
   if (!hero.moving) return;
-  const to = moveCircle(w.grid, hero, HERO.radius, mx * w.speed * dt, my * w.speed * dt);
+  const to = moveCircle(w.grid, hero, w.heroDef.radius, mx * w.speed * dt, my * w.speed * dt);
   hero.x = to.x;
   hero.y = to.y;
   if (mx < -0.15) hero.facing = -1;
@@ -175,7 +179,7 @@ function walkMonsters(w: World, dt: number): void {
 
 function shoveHero(w: World, dx: number, dy: number): void {
   if (dx === 0 && dy === 0) return;
-  const to = moveCircle(w.grid, w.hero, HERO.radius, dx, dy);
+  const to = moveCircle(w.grid, w.hero, w.heroDef.radius, dx, dy);
   w.hero.x = to.x;
   w.hero.y = to.y;
 }

@@ -1,0 +1,8 @@
+[
+  {"id":"axe","name":"도끼","each":"피해 +1","aptitude":"axe","effects":["axe.damage","axe.wide","axe.spin","axe.stun","axe.reset"]},
+  {"id":"fighting","name":"전투","each":"최대 체력 +8","aptitude":"fighting","effects":["fighting.hp","fighting.regen","fighting.healKill","fighting.desperate","fighting.lastStand"]},
+  {"id":"armour","name":"갑옷","each":"받는 피해 -1","aptitude":"armour","effects":["armour.reduce","armour.stone","armour.deflect","armour.unmoved","armour.thorns"]},
+  {"id":"shield","name":"방패","each":"막을 확률 +4%","aptitude":"shield","effects":["shield.chance","shield.push","shield.missile","shield.stun","shield.reset"]},
+  {"id":"dodging","name":"회피","each":"피할 확률 +3%","aptitude":"dodging","effects":["dodging.chance","dodging.speed","dodging.delay","dodging.squeeze","dodging.grace"]},
+  {"id":"throwing","name":"투척","each":"피해 +1, 재사용 조금 짧게","aptitude":"throwing","effects":["throwing.power","throwing.pierce","throwing.double","throwing.slow","throwing.return"]}
+]

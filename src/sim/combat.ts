@@ -1,4 +1,3 @@
-import { HERO } from '../data/hero';
 import { POISON } from '../data/monsters';
 import { DUNGEON } from '../data/packs';
 import { hurtHero, wake } from './effects';
@@ -41,7 +40,7 @@ function mend(w: World, dt: number): void {
     hero.hp = Math.max(0, hero.hp - POISON * dt);
     if (hero.hp <= 0) w.over = true;
   } else {
-    hero.hp = Math.min(hero.maxHp, hero.hp + HERO.regen * dt);
+    hero.hp = Math.min(hero.maxHp, hero.hp + w.heroDef.regen * dt);
   }
 }
 
@@ -56,7 +55,7 @@ export function throwTarget(w: World): Monster | undefined {
   for (const m of w.monsters) {
     if (m.hp <= 0 || !w.visible[Math.floor(m.y) * w.grid.w + Math.floor(m.x)]) continue;
     const d = Math.hypot(m.x - w.hero.x, m.y - w.hero.y);
-    if (d > HERO.thrown.range) continue;
+    if (d > w.heroDef.thrown.range) continue;
     const rank = (m.stats.throws && m.awake ? 0 : m.awake ? 100 : 200) + d;
     if (rank < bestRank) {
       bestRank = rank;
@@ -74,7 +73,7 @@ function throwNow(w: World): void {
   const dx = target.x - hero.x;
   const dy = target.y - hero.y;
   const d = Math.hypot(dx, dy) || 1;
-  const t = HERO.thrown;
+  const t = w.heroDef.thrown;
   w.shots.push({ x: hero.x, y: hero.y, px: hero.x, py: hero.y, vx: (dx / d) * t.speed, vy: (dy / d) * t.speed, damage: t.damage, left: (t.range + 1.5) / t.speed, mine: true });
   hero.throwing = t.every;
   if (Math.abs(dx) > 0.15) hero.facing = dx < 0 ? -1 : 1;
@@ -94,10 +93,10 @@ function flyShots(w: World, dt: number): void {
     if (s.mine) {
       const hit = w.monsters.find((m) => m.hp > 0 && Math.hypot(m.x - s.x, m.y - s.y) <= m.stats.radius + 0.2);
       if (hit) {
-        strike(w, hit, s.damage, HERO.thrown.knock, 'throw', s.vx, s.vy);
+        strike(w, hit, s.damage, w.heroDef.thrown.knock, 'throw', s.vx, s.vy);
         continue;
       }
-    } else if (Math.hypot(s.x - w.hero.x, s.y - w.hero.y) <= HERO.radius + 0.12) {
+    } else if (Math.hypot(s.x - w.hero.x, s.y - w.hero.y) <= w.heroDef.radius + 0.12) {
       hurtHero(w, s.damage);
       continue;
     }
@@ -124,12 +123,12 @@ export function heroStrikes(w: World, dt: number, wantsThrow: boolean): void {
   if (hero.swing <= 0) {
     let any = false;
     for (const m of w.monsters) {
-      if (m.hp <= 0 || Math.hypot(m.x - hero.x, m.y - hero.y) - m.stats.radius > HERO.axe.reach) continue;
-      if (!any) w.events.push({ type: 'swing', x: hero.x, y: hero.y, reach: HERO.axe.reach + 0.3 });
+      if (m.hp <= 0 || Math.hypot(m.x - hero.x, m.y - hero.y) - m.stats.radius > w.heroDef.axe.reach) continue;
+      if (!any) w.events.push({ type: 'swing', x: hero.x, y: hero.y, reach: w.heroDef.axe.reach + 0.3 });
       any = true;
-      strike(w, m, HERO.axe.damage, HERO.axe.knock, 'axe', m.x - hero.x, m.y - hero.y);
+      strike(w, m, w.heroDef.axe.damage, w.heroDef.axe.knock, 'axe', m.x - hero.x, m.y - hero.y);
     }
-    hero.swing = any ? HERO.axe.every : 0;
+    hero.swing = any ? w.heroDef.axe.every : 0;
     if (any) noise(w, DUNGEON.loud);
   }
 
@@ -139,16 +138,16 @@ export function heroStrikes(w: World, dt: number, wantsThrow: boolean): void {
     for (const m of w.monsters) {
       if (m.hp <= 0) continue;
       const d = Math.hypot(m.x - hero.x, m.y - hero.y) - m.stats.radius;
-      if (d <= HERO.horns.reach && d < best) {
+      if (d <= w.heroDef.horns.reach && d < best) {
         best = d;
         nearest = m;
       }
     }
     if (nearest) {
-      strike(w, nearest, HERO.horns.damage, HERO.horns.knock, 'horns', nearest.x - hero.x, nearest.y - hero.y);
-      nearest.stun = HERO.horns.stun;
+      strike(w, nearest, w.heroDef.horns.damage, w.heroDef.horns.knock, 'horns', nearest.x - hero.x, nearest.y - hero.y);
+      nearest.stun = w.heroDef.horns.stun;
       nearest.wind = -1;
-      hero.butt = HERO.horns.every;
+      hero.butt = w.heroDef.horns.every;
     } else {
       hero.butt = 0;
     }
