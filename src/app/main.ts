@@ -9,12 +9,12 @@ import { spellAtPoint, spellTarget } from '../sim/spells';
 import { STEP, makeWorld, stepWorld, type Input, type World } from '../sim/world';
 import { makeCharacterSelect, type CharacterChoice } from '../ui/characterSelect';
 import { makeEquipmentPicker } from '../ui/equipmentPicker';
+import { makeGameLog } from '../ui/gameLog';
 import { makeHud } from '../ui/hud';
 import { makeInventorySheets } from '../ui/inventorySheets';
-import { makeGameLog } from '../ui/gameLog';
 import { makeHopButton } from '../ui/hopButton';
-import { makeSkillPicker } from '../ui/skillPicker';
 import { makeSkillBar } from '../ui/skillBar';
+import { makeSkillPicker } from '../ui/skillPicker';
 import { makeStatusSheet } from '../ui/statusSheet';
 import { makeSpellButtons } from '../ui/spellButtons';
 import { makeThrowButton } from '../ui/throwButton';
@@ -192,7 +192,14 @@ async function start(): Promise<void> {
       };
       queuedSpell = undefined;
       const active = Math.hypot(input.mx, input.my) > 0.01 || input.throw || input.hop || Boolean(input.spell);
-      if (!statusSheet.open && !inventory.open && !skillBar.expanded && !gameLog.expanded && !spellButtons.targetingId && (!timeMode.superhot || active)) {
+      if (
+        !statusSheet.open &&
+        !inventory.open &&
+        !skillBar.expanded &&
+        !gameLog.expanded &&
+        !spellButtons.targetingId &&
+        (!timeMode.superhot || active)
+      ) {
         stepWorld(world, input);
         if (world.events.some((event) => event.type === 'floor')) fx.clear();
         fx.take(world.events);

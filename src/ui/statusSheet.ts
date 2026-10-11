@@ -1,6 +1,6 @@
 import { brandData, type ResistName } from '../data/items';
-import { effectValue, xpToNext } from '../sim/skills';
 import { weaponOption } from '../sim/equipment';
+import { effectValue, xpToNext } from '../sim/skills';
 import type { World } from '../sim/world';
 
 const RESISTS: readonly { id: ResistName; label: string }[] = [
@@ -20,7 +20,11 @@ export interface StatusValue {
 export function statusValues(w: World): { vitals: StatusValue[]; resists: StatusValue[]; equipment: StatusValue[]; extra: StatusValue[] } {
   const resists = RESISTS.map(({ id, label }) => {
     const level = w.heroDef.resists[id] ?? 0;
-    return { label, value: level > 0 ? '+'.repeat(level) : level < 0 ? '-'.repeat(-level) : '· · ·', tone: level > 0 ? 'positive' as const : level < 0 ? 'negative' as const : 'muted' as const };
+    return {
+      label,
+      value: level > 0 ? '+'.repeat(level) : level < 0 ? '-'.repeat(-level) : '· · ·',
+      tone: level > 0 ? ('positive' as const) : level < 0 ? ('negative' as const) : ('muted' as const),
+    };
   });
   const slots = [
     ['무기', w.weapon.name + (w.weapon.brand ? ' (' + brandData(w.weapon.brand)?.name + ')' : '')],
@@ -50,7 +54,7 @@ export function statusValues(w: World): { vitals: StatusValue[]; resists: Status
       { label: '처치', value: String(w.kills) },
     ],
     resists,
-    equipment: slots.map(([label, value]) => ({ label, value, tone: value === '미착용' ? 'muted' as const : undefined })),
+    equipment: slots.map(([label, value]) => ({ label, value, tone: value === '미착용' ? ('muted' as const) : undefined })),
     extra: [
       { label: '체력재생', value: w.heroDef.regen.toFixed(2) + '/초' },
       { label: '마력재생', value: w.heroDef.manaRegen.toFixed(2) + '/초' },
@@ -124,7 +128,9 @@ export function makeStatusSheet(root: HTMLElement): StatusSheet {
       world = w;
       if (w.over && opened) this.close();
       if (!opened) return;
-      const key = [w.hero.hp, w.hero.mana, w.hero.level, w.hero.xp, w.kills, w.ammo, w.weapon.uid, w.heroDef.species].join('|');
+      const key = [w.hero.hp, w.hero.mana, w.hero.level, w.hero.xp, w.kills, w.ammo, w.weapon.uid, w.heroDef.species].join(
+        '|',
+      );
       if (key === lastKey) return;
       lastKey = key;
       title.textContent = w.heroDef.name + ' · 지하 ' + w.depth + '층';
