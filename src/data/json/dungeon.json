@@ -11,5 +11,7 @@
   "most": 110,
   "poisonPerSecond": 2,
   "levelXpBase": 6,
-  "levelXpStep": 4
+  "levelXpStep": 4,
+  "floorLimit": 180,
+  "overdueBandEvery": 5
 }

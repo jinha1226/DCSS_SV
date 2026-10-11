@@ -9,6 +9,8 @@ export interface PackKind {
 }
 export const DUNGEON = {
   floors: dungeonRaw.floors,
+  floorLimit: dungeonRaw.floorLimit,
+  overdueBandEvery: dungeonRaw.overdueBandEvery,
   tougher: dungeonRaw.tougher,
   loud: dungeonRaw.loud,
   arrowLoud: dungeonRaw.arrowLoud,
