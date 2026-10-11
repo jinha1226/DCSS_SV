@@ -7,7 +7,7 @@ import { hurtMonster } from './hits';
 import { hurtHero, wake } from './effects';
 import { FAR } from './flow';
 import { walkable } from './grid';
-import { recordKill } from './kills';
+
 import { effectValue, hasEffect, skillLevel, throwCooldown } from './skills';
 import { hornDamage, hornEvery, hornTrait } from './traits';
 import type { Monster, Shot, World } from './types';

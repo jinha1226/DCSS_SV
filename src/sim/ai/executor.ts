@@ -1,7 +1,7 @@
 import { hurtHero } from '../effects';
 import { downhill } from '../flow';
 import { castMonsterSpell } from '../spells';
-import type { Monster, World } from '../types';
+import type { Monster } from '../types';
 import type { ActionCandidate } from './actions';
 import type { MonsterContext } from './context';
 
