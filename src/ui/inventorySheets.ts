@@ -280,7 +280,9 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
                     if (targets.length > 0) {
                       const target = window.prompt(
                         '감정할 아이템 번호를 입력하세요:\\n' +
-                          targets.map((entry, index) => index + 1 + '. ' + (entry.kind === 'consumable' ? itemDisplayName(w, entry.id) : '')).join('\\n'),
+                          targets
+                            .map((entry, index) => index + 1 + '. ' + (entry.kind === 'consumable' ? itemDisplayName(w, entry.id) : ''))
+                            .join('\\n'),
                       );
                       const selected = target === null ? undefined : targets[Number(target) - 1];
                       if (!selected || selected.kind !== 'consumable') {
