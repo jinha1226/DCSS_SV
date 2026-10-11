@@ -69,7 +69,7 @@
   {
     "id": "deep_elf",
     "name": "딥엘프",
-    "tile": "hero/deep_elf",
+    "tile": "hero/deep_elf_m",
     "hp": 42,
     "mana": 30,
     "manaRegen": 3,
