@@ -19,6 +19,7 @@ export function spawnMonster(w: World, id: string, x: number, y: number, awake: 
     hp,
     awake,
     wind: -1,
+    attackMode: 'melee',
     rest: w.rng() * 0.4,
     stun: 0,
     flit: 0,
@@ -49,7 +50,13 @@ function throwerTurn(w: World, m: Monster, dt: number, dx: number, dy: number, d
   if (m.wind >= 0) {
     m.wind -= dt;
     if (m.wind < 0) {
-      w.shots.push({
+      if (m.attackMode === 'melee') {
+        const reach = w.heroDef.radius + m.stats.reach;
+        if (d <= reach + GRACE) {
+          const landed = hurtHero(w, m.stats.damage, 'melee', m, m.stats.elemental);
+          if (landed && m.stats.poison) w.hero.poison = Math.max(w.hero.poison, m.stats.poison);
+        }
+      } else w.shots.push({
         x: m.x,
         y: m.y,
         px: m.x,
@@ -68,14 +75,17 @@ function throwerTurn(w: World, m: Monster, dt: number, dx: number, dy: number, d
     }
     return { vx: 0, vy: 0 };
   }
+  const reach = w.heroDef.radius + m.stats.reach;
   if (!inView || d > t.range) {
     const way = downhill(w.flow, w.grid, m.x, m.y);
     return way ? { vx: way.x * speed, vy: way.y * speed } : { vx: 0, vy: 0 };
   }
   if (m.rest <= 0) {
+    m.attackMode = d <= reach ? 'melee' : 'ranged';
     m.wind = m.stats.windup;
     return { vx: 0, vy: 0 };
   }
+  if (d <= reach) return { vx: 0, vy: 0 };
   return d < t.keep ? { vx: (-dx / d) * speed, vy: (-dy / d) * speed } : { vx: 0, vy: 0 };
 }
 export function thinkMonster(w: World, m: Monster, dt: number): Stride {
