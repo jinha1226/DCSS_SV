@@ -292,7 +292,6 @@ export function spellAtPoint(w: World, spell: SpellData, x: number, y: number): 
     .sort((a, b) => a.d - b.d)[0]?.m;
 }
 
-
 export function castAt(w: World, spellId: string, x: number, y: number): boolean {
   const spell = spellData(spellId);
   const target = spellAtPoint(w, spell, x, y);

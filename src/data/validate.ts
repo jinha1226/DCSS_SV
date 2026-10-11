@@ -14,7 +14,8 @@ export function validateData(): void {
   if (!PACKS.length) throw new Error('packs.json: 비어 있음');
   if (!SKILLS.length) throw new Error('skills.json: 비어 있음');
   if (!SPELLS.length) throw new Error('spells.json: 비어 있음');
-  for (const school of SPELL_SCHOOLS) if (!SKILLS.some((skill) => skill.id === school)) throw new Error('spells.json: 없는 학파 스킬 ' + school);
+  for (const school of SPELL_SCHOOLS)
+    if (!SKILLS.some((skill) => skill.id === school)) throw new Error('spells.json: 없는 학파 스킬 ' + school);
   if (!WEAPONS.length || !AXES.length || !BOWS.length || !BRANDS.length || !RANDART_OPTIONS.length || !ARTEFACTS.length)
     throw new Error('items.json: 장비 자료가 비어 있음');
   if (EQUIPMENT.weaponsMin > EQUIPMENT.weaponsMax) throw new Error('items.json: 무기 범위가 잘못됨');

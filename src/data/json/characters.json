@@ -1,5 +1,17 @@
 [
-  {"id":"minotaur-berserker","species":"minotaur","job":"berserker","name":"미노타우로스 광전사","tagline":"도끼로 떼를 베고, 뿔로 받아친다"},
-  {"id":"barachi-hunter","species":"barachi","job":"hunter","name":"바라치 궁수","tagline":"멀리서 쏘고, 몰리면 뛰어서 빠진다"},
-  {"id":"deep-elf-conjurer","species":"deep_elf","job":"conjurer","name":"딥엘프 컨저러","tagline":"마나를 모아 강한 주문을 정확히 꽂는다"}
+  {
+    "id": "minotaur-berserker",
+    "species": "minotaur",
+    "job": "berserker",
+    "name": "미노타우로스 광전사",
+    "tagline": "도끼로 떼를 베고, 뿔로 받아친다"
+  },
+  { "id": "barachi-hunter", "species": "barachi", "job": "hunter", "name": "바라치 궁수", "tagline": "멀리서 쏘고, 몰리면 뛰어서 빠진다" },
+  {
+    "id": "deep-elf-conjurer",
+    "species": "deep_elf",
+    "job": "conjurer",
+    "name": "딥엘프 컨저러",
+    "tagline": "마나를 모아 강한 주문을 정확히 꽂는다"
+  }
 ]

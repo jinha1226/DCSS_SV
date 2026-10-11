@@ -66,12 +66,7 @@ export function makeSpellButtons(root: HTMLElement): SpellButtons {
         if (!button) continue;
         button.disabled = w.hero.mana < spell.mana;
         button.classList.toggle('targeting', targeting === spell.id);
-        button.innerHTML =
-          '<strong>' +
-          spell.name +
-          '</strong><span>' +
-          spell.mana +
-          ' MP</span>';
+        button.innerHTML = '<strong>' + spell.name + '</strong><span>' + spell.mana + ' MP</span>';
       }
     },
   };
