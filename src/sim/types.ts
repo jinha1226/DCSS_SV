@@ -1,5 +1,5 @@
 import type { HeroDefinition } from '../data/hero';
-import type { WeaponItem } from '../data/items';
+import type { ResistName, WeaponItem } from '../data/items';
 import type { SpellShape } from '../data/spells';
 import type { MonsterKind, MonsterStats } from '../data/monsters';
 import type { Room } from './floor';
@@ -104,6 +104,7 @@ export interface SpellShot {
   pierce: number;
   colour: string;
   readonly hit: Monster[];
+  readonly element?: ResistName;
 }
 export interface SpellCloud {
   x: number;
@@ -114,6 +115,7 @@ export interface SpellCloud {
   tick: number;
   nextTick: number;
   colour: string;
+  element?: ResistName;
 }
 export interface SpellVisual {
   readonly shape: SpellShape;
@@ -151,6 +153,14 @@ export type SimEvent =
       readonly y: number;
       readonly amount: number;
       readonly by: 'axe' | 'arrow' | 'spell' | 'horns' | 'headbutt_back' | 'throw' | 'thorns';
+    }
+  | {
+      readonly type: 'elemental';
+      readonly x: number;
+      readonly y: number;
+      readonly amount: number;
+      readonly element: ResistName;
+      readonly target: 'hero' | 'monster';
     }
   | { readonly type: 'brand'; readonly x: number; readonly y: number; readonly amount: number; readonly resisted: boolean }
   | { readonly type: 'kill'; readonly x: number; readonly y: number }

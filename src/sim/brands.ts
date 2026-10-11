@@ -1,5 +1,6 @@
 import { brandData } from '../data/items';
-import { resistanceFactor } from './equipment';
+import { resistanceFactor, damageAfterDefense } from './damage';
+import type { ResistName } from '../data/items';
 import { recordKill } from './kills';
 import type { Monster, World } from './types';
 
@@ -7,8 +8,8 @@ function resist(m: Monster, name: string): number {
   return m.stats.resists[name as keyof typeof m.stats.resists] ?? 0;
 }
 
-function brandEvent(w: World, m: Monster, amount: number, resisted: boolean): void {
-  w.events.push({ type: 'brand', x: m.x, y: m.y, amount: Math.max(0, Math.round(amount)), resisted });
+function brandEvent(w: World, m: Monster, type: ResistName, amount: number): void {
+  w.events.push({ type: 'elemental', x: m.x, y: m.y, amount, element: type, target: 'monster' });
 }
 
 export function emberBurst(w: World, dead: Monster): void {
@@ -18,7 +19,7 @@ export function emberBurst(w: World, dead: Monster): void {
     if (other === dead || other.hp <= 0 || Math.hypot(other.x - dead.x, other.y - dead.y) > 1.5) continue;
     const factor = resistanceFactor(resist(other, flame.resist));
     if (factor <= 0) {
-      brandEvent(w, other, 0, true);
+      brandEvent(w, other, flame.resist, 0);
       continue;
     }
     other.burning = Math.max(other.burning, (flame.duration ?? 3) * factor);
@@ -31,13 +32,17 @@ export function applyBrand(w: World, m: Monster, brandId: string | undefined): v
   if (!brand) return;
   const factor = resistanceFactor(resist(m, brand.resist));
   if (factor <= 0) {
-    brandEvent(w, m, 0, true);
+    brandEvent(w, m, brand.resist, 0);
     return;
   }
 
   if (brand.id === 'flame') {
     m.burning = Math.max(m.burning, (brand.duration ?? 3) * factor);
     m.burnDamage = (brand.damage ?? 2) * factor;
+    const hit = damageAfterDefense(brand.damage ?? 2, brand.resist, 0, m.stats.resists);
+    brandEvent(w, m, brand.resist, hit);
+    m.hp -= hit;
+    if (recordKill(w, m)) emberBurst(w, m);
   } else if (brand.id === 'cold') {
     m.slow = Math.max(m.slow, (brand.duration ?? 2) * factor);
     m.slowScale = Math.max(m.slowScale, (brand.slow ?? 0.3) * factor);
@@ -55,8 +60,8 @@ export function applyBrand(w: World, m: Monster, brandId: string | undefined): v
       }
       if (target) {
         const chainFactor = resistanceFactor(resist(target, brand.resist));
-        const damage = (brand.chainDamage ?? 5) * chainFactor;
-        brandEvent(w, target, damage, chainFactor <= 0);
+        const damage = damageAfterDefense(brand.chainDamage ?? 5, brand.resist, 0, target.stats.resists);
+        brandEvent(w, target, brand.resist, damage);
         if (damage > 0) {
           target.hp -= damage;
           target.flash = 0.12;
@@ -77,7 +82,10 @@ export function tickBrands(w: World, dt: number): void {
   for (const m of w.monsters) {
     if (m.hp <= 0 || m.burning <= 0) continue;
     m.burning -= dt;
+    const before = m.hp;
     m.hp -= m.burnDamage * dt;
+    const shown = Math.floor(before) - Math.floor(Math.max(0, m.hp));
+    if (shown > 0) brandEvent(w, m, 'fire', shown);
     if (recordKill(w, m)) emberBurst(w, m);
   }
 }

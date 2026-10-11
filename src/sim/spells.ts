@@ -1,5 +1,7 @@
 import { ACTIVE_SPELL_SHAPES, SPELLS, SPELL_SCHOOLS, spellData, type SpellData } from '../data/spells';
 import { walkable } from './grid';
+import { damageAfterDefense } from './damage';
+import type { ResistName } from '../data/items';
 import { recordKill } from './kills';
 import { skillLevel } from './skills';
 import { wake } from './effects';
@@ -84,13 +86,20 @@ export function spellTarget(w: World, spell: SpellData): Monster | undefined {
   return spellCandidates(w, spell)[0];
 }
 
-function hitMonster(w: World, m: Monster, amount: number): void {
+function hitMonster(w: World, m: Monster, amount: number, element?: ResistName): void {
   if (m.hp <= 0) return;
-  m.hp -= amount;
+  const damage = element ? damageAfterDefense(amount, element, 0, m.stats.resists) : amount;
+  m.hp -= damage;
   m.flash = 0.12;
   wake(w, m);
-  w.events.push({ type: 'hit', x: m.x, y: m.y, amount, by: 'spell' });
+  if (element) w.events.push({ type: 'elemental', x: m.x, y: m.y, amount: damage, element, target: 'monster' });
+  else w.events.push({ type: 'hit', x: m.x, y: m.y, amount: damage, by: 'spell' });
   recordKill(w, m);
+}
+
+function spellElement(spell: SpellData): ResistName | undefined {
+  const types: readonly ResistName[] = ['fire', 'cold', 'electric', 'poison', 'negative'];
+  return types.find((type) => spell.schools.includes(type)) ?? (spell.schools.includes('air') ? 'electric' : undefined);
 }
 
 function rayEnd(w: World, target: Monster, range: number): { x: number; y: number } {
@@ -129,6 +138,7 @@ function castProjectile(w: World, spell: SpellData, target: Monster, damage: num
     damage,
     pierce: spell.pierce ?? 0,
     colour: spell.colour,
+    element: spellElement(spell),
     hit: [],
   };
   w.spellShots.push(shot);
@@ -144,7 +154,7 @@ function castBeam(w: World, spell: SpellData, target: Monster, damage: number): 
     const t = Math.max(0, Math.min(1, ((m.x - w.hero.x) * dx + (m.y - w.hero.y) * dy) / length2));
     const px = w.hero.x + dx * t;
     const py = w.hero.y + dy * t;
-    if (Math.hypot(m.x - px, m.y - py) <= m.stats.radius + 0.18) hitMonster(w, m, damage);
+    if (Math.hypot(m.x - px, m.y - py) <= m.stats.radius + 0.18) hitMonster(w, m, damage, spellElement(spell));
   }
   w.spellVisuals.push({
     shape: 'beam',
@@ -185,6 +195,7 @@ function castCloud(w: World, spell: SpellData, target: Monster, damage: number):
     tick: spell.tick ?? 0.5,
     nextTick: 0,
     colour: spell.colour,
+    element: spellElement(spell),
   };
   w.spellClouds.push(cloud);
   w.spellVisuals.push({
@@ -265,7 +276,7 @@ function tickProjectiles(w: World, dt: number): void {
     );
     if (hit) {
       shot.hit.push(hit);
-      hitMonster(w, hit, shot.damage);
+      hitMonster(w, hit, shot.damage, shot.element);
       if (shot.pierce > 0) shot.pierce--;
       else continue;
     }
@@ -283,7 +294,7 @@ function tickClouds(w: World, dt: number): void {
       cloud.nextTick += cloud.tick;
       for (const m of w.monsters) {
         if (m.hp > 0 && Math.hypot(m.x - cloud.x, m.y - cloud.y) <= cloud.radius + m.stats.radius) {
-          hitMonster(w, m, cloud.damage);
+          hitMonster(w, m, cloud.damage, cloud.element);
         }
       }
     }

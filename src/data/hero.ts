@@ -1,6 +1,6 @@
 import jobsRaw from './json/jobs.json';
 import speciesRaw from './json/species.json';
-import { THROW_DATA, weaponBase } from './items';
+import { THROW_DATA, weaponBase, type ResistName } from './items';
 import { SKILLS } from './skills';
 import { hasTile, type TileName } from './tiles';
 import { TRAIT_IDS, type TraitData } from './traits';
@@ -31,6 +31,7 @@ export interface HeroDefinition {
     readonly knock: number;
   };
   readonly traits: readonly TraitData[];
+  readonly resists: Readonly<Partial<Record<ResistName, number>>>;
   readonly aptitudes: Readonly<Record<string, Aptitude>>;
   readonly startingWeapon: string;
   readonly startingAmmo: number;
@@ -93,6 +94,7 @@ export function heroFor(speciesId = 'minotaur', jobId = 'berserker'): HeroDefini
     axe: { damage: weapon.damage, reach: weapon.range, every: weapon.every, knock: weapon.knock },
     thrown: THROW_DATA,
     traits: s.traits as readonly TraitData[],
+    resists: 'resists' in s ? (s.resists as Readonly<Partial<Record<ResistName, number>>>) : {},
     aptitudes: s.aptitudes as Readonly<Record<string, Aptitude>>,
     startingWeapon: j.startingWeapon,
     startingAmmo: j.startingAmmo,

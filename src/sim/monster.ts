@@ -112,7 +112,7 @@ export function thinkMonster(w: World, m: Monster, dt: number): Stride {
     m.wind -= dt;
     if (m.wind < 0) {
       if (d <= reach + GRACE) {
-        const landed = hurtHero(w, m.stats.damage, 'melee', m);
+        const landed = hurtHero(w, m.stats.damage, 'melee', m, m.stats.elemental);
         if (landed && m.stats.poison) hero.poison = Math.max(hero.poison, m.stats.poison);
       }
       m.rest = m.stats.rest;

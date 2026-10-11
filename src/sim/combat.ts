@@ -3,6 +3,7 @@ import { POISON } from '../data/monsters';
 import { DUNGEON } from '../data/packs';
 import { applyBrand, applyWeaponBrand, emberBurst, tickBrands } from './brands';
 import { dropAmmo, weaponOption } from './equipment';
+import { damageAfterDefense } from './damage';
 import { hurtHero, wake } from './effects';
 import { FAR } from './flow';
 import { walkable } from './grid';
@@ -36,7 +37,7 @@ function strike(
   dy: number,
 ): boolean {
   if (m.hp <= 0) return false;
-  amount = power(w, amount);
+  amount = damageAfterDefense(power(w, amount), 'physical', m.stats.armour ?? 0, m.stats.resists);
   const d = Math.hypot(dx, dy);
   m.hp -= amount;
   m.flash = 0.12;

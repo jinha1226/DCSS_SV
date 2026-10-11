@@ -171,11 +171,7 @@ export function weaponScore(weapon: WeaponItem): number {
     (weapon.brand?.length ? 0.8 : 0)
   );
 }
-export function resistanceFactor(level: number): number {
-  if (level >= 3) return 0;
-  if (level === -1) return 2;
-  return Math.pow(0.5, Math.max(0, level));
-}
+export { resistanceFactor } from './damage';
 const hpBonus = (weapon: WeaponItem): number => weaponOption(weapon, 'maxHp');
 export function acceptPickup(w: World): void {
   const item = w.pendingPickup;

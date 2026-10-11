@@ -1,4 +1,5 @@
 import type { SimEvent } from '../sim/world';
+import { ELEMENT_COLOURS } from '../sim/damage';
 
 /** A number that rises from where a blow landed and fades. */
 interface Rising {
@@ -43,7 +44,16 @@ export class Fx {
   take(events: readonly SimEvent[]): void {
     for (const e of events) {
       if (e.type === 'hit') {
-        this.rising.push({ x: e.x, y: e.y - 0.45, text: String(e.amount), colour: COLOUR[e.by], big: e.by === 'horns', age: 0 });
+        this.rising.push({ x: e.x - 0.18, y: e.y - 0.45, text: String(e.amount), colour: COLOUR[e.by], big: e.by === 'horns', age: 0 });
+      } else if (e.type === 'elemental') {
+        this.rising.push({
+          x: e.x + 0.2,
+          y: e.y - 0.45,
+          text: e.target === 'hero' ? '-' + e.amount : String(e.amount),
+          colour: e.amount === 0 ? COLOUR.resisted : ELEMENT_COLOURS[e.element],
+          big: e.target === 'hero',
+          age: 0,
+        });
       } else if (e.type === 'brand') {
         this.rising.push({
           x: e.x,
@@ -54,7 +64,7 @@ export class Fx {
           age: 0,
         });
       } else if (e.type === 'hurt') {
-        this.rising.push({ x: e.x, y: e.y - 0.6, text: `-${e.amount}`, colour: COLOUR.hurt, big: true, age: 0 });
+        this.rising.push({ x: e.x - 0.18, y: e.y - 0.6, text: `-${e.amount}`, colour: COLOUR.hurt, big: true, age: 0 });
       } else if (e.type === 'dodge' || e.type === 'block') {
         this.rising.push({ x: e.x, y: e.y - 0.55, text: e.type === 'dodge' ? '피함' : '막음', colour: COLOUR.guard, big: false, age: 0 });
       } else if (e.type === 'swing') {
