@@ -5,7 +5,7 @@ import { STICK_REACH, stickPush } from '../../src/input/stick';
 import { cellPixels } from '../../src/view/render';
 
 describe('the address switches', () => {
-  const usual = { cols: 17, speed: 6.5, look: 'dcss', seed: 0, debug: false };
+  const usual = { cols: 17, speed: 6.5, look: 'dcss', seed: 0, debug: false, floor: 1 };
 
   it('fall back to the usual values', () => {
     expect(readSwitches('')).toEqual(usual);
@@ -23,12 +23,16 @@ describe('the address switches', () => {
       look: 'bright',
       seed: 42,
       debug: true,
+      floor: 1,
     });
   });
 
   it('write back only what differs from the usual', () => {
     expect(writeSwitches(readSwitches(''))).toBe('');
     expect(writeSwitches(readSwitches('?zoom=15'))).toBe('?zoom=15');
+    expect(readSwitches('?floor=2').floor).toBe(2);
+    expect(readSwitches('?floor=4').floor).toBe(1);
+    expect(writeSwitches(readSwitches('?floor=3'))).toBe('?floor=3');
     expect(writeSwitches(readSwitches('?zoom=17&speed=6.5'))).toBe('');
     for (const text of ['?zoom=13&speed=3.5&look=bright&seed=42&debug', '?debug', '?look=bright']) {
       expect(readSwitches(writeSwitches(readSwitches(text)))).toEqual(readSwitches(text));

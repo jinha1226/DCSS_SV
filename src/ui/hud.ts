@@ -36,16 +36,18 @@ export function makeHud(root: HTMLElement, again: () => void): Hud {
   return {
     show(w) {
       const hp = Math.ceil(w.hero.hp);
-      const line = `${hp}|${Math.floor(w.time)}|${w.kills}`;
+      const line = `${hp}|${Math.floor(w.time)}|${w.kills}|${w.depth}|${w.hero.poison > 0}`;
       if (line !== last) {
         last = line;
         fill.style.width = `${(Math.max(0, w.hero.hp) / w.hero.maxHp) * 100}%`;
+        bar.classList.toggle('poison', w.hero.poison > 0);
         bar.classList.toggle('low', w.hero.hp <= w.hero.maxHp * 0.3);
         hpText.textContent = `${hp} / ${w.hero.maxHp}`;
-        stats.textContent = `${clock(w.time)} · 처치 ${w.kills}`;
+        stats.textContent = `${w.depth}/3층 · ${clock(w.time)} · 처치 ${w.kills}`;
       }
       if (w.over !== shown) {
         shown = w.over;
+        title.textContent = w.won ? '던전을 빠져나왔다' : '쓰러졌다';
         result.textContent = `${clock(w.time)} 버팀 · ${w.kills} 처치`;
         over.classList.toggle('on', w.over);
       }

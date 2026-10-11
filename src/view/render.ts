@@ -1,3 +1,5 @@
+import { DUNGEON } from '../data/packs';
+import { throwTarget } from '../sim/combat';
 import type { TileName } from '../data/tiles';
 import { Cell, cellAt } from '../sim/grid';
 import { cellNoise } from '../sim/rng';
@@ -90,7 +92,13 @@ function drawMonster(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World, m: M
   const cx = ox + x * px;
   const cy = oy + y * px;
   drawFigure(ctx, m.flash > 0 ? atlas.struck : atlas.image, m.kind.tile, cx, cy, px, m.facing === 1);
-  if (m.hp < m.stats.hp) {
+  if (!m.awake) {
+    ctx.fillStyle = '#e5e9ef';
+    ctx.font = `${Math.max(10, Math.round(px * 0.45))}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('z', cx, cy - px * 0.6);
+  }
+  if (m.hp < m.maxHp) {
     const bw = Math.round(px * 0.7);
     const bh = Math.max(2, Math.round(px * 0.07));
     const bx = Math.round(cx - bw / 2);
@@ -98,7 +106,7 @@ function drawMonster(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World, m: M
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
     ctx.fillRect(bx - 1, by - 1, bw + 2, bh + 2);
     ctx.fillStyle = '#c8473a';
-    ctx.fillRect(bx, by, Math.round(bw * Math.max(0, m.hp / m.stats.hp)), bh);
+    ctx.fillRect(bx, by, Math.round(bw * Math.max(0, m.hp / m.maxHp)), bh);
   }
 }
 
@@ -127,6 +135,34 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
     drawMonster(ctx, atlas, w, m, px, ox, oy, between);
   }
 
+  for (const shot of w.shots) {
+    const sx = ox + (shot.px + (shot.x - shot.px) * between) * px;
+    const sy = oy + (shot.py + (shot.y - shot.py) * between) * px;
+    const tile = shot.mine ? 'item/boomerang1' : 'item/stone';
+    ctx.save();
+    ctx.translate(sx, sy);
+    if (shot.mine) ctx.rotate(w.time * 15);
+    drawTile(ctx, atlas.image, tile, -px * 0.26, -px * 0.26, px * 0.52);
+    ctx.restore();
+  }
+  const target = throwTarget(w);
+  if (target) {
+    const tx = ox + target.x * px;
+    const ty = oy + target.y * px;
+    ctx.strokeStyle = '#e2ce83';
+    ctx.lineWidth = Math.max(1, px * 0.065);
+    ctx.beginPath();
+    ctx.ellipse(tx, ty + px * 0.26, px * 0.42, px * 0.2, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  const down = w.stairs.find((stair) => stair.down && Math.floor(w.hero.x) === stair.x && Math.floor(w.hero.y) === stair.y);
+  if (down && w.descending > 0) {
+    ctx.strokeStyle = '#e6c56f';
+    ctx.lineWidth = Math.max(2, px * 0.08);
+    ctx.beginPath();
+    ctx.arc(ox + (down.x + 0.5) * px, oy + (down.y + 0.5) * px, px * 0.48, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, w.descending / DUNGEON.descend));
+    ctx.stroke();
+  }
   const cx = ox + hx * px;
   const cy = oy + hy * px;
   fx.drawStrokes(ctx, cx, cy, px);

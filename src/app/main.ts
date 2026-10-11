@@ -3,10 +3,11 @@ import { HERO } from '../data/hero';
 import { guardZoom } from '../input/guards';
 import { keyPush, watchKeys } from '../input/keys';
 import { makeStick } from '../input/stick';
-import { makeTestFloor } from '../sim/testFloor';
 import { STEP, makeWorld, stepWorld, type World } from '../sim/world';
+import { makeThrowButton } from '../ui/throwButton';
 import { makeHud } from '../ui/hud';
 import { loadAtlas } from '../view/atlas';
+import { drawMiniMap } from '../view/minimap';
 import { Fx } from '../view/fx';
 import { LOOK } from '../view/look';
 import { drawWorld } from '../view/render';
@@ -31,10 +32,11 @@ async function start(): Promise<void> {
   const stick = makeStick(canvas, root);
   const keys = watchKeys();
   const fx = new Fx();
+  const throwing = makeThrowButton(root);
 
   // A seed in the address gives the same run every time; without one each run differs.
   const begin = (): World =>
-    makeWorld(makeTestFloor(), { seed: switches.seed || (Date.now() & 0x7fffffff), speed: switches.speed });
+    makeWorld({ seed: switches.seed || (Date.now() & 0x7fffffff), speed: switches.speed, depth: switches.floor });
   let world = begin();
   const debug: { world: World } | undefined = switches.debug ? { world } : undefined;
   if (debug) Object.assign(window, { __sv: Object.assign(debug, { switches, stick, keys, heroWalk }) });
@@ -59,7 +61,8 @@ async function start(): Promise<void> {
   runLoop(
     () => {
       const key = keyPush(keys);
-      stepWorld(world, { mx: stick.x + key.x, my: stick.y + key.y });
+      stepWorld(world, { mx: stick.x + key.x, my: stick.y + key.y, throw: throwing.held || keys.has('Space') || keys.has('KeyJ') });
+      if (world.events.some((event) => event.type === 'floor')) fx.clear();
       fx.take(world.events);
       fx.step(STEP);
     },
@@ -68,6 +71,8 @@ async function start(): Promise<void> {
       // A world that has stopped is drawn where it stopped, not between two steps.
       drawWorld(ctx, atlas, world, { cols: switches.cols, look: LOOK[switches.look], dpr, heroWalk }, fx, world.over ? 1 : between);
       hud.show(world);
+      throwing.show(world);
+      drawMiniMap(ctx, world, dpr);
     },
   );
 }

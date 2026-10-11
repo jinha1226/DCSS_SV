@@ -4,7 +4,7 @@ const LEFT = ['KeyA', 'ArrowLeft'];
 const RIGHT = ['KeyD', 'ArrowRight'];
 const UP = ['KeyW', 'ArrowUp'];
 const DOWN = ['KeyS', 'ArrowDown'];
-const OURS = new Set([...LEFT, ...RIGHT, ...UP, ...DOWN]);
+const OURS = new Set([...LEFT, ...RIGHT, ...UP, ...DOWN, 'Space', 'KeyJ']);
 
 /** The direction the held keys ask for: each of x, y is -1, 0 or 1. */
 export function keyPush(down: ReadonlySet<string>): { x: number; y: number } {

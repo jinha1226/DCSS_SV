@@ -1,6 +1,5 @@
 import { HERO } from '../../src/data/hero';
 import { moveCircle, wallGap } from '../../src/sim/collide';
-import { makeTestFloor } from '../../src/sim/testFloor';
 import { makeWorld, stepWorld, type Input, type World } from '../../src/sim/world';
 
 /** A stand-in for a player: looks at the world and says which way to walk. */
@@ -89,7 +88,7 @@ export interface RunResult {
 
 /** Plays one run with a bot, for at most `limit` seconds. */
 export function play(bot: Bot, seed: number, limit: number): RunResult {
-  const w = makeWorld(makeTestFloor(), { seed });
+  const w = makeWorld({ seed });
   while (!w.over && w.time < limit) stepWorld(w, bot(w));
   return { seconds: w.time, kills: w.kills, hp: w.hero.hp, fell: w.over };
 }

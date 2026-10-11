@@ -79,7 +79,7 @@ describe('sight', () => {
 
 describe('what the hero has seen', () => {
   it('starts with its own room and grows as it walks', () => {
-    const w = makeWorld(makeTestFloor(), { monsters: false });
+    const w = makeWorld({ floor: makeTestFloor(), monsters: false });
     const count = (a: Uint8Array): number => a.reduce((n, v) => n + v, 0);
     const first = count(w.seen);
     expect(first).toBeGreaterThan(90);

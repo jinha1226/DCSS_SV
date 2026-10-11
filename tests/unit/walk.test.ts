@@ -130,27 +130,27 @@ describe('the floor of stage 1', () => {
 
 describe('the hero', () => {
   it('walks at its speed, and no faster on the diagonal', () => {
-    const w = makeWorld(makeTestFloor(), { monsters: false });
+    const w = makeWorld({ floor: makeTestFloor(), monsters: false });
     const x0 = w.hero.x;
     for (let i = 0; i < 60; i++) stepWorld(w, { mx: 1, my: 0 });
     expect(w.hero.x - x0).toBeCloseTo(HERO.speed, 6);
     expect(w.time).toBeCloseTo(60 * STEP);
 
-    const d = makeWorld(makeTestFloor(), { monsters: false });
+    const d = makeWorld({ floor: makeTestFloor(), monsters: false });
     const from = { x: d.hero.x, y: d.hero.y };
     for (let i = 0; i < 20; i++) stepWorld(d, { mx: 1, my: 1 });
     expect(Math.hypot(d.hero.x - from.x, d.hero.y - from.y)).toBeCloseTo((HERO.speed * 20) / 60, 6);
   });
 
   it('walks slower when the stick is pushed part way', () => {
-    const w = makeWorld(makeTestFloor(), { monsters: false });
+    const w = makeWorld({ floor: makeTestFloor(), monsters: false });
     const x0 = w.hero.x;
     for (let i = 0; i < 60; i++) stepWorld(w, { mx: 0.5, my: 0 });
     expect(w.hero.x - x0).toBeCloseTo(HERO.speed / 2, 6);
   });
 
   it('turns to face the way it walks and keeps facing that way when it stops', () => {
-    const w = makeWorld(makeTestFloor(), { monsters: false });
+    const w = makeWorld({ floor: makeTestFloor(), monsters: false });
     stepWorld(w, { mx: 1, my: 0 });
     expect(w.hero.facing).toBe(1);
     expect(w.hero.moving).toBe(true);
@@ -164,7 +164,7 @@ describe('the hero', () => {
   });
 
   it('remembers where it was a step ago', () => {
-    const w = makeWorld(makeTestFloor(), { monsters: false });
+    const w = makeWorld({ floor: makeTestFloor(), monsters: false });
     stepWorld(w, { mx: 1, my: 0 });
     const x1 = w.hero.x;
     stepWorld(w, { mx: 1, my: 0 });
