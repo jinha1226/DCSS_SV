@@ -1408,3 +1408,116 @@ canvas {
   color: #b5a991;
   font-size: 11px;
 }
+
+/* DCSS-inspired compact character overview. Only live game values are shown. */
+.status-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 27;
+  display: none;
+  flex-direction: column;
+  background: #050505;
+  color: #c6c6c6;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 12px calc(12px + env(safe-area-inset-bottom, 0px));
+}
+
+.status-sheet.on {
+  display: flex;
+}
+
+.status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0 14px;
+  color: #e6d04d;
+  font-size: 15px;
+}
+
+.status-header strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-header button {
+  flex: 0 0 auto;
+  min-height: 40px;
+  border: 1px solid #625633;
+  border-radius: 5px;
+  background: #211c12;
+  color: #e6d04d;
+  font: inherit;
+  padding: 7px 12px;
+}
+
+.status-body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.status-vitals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 16px;
+  row-gap: 4px;
+  margin-bottom: 22px;
+}
+
+.status-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.status-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px;
+  min-height: 25px;
+  font-size: clamp(10px, 2.9vw, 13px);
+}
+
+.status-line > span:first-child {
+  flex: 0 0 auto;
+  color: #b59b52;
+}
+
+.status-value {
+  color: #e3e0d5;
+  min-width: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.status-value.positive {
+  color: #80d65b;
+}
+
+.status-value.negative {
+  color: #e68072;
+}
+
+.status-value.muted {
+  color: #686868;
+}
+
+.status-extra {
+  border-top: 1px solid #39342b;
+  padding-top: 12px;
+}
+
+.status-extra .status-line {
+  justify-content: flex-start;
+  gap: 14px;
+}
+
+.status-extra .status-line > span:first-child {
+  min-width: 90px;
+}

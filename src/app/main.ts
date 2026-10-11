@@ -15,6 +15,7 @@ import { makeGameLog } from '../ui/gameLog';
 import { makeHopButton } from '../ui/hopButton';
 import { makeSkillPicker } from '../ui/skillPicker';
 import { makeSkillBar } from '../ui/skillBar';
+import { makeStatusSheet } from '../ui/statusSheet';
 import { makeSpellButtons } from '../ui/spellButtons';
 import { makeThrowButton } from '../ui/throwButton';
 import { makeTimeModeButton } from '../ui/timeModeButton';
@@ -69,6 +70,7 @@ async function start(): Promise<void> {
     gameLog.reset(world);
     skillBar.close();
     inventory.close();
+    statusSheet.close();
     spellButtons.cancelTarget();
     selector.hide();
     if (debug) debug.world = world;
@@ -79,6 +81,7 @@ async function start(): Promise<void> {
     gameLog.hide();
     skillBar.close();
     inventory.close();
+    statusSheet.close();
     selected = undefined;
     spellButtons.cancelTarget();
     selector.show();
@@ -96,6 +99,7 @@ async function start(): Promise<void> {
     chooseCharacter,
   );
   const inventory = makeInventorySheets(root);
+  const statusSheet = makeStatusSheet(root);
   const skillBar = makeSkillBar(hud.skillSlot, atlas, () => {
     skillBar.close();
     inventory.openSheet('equipment');
@@ -110,11 +114,13 @@ async function start(): Promise<void> {
     button.addEventListener('click', () => {
       hud.closeMenu();
       inventory.close();
+      statusSheet.close();
       skillBar.close();
       action();
     });
     hud.menuSlot.append(button);
   };
+  menuAction('@ 상태', () => statusSheet.openSheet());
   menuAction('⚔ 장비', () => inventory.openSheet('equipment'));
   menuAction('▣ 가방', () => inventory.openSheet('bag'));
   menuAction('✦ 스킬', () => skillBar.openDetails());
@@ -186,7 +192,7 @@ async function start(): Promise<void> {
       };
       queuedSpell = undefined;
       const active = Math.hypot(input.mx, input.my) > 0.01 || input.throw || input.hop || Boolean(input.spell);
-      if (!inventory.open && !skillBar.expanded && !gameLog.expanded && !spellButtons.targetingId && (!timeMode.superhot || active)) {
+      if (!statusSheet.open && !inventory.open && !skillBar.expanded && !gameLog.expanded && !spellButtons.targetingId && (!timeMode.superhot || active)) {
         stepWorld(world, input);
         if (world.events.some((event) => event.type === 'floor')) fx.clear();
         fx.take(world.events);
@@ -215,6 +221,7 @@ async function start(): Promise<void> {
       gameLog.show(world);
       skillBar.show(world);
       inventory.show(world);
+      statusSheet.show(world);
       picker.show(world);
       gear.show(world);
       spellButtons.show(world);
