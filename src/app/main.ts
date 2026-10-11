@@ -10,6 +10,7 @@ import { STEP, makeWorld, stepWorld, type Input, type World } from '../sim/world
 import { makeCharacterSelect, type CharacterChoice } from '../ui/characterSelect';
 import { makeEquipmentPicker } from '../ui/equipmentPicker';
 import { makeHud } from '../ui/hud';
+import { makeGameLog } from '../ui/gameLog';
 import { makeHopButton } from '../ui/hopButton';
 import { makeSkillPicker } from '../ui/skillPicker';
 import { makeSkillBar } from '../ui/skillBar';
@@ -42,7 +43,6 @@ async function start(): Promise<void> {
   const fx = new Fx();
   const hop = makeHopButton(root);
   const throwing = makeThrowButton(root);
-  const timeMode = makeTimeModeButton(root);
   const picker = makeSkillPicker(root);
   const skillBar = makeSkillBar(root);
   const gear = makeEquipmentPicker(root);
@@ -66,6 +66,7 @@ async function start(): Promise<void> {
       depth: switches.floor,
     });
     fx.clear();
+    gameLog.reset(world);
     skillBar.close();
     spellButtons.cancelTarget();
     selector.hide();
@@ -74,6 +75,7 @@ async function start(): Promise<void> {
 
   const chooseCharacter = (): void => {
     world = undefined;
+    gameLog.hide();
     skillBar.close();
     selected = undefined;
     spellButtons.cancelTarget();
@@ -91,6 +93,8 @@ async function start(): Promise<void> {
     },
     chooseCharacter,
   );
+  const timeMode = makeTimeModeButton(hud.menuSlot);
+  const gameLog = makeGameLog(root);
 
   const requested = CHARACTERS.find((character) => character.id === switches.who || character.name === switches.who);
   if (requested) begin(requested);
@@ -158,10 +162,11 @@ async function start(): Promise<void> {
       };
       queuedSpell = undefined;
       const active = Math.hypot(input.mx, input.my) > 0.01 || input.throw || input.hop || Boolean(input.spell);
-      if (!spellButtons.targetingId && (!timeMode.superhot || active)) {
+      if (!gameLog.expanded && !spellButtons.targetingId && (!timeMode.superhot || active)) {
         stepWorld(world, input);
         if (world.events.some((event) => event.type === 'floor')) fx.clear();
         fx.take(world.events);
+        gameLog.take(world);
         fx.step(STEP);
       }
     },
@@ -183,13 +188,15 @@ async function start(): Promise<void> {
         world.over ? 1 : between,
       );
       hud.show(world);
+      gameLog.show(world);
       skillBar.show(world);
       picker.show(world);
       gear.show(world);
       spellButtons.show(world);
       hop.show(world);
       throwing.show(world);
-      drawMiniMap(ctx, world, dpr);
+      const minimapContext = hud.minimap.getContext('2d');
+      if (minimapContext) drawMiniMap(minimapContext, world, dpr);
     },
   );
 }

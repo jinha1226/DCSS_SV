@@ -788,3 +788,230 @@ canvas {
   color: #efd38a;
   font-variant-numeric: tabular-nums;
 }
+
+/* Portrait HUD: map | location/time | menu, then vitals, then compact skill levels. */
+.top {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  padding: calc(7px + env(safe-area-inset-top, 0px)) 10px 16px;
+  z-index: 6;
+}
+
+.hud-header {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr) 44px;
+  align-items: start;
+  gap: 8px;
+  height: 70px;
+}
+
+.hud-minimap {
+  position: static;
+  display: block;
+  width: 70px;
+  height: 70px;
+  border: 1px solid #655e4d;
+  border-radius: 6px;
+  image-rendering: pixelated;
+}
+
+.hud-location {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 12px;
+  min-width: 0;
+  gap: 4px;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px #000;
+}
+
+.hud-place {
+  font-size: 15px;
+}
+
+.hud-time {
+  font-size: 12px;
+  color: #cbbfa7;
+}
+
+.hud-menu-area {
+  position: relative;
+  pointer-events: auto;
+}
+
+.hud-menu-button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid #82745a;
+  border-radius: 9px;
+  background: rgba(27, 25, 22, 0.94);
+  color: #f5e6c6;
+  font: 700 22px system-ui;
+}
+
+.hud-menu-popup {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 130px;
+  padding: 6px;
+  border: 1px solid #786b54;
+  border-radius: 8px;
+  background: #25221c;
+}
+
+.hud-menu-popup.hidden {
+  display: none;
+}
+
+.hud-menu-popup .time-mode {
+  position: static;
+  display: block;
+  min-width: 0;
+  width: 100%;
+  height: 38px;
+  border-radius: 7px;
+}
+
+.vitals {
+  width: 100%;
+}
+
+.top .hp {
+  height: 18px;
+}
+
+.top .mana {
+  height: 11px;
+  margin-top: 3px;
+}
+
+.level-row {
+  height: 12px;
+  margin-top: 4px;
+}
+
+.skillbar {
+  top: calc(140px + env(safe-area-inset-top, 0px));
+}
+
+.skillbar-chip {
+  flex-basis: 35px;
+  height: 35px;
+}
+
+.game-log {
+  position: fixed;
+  left: 10px;
+  right: 114px;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 5;
+  display: none;
+  pointer-events: none;
+}
+
+.game-log.on {
+  display: block;
+}
+
+.game-log-peek {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  min-height: 34px;
+  padding: 7px 9px;
+  border: 1px solid rgba(147, 133, 105, 0.45);
+  border-radius: 7px;
+  background: rgba(13, 13, 15, 0.76);
+  text-align: left;
+  pointer-events: auto;
+}
+
+.game-log-line {
+  overflow: hidden;
+  color: #ded7c7;
+  font-size: 11px;
+  line-height: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-log-line.warning {
+  color: #f3ad8e;
+}
+
+.game-log-line.good {
+  color: #b3dfa5;
+}
+
+.game-log-line.system {
+  color: #d4bd82;
+}
+
+.game-log-shade {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 18;
+  border: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.game-log-shade.on {
+  display: block;
+}
+
+.game-log-panel {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 19;
+  max-height: 48dvh;
+  padding: 12px 14px calc(14px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid #8f805e;
+  border-radius: 14px 14px 0 0;
+  background: #1b1b1b;
+}
+
+.game-log-panel.on {
+  display: flex;
+  flex-direction: column;
+}
+
+.game-log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.game-log-header button {
+  min-height: 34px;
+  padding: 5px 12px;
+  border: 1px solid #8f805e;
+  border-radius: 7px;
+  background: #322c23;
+  color: #f2ead8;
+}
+
+.game-log-history {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.game-log-history .game-log-line {
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 13px;
+  line-height: 18px;
+  white-space: normal;
+}

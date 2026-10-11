@@ -99,5 +99,5 @@ export function wake(w: World, m: Monster): void {
     other.awake = true;
     other.rest = Math.max(other.rest, w.rng() * 0.5);
   }
-  w.events.push({ type: 'wake', x: m.x, y: m.y });
+  w.events.push({ type: 'wake', x: m.x, y: m.y, name: m.kind.name });
 }

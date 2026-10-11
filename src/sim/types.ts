@@ -163,12 +163,12 @@ export type SimEvent =
       readonly target: 'hero' | 'monster';
     }
   | { readonly type: 'brand'; readonly x: number; readonly y: number; readonly amount: number; readonly resisted: boolean }
-  | { readonly type: 'kill'; readonly x: number; readonly y: number }
+  | { readonly type: 'kill'; readonly x: number; readonly y: number; readonly name?: string }
   | { readonly type: 'hurt'; readonly x: number; readonly y: number; readonly amount: number }
   | { readonly type: 'dodge'; readonly x: number; readonly y: number }
   | { readonly type: 'block'; readonly x: number; readonly y: number }
   | { readonly type: 'throw'; readonly x: number; readonly y: number }
-  | { readonly type: 'wake'; readonly x: number; readonly y: number }
+  | { readonly type: 'wake'; readonly x: number; readonly y: number; readonly name?: string }
   | { readonly type: 'floor'; readonly depth: number };
 export interface Stairs {
   readonly x: number;

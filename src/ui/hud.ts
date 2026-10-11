@@ -3,6 +3,8 @@ import { xpToNext } from '../sim/skills';
 import type { World } from '../sim/world';
 
 export interface Hud {
+  readonly minimap: HTMLCanvasElement;
+  readonly menuSlot: HTMLElement;
   show(w: World): void;
 }
 
@@ -24,6 +26,37 @@ function skillText(w: World): string {
 
 export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: () => void): Hud {
   const top = el('div', 'top', root);
+  const header = el('div', 'hud-header', top);
+  const minimap = document.createElement('canvas');
+  minimap.className = 'hud-minimap';
+  minimap.width = 144;
+  minimap.height = 144;
+  minimap.setAttribute('aria-label', '탐험한 던전 미니맵');
+  header.append(minimap);
+
+  const location = el('div', 'hud-location', header);
+  const place = el('strong', 'hud-place', location);
+  const elapsed = el('span', 'hud-time', location);
+  const menuArea = el('div', 'hud-menu-area', header);
+  const menuButton = document.createElement('button');
+  menuButton.type = 'button';
+  menuButton.className = 'hud-menu-button';
+  menuButton.textContent = '☰';
+  menuButton.setAttribute('aria-label', '메뉴 열기');
+  menuButton.setAttribute('aria-expanded', 'false');
+  menuArea.append(menuButton);
+  const menuSlot = el('div', 'hud-menu-popup', menuArea);
+  menuSlot.classList.add('hidden');
+  const closeMenu = (): void => {
+    menuSlot.classList.add('hidden');
+    menuButton.setAttribute('aria-expanded', 'false');
+  };
+  menuButton.addEventListener('click', () => {
+    const opening = menuSlot.classList.contains('hidden');
+    menuSlot.classList.toggle('hidden', !opening);
+    menuButton.setAttribute('aria-expanded', String(opening));
+  });
+
   const vitals = el('div', 'vitals', top);
   const bar = el('div', 'hp', vitals);
   const fill = el('div', 'hp-fill', bar);
@@ -35,7 +68,7 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
   const levelText = el('span', 'level-text', levelRow);
   const xp = el('div', 'xp', levelRow);
   const xpFill = el('div', 'xp-fill', xp);
-  const stats = el('div', 'stats', top);
+  // The current floor and time live in the middle of the uppermost row.
 
   const over = el('div', 'over', root);
   const title = el('h1', '', over);
@@ -60,6 +93,8 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
   let last = '';
   let shown = false;
   return {
+    minimap,
+    menuSlot,
     show(w) {
       const hp = Math.ceil(w.hero.hp);
       const need = xpToNext(w.hero.level);
@@ -85,9 +120,11 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
         manaText.textContent = Math.floor(w.hero.mana) + ' / ' + w.hero.maxMana;
         levelText.textContent = 'Lv ' + w.hero.level;
         xpFill.style.width = Math.min(1, w.hero.xp / need) * 100 + '%';
-        stats.textContent = w.depth + '/3층 · ' + clock(w.time) + ' · 처치 ' + w.kills;
+        place.textContent = '지하 ' + w.depth + '층';
+        elapsed.textContent = clock(w.time) + ' · 처치 ' + w.kills;
       }
       if (w.over !== shown) {
+        if (w.over) closeMenu();
         shown = w.over;
         if (w.over) shownAt = performance.now();
         title.textContent = w.won ? '던전을 빠져나왔다' : '쓰러졌다';
