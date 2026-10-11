@@ -7,7 +7,12 @@ export const STILL: Input = { mx: 0, my: 0 };
 export function arena(depth = 1): World {
   const grid = makeGrid(20, 20);
   carve(grid, 1, 1, 18, 18);
-  return makeWorld({ floor: { grid, start: { x: 10, y: 10 }, rooms: [{ x: 1, y: 1, w: 18, h: 18 }] }, monsters: false, items: false, depth });
+  return makeWorld({
+    floor: { grid, start: { x: 10, y: 10 }, rooms: [{ x: 1, y: 1, w: 18, h: 18 }] },
+    monsters: false,
+    items: false,
+    depth,
+  });
 }
 
 /** A world whose hero holds its own blows, to watch what monsters do. */

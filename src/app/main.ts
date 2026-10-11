@@ -37,8 +37,7 @@ async function start(): Promise<void> {
   const throwing = makeThrowButton(root);
 
   // A seed in the address gives the same run every time; without one each run differs.
-  const begin = (): World =>
-    makeWorld({ seed: switches.seed || (Date.now() & 0x7fffffff), speed: switches.speed, depth: switches.floor });
+  const begin = (): World => makeWorld({ seed: switches.seed || Date.now() & 0x7fffffff, speed: switches.speed, depth: switches.floor });
   let world = begin();
   const debug: { world: World } | undefined = switches.debug ? { world } : undefined;
   if (debug) Object.assign(window, { __sv: Object.assign(debug, { switches, stick, keys, heroWalk }) });

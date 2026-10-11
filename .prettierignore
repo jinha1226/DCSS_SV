@@ -1,0 +1,7 @@
+dist
+node_modules
+public
+package-lock.json
+src/data/tiles.gen.ts
+*.md
+.github

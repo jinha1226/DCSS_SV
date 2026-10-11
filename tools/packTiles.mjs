@@ -37,7 +37,9 @@ const sheet = new Uint8Array(width * rows * SIZE * 4);
 const names = [];
 
 files.forEach((file, i) => {
-  const name = relative(src, file).replace(/\\/g, '/').replace(/\.png$/, '');
+  const name = relative(src, file)
+    .replace(/\\/g, '/')
+    .replace(/\.png$/, '');
   const tile = readTile(file, name);
   const left = (i % COLS) * SIZE;
   const top = Math.floor(i / COLS) * SIZE;

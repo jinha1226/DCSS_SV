@@ -79,7 +79,16 @@ function drawFigure(
   ctx.restore();
 }
 
-function drawMonster(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World, m: Monster, px: number, ox: number, oy: number, between: number): void {
+function drawMonster(
+  ctx: CanvasRenderingContext2D,
+  atlas: Atlas,
+  w: World,
+  m: Monster,
+  px: number,
+  ox: number,
+  oy: number,
+  between: number,
+): void {
   let x = m.px + (m.x - m.px) * between;
   let y = m.py + (m.y - m.py) * between;
   if (m.wind >= 0) {
@@ -128,16 +137,23 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
   drawFloor(ctx, atlas, w, view.look, px, ox, oy);
 
   for (const item of w.groundItems) {
-    const ix = Math.floor(item.x), iy = Math.floor(item.y);
+    const ix = Math.floor(item.x),
+      iy = Math.floor(item.y);
     if (!w.seen[iy * w.grid.w + ix]) continue;
-    const sx = ox + item.x * px, sy = oy + item.y * px;
+    const sx = ox + item.x * px,
+      sy = oy + item.y * px;
     const tile = item.kind === 'ammo' ? 'item/boomerang1' : item.axe?.tile;
     if (!tile) continue;
     drawFigure(ctx, atlas.image, tile, sx, sy, px * 0.72, false);
     if (item.axe?.special) {
-      ctx.strokeStyle = '#d6b96d'; ctx.lineWidth = Math.max(1, px * 0.04); ctx.strokeRect(sx - px * 0.35, sy - px * 0.35, px * 0.7, px * 0.7);
+      ctx.strokeStyle = '#d6b96d';
+      ctx.lineWidth = Math.max(1, px * 0.04);
+      ctx.strokeRect(sx - px * 0.35, sy - px * 0.35, px * 0.7, px * 0.7);
     } else if (item.axe?.brand) {
-      ctx.fillStyle = brandData(item.axe.brand)?.colour ?? '#aaa'; ctx.beginPath(); ctx.arc(sx, sy + px * 0.31, Math.max(2, px * 0.07), 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = brandData(item.axe.brand)?.colour ?? '#aaa';
+      ctx.beginPath();
+      ctx.arc(sx, sy + px * 0.31, Math.max(2, px * 0.07), 0, Math.PI * 2);
+      ctx.fill();
     }
   }
 
@@ -175,7 +191,13 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
     ctx.strokeStyle = '#e6c56f';
     ctx.lineWidth = Math.max(2, px * 0.08);
     ctx.beginPath();
-    ctx.arc(ox + (down.x + 0.5) * px, oy + (down.y + 0.5) * px, px * 0.48, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, w.descending / DUNGEON.descend));
+    ctx.arc(
+      ox + (down.x + 0.5) * px,
+      oy + (down.y + 0.5) * px,
+      px * 0.48,
+      -Math.PI / 2,
+      -Math.PI / 2 + Math.PI * 2 * Math.min(1, w.descending / DUNGEON.descend),
+    );
     ctx.stroke();
   }
   const cx = ox + hx * px;

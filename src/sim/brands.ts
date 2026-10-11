@@ -48,7 +48,10 @@ export function applyWeaponBrand(w: World, m: Monster): void {
       for (const other of w.monsters) {
         if (other === m || other.hp <= 0) continue;
         const d = Math.hypot(other.x - m.x, other.y - m.y);
-        if (d < best) { best = d; target = other; }
+        if (d < best) {
+          best = d;
+          target = other;
+        }
       }
       if (target) {
         const chainFactor = resistanceFactor(resist(target, brand.resist));

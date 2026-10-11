@@ -2,7 +2,9 @@ import { skillData } from '../data/skills';
 import { xpToNext } from '../sim/skills';
 import type { World } from '../sim/world';
 
-export interface Hud { show(w: World): void }
+export interface Hud {
+  show(w: World): void;
+}
 
 function el(tag: string, className: string, parent: HTMLElement): HTMLElement {
   const node = document.createElement(tag);
@@ -48,7 +50,7 @@ export function makeHud(root: HTMLElement, again: () => void): Hud {
       const line = [hp, Math.floor(w.time), w.kills, w.depth, w.hero.poison > 0, w.hero.level, w.hero.xp, need].join('|');
       if (line !== last) {
         last = line;
-        fill.style.width = Math.max(0, w.hero.hp) / w.hero.maxHp * 100 + '%';
+        fill.style.width = (Math.max(0, w.hero.hp) / w.hero.maxHp) * 100 + '%';
         bar.classList.toggle('poison', w.hero.poison > 0);
         bar.classList.toggle('low', w.hero.hp <= w.hero.maxHp * 0.3);
         hpText.textContent = hp + ' / ' + w.hero.maxHp;

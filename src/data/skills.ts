@@ -1,12 +1,38 @@
 import skillsRaw from './json/skills.json';
 
 export const SKILL_EFFECTS = new Set([
-  'axe.damage','axe.wide','axe.spin','axe.stun','axe.reset',
-  'fighting.hp','fighting.regen','fighting.healKill','fighting.desperate','fighting.lastStand',
-  'armour.reduce','armour.stone','armour.deflect','armour.unmoved','armour.thorns',
-  'shield.chance','shield.push','shield.missile','shield.stun','shield.reset',
-  'dodging.chance','dodging.speed','dodging.delay','dodging.squeeze','dodging.grace',
-  'throwing.power','throwing.cooldown','throwing.pierce','throwing.double','throwing.slow','throwing.slowTime','throwing.return',
+  'axe.damage',
+  'axe.wide',
+  'axe.spin',
+  'axe.stun',
+  'axe.reset',
+  'fighting.hp',
+  'fighting.regen',
+  'fighting.healKill',
+  'fighting.desperate',
+  'fighting.lastStand',
+  'armour.reduce',
+  'armour.stone',
+  'armour.deflect',
+  'armour.unmoved',
+  'armour.thorns',
+  'shield.chance',
+  'shield.push',
+  'shield.missile',
+  'shield.stun',
+  'shield.reset',
+  'dodging.chance',
+  'dodging.speed',
+  'dodging.delay',
+  'dodging.squeeze',
+  'dodging.grace',
+  'throwing.power',
+  'throwing.cooldown',
+  'throwing.pierce',
+  'throwing.double',
+  'throwing.slow',
+  'throwing.slowTime',
+  'throwing.return',
 ]);
 
 export interface SkillEffect {
@@ -27,7 +53,8 @@ export const SKILLS: readonly SkillData[] = skillsRaw.map((row) => {
   const effects: SkillEffect[] = row.effects.map((effect) => {
     const name: string = effect.effect;
     if (!SKILL_EFFECTS.has(name)) throw new Error('skills.json: ' + row.id + ': 코드에 없는 effect ' + name);
-    if (!('level' in effect) && !('perLevel' in effect)) throw new Error('skills.json: ' + row.id + '.' + name + ': level 또는 perLevel이 필요함');
+    if (!('level' in effect) && !('perLevel' in effect))
+      throw new Error('skills.json: ' + row.id + '.' + name + ': level 또는 perLevel이 필요함');
     return {
       effect: name,
       ...('level' in effect ? { level: effect.level } : {}),

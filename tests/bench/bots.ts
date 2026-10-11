@@ -89,7 +89,12 @@ function route(w: World, target: (x: number, y: number) => boolean): Input | und
       end = i;
       break;
     }
-    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+    for (const [dx, dy] of [
+      [1, 0],
+      [-1, 0],
+      [0, 1],
+      [0, -1],
+    ] as const) {
       const nx = x + dx;
       const ny = y + dy;
       const ni = ny * w.grid.w + nx;
@@ -103,7 +108,7 @@ function route(w: World, target: (x: number, y: number) => boolean): Input | und
   if (end === start) return { mx: 0, my: 0 };
   let step = end;
   while (prev[step] !== start && prev[step]! >= 0) step = prev[step]!;
-  const tx = step % w.grid.w + 0.5;
+  const tx = (step % w.grid.w) + 0.5;
   const ty = Math.floor(step / w.grid.w) + 0.5;
   const dx = tx - w.hero.x;
   const dy = ty - w.hero.y;
@@ -119,7 +124,12 @@ export const explore: Bot = (w) => {
   const toStair = route(w, (x, y) => stair.has(y * w.grid.w + x));
   if (toStair) return { ...toStair, throw: Boolean(throwTarget(w)) };
   const frontier = (x: number, y: number): boolean => {
-    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+    for (const [dx, dy] of [
+      [1, 0],
+      [-1, 0],
+      [0, 1],
+      [0, -1],
+    ] as const) {
       const nx = x + dx;
       const ny = y + dy;
       if (nx >= 0 && ny >= 0 && nx < w.grid.w && ny < w.grid.h && !w.seen[ny * w.grid.w + nx]) return true;
@@ -160,7 +170,8 @@ export function play(bot: Bot, seed: number, limit: number, chooser: Chooser = a
   while (!w.over && w.time < limit) {
     if (w.pendingPickup) {
       const found = w.pendingPickup.axe;
-      if (found && weaponScore(found) > weaponScore(w.weapon)) acceptPickup(w); else declinePickup(w);
+      if (found && weaponScore(found) > weaponScore(w.weapon)) acceptPickup(w);
+      else declinePickup(w);
       continue;
     }
     if (w.choosing) {
@@ -169,19 +180,49 @@ export function play(bot: Bot, seed: number, limit: number, chooser: Chooser = a
     }
     stepWorld(w, bot(w));
   }
-  return { seconds: w.time, kills: w.kills, hp: w.hero.hp, fell: w.over && !w.won, depth: w.depth, won: w.won, level: w.hero.level, offered: w.pickupStats.offered, swapped: w.pickupStats.swapped, throws: w.pickupStats.throws, recovered: w.pickupStats.recovered };
+  return {
+    seconds: w.time,
+    kills: w.kills,
+    hp: w.hero.hp,
+    fell: w.over && !w.won,
+    depth: w.depth,
+    won: w.won,
+    level: w.hero.level,
+    offered: w.pickupStats.offered,
+    swapped: w.pickupStats.swapped,
+    throws: w.pickupStats.throws,
+    recovered: w.pickupStats.recovered,
+  };
 }
 
 export function summary(runs: readonly RunResult[]): string {
   const mean = (f: (r: RunResult) => number): number => runs.reduce((a, r) => a + f(r), 0) / runs.length;
   const times = runs.map((r) => r.seconds).sort((a, b) => a - b);
-  return 'won ' + runs.filter((r) => r.won).length + '/' + runs.length +
-    ', depth ' + mean((r) => r.depth).toFixed(1) +
-    ', seconds ' + mean((r) => r.seconds).toFixed(0) + ' (' + times[0]!.toFixed(0) + '-' + times[times.length - 1]!.toFixed(0) + ')' +
-    ', kills ' + mean((r) => r.kills).toFixed(0) +
-    ', level ' + mean((r) => r.level).toFixed(1) +
-    ', offers ' + mean((r) => r.offered).toFixed(1) +
-    ', swaps ' + mean((r) => r.swapped).toFixed(1) +
-    ', throws ' + mean((r) => r.throws).toFixed(1) +
-    ', recovered ' + mean((r) => r.recovered).toFixed(1);
+  return (
+    'won ' +
+    runs.filter((r) => r.won).length +
+    '/' +
+    runs.length +
+    ', depth ' +
+    mean((r) => r.depth).toFixed(1) +
+    ', seconds ' +
+    mean((r) => r.seconds).toFixed(0) +
+    ' (' +
+    times[0]!.toFixed(0) +
+    '-' +
+    times[times.length - 1]!.toFixed(0) +
+    ')' +
+    ', kills ' +
+    mean((r) => r.kills).toFixed(0) +
+    ', level ' +
+    mean((r) => r.level).toFixed(1) +
+    ', offers ' +
+    mean((r) => r.offered).toFixed(1) +
+    ', swaps ' +
+    mean((r) => r.swapped).toFixed(1) +
+    ', throws ' +
+    mean((r) => r.throws).toFixed(1) +
+    ', recovered ' +
+    mean((r) => r.recovered).toFixed(1)
+  );
 }

@@ -2,7 +2,9 @@ import { skillData } from '../data/skills';
 import { chooseSkill } from '../sim/skills';
 import type { World } from '../sim/world';
 
-export interface SkillPicker { show(w: World): void }
+export interface SkillPicker {
+  show(w: World): void;
+}
 
 export function makeSkillPicker(root: HTMLElement): SkillPicker {
   const wrap = document.createElement('div');

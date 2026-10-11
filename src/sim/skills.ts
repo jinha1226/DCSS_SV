@@ -3,7 +3,9 @@ import { SKILLS, skillData, type SkillEffect } from '../data/skills';
 import type { SkillChoice, World } from './types';
 
 export const MAX_SKILL = 8;
-export function skillLevel(w: World, id: string): number { return w.hero.skills[id] ?? 0; }
+export function skillLevel(w: World, id: string): number {
+  return w.hero.skills[id] ?? 0;
+}
 
 function owner(effect: string): { skill: string; rule: SkillEffect } | undefined {
   for (const skill of SKILLS) {
@@ -22,7 +24,9 @@ export function effectValue(w: World, effect: string): number {
   return 0;
 }
 export const hasEffect = (w: World, effect: string): boolean => effectValue(w, effect) !== 0;
-export function xpToNext(level: number): number { return DUNGEON.levelXpBase + DUNGEON.levelXpStep * (level - 1); }
+export function xpToNext(level: number): number {
+  return DUNGEON.levelXpBase + DUNGEON.levelXpStep * (level - 1);
+}
 
 function firstGain(w: World, id: string): number {
   const skill = skillData(id);
@@ -75,7 +79,9 @@ export function chooseSkill(w: World, id: string): void {
   w.choosing = null;
   deal(w);
 }
-export function heroSpeed(w: World): number { return w.speed * (1 + effectValue(w, 'dodging.speed') + (w.weapon.options.find((o) => o.id === 'speed')?.value ?? 0)); }
+export function heroSpeed(w: World): number {
+  return w.speed * (1 + effectValue(w, 'dodging.speed') + (w.weapon.options.find((o) => o.id === 'speed')?.value ?? 0));
+}
 export function heroGive(w: World): number {
   if (hasEffect(w, 'armour.unmoved')) return 0;
   return w.heroDef.give * (hasEffect(w, 'dodging.squeeze') ? effectValue(w, 'dodging.squeeze') : 1);

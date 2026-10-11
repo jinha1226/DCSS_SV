@@ -12,7 +12,8 @@ DCSS식 던전에서 떼를 상대하는 실시간 2D 게임 (가칭 던전 뱀�
 ```
 npm install
 npm run dev      # 개발 서버
-npm run check    # 린트, 타입 검사, 테스트
+npm run format   # 코드 모양 맞추기 (올리기 전에 꼭)
+npm run check    # 린트(모양 검사 포함), 타입 검사, 테스트
 npm run build    # 배포용 빌드
 npm run tiles    # 타일을 더하거나 뺀 뒤 한 장으로 다시 묶기
 npm run bench    # 봇이 여러 판을 돌려 난이도를 잰다

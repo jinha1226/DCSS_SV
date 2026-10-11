@@ -1,25 +1,103 @@
 [
-  {"id":"hand_axe","kind":"axe","name":"손도끼","tile":"item/hand_axe1","class":"light","damage":6,"every":0.6,"reach":1.2,"knock":1.2,"hands":1,"depthWeights":[8,5,2]},
-  {"id":"war_axe","kind":"axe","name":"전투도끼","tile":"item/war_axe1","class":"heavy","damage":8,"every":0.75,"reach":1.2,"knock":1.2,"hands":1,"depthWeights":[2,6,5]},
-  {"id":"battle_axe","kind":"axe","name":"큰도끼","tile":"item/battle_axe1","class":"twohand","damage":11,"every":0.9,"reach":1.2,"knock":1.2,"hands":2,"depthWeights":[1,2,7]},
-  {"id":"boomerang","kind":"throw","name":"부메랑","tile":"item/boomerang1","damage":8,"range":8,"speed":15,"every":1.4,"knock":3},
-  {"id":"stone","kind":"missile","name":"돌","tile":"item/stone"},
+  {
+    "id": "hand_axe",
+    "kind": "axe",
+    "name": "손도끼",
+    "tile": "item/hand_axe1",
+    "class": "light",
+    "damage": 6,
+    "every": 0.6,
+    "reach": 1.2,
+    "knock": 1.2,
+    "hands": 1,
+    "depthWeights": [8, 5, 2]
+  },
+  {
+    "id": "war_axe",
+    "kind": "axe",
+    "name": "전투도끼",
+    "tile": "item/war_axe1",
+    "class": "heavy",
+    "damage": 8,
+    "every": 0.75,
+    "reach": 1.2,
+    "knock": 1.2,
+    "hands": 1,
+    "depthWeights": [2, 6, 5]
+  },
+  {
+    "id": "battle_axe",
+    "kind": "axe",
+    "name": "큰도끼",
+    "tile": "item/battle_axe1",
+    "class": "twohand",
+    "damage": 11,
+    "every": 0.9,
+    "reach": 1.2,
+    "knock": 1.2,
+    "hands": 2,
+    "depthWeights": [1, 2, 7]
+  },
+  {
+    "id": "boomerang",
+    "kind": "throw",
+    "name": "부메랑",
+    "tile": "item/boomerang1",
+    "damage": 8,
+    "range": 8,
+    "speed": 15,
+    "every": 1.4,
+    "knock": 3
+  },
+  { "id": "stone", "kind": "missile", "name": "돌", "tile": "item/stone" },
 
-  {"id":"flame","kind":"brand","name":"화염","resist":"fire","colour":"#d97845","duration":3,"damage":2},
-  {"id":"cold","kind":"brand","name":"냉기","resist":"cold","colour":"#82b9d8","duration":2,"slow":0.3},
-  {"id":"shock","kind":"brand","name":"전격","resist":"electric","colour":"#dacd62","chainDamage":5,"chainShare":0.3},
-  {"id":"vampiric","kind":"brand","name":"흡혈","resist":"negative","colour":"#a66a87","heal":1},
+  { "id": "flame", "kind": "brand", "name": "화염", "resist": "fire", "colour": "#d97845", "duration": 3, "damage": 2 },
+  { "id": "cold", "kind": "brand", "name": "냉기", "resist": "cold", "colour": "#82b9d8", "duration": 2, "slow": 0.3 },
+  { "id": "shock", "kind": "brand", "name": "전격", "resist": "electric", "colour": "#dacd62", "chainDamage": 5, "chainShare": 0.3 },
+  { "id": "vampiric", "kind": "brand", "name": "흡혈", "resist": "negative", "colour": "#a66a87", "heal": 1 },
 
-  {"id":"damage","kind":"randartOption","name":"피해","min":1,"max":3,"step":1},
-  {"id":"haste","kind":"randartOption","name":"휘두르는 속도","min":0.05,"max":0.15,"step":0.05},
-  {"id":"maxHp","kind":"randartOption","name":"최대 체력","min":5,"max":15,"step":5},
-  {"id":"armour","kind":"randartOption","name":"갑옷","min":1,"max":2,"step":1},
-  {"id":"evasion","kind":"randartOption","name":"회피","min":0.03,"max":0.06,"step":0.01},
-  {"id":"speed","kind":"randartOption","name":"걷는 속도","min":0.03,"max":0.08,"step":0.01},
+  { "id": "damage", "kind": "randartOption", "name": "피해", "min": 1, "max": 3, "step": 1 },
+  { "id": "haste", "kind": "randartOption", "name": "휘두르는 속도", "min": 0.05, "max": 0.15, "step": 0.05 },
+  { "id": "maxHp", "kind": "randartOption", "name": "최대 체력", "min": 5, "max": 15, "step": 5 },
+  { "id": "armour", "kind": "randartOption", "name": "갑옷", "min": 1, "max": 2, "step": 1 },
+  { "id": "evasion", "kind": "randartOption", "name": "회피", "min": 0.03, "max": 0.06, "step": 0.01 },
+  { "id": "speed", "kind": "randartOption", "name": "걷는 속도", "min": 0.03, "max": 0.08, "step": 0.01 },
 
-  {"id":"ember","kind":"artefact","name":"불씨 도끼","base":"war_axe","tile":"item/broad_axe1","brand":"flame","effect":"ember"},
-  {"id":"glut","kind":"artefact","name":"피 마시는 도끼","base":"battle_axe","tile":"item/executioner_axe1","brand":"vampiric","effect":"glut"},
+  {
+    "id": "ember",
+    "kind": "artefact",
+    "name": "불씨 도끼",
+    "base": "war_axe",
+    "tile": "item/broad_axe1",
+    "brand": "flame",
+    "effect": "ember"
+  },
+  {
+    "id": "glut",
+    "kind": "artefact",
+    "name": "피 마시는 도끼",
+    "base": "battle_axe",
+    "tile": "item/executioner_axe1",
+    "brand": "vampiric",
+    "effect": "glut"
+  },
 
-  {"id":"names","kind":"names","prefixes":["카르","둠","벨","라크","모르","세른"],"suffixes":["둠","라","바르","카","린","고르"]},
-  {"id":"equipment","kind":"config","axesMin":3,"axesMax":4,"ammoPilesMin":3,"ammoPilesMax":4,"ammoPileMin":2,"ammoPileMax":3,"ammoStart":5,"ammoMax":9}
+  {
+    "id": "names",
+    "kind": "names",
+    "prefixes": ["카르", "둠", "벨", "라크", "모르", "세른"],
+    "suffixes": ["둠", "라", "바르", "카", "린", "고르"]
+  },
+  {
+    "id": "equipment",
+    "kind": "config",
+    "axesMin": 3,
+    "axesMax": 4,
+    "ammoPilesMin": 3,
+    "ammoPilesMax": 4,
+    "ammoPileMin": 2,
+    "ammoPileMax": 3,
+    "ammoStart": 5,
+    "ammoMax": 9
+  }
 ]

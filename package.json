@@ -6,16 +6,18 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "lint": "eslint .",
+    "lint": "eslint . && prettier --check \"src/**/*.{ts,css,json}\" \"tests/**/*.ts\" \"tools/**/*.mjs\" \"*.{ts,js,json}\" index.html",
     "test": "vitest run",
     "tiles": "node tools/packTiles.mjs",
     "check": "npm run lint && tsc --noEmit && vitest run",
-    "bench": "vitest run --config vitest.bench.config.ts"
+    "bench": "vitest run --config vitest.bench.config.ts",
+    "format": "prettier --write \"src/**/*.{ts,css,json}\" \"tests/**/*.ts\" \"tools/**/*.mjs\" \"*.{ts,js,json}\" index.html"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.0",
     "@types/node": "^22.20.5",
     "eslint": "^9.30.0",
+    "prettier": "^3.9.10",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.35.0",
     "upng-js": "^2.1.0",

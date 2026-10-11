@@ -26,7 +26,12 @@ export function makeTestFloor(): Floor {
   carve(grid, 25, 32, 3, 6); // ... and up to C: the second ring
 
   // Pillars in the hall, to walk round.
-  for (const [x, y] of [[25, 23], [31, 23], [25, 28], [31, 28]] as const) {
+  for (const [x, y] of [
+    [25, 23],
+    [31, 23],
+    [25, 28],
+    [31, 28],
+  ] as const) {
     for (let j = 0; j < 2; j++) for (let i = 0; i < 2; i++) setCell(grid, x + i, y + j, Cell.Wall);
   }
   // A single pillar, and a jutting piece of wall, to test corners.

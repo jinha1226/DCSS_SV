@@ -71,7 +71,8 @@ describe('a generated floor', () => {
     for (const seed of SEEDS) {
       const { grid, rooms } = makeFloor(seed);
       expect(rooms.length, `seed ${seed}`).toBeGreaterThanOrEqual(6);
-      for (let i = 0; i < grid.w; i++) expect(walkable(grid, i, 0) || walkable(grid, i, grid.h - 1) || walkable(grid, 0, i) || walkable(grid, grid.w - 1, i)).toBe(false);
+      for (let i = 0; i < grid.w; i++)
+        expect(walkable(grid, i, 0) || walkable(grid, i, grid.h - 1) || walkable(grid, 0, i) || walkable(grid, grid.w - 1, i)).toBe(false);
       for (let y = 1; y < grid.h - 1; y++) {
         for (let x = 1; x < grid.w - 1; x++) {
           if (walkable(grid, x, y) && !walkable(grid, x - 1, y) && !walkable(grid, x + 1, y)) narrow++;
@@ -93,7 +94,10 @@ describe('a floor full of bands', () => {
       const own = w.rooms[0]!;
       for (const m of w.monsters) expect(inRoom(own, Math.floor(m.x), Math.floor(m.y))).toBe(false);
       for (let i = 1; i < w.rooms.length; i++) {
-        expect(w.monsters.some((m) => inRoom(w.rooms[i]!, Math.floor(m.x), Math.floor(m.y))), `seed ${seed} room ${i}`).toBe(true);
+        expect(
+          w.monsters.some((m) => inRoom(w.rooms[i]!, Math.floor(m.x), Math.floor(m.y))),
+          `seed ${seed} room ${i}`,
+        ).toBe(true);
       }
     }
   });
@@ -108,7 +112,10 @@ describe('a floor full of bands', () => {
   });
 
   it('is the same for the same seed', () => {
-    const spots = (seed: number): string => world(seed).monsters.map((m) => `${m.kind.id}@${m.x},${m.y}`).join(' ');
+    const spots = (seed: number): string =>
+      world(seed)
+        .monsters.map((m) => `${m.kind.id}@${m.x},${m.y}`)
+        .join(' ');
     expect(spots(5)).toBe(spots(5));
     expect(spots(5)).not.toBe(spots(6));
   });
@@ -145,7 +152,8 @@ describe('waking', () => {
     near.stun = 99;
     // A sleeper out of its own noticing range but within earshot, and one beyond earshot.
     const at = (steps: number): { x: number; y: number } => {
-      for (let i = 0; i < w.flow.dist.length; i++) if (w.flow.dist[i] === steps) return { x: (i % w.grid.w) + 0.5, y: Math.floor(i / w.grid.w) + 0.5 };
+      for (let i = 0; i < w.flow.dist.length; i++)
+        if (w.flow.dist[i] === steps) return { x: (i % w.grid.w) + 0.5, y: Math.floor(i / w.grid.w) + 0.5 };
       throw new Error(`no cell ${steps} steps away`);
     };
     const inEar = at(DUNGEON.loud - 1);

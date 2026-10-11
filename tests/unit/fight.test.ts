@@ -96,7 +96,13 @@ describe('the axe', () => {
   it('cuts everything in reach at once and nothing beyond', () => {
     const w = arena();
     w.hero.butt = 1e9;
-    for (const [x, y] of [[11, 10], [9, 10], [10, 11.2], [10.9, 9.1]] as const) spawnMonster(w, 'goblin', x, y, true);
+    for (const [x, y] of [
+      [11, 10],
+      [9, 10],
+      [10, 11.2],
+      [10.9, 9.1],
+    ] as const)
+      spawnMonster(w, 'goblin', x, y, true);
     const out = spawnMonster(w, 'goblin', 10 + HERO.axe.reach + GOBLIN.radius + 0.3, 10, false);
     out.stun = 99;
     stepWorld(w, STILL);

@@ -92,7 +92,12 @@ describe('the floor of stage 1', () => {
     reached[queue[0]![1] * grid.w + queue[0]![0]] = 1;
     while (queue.length) {
       const [x, y] = queue.pop()!;
-      for (const [i, j] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) {
+      for (const [i, j] of [
+        [x + 1, y],
+        [x - 1, y],
+        [x, y + 1],
+        [x, y - 1],
+      ] as const) {
         if (!walkable(grid, i, j) || reached[j * grid.w + i]) continue;
         reached[j * grid.w + i] = 1;
         queue.push([i, j]);

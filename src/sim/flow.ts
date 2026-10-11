@@ -31,7 +31,12 @@ export function updateFlow(flow: Flow, g: Grid, cx: number, cy: number): void {
     const x = at % g.w;
     const y = (at - x) / g.w;
     const next = (dist[at] as number) + 1;
-    for (const [i, j] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) {
+    for (const [i, j] of [
+      [x + 1, y],
+      [x - 1, y],
+      [x, y + 1],
+      [x, y - 1],
+    ] as const) {
       if (!walkable(g, i, j)) continue;
       const to = j * g.w + i;
       if (dist[to] !== FAR) continue;

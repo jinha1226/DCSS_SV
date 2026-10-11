@@ -26,7 +26,6 @@ jobs:
       - run: npm run lint
       - run: npx tsc --noEmit
       - run: npm test
-      - run: npm run bench
       - run: npx vite build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

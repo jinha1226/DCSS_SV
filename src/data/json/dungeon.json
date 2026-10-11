@@ -1,5 +1,14 @@
 {
-  "floors":3,"tougher":0.2,"loud":8,"descend":0.7,"calm":30,"bandEvery":16,
-  "bandSooner":0.06666666666666667,"bandLeast":7,"most":110,"poisonPerSecond":2,
-  "levelXpBase":6,"levelXpStep":4
+  "floors": 3,
+  "tougher": 0.2,
+  "loud": 8,
+  "descend": 0.7,
+  "calm": 30,
+  "bandEvery": 16,
+  "bandSooner": 0.06666666666666667,
+  "bandLeast": 7,
+  "most": 110,
+  "poisonPerSecond": 2,
+  "levelXpBase": 6,
+  "levelXpStep": 4
 }

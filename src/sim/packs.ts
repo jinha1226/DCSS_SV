@@ -20,7 +20,14 @@ export function pickPack(w: World): PackKind {
  * Puts a band on the open cells nearest (cx, cy) that pass `allowed`, one monster to a cell.
  * Returns how many were placed.
  */
-export function placePack(w: World, kind: PackKind, cx: number, cy: number, awake: boolean, allowed: (x: number, y: number) => boolean): number {
+export function placePack(
+  w: World,
+  kind: PackKind,
+  cx: number,
+  cy: number,
+  awake: boolean,
+  allowed: (x: number, y: number) => boolean,
+): number {
   const cells: { x: number; y: number; d: number }[] = [];
   for (let y = cy - 4; y <= cy + 4; y++) {
     for (let x = cx - 4; x <= cx + 4; x++) {

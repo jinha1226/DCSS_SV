@@ -20,7 +20,8 @@ export function drawMiniMap(ctx: CanvasRenderingContext2D, w: World, dpr: number
   }
   ctx.fillStyle = '#d9b866';
   for (const item of w.groundItems) {
-    const ix = Math.floor(item.x), iy = Math.floor(item.y);
+    const ix = Math.floor(item.x),
+      iy = Math.floor(item.y);
     if (!w.seen[iy * w.grid.w + ix]) continue;
     ctx.fillRect(x + ix * scale, y + iy * scale, scale, scale);
   }

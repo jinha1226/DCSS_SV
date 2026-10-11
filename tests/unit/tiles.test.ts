@@ -19,7 +19,11 @@ describe('the tile sheet', () => {
   it('lists exactly the tiles under assets/tiles (run `npm run tiles` after changing them)', () => {
     const src = join(root, 'assets/tiles');
     const onDisk = tileFiles(src)
-      .map((f) => relative(src, f).replace(/\\/g, '/').replace(/\.png$/, ''))
+      .map((f) =>
+        relative(src, f)
+          .replace(/\\/g, '/')
+          .replace(/\.png$/, ''),
+      )
       .sort();
     expect([...TILE_NAMES]).toEqual(onDisk);
   });

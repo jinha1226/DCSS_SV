@@ -68,7 +68,15 @@ export function walkFrame(moving: boolean, seconds: number): number {
 }
 
 /** Draws frame `frame` with its middle at (cx, cy), turned to face right when `flip` is set. */
-export function drawWalker(ctx: CanvasRenderingContext2D, sheet: Sheet, frame: number, cx: number, cy: number, px: number, flip: boolean): void {
+export function drawWalker(
+  ctx: CanvasRenderingContext2D,
+  sheet: Sheet,
+  frame: number,
+  cx: number,
+  cy: number,
+  px: number,
+  flip: boolean,
+): void {
   const x = Math.round(cx - px / 2);
   const y = Math.round(cy - px / 2);
   ctx.save();

@@ -1,9 +1,27 @@
 [
   {
-    "id":"minotaur","name":"미노타우로스","tile":"hero/minotaur",
-    "hp":60,"radius":0.35,"speed":6.5,"sight":20,"regen":0.5,"give":0.3,
-    "walk":{"legs":25,"mid":17},
-    "horns":{"damage":5,"reach":0.75,"every":2.4,"knock":13,"stun":0.6,"damageEveryLevel":2,"damageGain":1,"speedEveryLevel":3,"speedGain":0.1,"minEvery":1.5},
-    "aptitudes":{"axe":2,"fighting":2,"armour":1,"shield":1,"dodging":1,"throwing":1}
+    "id": "minotaur",
+    "name": "미노타우로스",
+    "tile": "hero/minotaur",
+    "hp": 60,
+    "radius": 0.35,
+    "speed": 6.5,
+    "sight": 20,
+    "regen": 0.5,
+    "give": 0.3,
+    "walk": { "legs": 25, "mid": 17 },
+    "horns": {
+      "damage": 5,
+      "reach": 0.75,
+      "every": 2.4,
+      "knock": 13,
+      "stun": 0.6,
+      "damageEveryLevel": 2,
+      "damageGain": 1,
+      "speedEveryLevel": 3,
+      "speedGain": 0.1,
+      "minEvery": 1.5
+    },
+    "aptitudes": { "axe": 2, "fighting": 2, "armour": 1, "shield": 1, "dodging": 1, "throwing": 1 }
   }
 ]

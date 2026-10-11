@@ -76,7 +76,8 @@ function cellAtForArena(): Cell {
 
 describe('skill values', () => {
   it('exposes every axe milestone', () => {
-    const w = arena(); grant(w, 'axe', 7);
+    const w = arena();
+    grant(w, 'axe', 7);
     expect(effectValue(w, 'axe.damage')).toBe(8);
     expect(effectValue(w, 'axe.wide')).toBe(0.3);
     expect(effectValue(w, 'axe.spin')).toBe(1.5);
@@ -84,7 +85,8 @@ describe('skill values', () => {
     expect(effectValue(w, 'axe.reset')).toBe(1);
   });
   it('exposes every fighting milestone', () => {
-    const w = arena(); grant(w, 'fighting', 7);
+    const w = arena();
+    grant(w, 'fighting', 7);
     expect(effectValue(w, 'fighting.hp')).toBe(64);
     expect(effectValue(w, 'fighting.regen')).toBe(2);
     expect(effectValue(w, 'fighting.healKill')).toBe(1);
@@ -92,7 +94,8 @@ describe('skill values', () => {
     expect(effectValue(w, 'fighting.lastStand')).toBe(1);
   });
   it('exposes every armour milestone', () => {
-    const w = arena(); grant(w, 'armour', 8);
+    const w = arena();
+    grant(w, 'armour', 8);
     expect(effectValue(w, 'armour.reduce')).toBe(8);
     expect(effectValue(w, 'armour.stone')).toBe(0.5);
     expect(effectValue(w, 'armour.deflect')).toBe(3);
@@ -100,7 +103,8 @@ describe('skill values', () => {
     expect(effectValue(w, 'armour.thorns')).toBe(2);
   });
   it('exposes every shield milestone', () => {
-    const w = arena(); grant(w, 'shield', 8);
+    const w = arena();
+    grant(w, 'shield', 8);
     expect(effectValue(w, 'shield.chance')).toBeCloseTo(0.32);
     expect(effectValue(w, 'shield.push')).toBe(5);
     expect(effectValue(w, 'shield.missile')).toBe(2);
@@ -108,7 +112,8 @@ describe('skill values', () => {
     expect(effectValue(w, 'shield.reset')).toBe(1);
   });
   it('exposes every dodging milestone', () => {
-    const w = arena(); grant(w, 'dodging', 8);
+    const w = arena();
+    grant(w, 'dodging', 8);
     expect(effectValue(w, 'dodging.chance')).toBeCloseTo(0.24);
     expect(effectValue(w, 'dodging.speed')).toBe(0.06);
     expect(effectValue(w, 'dodging.delay')).toBe(0.8);
@@ -116,7 +121,8 @@ describe('skill values', () => {
     expect(effectValue(w, 'dodging.grace')).toBe(0.8);
   });
   it('exposes every throwing milestone', () => {
-    const w = arena(); grant(w, 'throwing', 8);
+    const w = arena();
+    grant(w, 'throwing', 8);
     expect(effectValue(w, 'throwing.power')).toBe(8);
     expect(effectValue(w, 'throwing.cooldown')).toBeCloseTo(-0.56);
     expect(effectValue(w, 'throwing.pierce')).toBe(1);

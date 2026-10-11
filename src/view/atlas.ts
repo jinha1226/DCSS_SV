@@ -37,14 +37,7 @@ export function loadAtlas(): Promise<Atlas> {
 }
 
 /** Draws one tile with its top-left corner at (x, y), `size` pixels wide. */
-export function drawTile(
-  ctx: CanvasRenderingContext2D,
-  sheet: Sheet,
-  name: TileName,
-  x: number,
-  y: number,
-  size: number,
-): void {
+export function drawTile(ctx: CanvasRenderingContext2D, sheet: Sheet, name: TileName, x: number, y: number, size: number): void {
   const at = tileRect(name);
   ctx.drawImage(sheet, at.x, at.y, TILE_SIZE, TILE_SIZE, x, y, size, size);
 }
