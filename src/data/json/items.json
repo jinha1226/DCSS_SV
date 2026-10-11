@@ -242,10 +242,86 @@
     "effect": "ember"
   },
   {
+    "id": "potion_healing",
+    "kind": "potion",
+    "name": "회복 물약",
+    "enabled": false,
+    "useMode": "store",
+    "stackable": true,
+    "maxStack": 9,
+    "depthWeights": [0, 0, 0],
+    "effects": [{ "id": "heal", "power": 30 }]
+  },
+  {
+    "id": "scroll_blink",
+    "kind": "scroll",
+    "name": "점멸 두루마리",
+    "enabled": false,
+    "useMode": "store",
+    "stackable": true,
+    "maxStack": 9,
+    "depthWeights": [0, 0, 0],
+    "effects": [{ "id": "blink", "power": 3 }]
+  },
+  {
+    "id": "wand_sparks",
+    "kind": "wand",
+    "name": "전격 완드",
+    "enabled": false,
+    "useMode": "store",
+    "stackable": false,
+    "depthWeights": [0, 0, 0],
+    "effects": [{ "id": "lightning", "power": 8 }]
+  },
+  {
+    "id": "ring_warding",
+    "kind": "jewellery",
+    "name": "수호 반지",
+    "enabled": false,
+    "useMode": "equip",
+    "stackable": false,
+    "depthWeights": [0, 0, 0],
+    "effects": [{ "id": "armour", "power": 1 }]
+  },
+  {
+    "id": "leather_armour",
+    "kind": "armour",
+    "name": "가죽 갑옷",
+    "enabled": false,
+    "useMode": "equip",
+    "stackable": false,
+    "depthWeights": [0, 0, 0],
+    "effects": [{ "id": "armour", "power": 2 }]
+  },
+  {
+    "id": "buckler",
+    "kind": "shield",
+    "name": "버클러",
+    "enabled": false,
+    "useMode": "equip",
+    "stackable": false,
+    "depthWeights": [0, 0, 0],
+    "effects": [{ "id": "shield", "power": 1 }]
+  },
+  {
     "id": "names",
     "kind": "names",
-    "prefixes": ["카르", "둠", "벨", "라크", "모르", "세른"],
-    "suffixes": ["둠", "라", "바르", "카", "린", "고르"]
+    "prefixes": [
+      "카르",
+      "둠",
+      "벨",
+      "라크",
+      "모르",
+      "세른"
+    ],
+    "suffixes": [
+      "둠",
+      "라",
+      "바르",
+      "카",
+      "린",
+      "고르"
+    ]
   },
   {
     "id": "equipment",

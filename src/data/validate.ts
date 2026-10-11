@@ -2,6 +2,7 @@ import characters from './json/characters.json';
 import jobs from './json/jobs.json';
 import species from './json/species.json';
 import { characterData } from './characters';
+import { validateItemDefinitions } from './itemCatalog';
 import { heroFor } from './hero';
 import { ARTEFACTS, AXES, BOWS, BRANDS, EQUIPMENT, RANDART_OPTIONS, WEAPONS } from './items';
 import { MONSTERS } from './monsters';
@@ -10,6 +11,7 @@ import { SKILLS } from './skills';
 import { SPELLS, SPELL_SCHOOLS } from './spells';
 
 export function validateData(): void {
+  validateItemDefinitions();
   if (!MONSTERS.length) throw new Error('monsters.json: 비어 있음');
   if (!PACKS.length) throw new Error('packs.json: 비어 있음');
   if (!SKILLS.length) throw new Error('skills.json: 비어 있음');
