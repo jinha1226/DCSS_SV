@@ -59,7 +59,6 @@ export function applyBrand(w: World, m: Monster, brandId: string | undefined): v
         }
       }
       if (target) {
-        const chainFactor = resistanceFactor(resist(target, brand.resist));
         const damage = damageAfterDefense(brand.chainDamage ?? 5, brand.resist, 0, target.stats.resists);
         brandEvent(w, target, brand.resist, damage);
         if (damage > 0) {
