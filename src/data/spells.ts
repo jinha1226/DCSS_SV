@@ -1,16 +1,6 @@
 import spellsRaw from './json/spells.json';
 
-export type SpellShape =
-  | 'projectile'
-  | 'beam'
-  | 'burst'
-  | 'cloud'
-  | 'utility'
-  | 'chain'
-  | 'summon'
-  | 'construct'
-  | 'debuff'
-  | 'teleport';
+export type SpellShape = 'projectile' | 'beam' | 'burst' | 'cloud' | 'utility' | 'chain' | 'summon' | 'construct' | 'debuff' | 'teleport';
 
 export interface SpellData {
   readonly id: string;
