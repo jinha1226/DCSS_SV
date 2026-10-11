@@ -60,7 +60,7 @@ export function makeHud(root: HTMLElement, again: () => void): Hud {
         shown = w.over;
         title.textContent = w.won ? '던전을 빠져나왔다' : '쓰러졌다';
         result.textContent = clock(w.time) + ' 버팀 · ' + w.kills + ' 처치 · Lv ' + w.hero.level;
-        skills.textContent = skillText(w) || '고른 스킬 없음';
+        skills.textContent = (skillText(w) || '고른 스킬 없음') + ' · 무기 ' + w.weapon.name;
         over.classList.toggle('on', w.over);
       }
     },

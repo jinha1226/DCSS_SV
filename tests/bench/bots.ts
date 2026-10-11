@@ -1,5 +1,6 @@
 import { moveCircle, wallGap } from '../../src/sim/collide';
 import { throwTarget } from '../../src/sim/combat';
+import { acceptPickup, declinePickup, weaponScore } from '../../src/sim/equipment';
 import { Cell, cellAt, walkable } from '../../src/sim/grid';
 import { chooseSkill, effectValue, skillLevel } from '../../src/sim/skills';
 import { makeWorld, stepWorld, type Input, type SkillChoice, type World } from '../../src/sim/world';
@@ -31,7 +32,7 @@ export const kite: Bot = (w) => {
   if (!near) return { mx: 0, my: 0 };
   const nx = near.dx / near.d;
   const ny = near.dy / near.d;
-  const want = w.heroDef.axe.reach + effectValue(w, 'axe.wide') - 0.15;
+  const want = w.weapon.reach + effectValue(w, 'axe.wide') - 0.15;
   if (near.d > want + 0.6) return { mx: 0, my: 0 };
   const away = near.d < want ? 1 : 0.2;
   return { mx: -nx * away - ny * 0.7, my: -ny * away + nx * 0.7 };
@@ -57,7 +58,7 @@ export const dance: Bot = (w) => {
       const d = Math.max(0.6, d0 - (m.stun > 0 ? 0 : m.stats.speed * ahead));
       const strike = w.heroDef.radius + m.stats.reach + 0.25;
       if (d < strike) score -= 10 * (strike - d + 0.3);
-      if (d0 <= w.heroDef.axe.reach + effectValue(w, 'axe.wide') - 0.05) inReach = true;
+      if (d0 <= w.weapon.reach + effectValue(w, 'axe.wide') - 0.05) inReach = true;
     }
     if (inReach) score += 2;
     score += Math.min(1.5, wallGap(w.grid, to)) * 0.4;
@@ -148,18 +149,27 @@ export interface RunResult {
   readonly depth: number;
   readonly won: boolean;
   readonly level: number;
+  readonly offered: number;
+  readonly swapped: number;
+  readonly throws: number;
+  readonly recovered: number;
 }
 
 export function play(bot: Bot, seed: number, limit: number, chooser: Chooser = axeFirst): RunResult {
   const w = makeWorld({ seed });
   while (!w.over && w.time < limit) {
+    if (w.pendingPickup) {
+      const found = w.pendingPickup.axe;
+      if (found && weaponScore(found) > weaponScore(w.weapon)) acceptPickup(w); else declinePickup(w);
+      continue;
+    }
     if (w.choosing) {
       chooseSkill(w, chooser(w.choosing, w));
       continue;
     }
     stepWorld(w, bot(w));
   }
-  return { seconds: w.time, kills: w.kills, hp: w.hero.hp, fell: w.over && !w.won, depth: w.depth, won: w.won, level: w.hero.level };
+  return { seconds: w.time, kills: w.kills, hp: w.hero.hp, fell: w.over && !w.won, depth: w.depth, won: w.won, level: w.hero.level, offered: w.pickupStats.offered, swapped: w.pickupStats.swapped, throws: w.pickupStats.throws, recovered: w.pickupStats.recovered };
 }
 
 export function summary(runs: readonly RunResult[]): string {
@@ -169,5 +179,9 @@ export function summary(runs: readonly RunResult[]): string {
     ', depth ' + mean((r) => r.depth).toFixed(1) +
     ', seconds ' + mean((r) => r.seconds).toFixed(0) + ' (' + times[0]!.toFixed(0) + '-' + times[times.length - 1]!.toFixed(0) + ')' +
     ', kills ' + mean((r) => r.kills).toFixed(0) +
-    ', level ' + mean((r) => r.level).toFixed(1);
+    ', level ' + mean((r) => r.level).toFixed(1) +
+    ', offers ' + mean((r) => r.offered).toFixed(1) +
+    ', swaps ' + mean((r) => r.swapped).toFixed(1) +
+    ', throws ' + mean((r) => r.throws).toFixed(1) +
+    ', recovered ' + mean((r) => r.recovered).toFixed(1);
 }

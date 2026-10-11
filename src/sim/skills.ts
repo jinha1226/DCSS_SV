@@ -15,6 +15,7 @@ function owner(effect: string): { skill: string; rule: SkillEffect } | undefined
 export function effectValue(w: World, effect: string): number {
   const found = owner(effect);
   if (!found) return 0;
+  if (found.skill === 'shield' && w.weapon.hands === 2) return 0;
   const level = skillLevel(w, found.skill);
   if (found.rule.perLevel !== undefined) return found.rule.perLevel * level;
   if (found.rule.level !== undefined && level >= found.rule.level) return found.rule.value ?? 1;
@@ -40,7 +41,7 @@ export function makeSkillChoice(w: World, id: string): SkillChoice {
 }
 function deal(w: World): void {
   if (w.pendingChoices <= 0 || w.choosing) return;
-  const available = SKILLS.filter((skill) => skillLevel(w, skill.id) < MAX_SKILL);
+  const available = SKILLS.filter((skill) => skillLevel(w, skill.id) < MAX_SKILL && !(skill.id === 'shield' && w.weapon.hands === 2));
   for (let i = available.length - 1; i > 0; i--) {
     const j = Math.floor(w.rng() * (i + 1));
     const swap = available[i]!;
@@ -74,7 +75,7 @@ export function chooseSkill(w: World, id: string): void {
   w.choosing = null;
   deal(w);
 }
-export function heroSpeed(w: World): number { return w.speed * (1 + effectValue(w, 'dodging.speed')); }
+export function heroSpeed(w: World): number { return w.speed * (1 + effectValue(w, 'dodging.speed') + (w.weapon.options.find((o) => o.id === 'speed')?.value ?? 0)); }
 export function heroGive(w: World): number {
   if (hasEffect(w, 'armour.unmoved')) return 0;
   return w.heroDef.give * (hasEffect(w, 'dodging.squeeze') ? effectValue(w, 'dodging.squeeze') : 1);

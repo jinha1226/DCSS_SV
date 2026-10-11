@@ -19,7 +19,7 @@ interface Stroke {
 
 const RISE = 0.6;
 const STROKE = 0.2;
-const COLOUR = { axe: '#f4ecd6', horns: '#ffcf6a', throw: '#d2e8ff', thorns: '#d8a6ff', hurt: '#ff7a6a', guard: '#b9dfef' } as const;
+const COLOUR = { axe: '#f4ecd6', horns: '#ffcf6a', throw: '#d2e8ff', thorns: '#d8a6ff', hurt: '#ff7a6a', guard: '#b9dfef', brand: '#e6c27a', resisted: '#999999' } as const;
 
 /** What the screen shows of blows given and taken. It only listens to the rules; it never changes them. */
 export class Fx {
@@ -32,6 +32,8 @@ export class Fx {
     for (const e of events) {
       if (e.type === 'hit') {
         this.rising.push({ x: e.x, y: e.y - 0.45, text: String(e.amount), colour: COLOUR[e.by], big: e.by === 'horns', age: 0 });
+      } else if (e.type === 'brand') {
+        this.rising.push({ x: e.x, y: e.y - 0.4, text: e.resisted ? '0' : String(e.amount), colour: e.resisted ? COLOUR.resisted : COLOUR.brand, big: false, age: 0 });
       } else if (e.type === 'hurt') {
         this.rising.push({ x: e.x, y: e.y - 0.6, text: `-${e.amount}`, colour: COLOUR.hurt, big: true, age: 0 });
       } else if (e.type === 'dodge' || e.type === 'block') {

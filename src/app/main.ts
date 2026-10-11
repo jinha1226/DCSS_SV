@@ -6,6 +6,7 @@ import { makeStick } from '../input/stick';
 import { STEP, makeWorld, stepWorld, type World } from '../sim/world';
 import { makeThrowButton } from '../ui/throwButton';
 import { makeHud } from '../ui/hud';
+import { makeEquipmentPicker } from '../ui/equipmentPicker';
 import { makeSkillPicker } from '../ui/skillPicker';
 import { loadAtlas } from '../view/atlas';
 import { drawMiniMap } from '../view/minimap';
@@ -43,6 +44,7 @@ async function start(): Promise<void> {
   if (debug) Object.assign(window, { __sv: Object.assign(debug, { switches, stick, keys, heroWalk }) });
 
   const picker = makeSkillPicker(root);
+  const gear = makeEquipmentPicker(root);
   const hud = makeHud(root, () => {
     world = begin();
     fx.clear();
@@ -74,6 +76,7 @@ async function start(): Promise<void> {
       drawWorld(ctx, atlas, world, { cols: switches.cols, look: LOOK[switches.look], dpr, heroWalk }, fx, world.over ? 1 : between);
       hud.show(world);
       picker.show(world);
+      gear.show(world);
       throwing.show(world);
       drawMiniMap(ctx, world, dpr);
     },

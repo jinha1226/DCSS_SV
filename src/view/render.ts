@@ -1,3 +1,4 @@
+import { brandData } from '../data/items';
 import { DUNGEON } from '../data/packs';
 import { throwTarget } from '../sim/combat';
 import type { TileName } from '../data/tiles';
@@ -126,6 +127,20 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
   ctx.fillRect(0, 0, width, height);
   drawFloor(ctx, atlas, w, view.look, px, ox, oy);
 
+  for (const item of w.groundItems) {
+    const ix = Math.floor(item.x), iy = Math.floor(item.y);
+    if (!w.seen[iy * w.grid.w + ix]) continue;
+    const sx = ox + item.x * px, sy = oy + item.y * px;
+    const tile = item.kind === 'ammo' ? 'item/boomerang1' : item.axe?.tile;
+    if (!tile) continue;
+    drawFigure(ctx, atlas.image, tile, sx, sy, px * 0.72, false);
+    if (item.axe?.special) {
+      ctx.strokeStyle = '#d6b96d'; ctx.lineWidth = Math.max(1, px * 0.04); ctx.strokeRect(sx - px * 0.35, sy - px * 0.35, px * 0.7, px * 0.7);
+    } else if (item.axe?.brand) {
+      ctx.fillStyle = brandData(item.axe.brand)?.colour ?? '#aaa'; ctx.beginPath(); ctx.arc(sx, sy + px * 0.31, Math.max(2, px * 0.07), 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
   // Monsters out of sight are not drawn, even on remembered ground.
   for (const m of w.monsters) {
     if (!w.visible[Math.floor(m.y) * w.grid.w + Math.floor(m.x)]) continue;
@@ -170,4 +185,6 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
   const sheet = w.hero.hurt > 0 ? view.heroWalk.hurt : view.heroWalk.image;
   drawWalker(ctx, sheet, walkFrame(w.hero.moving && !w.over, w.time), cx, cy, px, w.hero.facing === 1);
   fx.drawNumbers(ctx, ox, oy, px, view.dpr);
+  const icon = Math.max(24 * view.dpr, px * 0.65);
+  drawTile(ctx, atlas.image, w.weapon.tile, width - icon - 10 * view.dpr, height - icon - 126 * view.dpr, icon);
 }
