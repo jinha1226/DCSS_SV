@@ -31,6 +31,8 @@ export function spawnMonster(w: World, id: string, x: number, y: number, awake: 
     maxMana: mana,
     spellCooldown: 0,
     guard: 0,
+    fear: 0,
+    confusion: 0,
     itemUses,
     ...(kind.stats.weapon ? { weapon: plainWeapon(kind.stats.weapon, 'monster-' + id) } : {}),
     awake,
@@ -76,6 +78,8 @@ export function thinkMonster(w: World, m: Monster, dt: number): Stride {
   }
   if (m.spellCooldown > 0) m.spellCooldown = Math.max(0, m.spellCooldown - dt);
   if (m.guard > 0) m.guard = Math.max(0, m.guard - dt);
+  if (m.fear > 0) m.fear = Math.max(0, m.fear - dt);
+  if (m.confusion > 0) m.confusion = Math.max(0, m.confusion - dt);
   m.mana = Math.min(m.maxMana, m.mana + (m.stats.manaRegen ?? 0) * dt);
   if (!m.awake) {
     if (d > BUMP && (!visible || d > m.stats.notice)) return STILL;
@@ -90,6 +94,16 @@ export function thinkMonster(w: World, m: Monster, dt: number): Stride {
     return STILL;
   }
   if (Math.abs(dx) > 0.05) m.facing = dx < 0 ? -1 : 1;
+  if (m.fear > 0) {
+    m.wind = -1;
+    const away = Math.hypot(dx, w.hero.y - m.y) || 1;
+    return { vx: (-dx / away) * m.stats.speed, vy: ((m.y - w.hero.y) / away) * m.stats.speed };
+  }
+  if (m.confusion > 0) {
+    m.wind = -1;
+    const angle = w.rng() * Math.PI * 2;
+    return { vx: Math.cos(angle) * m.stats.speed * 0.7, vy: Math.sin(angle) * m.stats.speed * 0.7 };
+  }
   const context = monsterContext(w, m);
   const locked = continueMonsterAction(context, dt);
   if (locked) return locked;

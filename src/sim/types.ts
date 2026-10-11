@@ -60,6 +60,8 @@ export interface Monster {
   maxMana: number;
   spellCooldown: number;
   guard: number;
+  fear: number;
+  confusion: number;
   /** Remaining uses of items.json items carried by this monster. */
   itemUses: Record<string, number>;
   x: number;
@@ -148,7 +150,7 @@ export interface SpellVisual {
 }
 export interface GroundItem {
   readonly uid: string;
-  readonly kind: 'axe' | 'ammo' | 'path' | 'book' | 'consumable';
+  readonly kind: 'axe' | 'ammo' | 'path' | 'book' | 'consumable' | 'gear';
   x: number;
   y: number;
   axe?: WeaponItem;
@@ -161,7 +163,8 @@ export interface GroundItem {
 }
 export type BagItem =
   | { readonly uid: string; readonly kind: 'weapon'; readonly weapon: WeaponItem }
-  | { readonly uid: string; readonly kind: 'consumable'; readonly id: string; count: number };
+  | { readonly uid: string; readonly kind: 'consumable'; readonly id: string; count: number }
+  | { readonly uid: string; readonly kind: 'gear'; readonly id: string };
 export interface PickupStats {
   offered: number;
   swapped: number;
@@ -217,6 +220,9 @@ export interface World {
   readonly seed: number;
   weapon: WeaponItem;
   readonly inventory: BagItem[];
+  readonly gear: Partial<Record<'armour' | 'shield' | 'helmet' | 'gloves' | 'boots' | 'cloak' | 'amulet' | 'ring1' | 'ring2', string>>;
+  readonly gearEnchantment: Record<string, number>;
+  readonly cursedGear: Set<string>;
   readonly identifiedItems: Set<string>;
   readonly itemAppearances: Record<string, string>;
   ammo: number;

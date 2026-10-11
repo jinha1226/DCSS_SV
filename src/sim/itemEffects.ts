@@ -1,5 +1,6 @@
 import { itemDefinition } from '../data/itemCatalog';
 import { identifyItem } from './identification';
+import { enchantArmour } from './gear';
 import { hurtHero } from './effects';
 import { updateFlow } from './flow';
 import { computeFov } from './fov';
@@ -46,6 +47,24 @@ export function activateItem(w: World, id: string, side: ItemUser, source?: Mons
     w.weapon = { ...w.weapon, enchantment: (w.weapon.enchantment ?? 0) + power };
     return true;
   }
+  if (effect.id === 'enchant_armour' && side === 'hero') {
+    const target = Object.values(w.gear).find((gearId) => gearId && ['armour', 'shield'].includes(itemDefinition(gearId).kind) && (w.gearEnchantment[gearId] ?? 0) < 9);
+    return target ? enchantArmour(w, target) : false;
+  }
+  if (effect.id === 'remove_curse' && side === 'hero') {
+    if (w.cursedGear.size === 0) return false;
+    w.cursedGear.clear();
+    return true;
+  }
+  if (effect.id === 'confusion' && side === 'hero') {
+    let affected = false;
+    for (const monster of w.monsters) {
+      if (monster.hp <= 0 || Math.hypot(monster.x - actor.x, monster.y - actor.y) > power) continue;
+      monster.confusion = Math.max(monster.confusion, 3);
+      affected = true;
+    }
+    return affected;
+  }
   if (effect.id === 'identify' && side === 'hero') {
     const unknown = w.inventory.find((entry) => entry.kind === 'consumable' && !w.identifiedItems.has(entry.id) && entry.id !== id);
     if (!unknown || unknown.kind !== 'consumable') return false;
@@ -56,7 +75,7 @@ export function activateItem(w: World, id: string, side: ItemUser, source?: Mons
     let affected = false;
     for (const monster of w.monsters) {
       if (monster.hp <= 0 || Math.hypot(monster.x - actor.x, monster.y - actor.y) > power) continue;
-      monster.stun = Math.max(monster.stun, 1.5);
+      monster.fear = Math.max(monster.fear, 3);
       affected = true;
     }
     return affected;

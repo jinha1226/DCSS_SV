@@ -173,6 +173,23 @@ export function populateFloorItems(w: World): void {
       w.groundItems.push({ uid: uid(w, 'supply'), kind: 'consumable', itemId, x: cell.x, y: cell.y, ignored: false });
     }
   }
+  if (w.itemsEnabled) {
+    const tier = Math.min(2, w.depth - 1);
+    const gear = ITEM_DEFINITIONS.filter((item) => item.enabled && ['armour', 'shield', 'jewellery'].includes(item.kind));
+    const total = gear.reduce((sum, item) => sum + (item.depthWeights[tier] ?? 0), 0);
+    for (let i = 0; i < 2 && total > 0; i++) {
+      const cell = roomCell(w);
+      if (!cell) continue;
+      let roll = w.rng() * total;
+      for (const item of gear) {
+        roll -= item.depthWeights[tier] ?? 0;
+        if (roll < 0) {
+          w.groundItems.push({ uid: uid(w, 'gear'), kind: 'gear', itemId: item.id, x: cell.x, y: cell.y, ignored: false });
+          break;
+        }
+      }
+    }
+  }
   const piles = rollInt(w, EQUIPMENT.ammoPilesMin, EQUIPMENT.ammoPilesMax);
   for (let i = 0; i < piles; i++) putAmmo(w, rollInt(w, EQUIPMENT.ammoPileMin, EQUIPMENT.ammoPileMax), roomCell(w));
   if (w.heroDef.attackMode === 'magic' && !w.openSkills.has('fire')) putBook(w, 'fire', roomCell(w));
@@ -283,6 +300,9 @@ export function collectGround(w: World): void {
       w.groundItems.splice(i, 1);
     } else if (item.kind === 'book') {
       if (item.school) openSkill(w, item.school);
+      w.groundItems.splice(i, 1);
+    } else if (item.kind === 'gear') {
+      if (item.itemId) w.inventory.push({ uid: item.uid, kind: 'gear', id: item.itemId });
       w.groundItems.splice(i, 1);
     } else if (item.kind === 'consumable') {
       if (item.itemId) addConsumable(w, item.itemId as ConsumableId, item.count ?? 1);

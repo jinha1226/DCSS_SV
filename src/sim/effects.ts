@@ -1,4 +1,5 @@
 import { weaponOption } from './equipment';
+import { gearBonus } from './gear';
 import { damageAfterDefense } from './damage';
 import type { ResistName } from '../data/items';
 import { recordKill } from './kills';
@@ -10,7 +11,7 @@ import type { Monster, World } from './types';
 export type HurtKind = 'melee' | 'stone' | 'spell';
 
 function heroResists(w: World): Readonly<Partial<Record<ResistName, number>>> {
-  return w.heroDef.resists;
+  return { ...w.heroDef.resists, fire: (w.heroDef.resists.fire ?? 0) + gearBonus(w, 'fire_resist'), cold: (w.heroDef.resists.cold ?? 0) + gearBonus(w, 'cold_resist') };
 }
 
 function pushDamageEvents(w: World, physical: number, elemental: number, element?: ResistName): void {
@@ -42,7 +43,7 @@ export function hurtHero(
     if (grace > 0) hero.invulnerable = Math.max(hero.invulnerable, grace);
     return false;
   }
-  let block = effectValue(w, 'shield.chance');
+  let block = effectValue(w, 'shield.chance') + (w.weapon.hands === 2 ? 0 : gearBonus(w, 'shield') * 0.12);
   if (kind === 'stone' && hasEffect(w, 'shield.missile')) block *= effectValue(w, 'shield.missile');
   if (block > 0 && w.rng() < Math.min(1, block)) {
     w.events.push({ type: 'block', x: hero.x, y: hero.y });
@@ -65,7 +66,7 @@ export function hurtHero(
   const physical = damageAfterDefense(
     amount,
     'physical',
-    effectValue(w, 'armour.reduce') + weaponOption(w.weapon, 'armour'),
+    effectValue(w, 'armour.reduce') + weaponOption(w.weapon, 'armour') + gearBonus(w, 'armour'),
     heroResists(w),
   );
   const elementalDamage = elemental ? damageAfterDefense(elemental.damage, elemental.type, 0, heroResists(w)) : 0;

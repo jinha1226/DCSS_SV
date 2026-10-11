@@ -39,12 +39,21 @@ export function dropConsumable(w: World, id: ConsumableId): boolean {
   return true;
 }
 
-export function useConsumable(w: World, id: ConsumableId): boolean {
+export function useConsumable(w: World, id: ConsumableId, targetId?: string): boolean {
   if (w.over || w.choosing || w.pendingPickup) return false;
   const index = w.inventory.findIndex((item) => item.kind === 'consumable' && item.id === id);
   const item = w.inventory[index];
   if (!item || item.kind !== 'consumable' || item.count <= 0) return false;
   // Shared item effect handler is also used by monster utility AI.
+  if (id === 'scroll_identify' && targetId) {
+    const target = w.inventory.find((entry) => entry.kind === 'consumable' && entry.id === targetId);
+    if (!target || w.identifiedItems.has(targetId) || targetId === id) return false;
+    identifyItem(w, targetId);
+    item.count--;
+    if (item.count === 0) w.inventory.splice(index, 1);
+    identifyItem(w, id);
+    return true;
+  }
   if (!activateItem(w, id, 'hero')) return false;
   item.count--;
   if (item.count === 0) w.inventory.splice(index, 1);

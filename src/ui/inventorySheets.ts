@@ -1,5 +1,6 @@
 import { brandData } from '../data/items';
 import { itemDisplayName } from '../sim/identification';
+import { equipGear, unequipGear, dropGear, gearName, gearBonus, type GearSlot } from '../sim/gear';
 import { CONSUMABLES, dropConsumable, useConsumable, type ConsumableId } from '../sim/consumables';
 import { dropStoredWeapon, equipStoredWeapon, weaponOption, weaponScore } from '../sim/equipment';
 import type { World } from '../sim/world';
@@ -29,8 +30,8 @@ const SLOTS = [
 export function equipmentSlots(w: World): EquipmentSlot[] {
   return SLOTS.map((slot) => ({
     ...slot,
-    value: slot.id === 'weapon' ? w.weapon.name + ((w.weapon.enchantment ?? 0) > 0 ? ' +' + w.weapon.enchantment : '') : '—',
-    available: slot.id === 'weapon',
+    value: slot.id === 'weapon' ? w.weapon.name + ((w.weapon.enchantment ?? 0) > 0 ? ' +' + w.weapon.enchantment : '') : w.gear[slot.id as GearSlot] ? gearName(w, w.gear[slot.id as GearSlot]!) : '—',
+    available: slot.id === 'weapon' || slot.id !== 'offhand',
   }));
 }
 export interface BagEntry {
@@ -45,6 +46,8 @@ export function bagEntries(w: World): BagEntry[] {
   for (const item of w.inventory) {
     if (item.kind === 'weapon') {
       items.push({ id: item.uid, name: item.weapon.name, group: 'equipment', count: 1, equipped: false });
+    } else if (item.kind === 'gear') {
+      items.push({ id: item.uid, name: gearName(w, item.id), group: 'equipment', count: 1, equipped: false });
     } else {
       items.push({
         id: item.uid,
@@ -129,6 +132,9 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
       tab,
       w.weapon.uid,
       w.weapon.enchantment ?? 0,
+      JSON.stringify(w.gear),
+      JSON.stringify(w.gearEnchantment),
+      [...w.cursedGear].join(','),
       [...w.identifiedItems].join(','),
       w.ammo,
       w.hero.hp,
@@ -154,6 +160,13 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
             }),
           );
         }
+        if (slot.id !== 'weapon' && slot.id !== 'offhand' && w.gear[slot.id as GearSlot]) {
+          line.append(action('해제', () => {
+            feedback = unequipGear(w, slot.id as GearSlot) ? '장비 해제' : '저주받은 장비는 해제할 수 없어.';
+            lastKey = '';
+            draw(w);
+          }));
+        }
         content.append(line);
       }
       const summary = document.createElement('div');
@@ -171,7 +184,7 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
       content.append(summary);
       const note = document.createElement('p');
       note.className = 'inventory-note';
-      note.textContent = '무기 교체가 가능해. 나머지 장비 슬롯은 아직 전투 규칙과 연결되지 않았어.';
+      note.textContent = '방어력 +' + gearBonus(w, 'armour') + ' · 방패 +' + gearBonus(w, 'shield') + ' · 화염 저항 +' + gearBonus(w, 'fire_resist') + ' · 냉기 저항 +' + gearBonus(w, 'cold_resist');
       content.append(note);
     } else {
       const names: { id: BagTab; label: string }[] = [
@@ -225,6 +238,19 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
                   draw(w);
                 }),
               );
+            } else if (stored?.kind === 'gear') {
+              line.append(
+                action('장착', () => {
+                  feedback = equipGear(w, item.id) ? '장비 장착' : '장착할 수 없어. 양손무기 또는 저주를 확인해.';
+                  lastKey = '';
+                  draw(w);
+                }),
+                action('버리기', () => {
+                  feedback = dropGear(w, item.id) ? '장비 버림' : '버릴 수 없어.';
+                  lastKey = '';
+                  draw(w);
+                }),
+              );
             }
           }
           if (item.group === 'consumable') {
@@ -232,7 +258,15 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
             if (config) {
               line.append(
                 action(config.action, () => {
-                  feedback = useConsumable(w, item.id as ConsumableId) ? itemDisplayName(w, item.id) + ' 사용' : '지금은 사용할 수 없어.';
+                  if (item.id === 'scroll_identify') {
+                    const targets = w.inventory.filter((entry) => entry.kind === 'consumable' && entry.id !== item.id && !w.identifiedItems.has(entry.id));
+                    if (targets.length > 0) {
+                      const target = window.prompt('감정할 아이템 번호를 입력하세요:\\n' + targets.map((entry, index) => (index + 1) + '. ' + itemDisplayName(w, entry.id)).join('\\n'));
+                      const selected = target === null ? undefined : targets[Number(target) - 1];
+                      if (!selected || selected.kind !== 'consumable') { feedback = '감정을 취소했어.'; lastKey = ''; draw(w); return; }
+                      feedback = useConsumable(w, item.id, selected.id) ? '감정 완료: ' + itemDisplayName(w, selected.id) : '감정할 수 없어.';
+                    } else feedback = '감정할 아이템이 없어.';
+                  } else feedback = useConsumable(w, item.id as ConsumableId) ? itemDisplayName(w, item.id) + ' 사용' : '지금은 사용할 수 없어.';
                   lastKey = '';
                   draw(w);
                 }),

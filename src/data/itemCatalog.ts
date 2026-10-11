@@ -117,6 +117,13 @@ export function parseItemDefinition(row: Row): ItemDefinition {
     'identify',
     'teleport',
     'fear',
+    'armour',
+    'shield',
+    'fire_resist',
+    'cold_resist',
+    'enchant_armour',
+    'remove_curse',
+    'confusion',
   ]);
   if (enabled && effects.some((effect) => !supported.has((effect as ItemEffect).id))) {
     throw new Error(label + ': effects 실행기는 아직 연결되지 않음');
