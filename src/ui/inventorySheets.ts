@@ -29,7 +29,7 @@ const SLOTS = [
 export function equipmentSlots(w: World): EquipmentSlot[] {
   return SLOTS.map((slot) => ({
     ...slot,
-    value: slot.id === 'weapon' ? w.weapon.name + ' +' + (w.weapon.enchantment ?? 0) : '—',
+    value: slot.id === 'weapon' ? w.weapon.name + ((w.weapon.enchantment ?? 0) > 0 ? ' +' + w.weapon.enchantment : '') : '—',
     available: slot.id === 'weapon',
   }));
 }
