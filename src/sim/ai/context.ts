@@ -25,10 +25,13 @@ export function monsterContext(world: World, monster: Monster): MonsterContext {
   const reach = world.heroDef.radius + (weapon && weapon.family !== 'bow' ? weapon.range : monster.stats.reach);
   const rangedRange = weapon?.family === 'bow' ? weapon.range : (monster.stats.throws?.range ?? 0);
   const spells = monster.stats.ai?.spells ?? [];
-  const magicRange = Math.max(0, ...spells.map((id) => {
-    const spell = spellData(id);
-    return (spell.damage !== undefined && monster.maxMana >= spell.mana) ? spell.range ?? 0 : 0;
-  }));
+  const magicRange = Math.max(
+    0,
+    ...spells.map((id) => {
+      const spell = spellData(id);
+      return spell.damage !== undefined && monster.maxMana >= spell.mana ? (spell.range ?? 0) : 0;
+    }),
+  );
   const effectiveRange = Math.max(rangedRange, magicRange);
   const preferredRange = monster.stats.ai?.preferredRange ?? monster.stats.throws?.keep ?? (effectiveRange ? effectiveRange * 0.6 : 0);
   return {

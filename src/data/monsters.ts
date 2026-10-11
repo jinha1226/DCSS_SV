@@ -74,10 +74,12 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
   if (speciesId !== undefined && !species) throw new Error('monsters.json: ' + row.id + '.species: 없는 종족');
   const itemIds: unknown = 'items' in row ? row.items : undefined;
   if (itemIds !== undefined) {
-    if (!Array.isArray(itemIds) || itemIds.some((id) => typeof id !== 'string')) throw new Error('monsters.json: ' + row.id + '.items: 문자열 배열이 아님');
+    if (!Array.isArray(itemIds) || itemIds.some((id) => typeof id !== 'string'))
+      throw new Error('monsters.json: ' + row.id + '.items: 문자열 배열이 아님');
     for (const id of itemIds) {
       const item = itemDefinition(id);
-      if (!item.enabled || !['potion', 'scroll', 'wand'].includes(item.kind)) throw new Error('monsters.json: ' + row.id + '.items: 사용할 수 없는 아이템');
+      if (!item.enabled || !['potion', 'scroll', 'wand'].includes(item.kind))
+        throw new Error('monsters.json: ' + row.id + '.items: 사용할 수 없는 아이템');
     }
   }
   const weapon = 'weapon' in row ? row.weapon : undefined;
