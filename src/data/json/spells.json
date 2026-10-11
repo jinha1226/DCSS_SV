@@ -2,42 +2,47 @@
   {
     "id": "arc_needle",
     "name": "마력침",
-    "school": "conjuration",
     "level": 1,
     "mana": 2,
     "shape": "projectile",
     "damage": 5,
     "range": 6,
     "speed": 16,
-    "colour": "#b8d6ff"
+    "colour": "#b8d6ff",
+    "schools": [
+      "conjuration"
+    ]
   },
   {
     "id": "focus_ray",
     "name": "집광선",
-    "school": "conjuration",
     "level": 2,
     "mana": 4,
     "shape": "beam",
     "damage": 7,
     "range": 7,
-    "colour": "#a9c7ff"
+    "colour": "#a9c7ff",
+    "schools": [
+      "conjuration"
+    ]
   },
   {
     "id": "pulse_burst",
     "name": "파동탄",
-    "school": "conjuration",
     "level": 3,
     "mana": 6,
     "shape": "burst",
     "damage": 9,
     "range": 7,
     "radius": 1.2,
-    "colour": "#c9b8ff"
+    "colour": "#c9b8ff",
+    "schools": [
+      "conjuration"
+    ]
   },
   {
     "id": "split_lance",
     "name": "분광창",
-    "school": "conjuration",
     "level": 4,
     "mana": 8,
     "shape": "projectile",
@@ -45,24 +50,28 @@
     "range": 8,
     "speed": 18,
     "pierce": 1,
-    "colour": "#a6e5ff"
+    "colour": "#a6e5ff",
+    "schools": [
+      "conjuration"
+    ]
   },
   {
     "id": "gravity_bloom",
     "name": "중력꽃",
-    "school": "conjuration",
     "level": 5,
     "mana": 10,
     "shape": "burst",
     "damage": 13,
     "range": 8,
     "radius": 1.7,
-    "colour": "#b9a5ef"
+    "colour": "#b9a5ef",
+    "schools": [
+      "conjuration"
+    ]
   },
   {
     "id": "collapse_field",
     "name": "붕괴장",
-    "school": "conjuration",
     "level": 6,
     "mana": 12,
     "shape": "cloud",
@@ -71,47 +80,55 @@
     "radius": 1.5,
     "duration": 3,
     "tick": 0.5,
-    "colour": "#9986d8"
+    "colour": "#9986d8",
+    "schools": [
+      "conjuration"
+    ]
   },
   {
     "id": "void_nova",
     "name": "공허폭발",
-    "school": "conjuration",
     "level": 7,
     "mana": 16,
     "shape": "burst",
     "damage": 18,
     "range": 8,
     "radius": 2.2,
-    "colour": "#d8c5ff"
+    "colour": "#d8c5ff",
+    "schools": [
+      "conjuration"
+    ]
   },
   {
     "id": "ember_dart",
     "name": "불씨",
-    "school": "fire",
     "level": 1,
     "mana": 3,
     "shape": "projectile",
     "damage": 6,
     "range": 6,
     "speed": 15,
-    "colour": "#e9955e"
+    "colour": "#e9955e",
+    "schools": [
+      "fire"
+    ]
   },
   {
     "id": "searing_line",
     "name": "작열선",
-    "school": "fire",
     "level": 2,
     "mana": 5,
     "shape": "beam",
     "damage": 9,
     "range": 7,
-    "colour": "#ef7d4a"
+    "colour": "#ef7d4a",
+    "schools": [
+      "fire"
+    ]
   },
   {
     "id": "ash_cloud",
     "name": "잿불구름",
-    "school": "fire",
     "level": 3,
     "mana": 7,
     "shape": "cloud",
@@ -120,28 +137,35 @@
     "radius": 1.4,
     "duration": 3,
     "tick": 0.5,
-    "colour": "#c86c48"
+    "colour": "#c86c48",
+    "schools": [
+      "fire"
+    ]
   },
   {
     "id": "blink_step",
     "name": "점멸",
-    "school": "translocation",
     "level": 1,
     "mana": 4,
     "shape": "utility",
     "effect": "blink",
     "distance": 3,
-    "colour": "#83c6d9"
+    "colour": "#83c6d9",
+    "schools": [
+      "translocation"
+    ]
   },
   {
     "id": "phase_guard",
     "name": "위상막",
-    "school": "translocation",
     "level": 2,
     "mana": 6,
     "shape": "utility",
     "effect": "guard",
     "duration": 2,
-    "colour": "#a3b9ff"
+    "colour": "#a3b9ff",
+    "schools": [
+      "translocation"
+    ]
   }
 ]

@@ -1,4 +1,4 @@
-import { SPELLS, SPELL_SCHOOLS, spellData, type SpellData } from '../data/spells';
+import { ACTIVE_SPELL_SHAPES, SPELLS, SPELL_SCHOOLS, spellData, type SpellData } from '../data/spells';
 import { walkable } from './grid';
 import { recordKill } from './kills';
 import { skillLevel } from './skills';
@@ -15,8 +15,21 @@ function schoolLevel(w: World, school: string): number {
   return skillLevel(w, school);
 }
 
+function requiredLevel(spell: SpellData, school: string): number {
+  return spell.requirements?.[school] ?? spell.level;
+}
+
+function spellExcess(w: World, spell: SpellData): number {
+  return Math.max(0, Math.min(...spell.schools.map((school) => schoolLevel(w, school) - requiredLevel(spell, school))));
+}
+
 export function knownSpells(w: World, school?: string): SpellData[] {
-  return SPELLS.filter((spell) => (!school || spell.school === school) && schoolLevel(w, spell.school) >= spell.level);
+  return SPELLS.filter(
+    (spell) =>
+      ACTIVE_SPELL_SHAPES.includes(spell.shape) &&
+      (!school || spell.schools.includes(school)) &&
+      spell.schools.every((id) => schoolLevel(w, id) >= requiredLevel(spell, id)),
+  );
 }
 
 function primarySchool(w: World): string | undefined {
@@ -46,17 +59,15 @@ export function paidSpells(w: World): SpellData[] {
     if (top.shape === 'utility') out.push(...known.filter((spell) => spell.shape === 'utility'));
     else out.push(top);
   }
-  return out;
+  return [...new Map(out.map((spell) => [spell.id, spell])).values()];
 }
 
 export function spellRange(w: World, spell: SpellData): number {
-  const excess = Math.max(0, schoolLevel(w, spell.school) - spell.level);
-  return spell.range + Math.floor(excess / 2);
+  return (spell.range ?? 0) + Math.floor(spellExcess(w, spell) / 2);
 }
 
 export function spellDamage(w: World, spell: SpellData): number {
-  const excess = Math.max(0, schoolLevel(w, spell.school) - spell.level);
-  return spell.damage + excess * 2;
+  return (spell.damage ?? 0) + spellExcess(w, spell) * 2;
 }
 
 export function spellCandidates(w: World, spell: SpellData): Monster[] {
@@ -193,14 +204,15 @@ function execute(w: World, spell: SpellData, target: Monster): void {
   if (spell.shape === 'projectile') castProjectile(w, spell, target, damage);
   else if (spell.shape === 'beam') castBeam(w, spell, target, damage);
   else if (spell.shape === 'burst') castBurst(w, spell, target, damage);
-  else castCloud(w, spell, target, damage);
+  else if (spell.shape === 'cloud') castCloud(w, spell, target, damage);
+  else return;
   const dx = target.x - w.hero.x;
   if (Math.abs(dx) > 0.15) w.hero.facing = dx < 0 ? -1 : 1;
 }
 
 export function castPaidSpell(w: World, spellId: string, target?: Monster): boolean {
   const spell = spellData(spellId);
-  if (!paidSpells(w).some((entry) => entry.id === spell.id)) return false;
+  if (!ACTIVE_SPELL_SHAPES.includes(spell.shape) || !paidSpells(w).some((entry) => entry.id === spell.id)) return false;
   if (w.hero.mana < spell.mana) return false;
   if (spell.shape === 'utility') {
     if (spell.effect === 'blink') {
