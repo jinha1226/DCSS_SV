@@ -679,7 +679,9 @@ canvas {
   border-radius: 3px;
   background: #24221f;
   color: #f4dd98;
-  font: 700 11px/14px system-ui, sans-serif;
+  font:
+    700 11px/14px system-ui,
+    sans-serif;
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
@@ -735,7 +737,9 @@ canvas {
   border-radius: 8px;
   background: #333028;
   color: #f2ead8;
-  font: 600 13px system-ui, sans-serif;
+  font:
+    600 13px system-ui,
+    sans-serif;
 }
 
 .skillbar-list {
