@@ -7,7 +7,8 @@ import { hurtHero, wake } from './effects';
 import { FAR } from './flow';
 import { walkable } from './grid';
 import { recordKill } from './kills';
-import { effectValue, hasEffect, hornDamage, hornEvery, skillLevel, throwCooldown } from './skills';
+import { effectValue, hasEffect, skillLevel, throwCooldown } from './skills';
+import { hornDamage, hornEvery, hornTrait } from './traits';
 import type { Monster, Shot, World } from './types';
 
 export const KNOCK_FADE = 14;
@@ -206,20 +207,21 @@ export function heroStrikes(w: World, dt: number, wantsThrow: boolean): void {
       noise(w, DUNGEON.loud);
     } else h.swing = 0;
   }
-  if (h.butt <= 0) {
+  const horns = hornTrait(w);
+  if (horns && h.butt <= 0) {
     let nearest: Monster | undefined,
       best = Infinity;
     for (const m of w.monsters) {
       if (m.hp <= 0) continue;
       const d = Math.hypot(m.x - h.x, m.y - h.y) - m.stats.radius;
-      if (d <= w.heroDef.horns.reach && d < best) {
+      if (d <= horns.reach && d < best) {
         best = d;
         nearest = m;
       }
     }
     if (nearest) {
-      strike(w, nearest, hornDamage(w), w.heroDef.horns.knock, 'horns', nearest.x - h.x, nearest.y - h.y);
-      nearest.stun = w.heroDef.horns.stun;
+      strike(w, nearest, hornDamage(w), horns.knock, 'horns', nearest.x - h.x, nearest.y - h.y);
+      nearest.stun = horns.stun;
       nearest.wind = -1;
       h.butt = hornEvery(w);
     } else h.butt = 0;

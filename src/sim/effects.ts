@@ -1,6 +1,7 @@
 import { weaponOption } from './equipment';
 import { recordKill } from './kills';
 import { effectValue, hasEffect } from './skills';
+import { headbuttBack } from './traits';
 import type { Monster, World } from './types';
 
 export type HurtKind = 'melee' | 'stone';
@@ -10,6 +11,7 @@ export function hurtHero(w: World, amount: number, kind: HurtKind = 'melee', sou
   const dodge = effectValue(w, 'dodging.chance') + weaponOption(w.weapon, 'evasion');
   if (dodge > 0 && w.rng() < dodge) {
     w.events.push({ type: 'dodge', x: hero.x, y: hero.y });
+    headbuttBack(w, source, kind);
     if (source && hasEffect(w, 'dodging.delay')) source.rest += effectValue(w, 'dodging.delay');
     const grace = effectValue(w, 'dodging.grace');
     if (grace > 0) hero.invulnerable = Math.max(hero.invulnerable, grace);
@@ -19,6 +21,7 @@ export function hurtHero(w: World, amount: number, kind: HurtKind = 'melee', sou
   if (kind === 'stone' && hasEffect(w, 'shield.missile')) block *= effectValue(w, 'shield.missile');
   if (block > 0 && w.rng() < Math.min(1, block)) {
     w.events.push({ type: 'block', x: hero.x, y: hero.y });
+    headbuttBack(w, source, kind);
     if (source && hasEffect(w, 'shield.push')) {
       const dx = source.x - hero.x,
         dy = source.y - hero.y,

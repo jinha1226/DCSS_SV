@@ -12,7 +12,9 @@ function el(tag: string, className: string, parent: HTMLElement): HTMLElement {
   parent.append(node);
   return node;
 }
+
 const clock = (seconds: number): string => Math.floor(seconds / 60) + ':' + String(Math.floor(seconds % 60)).padStart(2, '0');
+
 function skillText(w: World): string {
   return Object.entries(w.hero.skills)
     .filter(([, level]) => level > 0)
@@ -20,7 +22,7 @@ function skillText(w: World): string {
     .join(' · ');
 }
 
-export function makeHud(root: HTMLElement, again: () => void): Hud {
+export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: () => void): Hud {
   const top = el('div', 'top', root);
   const vitals = el('div', 'vitals', top);
   const bar = el('div', 'hp', vitals);
@@ -36,10 +38,21 @@ export function makeHud(root: HTMLElement, again: () => void): Hud {
   const title = el('h1', '', over);
   const result = el('p', '', over);
   const skills = el('p', 'result-skills', over);
-  const button = el('button', '', over) as HTMLButtonElement;
-  button.type = 'button';
-  button.textContent = '다시 시작';
-  button.addEventListener('click', again);
+  const againButton = el('button', '', over) as HTMLButtonElement;
+  againButton.type = 'button';
+  againButton.textContent = '같은 캐릭터로 다시';
+  const chooseButton = el('button', '', over) as HTMLButtonElement;
+  chooseButton.type = 'button';
+  chooseButton.textContent = '캐릭터 고르기';
+
+  let shownAt = 0;
+  const ready = (): boolean => performance.now() - shownAt >= 400;
+  againButton.addEventListener('click', () => {
+    if (ready()) again();
+  });
+  chooseButton.addEventListener('click', () => {
+    if (ready()) chooseCharacter();
+  });
 
   let last = '';
   let shown = false;
@@ -60,11 +73,15 @@ export function makeHud(root: HTMLElement, again: () => void): Hud {
       }
       if (w.over !== shown) {
         shown = w.over;
+        if (w.over) shownAt = performance.now();
         title.textContent = w.won ? '던전을 빠져나왔다' : '쓰러졌다';
-        result.textContent = clock(w.time) + ' 버팀 · ' + w.kills + ' 처치 · Lv ' + w.hero.level;
+        result.textContent = w.depth + '층 · ' + clock(w.time) + ' · ' + w.kills + ' 처치 · Lv ' + w.hero.level;
         skills.textContent = (skillText(w) || '고른 스킬 없음') + ' · 무기 ' + w.weapon.name;
         over.classList.toggle('on', w.over);
       }
+      const buttonsReady = !w.over || ready();
+      againButton.disabled = !buttonsReady;
+      chooseButton.disabled = !buttonsReady;
     },
   };
 }

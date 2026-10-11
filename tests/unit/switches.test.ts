@@ -5,7 +5,7 @@ import { STICK_REACH, stickPush } from '../../src/input/stick';
 import { cellPixels } from '../../src/view/render';
 
 describe('the address switches', () => {
-  const usual = { cols: 17, speed: 6.5, look: 'dcss', seed: 0, debug: false, floor: 1 };
+  const usual = { cols: 17, speed: 6.5, look: 'dcss', seed: 0, debug: false, floor: 1, who: '' };
 
   it('fall back to the usual values', () => {
     expect(readSwitches('')).toEqual(usual);
@@ -18,19 +18,23 @@ describe('the address switches', () => {
 
   it('read what is given', () => {
     expect(readSwitches('?zoom=15&speed=5.5&look=bright&seed=42&debug')).toEqual({
-      cols: 15,
+      cols: 17,
       speed: 5.5,
       look: 'bright',
       seed: 42,
       debug: true,
       floor: 1,
+      who: '',
     });
   });
 
   it('write back only what differs from the usual', () => {
     expect(writeSwitches(readSwitches(''))).toBe('');
-    expect(writeSwitches(readSwitches('?zoom=15'))).toBe('?zoom=15');
+    expect(writeSwitches(readSwitches('?zoom=15'))).toBe('');
     expect(readSwitches('?floor=2').floor).toBe(2);
+    expect(readSwitches('?who=minotaur-berserker').who).toBe('minotaur-berserker');
+    expect(writeSwitches(readSwitches('?who=minotaur-berserker'))).toBe('?who=minotaur-berserker');
+    expect(readSwitches('?zoom=9').cols).toBe(17);
     expect(readSwitches('?floor=4').floor).toBe(1);
     expect(writeSwitches(readSwitches('?floor=3'))).toBe('?floor=3');
     expect(writeSwitches(readSwitches('?zoom=17&speed=6.5'))).toBe('');

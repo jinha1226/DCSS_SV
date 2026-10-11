@@ -1,5 +1,6 @@
 import { ARTEFACTS, AXES, BRANDS, EQUIPMENT, NAME_PARTS, RANDART_OPTIONS, axeBase, type AxeItem, type AxeOption } from '../data/items';
 import { Cell, cellAt, walkable } from './grid';
+import { openSkill } from './skills';
 import type { World } from './types';
 
 const RANDART = [0.1, 0.3, 0.5] as const;
@@ -140,6 +141,7 @@ export function acceptPickup(w: World): void {
   w.hero.maxHp += delta;
   w.hero.hp = Math.min(w.hero.maxHp, Math.max(1, w.hero.hp + Math.max(0, delta)));
   w.weapon = item.axe;
+  openSkill(w, 'axe');
   w.groundItems.splice(index, 1, { uid: old.uid, kind: 'axe', x: item.x, y: item.y, axe: old, ignored: true });
   w.pickupStats.swapped++;
   w.pendingPickup = null;
@@ -172,12 +174,16 @@ export function collectGround(w: World): void {
   for (let i = w.groundItems.length - 1; i >= 0; i--) {
     const item = w.groundItems[i]!;
     if (Math.hypot(item.x - w.hero.x, item.y - w.hero.y) > PICKUP_RADIUS) continue;
-    if (item.kind === 'ammo') {
+    if (item.kind === 'path') {
+      if (item.skill) openSkill(w, item.skill);
+      w.groundItems.splice(i, 1);
+    } else if (item.kind === 'ammo') {
       const before = w.ammo;
       w.ammo = Math.min(EQUIPMENT.ammoMax, w.ammo + (item.count ?? 1));
       const took = w.ammo - before;
       if (took <= 0) continue;
       w.pickupStats.recovered += took;
+      openSkill(w, 'throwing');
       const left = (item.count ?? 1) - took;
       if (left > 0) item.count = left;
       else w.groundItems.splice(i, 1);
@@ -185,5 +191,34 @@ export function collectGround(w: World): void {
       w.pendingPickup = item;
       w.pickupStats.offered++;
     }
+  }
+}
+
+export interface NewPathOpener {
+  readonly skill: string;
+  readonly id: string;
+}
+
+export function placeNewPath(w: World, openers: readonly NewPathOpener[] = []): void {
+  const available = openers.filter((opener) => !w.openSkills.has(opener.skill));
+  if (!available.length) return;
+  const opener = available[Math.floor(w.rng() * available.length)]!;
+  const room = w.rooms.length > 1 ? w.rooms[1 + Math.floor(w.rng() * (w.rooms.length - 1))]! : w.rooms[0];
+  if (!room) return;
+  for (let attempt = 0; attempt < 40; attempt++) {
+    const x = room.x + 1 + Math.floor(w.rng() * Math.max(1, room.w - 2));
+    const y = room.y + 1 + Math.floor(w.rng() * Math.max(1, room.h - 2));
+    if (cellAt(w.grid, x, y) !== Cell.Floor) continue;
+    if (w.groundItems.some((item) => Math.floor(item.x) === x && Math.floor(item.y) === y)) continue;
+    w.groundItems.push({
+      uid: 'path-' + opener.id + '-' + w.depth,
+      kind: 'path',
+      x: x + 0.5,
+      y: y + 0.5,
+      skill: opener.skill,
+      ignored: false,
+      newPath: true,
+    });
+    return;
   }
 }

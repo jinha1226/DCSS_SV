@@ -4,7 +4,7 @@ import { DUNGEON } from '../data/packs';
 import { moveCircle } from './collide';
 import { KNOCK_FADE, heroStrikes } from './combat';
 import { shove } from './crowd';
-import { collectGround, populateFloorItems } from './equipment';
+import { collectGround, placeNewPath, populateFloorItems } from './equipment';
 import type { Floor } from './floor';
 import { makeFlow, updateFlow } from './flow';
 import { computeFov } from './fov';
@@ -13,7 +13,7 @@ import { Cell, cellAt } from './grid';
 import { thinkMonster } from './monster';
 import { fillFloor, lingering } from './packs';
 import { makeRng } from './rng';
-import { heroSpeed } from './skills';
+import { heroSpeed, openStartingSkills } from './skills';
 import type { Input, Stairs, World } from './types';
 export type { GroundItem, Hero, Input, Monster, PickupStats, Shot, SimEvent, SkillChoice, Stairs, World } from './types';
 export const STEP = 1 / 60;
@@ -26,6 +26,7 @@ export interface WorldOptions {
   readonly job?: string;
   readonly monsters?: boolean;
   readonly items?: boolean;
+  readonly definition?: ReturnType<typeof heroFor>;
 }
 const SETTLE = 2;
 export const floorSeed = (seed: number, depth: number): number => (Math.imul(seed, 2654435761) + depth * 97) >>> 0;
@@ -65,13 +66,16 @@ function enter(w: World, floor: Floor, monsters: boolean): void {
   w.hero.y = w.hero.py = floor.start.y;
   look(w);
   if (monsters) fillFloor(w);
-  if (w.itemsEnabled) populateFloorItems(w);
+  if (w.itemsEnabled) {
+    populateFloorItems(w);
+    placeNewPath(w);
+  }
 }
 export function makeWorld(options: WorldOptions = {}): World {
   const seed = options.seed ?? 1,
     depth = Math.min(DUNGEON.floors, Math.max(1, options.depth ?? 1)),
     floor = options.floor ?? makeFloor(floorSeed(seed, depth)),
-    heroDef = heroFor(options.species, options.job);
+    heroDef = options.definition ?? heroFor(options.species, options.job);
   const weapon = plainAxe(heroDef.startingWeapon, 'start');
   const world: World = {
     grid: floor.grid,
@@ -115,6 +119,8 @@ export function makeWorld(options: WorldOptions = {}): World {
     nextItem: 1,
     itemsEnabled: options.items !== false,
     pickupStats: { offered: 0, swapped: 0, throws: 0, recovered: 0 },
+    openSkills: new Set<string>(),
+    guaranteedSkills: [],
     depth,
     time: 0,
     floorTime: 0,
@@ -128,6 +134,7 @@ export function makeWorld(options: WorldOptions = {}): World {
     over: false,
     won: false,
   };
+  openStartingSkills(world);
   enter(world, floor, options.monsters !== false);
   return world;
 }

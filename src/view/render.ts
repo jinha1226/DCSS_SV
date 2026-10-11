@@ -120,6 +120,34 @@ function drawMonster(
   }
 }
 
+function drawThreatArrows(ctx: CanvasRenderingContext2D, w: World, px: number, width: number, height: number, dpr: number): void {
+  const sectors = new Set<number>();
+  for (const monster of w.monsters) {
+    const index = Math.floor(monster.y) * w.grid.w + Math.floor(monster.x);
+    if (!monster.awake || monster.hp <= 0 || w.visible[index]) continue;
+    const angle = Math.atan2(monster.y - w.hero.y, monster.x - w.hero.x);
+    sectors.add(Math.round(angle / (Math.PI / 4)));
+  }
+  const radiusX = width / 2 - Math.max(18 * dpr, px * 0.45);
+  const radiusY = height / 2 - Math.max(80 * dpr, px * 0.8);
+  ctx.fillStyle = 'rgba(224, 200, 142, 0.82)';
+  for (const sector of sectors) {
+    const angle = sector * (Math.PI / 4);
+    const x = width / 2 + Math.cos(angle) * radiusX;
+    const y = height / 2 + Math.sin(angle) * radiusY;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.beginPath();
+    ctx.moveTo(7 * dpr, 0);
+    ctx.lineTo(-5 * dpr, -4 * dpr);
+    ctx.lineTo(-5 * dpr, 4 * dpr);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
 /**
  * Draws the floor with the hero in the middle of the screen. `between` is how far this frame
  * falls between the last step of the rules and the next, 0 to 1.
@@ -165,6 +193,8 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
     if (sx < -px || sy < -px || sx > width + px || sy > height + px) continue;
     drawMonster(ctx, atlas, w, m, px, ox, oy, between);
   }
+
+  drawThreatArrows(ctx, w, px, width, height, view.dpr);
 
   for (const shot of w.shots) {
     const sx = ox + (shot.px + (shot.x - shot.px) * between) * px;

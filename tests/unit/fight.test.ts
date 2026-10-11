@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { HERO } from '../../src/data/hero';
+import { hornTrait } from '../../src/sim/traits';
 import { monsterKind } from '../../src/data/monsters';
 import { FAR, downhill, makeFlow, updateFlow } from '../../src/sim/flow';
 import { Cell, carve, makeGrid, setCell } from '../../src/sim/grid';
 import { spawnMonster } from '../../src/sim/monster';
+import { effectValue } from '../../src/sim/skills';
 import { STEP, makeWorld, stepWorld } from '../../src/sim/world';
 import { STILL, arena, count, quietArena, run } from './arena';
 
@@ -109,7 +111,8 @@ describe('the axe', () => {
     expect(count(w.events, 'swing')).toBe(1);
     expect(count(w.events, 'hit')).toBe(4);
     expect(out.hp).toBe(GOBLIN.hp);
-    for (const m of w.monsters) if (m !== out) expect(m.hp).toBe(GOBLIN.hp - HERO.axe.damage);
+    const axeDamage = w.weapon.damage + effectValue(w, 'axe.damage');
+    for (const m of w.monsters) if (m !== out) expect(m.hp).toBe(GOBLIN.hp - axeDamage);
   });
 
   it('does not swing at empty air, and swings the moment something comes in reach', () => {
@@ -169,8 +172,9 @@ describe('the horns', () => {
     stepWorld(w, STILL);
     const hits = w.events.filter((e) => e.type === 'hit');
     expect(hits).toHaveLength(1);
-    expect(hits[0]).toMatchObject({ by: 'horns', amount: HERO.horns.damage });
-    expect(near.hp).toBe(GOBLIN.hp - HERO.horns.damage);
+    const horns = hornTrait(w)!;
+    expect(hits[0]).toMatchObject({ by: 'horns', amount: horns.damage });
+    expect(near.hp).toBe(GOBLIN.hp - hornTrait(w)!.damage);
     expect(other.hp).toBe(GOBLIN.hp);
     expect(near.stun).toBeGreaterThan(0);
     w.hero.butt = 1e9;
@@ -184,7 +188,7 @@ describe('the horns', () => {
     spawnMonster(w, 'goblin', 10 + TOUCH + 0.05, 10, true).hp = 9999;
     const butts = count(run(w, 6), 'hit');
     expect(butts).toBeGreaterThanOrEqual(2);
-    expect(butts).toBeLessThanOrEqual(Math.ceil(6 / HERO.horns.every));
+    expect(butts).toBeLessThanOrEqual(Math.ceil(6 / hornTrait(w)!.every));
   });
 });
 

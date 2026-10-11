@@ -11,8 +11,11 @@ export interface SkillChoice {
   readonly name: string;
   readonly from: number;
   readonly to: number;
+  readonly gain: number;
+  readonly cap: number;
   readonly line: string;
 }
+
 export interface Hero {
   x: number;
   y: number;
@@ -34,6 +37,7 @@ export interface Hero {
   lastStandUsed: boolean;
   axeSwings: number;
 }
+
 export interface Monster {
   readonly kind: MonsterKind;
   readonly stats: MonsterStats;
@@ -60,6 +64,7 @@ export interface Monster {
   burnDamage: number;
   facing: -1 | 1;
 }
+
 export interface Shot {
   x: number;
   y: number;
@@ -75,21 +80,26 @@ export interface Shot {
   returning: boolean;
   readonly hit: Monster[];
 }
+
 export interface GroundItem {
   readonly uid: string;
-  readonly kind: 'axe' | 'ammo';
+  readonly kind: 'axe' | 'ammo' | 'path';
   x: number;
   y: number;
   axe?: AxeItem;
   count?: number;
+  skill?: string;
   ignored: boolean;
+  newPath?: boolean;
 }
+
 export interface PickupStats {
   offered: number;
   swapped: number;
   throws: number;
   recovered: number;
 }
+
 export type SimEvent =
   | { readonly type: 'swing'; readonly x: number; readonly y: number; readonly reach: number }
   | {
@@ -97,7 +107,7 @@ export type SimEvent =
       readonly x: number;
       readonly y: number;
       readonly amount: number;
-      readonly by: 'axe' | 'horns' | 'throw' | 'thorns';
+      readonly by: 'axe' | 'horns' | 'headbutt_back' | 'throw' | 'thorns';
     }
   | { readonly type: 'brand'; readonly x: number; readonly y: number; readonly amount: number; readonly resisted: boolean }
   | { readonly type: 'kill'; readonly x: number; readonly y: number }
@@ -107,11 +117,13 @@ export type SimEvent =
   | { readonly type: 'throw'; readonly x: number; readonly y: number }
   | { readonly type: 'wake'; readonly x: number; readonly y: number }
   | { readonly type: 'floor'; readonly depth: number };
+
 export interface Stairs {
   readonly x: number;
   readonly y: number;
   readonly down: boolean;
 }
+
 export interface World {
   grid: Grid;
   rooms: readonly Room[];
@@ -134,6 +146,8 @@ export interface World {
   nextItem: number;
   itemsEnabled: boolean;
   readonly pickupStats: PickupStats;
+  readonly openSkills: Set<string>;
+  readonly guaranteedSkills: string[];
   depth: number;
   time: number;
   floorTime: number;
@@ -147,6 +161,7 @@ export interface World {
   over: boolean;
   won: boolean;
 }
+
 export interface Input {
   readonly mx: number;
   readonly my: number;

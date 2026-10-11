@@ -22,6 +22,7 @@ const STROKE = 0.2;
 const COLOUR = {
   axe: '#f4ecd6',
   horns: '#ffcf6a',
+  headbutt_back: '#ffcf6a',
   throw: '#d2e8ff',
   thorns: '#d8a6ff',
   hurt: '#ff7a6a',

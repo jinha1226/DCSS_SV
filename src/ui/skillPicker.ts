@@ -43,7 +43,8 @@ export function makeSkillPicker(root: HTMLElement): SkillPicker {
           const name = document.createElement('strong');
           name.textContent = card.name;
           const level = document.createElement('span');
-          level.textContent = card.from + ' → ' + card.to + '단계';
+          const badges = [card.gain > 1 ? '+' + card.gain : '', card.cap < 8 ? '최대 ' + card.cap : ''].filter(Boolean);
+          level.textContent = card.from + ' → ' + card.to + '단계' + (badges.length ? ' · ' + badges.join(' · ') : '');
           const line = document.createElement('small');
           line.textContent = card.line;
           button.append(name, level, line);

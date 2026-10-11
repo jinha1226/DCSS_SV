@@ -23,6 +23,7 @@ export function drawMiniMap(ctx: CanvasRenderingContext2D, w: World, dpr: number
     const ix = Math.floor(item.x),
       iy = Math.floor(item.y);
     if (!w.seen[iy * w.grid.w + ix]) continue;
+    ctx.fillStyle = item.newPath ? '#66d7c2' : '#d9b866';
     ctx.fillRect(x + ix * scale, y + iy * scale, scale, scale);
   }
   ctx.fillStyle = '#ffedb6';

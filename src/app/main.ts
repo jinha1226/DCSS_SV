@@ -1,23 +1,24 @@
 import '../styles/main.css';
-import { HERO } from '../data/hero';
+import { CHARACTERS, type CharacterData } from '../data/characters';
+import { heroFor } from '../data/hero';
 import { guardZoom } from '../input/guards';
 import { keyPush, watchKeys } from '../input/keys';
 import { makeStick } from '../input/stick';
 import { STEP, makeWorld, stepWorld, type World } from '../sim/world';
-import { makeThrowButton } from '../ui/throwButton';
-import { makeHud } from '../ui/hud';
+import { makeCharacterSelect } from '../ui/characterSelect';
 import { makeEquipmentPicker } from '../ui/equipmentPicker';
+import { makeHud } from '../ui/hud';
 import { makeSkillPicker } from '../ui/skillPicker';
+import { makeThrowButton } from '../ui/throwButton';
 import { loadAtlas } from '../view/atlas';
-import { drawMiniMap } from '../view/minimap';
 import { Fx } from '../view/fx';
 import { LOOK } from '../view/look';
+import { drawMiniMap } from '../view/minimap';
 import { drawWorld } from '../view/render';
-import { makeWalk } from '../view/walk';
+import { makeWalk, type WalkSheet } from '../view/walk';
 import { runLoop } from './loop';
 import { readSwitches } from './switches';
 
-/** Stage 2: goblins come for the hero on a hand-made floor, and the axe swings by itself. */
 async function start(): Promise<void> {
   const root = document.querySelector<HTMLDivElement>('#app');
   if (!root) return;
@@ -30,48 +31,82 @@ async function start(): Promise<void> {
 
   const switches = readSwitches(location.search);
   const atlas = await loadAtlas();
-  const heroWalk = makeWalk(atlas, 'hero/minotaur', HERO.walk);
   const stick = makeStick(canvas, root);
   const keys = watchKeys();
   const fx = new Fx();
   const throwing = makeThrowButton(root);
-
-  // A seed in the address gives the same run every time; without one each run differs.
-  const begin = (): World => makeWorld({ seed: switches.seed || Date.now() & 0x7fffffff, speed: switches.speed, depth: switches.floor });
-  let world = begin();
-  const debug: { world: World } | undefined = switches.debug ? { world } : undefined;
-  if (debug) Object.assign(window, { __sv: Object.assign(debug, { switches, stick, keys, heroWalk }) });
-
   const picker = makeSkillPicker(root);
   const gear = makeEquipmentPicker(root);
-  const hud = makeHud(root, () => {
-    world = begin();
-    fx.clear();
-    if (debug) debug.world = world;
-  });
 
+  let selected: CharacterData | undefined;
+  let world: World | undefined;
+  let heroWalk: WalkSheet | undefined;
   let dpr = 1;
+
+  const begin = (character: CharacterData): void => {
+    selected = character;
+    const hero = heroFor(character.species, character.job);
+    heroWalk = makeWalk(atlas, hero.tile, hero.walk);
+    world = makeWorld({
+      species: character.species,
+      job: character.job,
+      seed: switches.seed || Date.now() & 0x7fffffff,
+      speed: switches.speed,
+      depth: switches.floor,
+    });
+    fx.clear();
+    selector.hide();
+    if (debug) debug.world = world;
+  };
+
+  const chooseCharacter = (): void => {
+    world = undefined;
+    selected = undefined;
+    selector.show();
+  };
+
+  const selector = makeCharacterSelect(root, atlas, begin);
+  const debug: { world?: World } | undefined = switches.debug ? {} : undefined;
+  if (debug) Object.assign(window, { __sv: Object.assign(debug, { switches, stick, keys }) });
+
+  const hud = makeHud(
+    root,
+    () => {
+      if (selected) begin(selected);
+    },
+    chooseCharacter,
+  );
+
+  const requested = CHARACTERS.find((character) => character.id === switches.who || character.name === switches.who);
+  if (requested) begin(requested);
+  else selector.show();
+
   const fit = (): void => {
     dpr = Math.min(window.devicePixelRatio || 1, 3);
-    const w = Math.round(canvas.clientWidth * dpr);
-    const h = Math.round(canvas.clientHeight * dpr);
-    if (canvas.width !== w || canvas.height !== h) {
-      canvas.width = w;
-      canvas.height = h;
+    const width = Math.round(canvas.clientWidth * dpr);
+    const height = Math.round(canvas.clientHeight * dpr);
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
     }
   };
 
   runLoop(
     () => {
+      if (!world) return;
       const key = keyPush(keys);
-      stepWorld(world, { mx: stick.x + key.x, my: stick.y + key.y, throw: throwing.held || keys.has('Space') || keys.has('KeyJ') });
+      stepWorld(world, {
+        mx: stick.x + key.x,
+        my: stick.y + key.y,
+        throw: throwing.held || keys.has('Space') || keys.has('KeyJ'),
+      });
       if (world.events.some((event) => event.type === 'floor')) fx.clear();
       fx.take(world.events);
       fx.step(STEP);
     },
     (between) => {
       fit();
-      // A world that has stopped is drawn where it stopped, not between two steps.
+      if (!world || !heroWalk) return;
       drawWorld(ctx, atlas, world, { cols: switches.cols, look: LOOK[switches.look], dpr, heroWalk }, fx, world.over ? 1 : between);
       hud.show(world);
       picker.show(world);
