@@ -60,8 +60,13 @@ export function hurtHero(
   }
   if (kind === 'stone' && hasEffect(w, 'armour.stone')) amount = Math.ceil(amount * effectValue(w, 'armour.stone'));
   const weak = effectValue(w, 'armour.deflect');
-  if (weak > 0 && amount <= weak) return false;
-  const physical = damageAfterDefense(amount, 'physical', effectValue(w, 'armour.reduce') + weaponOption(w.weapon, 'armour'), heroResists(w));
+  if (weak > 0 && amount <= weak) amount = 0;
+  const physical = damageAfterDefense(
+    amount,
+    'physical',
+    effectValue(w, 'armour.reduce') + weaponOption(w.weapon, 'armour'),
+    heroResists(w),
+  );
   const elementalDamage = elemental ? damageAfterDefense(elemental.damage, elemental.type, 0, heroResists(w)) : 0;
   amount = physical + elementalDamage;
   if (source && hasEffect(w, 'armour.thorns')) {
