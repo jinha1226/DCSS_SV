@@ -1,4 +1,4 @@
-import { SPELLS, SPELL_SCHOOLS, schoolSpells, spellData, type SpellData } from '../data/spells';
+import { SPELLS, SPELL_SCHOOLS, spellData, type SpellData } from '../data/spells';
 import { walkable } from './grid';
 import { recordKill } from './kills';
 import { skillLevel } from './skills';

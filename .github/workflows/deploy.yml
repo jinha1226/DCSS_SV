@@ -23,6 +23,13 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
+      - run: npm run format
+      - run: npx eslint .
+        continue-on-error: true
+      - run: npx tsc --noEmit
+        continue-on-error: true
+      - run: npx vitest run
+        continue-on-error: true
       - run: npm run check
       - run: npx vite build
       - uses: actions/configure-pages@v5
