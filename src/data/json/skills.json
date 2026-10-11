@@ -277,5 +277,52 @@
     "each": "새 화염 주문, 주문 강화",
     "aptitude": "magic",
     "effects": []
+  },
+  {
+    "id": "long_blade",
+    "name": "장검",
+    "each": "피해 +1, 공격 속도 향상",
+    "aptitude": "long_blade",
+    "effects": [
+      {
+        "effect": "long_blade.damage",
+        "perLevel": 1
+      },
+      {
+        "effect": "long_blade.haste",
+        "perLevel": -0.025
+      },
+      {
+        "effect": "long_blade.parry",
+        "level": 2,
+        "value": 0.08,
+        "text": "적의 공격을 가끔 받아넘긴다"
+      },
+      {
+        "effect": "long_blade.reach",
+        "level": 4,
+        "value": 0.25,
+        "text": "검의 공격 범위가 넓어진다"
+      },
+      {
+        "effect": "long_blade.parry",
+        "level": 6,
+        "value": 0.16,
+        "text": "받아넘기기 확률 증가"
+      },
+      {
+        "effect": "long_blade.reset",
+        "level": 8,
+        "value": 1,
+        "text": "처치 후 바로 다시 벤다"
+      }
+    ]
+  },
+  {
+    "id": "translocation",
+    "name": "공간술",
+    "each": "새 이동 주문, 재사용 효율 향상",
+    "aptitude": "magic",
+    "effects": []
   }
 ]

@@ -85,7 +85,6 @@
     "radius": 2.2,
     "colour": "#d8c5ff"
   },
-
   {
     "id": "ember_dart",
     "name": "불씨",
@@ -122,5 +121,27 @@
     "duration": 3,
     "tick": 0.5,
     "colour": "#c86c48"
+  },
+  {
+    "id": "blink_step",
+    "name": "점멸",
+    "school": "translocation",
+    "level": 1,
+    "mana": 4,
+    "shape": "utility",
+    "effect": "blink",
+    "distance": 3,
+    "colour": "#83c6d9"
+  },
+  {
+    "id": "phase_guard",
+    "name": "위상막",
+    "school": "translocation",
+    "level": 2,
+    "mana": 6,
+    "shape": "utility",
+    "effect": "guard",
+    "duration": 2,
+    "colour": "#a3b9ff"
   }
 ]

@@ -201,6 +201,26 @@ export function castPaidSpell(w: World, spellId: string, target?: Monster): bool
   const spell = spellData(spellId);
   if (!paidSpells(w).some((entry) => entry.id === spell.id)) return false;
   if (w.hero.mana < spell.mana) return false;
+  if (spell.shape === 'utility') {
+    if (spell.effect === 'blink') {
+      const dx = Math.sign(w.hero.facing);
+      let moved = false;
+      for (let d = spell.distance ?? 3; d >= 1; d--) {
+        const nx = w.hero.x + dx * d;
+        if (walkable(w.grid, Math.floor(nx), Math.floor(w.hero.y))) {
+          w.hero.x = nx;
+          w.hero.px = nx;
+          moved = true;
+          break;
+        }
+      }
+      if (!moved) return false;
+    } else if (spell.effect === 'guard') {
+      w.hero.invulnerable = Math.max(w.hero.invulnerable, spell.duration ?? 2);
+    } else return false;
+    w.hero.mana -= spell.mana;
+    return true;
+  }
   const chosen = target ?? spellTarget(w, spell);
   if (!chosen || !spellCandidates(w, spell).includes(chosen)) return false;
   w.hero.mana -= spell.mana;

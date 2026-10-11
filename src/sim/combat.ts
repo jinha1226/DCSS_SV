@@ -289,12 +289,13 @@ export function heroStrikes(w: World, dt: number, wantsThrow: boolean): void {
   } else if (w.weapon.family === 'bow') {
     if (h.swing <= 0) shootNow(w);
   } else if (h.swing <= 0) {
-    const axeLevel = skillLevel(w, 'axe'),
-      baseReach = w.weapon.range + (axeLevel >= 2 ? effectValue(w, 'axe.wide') : 0),
+    const isBlade = w.weapon.family === 'long_blade';
+    const axeLevel = isBlade ? 0 : skillLevel(w, 'axe'),
+      baseReach = w.weapon.range + (isBlade ? effectValue(w, 'long_blade.reach') : axeLevel >= 2 ? effectValue(w, 'axe.wide') : 0),
       next = h.axeSwings + 1;
     const spin = axeLevel >= 4 && next % 3 === 0 ? effectValue(w, 'axe.spin') : 1,
       reach = baseReach * spin;
-    const damage = (w.weapon.damage + weaponOption(w.weapon, 'damage') + effectValue(w, 'axe.damage')) * spin;
+    const damage = (w.weapon.damage + weaponOption(w.weapon, 'damage') + (isBlade ? effectValue(w, 'long_blade.damage') : effectValue(w, 'axe.damage'))) * spin;
     let any = false,
       kill = false,
       hits = 0;
@@ -311,7 +312,7 @@ export function heroStrikes(w: World, dt: number, wantsThrow: boolean): void {
       if (w.weapon.effect === 'glut' && hits >= 3) h.hp = Math.min(h.maxHp, h.hp + hits);
       h.axeSwings = next;
       const haste = Math.min(0.5, weaponOption(w.weapon, 'haste'));
-      h.swing = kill && hasEffect(w, 'axe.reset') ? 0 : w.weapon.every * (1 - haste);
+      h.swing = kill && hasEffect(w, isBlade ? 'long_blade.reset' : 'axe.reset') ? 0 : w.weapon.every * (1 - haste) * (1 + (isBlade ? effectValue(w, 'long_blade.haste') : 0));
       noise(w, DUNGEON.loud);
     } else h.swing = 0;
   }

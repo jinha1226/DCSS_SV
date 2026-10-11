@@ -61,6 +61,7 @@ export function makeSpellButtons(root: HTMLElement): SpellButtons {
       rebuild(w);
       const spells = paidSpells(w);
       wrap.classList.toggle('on', spells.length > 0);
+      wrap.classList.toggle('with-hop', w.heroDef.species === 'barachi');
       for (const spell of spells) {
         const button = wrap.querySelector<HTMLButtonElement>('[data-spell="' + spell.id + '"]');
         if (!button) continue;

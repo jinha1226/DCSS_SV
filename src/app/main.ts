@@ -5,7 +5,7 @@ import { spellData } from '../data/spells';
 import { guardZoom } from '../input/guards';
 import { keyPush, watchKeys } from '../input/keys';
 import { makeStick } from '../input/stick';
-import { spellAtPoint, spellTarget } from '../sim/spells';
+import { castPaidSpell, spellAtPoint, spellTarget } from '../sim/spells';
 import { STEP, makeWorld, stepWorld, type Input, type World } from '../sim/world';
 import { makeCharacterSelect, type CharacterChoice } from '../ui/characterSelect';
 import { makeEquipmentPicker } from '../ui/equipmentPicker';
@@ -107,6 +107,7 @@ async function start(): Promise<void> {
     (event) => {
       if (!world || !spellButtons.targetingId) return;
       const spell = spellData(spellButtons.targetingId);
+      if (spell.shape === 'utility') return;
       const rect = canvas.getBoundingClientRect();
       const sx = (event.clientX - rect.left) * (canvas.width / rect.width);
       const sy = (event.clientY - rect.top) * (canvas.height / rect.height);
@@ -128,7 +129,10 @@ async function start(): Promise<void> {
       if (!world) return;
       const pressedSpell = spellButtons.takePress();
       if (pressedSpell) {
-        if (timeMode.superhot) {
+        const selectedSpell = spellData(pressedSpell);
+        if (selectedSpell.shape === 'utility') {
+          castPaidSpell(world, pressedSpell);
+        } else if (timeMode.superhot) {
           if (spellButtons.targetingId === pressedSpell) spellButtons.cancelTarget();
           else spellButtons.beginTarget(pressedSpell);
         } else {

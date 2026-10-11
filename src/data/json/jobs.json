@@ -5,7 +5,11 @@
     "attackMode": "weapon",
     "startingWeapon": "hand_axe",
     "startingAmmo": 5,
-    "startingSkills": { "axe": 1, "fighting": 1, "dodging": 1 }
+    "startingSkills": {
+      "axe": 1,
+      "fighting": 1,
+      "dodging": 1
+    }
   },
   {
     "id": "hunter",
@@ -13,7 +17,11 @@
     "attackMode": "weapon",
     "startingWeapon": "shortbow",
     "startingAmmo": 0,
-    "startingSkills": { "bow": 2, "fighting": 1, "dodging": 1 }
+    "startingSkills": {
+      "bow": 2,
+      "fighting": 1,
+      "dodging": 1
+    }
   },
   {
     "id": "conjurer",
@@ -21,6 +29,23 @@
     "attackMode": "magic",
     "startingWeapon": "hand_axe",
     "startingAmmo": 0,
-    "startingSkills": { "conjuration": 1, "fighting": 1, "dodging": 1 }
+    "startingSkills": {
+      "conjuration": 1,
+      "fighting": 1,
+      "dodging": 1
+    }
+  },
+  {
+    "id": "spellblade",
+    "name": "마검사",
+    "attackMode": "weapon",
+    "startingWeapon": "long_sword",
+    "startingAmmo": 0,
+    "startingSkills": {
+      "long_blade": 2,
+      "translocation": 1,
+      "fighting": 1,
+      "dodging": 1
+    }
   }
 ]

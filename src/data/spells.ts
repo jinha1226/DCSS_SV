@@ -1,6 +1,6 @@
 import spellsRaw from './json/spells.json';
 
-export type SpellShape = 'projectile' | 'beam' | 'burst' | 'cloud';
+export type SpellShape = 'projectile' | 'beam' | 'burst' | 'cloud' | 'utility';
 
 export interface SpellData {
   readonly id: string;
@@ -17,13 +17,15 @@ export interface SpellData {
   readonly tick?: number;
   readonly pierce?: number;
   readonly colour: string;
+  readonly effect?: 'blink' | 'guard';
+  readonly distance?: number;
 }
 
 export const SPELLS: readonly SpellData[] = spellsRaw as readonly SpellData[];
 
 for (const spell of SPELLS) {
   if (spell.level < 1 || spell.level > 7) throw new Error('spells.json: ' + spell.id + ': level은 1~7');
-  if (!['projectile', 'beam', 'burst', 'cloud'].includes(spell.shape)) {
+  if (!['projectile', 'beam', 'burst', 'cloud', 'utility'].includes(spell.shape)) {
     throw new Error('spells.json: ' + spell.id + ': 모르는 shape ' + spell.shape);
   }
 }
