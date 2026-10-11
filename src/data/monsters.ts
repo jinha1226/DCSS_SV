@@ -34,6 +34,7 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
     if (!['fire', 'cold', 'electric', 'negative', 'poison'].includes(name) || typeof level !== 'number' || level < -1 || level > 3)
       throw new Error('monsters.json: ' + row.id + '.resists: 잘못된 저항');
   const rawElement: unknown = 'elemental' in row ? row.elemental : undefined;
+  const armour: unknown = 'armour' in row ? row.armour : undefined;
   const element = rawElement as { type?: string; damage?: number } | undefined;
   if (
     element &&
@@ -59,7 +60,7 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
     rest: row.rest,
     notice: row.notice,
     resists,
-    ...(typeof row.armour === 'number' ? { armour: row.armour } : {}),
+    ...(typeof armour === 'number' ? { armour } : {}),
     ...(element ? { elemental: element as { type: ResistName; damage: number } } : {}),
     ...('throws' in row ? { throws: row.throws } : {}),
     ...('flits' in row ? { flits: row.flits } : {}),
