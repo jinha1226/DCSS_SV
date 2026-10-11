@@ -39,6 +39,11 @@ export const SKILL_EFFECTS = new Set([
   'throwing.slow',
   'throwing.slowTime',
   'throwing.return',
+  'long_blade.damage',
+  'long_blade.haste',
+  'long_blade.parry',
+  'long_blade.reach',
+  'long_blade.reset',
 ]);
 
 export interface SkillEffect {
