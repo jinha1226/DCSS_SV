@@ -3,9 +3,9 @@ import { HERO } from '../../src/data/hero';
 import { MONSTERS, POISON, monsterKind } from '../../src/data/monsters';
 import { DUNGEON, PACKS } from '../../src/data/packs';
 import { throwTarget } from '../../src/sim/combat';
-import { Cell, setCell } from '../../src/sim/grid';
+import { Cell, carve, makeGrid, setCell } from '../../src/sim/grid';
 import { spawnMonster } from '../../src/sim/monster';
-import { STEP, stepWorld } from '../../src/sim/world';
+import { STEP, makeWorld, stepWorld } from '../../src/sim/world';
 import { STILL, arena, count, quietArena, run } from './arena';
 
 const stats = (id: string) => monsterKind(id).stats;
@@ -72,15 +72,25 @@ describe('a kobold', () => {
     expect(w.hero.hp).toBeLessThan(HERO.hp);
   });
 
-  it('misses a hero who keeps moving across its aim', () => {
-    const w = quietArena();
-    spawnMonster(w, 'kobold', 15, 10, true).rest = 0;
+  it('misses a hero who keeps walking across its aim', () => {
+    // A long room, so the hero can walk for four seconds without meeting a wall: a hero stopped
+    // by a wall is standing still as far as a stone is concerned.
+    const grid = makeGrid(12, 40);
+    carve(grid, 1, 1, 10, 38);
+    const w = makeWorld({ floor: { grid, start: { x: 3, y: 3 }, rooms: [] }, monsters: false });
+    w.hero.swing = w.hero.butt = 1e9;
+    spawnMonster(w, 'kobold', 8, 3, true).rest = 0;
     let hurts = 0;
+    let thrown = 0;
     for (let i = 0; i < Math.round(4 / STEP); i++) {
-      stepWorld(w, { mx: 0, my: -1 });
+      const before = w.shots.length;
+      stepWorld(w, { mx: 0, my: 1 });
+      if (w.shots.length > before) thrown++;
       hurts += count(w.events, 'hurt');
     }
+    expect(thrown).toBeGreaterThanOrEqual(1);
     expect(hurts).toBe(0);
+    expect(w.hero.y).toBeGreaterThan(25);
   });
 
   it('cannot throw through a wall', () => {
