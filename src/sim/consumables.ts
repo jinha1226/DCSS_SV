@@ -1,9 +1,5 @@
 import type { World } from './types';
-import { walkable } from './grid';
-import { computeFov } from './fov';
-import { updateFlow } from './flow';
-import { itemDefinition } from '../data/itemCatalog';
-import { hurtMonster } from './hits';
+import { activateItem } from './itemEffects';
 
 export type ConsumableId = 'potion_healing' | 'scroll_blink' | 'wand_sparks';
 export const CONSUMABLES: Readonly<Record<ConsumableId, { name: string; action: string }>> = {
@@ -45,36 +41,8 @@ export function useConsumable(w: World, id: ConsumableId): boolean {
   const index = w.inventory.findIndex((item) => item.kind === 'consumable' && item.id === id);
   const item = w.inventory[index];
   if (!item || item.kind !== 'consumable' || item.count <= 0) return false;
-  const power = itemDefinition(id).effects[0]?.power ?? 0;
-  if (id === 'potion_healing') {
-    if (w.hero.hp >= w.hero.maxHp) return false;
-    w.hero.hp = Math.min(w.hero.maxHp, w.hero.hp + power);
-  } else if (id === 'scroll_blink') {
-    const choices: { x: number; y: number }[] = [];
-    for (let dy = -power; dy <= power; dy++) {
-      for (let dx = -power; dx <= power; dx++) {
-        const x = Math.floor(w.hero.x) + dx;
-        const y = Math.floor(w.hero.y) + dy;
-        if ((dx === 0 && dy === 0) || !walkable(w.grid, x, y) || !w.visible[y * w.grid.w + x]) continue;
-        if (w.monsters.some((monster) => Math.hypot(monster.x - (x + 0.5), monster.y - (y + 0.5)) < 0.9)) continue;
-        choices.push({ x: x + 0.5, y: y + 0.5 });
-      }
-    }
-    if (!choices.length) return false;
-    const destination = choices[Math.floor(w.rng() * choices.length)]!;
-    w.hero.x = w.hero.px = destination.x;
-    w.hero.y = w.hero.py = destination.y;
-    computeFov(w.grid, Math.floor(destination.x), Math.floor(destination.y), w.heroDef.sight, w.visible);
-    for (let i = 0; i < w.visible.length; i++) if (w.visible[i]) w.seen[i] = 1;
-    updateFlow(w.flow, w.grid, Math.floor(destination.x), Math.floor(destination.y));
-  } else {
-    const target = w.monsters
-      .filter((monster) => monster.hp > 0 && w.visible[Math.floor(monster.y) * w.grid.w + Math.floor(monster.x)])
-      .filter((monster) => Math.hypot(monster.x - w.hero.x, monster.y - w.hero.y) <= 7)
-      .sort((a, b) => Math.hypot(a.x - w.hero.x, a.y - w.hero.y) - Math.hypot(b.x - w.hero.x, b.y - w.hero.y))[0];
-    if (!target) return false;
-    hurtMonster(w, target, power, 'electric');
-  }
+  // Shared item effect handler is also used by monster utility AI.
+  if (!activateItem(w, id, 'hero')) return false;
   item.count--;
   if (item.count === 0) w.inventory.splice(index, 1);
   return true;
