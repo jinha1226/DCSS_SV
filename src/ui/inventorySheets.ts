@@ -1,4 +1,5 @@
 import { brandData } from '../data/items';
+import { itemDisplayName } from '../sim/identification';
 import { CONSUMABLES, dropConsumable, useConsumable, type ConsumableId } from '../sim/consumables';
 import { dropStoredWeapon, equipStoredWeapon, weaponOption, weaponScore } from '../sim/equipment';
 import type { World } from '../sim/world';
@@ -28,7 +29,7 @@ const SLOTS = [
 export function equipmentSlots(w: World): EquipmentSlot[] {
   return SLOTS.map((slot) => ({
     ...slot,
-    value: slot.id === 'weapon' ? w.weapon.name : '—',
+    value: slot.id === 'weapon' ? w.weapon.name + ' +' + (w.weapon.enchantment ?? 0) : '—',
     available: slot.id === 'weapon',
   }));
 }
@@ -47,7 +48,7 @@ export function bagEntries(w: World): BagEntry[] {
     } else {
       items.push({
         id: item.uid,
-        name: CONSUMABLES[item.id as ConsumableId]?.name ?? item.id,
+        name: itemDisplayName(w, item.id),
         group: 'consumable',
         count: item.count,
         equipped: false,
@@ -127,6 +128,8 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
       sheet,
       tab,
       w.weapon.uid,
+      w.weapon.enchantment ?? 0,
+      [...w.identifiedItems].join(','),
       w.ammo,
       w.hero.hp,
       w.hero.maxHp,
@@ -158,7 +161,7 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
       const brand = brandData(w.weapon.brand)?.name ?? '없음';
       summary.textContent =
         '피해 ' +
-        (w.weapon.damage + weaponOption(w.weapon, 'damage')) +
+        (w.weapon.damage + (w.weapon.enchantment ?? 0) + weaponOption(w.weapon, 'damage')) +
         ' · 공격 간격 ' +
         w.weapon.every.toFixed(2) +
         '초 · ' +
@@ -201,7 +204,7 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
               const compared = weaponScore(stored.weapon) - weaponScore(w.weapon);
               detail.textContent =
                 '피해 ' +
-                (stored.weapon.damage + weaponOption(stored.weapon, 'damage')) +
+                (stored.weapon.damage + (stored.weapon.enchantment ?? 0) + weaponOption(stored.weapon, 'damage')) +
                 ' / 간격 ' +
                 stored.weapon.every.toFixed(2) +
                 '초 / ' +
@@ -229,7 +232,7 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
             if (config) {
               line.append(
                 action(config.action, () => {
-                  feedback = useConsumable(w, item.id as ConsumableId) ? config.name + ' 사용' : '지금은 사용할 수 없어.';
+                  feedback = useConsumable(w, item.id as ConsumableId) ? itemDisplayName(w, item.id) + ' 사용' : '지금은 사용할 수 없어.';
                   lastKey = '';
                   draw(w);
                 }),

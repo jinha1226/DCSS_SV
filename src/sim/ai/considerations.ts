@@ -37,6 +37,7 @@ export function scoreMonsterAction(context: MonsterContext, candidate: ActionCan
   if (candidate.action === 'item' && candidate.itemId) {
     const effect = itemDefinition(candidate.itemId).effects[0];
     if (effect?.id === 'heal') return 20 + danger * 140 + Math.min(10, (effect.power ?? 0) * 0.2);
+    if (effect?.id === 'restore_mana') return 25 + (1 - m.mana / Math.max(1, m.maxMana)) * 65;
     if (effect?.id === 'blink') return 25 + danger * 80 + clamp01(1 - d / 3) * 18;
     if (effect?.id === 'lightning') return 52 + Math.min(28, (effect.power ?? 0) * 2);
     return 0;

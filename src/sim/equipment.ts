@@ -14,6 +14,7 @@ import {
 } from '../data/items';
 import { Cell, cellAt, walkable } from './grid';
 import { addConsumable, type ConsumableId } from './consumables';
+import { ITEM_DEFINITIONS } from '../data/itemCatalog';
 import { openSkill } from './skills';
 import type { World } from './types';
 
@@ -153,11 +154,19 @@ export function populateFloorItems(w: World): void {
     putWeapon(w, generateWeapon(w, family), roomCell(w), i === same);
   }
   if (w.itemsEnabled) {
-    const available: ConsumableId[] = ['potion_healing', 'scroll_blink', 'wand_sparks'];
+    const available = ITEM_DEFINITIONS.filter((item) => item.enabled && ['potion', 'scroll', 'wand'].includes(item.kind));
+    const tier = Math.min(2, w.depth - 1);
+    const totalWeight = available.reduce((sum, item) => sum + (item.depthWeights[tier] ?? 0), 0);
     for (let i = 0; i < 3; i++) {
       const cell = roomCell(w);
       if (!cell) continue;
-      const itemId = available[Math.floor(w.rng() * available.length)]!;
+      let roll = w.rng() * totalWeight;
+      let itemId: ConsumableId | undefined;
+      for (const item of available) {
+        roll -= item.depthWeights[tier] ?? 0;
+        if (roll < 0) { itemId = item.id; break; }
+      }
+      if (!itemId) continue;
       w.groundItems.push({ uid: uid(w, 'supply'), kind: 'consumable', itemId, x: cell.x, y: cell.y, ignored: false });
     }
   }
@@ -176,7 +185,7 @@ export function weaponOption(weapon: WeaponItem, id: string): number {
 }
 export function weaponScore(weapon: WeaponItem): number {
   return (
-    (weapon.damage + weaponOption(weapon, 'damage')) / (weapon.every * (1 - weaponOption(weapon, 'haste'))) +
+    (weapon.damage + (weapon.enchantment ?? 0) + weaponOption(weapon, 'damage')) / (weapon.every * (1 - weaponOption(weapon, 'haste'))) +
     (weapon.special ? 2 : 0) +
     (weapon.brand?.length ? 0.8 : 0)
   );

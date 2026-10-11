@@ -38,6 +38,8 @@ export interface Hero {
   skills: Record<string, number>;
   invulnerable: number;
   lastStandUsed: boolean;
+  might: number;
+  haste: number;
   axeSwings: number;
   hopCooldown: number;
   hopTime: number;
@@ -215,6 +217,8 @@ export interface World {
   readonly seed: number;
   weapon: WeaponItem;
   readonly inventory: BagItem[];
+  readonly identifiedItems: Set<string>;
+  readonly itemAppearances: Record<string, string>;
   ammo: number;
   readonly groundItems: GroundItem[];
   pendingPickup: GroundItem | null;

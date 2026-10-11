@@ -104,7 +104,7 @@ export function parseItemDefinition(row: Row): ItemDefinition {
     }
   }
   // Only consumable effects with implemented handlers may be activated.
-  const supported = new Set(['heal', 'blink', 'lightning']);
+  const supported = new Set(['heal', 'blink', 'lightning', 'restore_mana', 'might', 'haste', 'cure', 'poison', 'enchant_weapon', 'identify', 'teleport', 'fear']);
   if (enabled && effects.some((effect) => !supported.has((effect as ItemEffect).id))) {
     throw new Error(label + ': effects 실행기는 아직 연결되지 않음');
   }

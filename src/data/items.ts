@@ -80,6 +80,8 @@ export interface WeaponItem {
   readonly options: readonly WeaponOption[];
   readonly effect?: string;
   readonly special: boolean;
+  /** Persistent DCSS-style enchantment, separate from random artefact bonuses. */
+  readonly enchantment?: number;
 }
 export type AxeItem = WeaponItem;
 export type AxeOption = WeaponOption;

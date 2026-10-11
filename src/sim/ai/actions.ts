@@ -47,6 +47,7 @@ export function availableMonsterActions(context: MonsterContext): ActionCandidat
       const effect = itemDefinition(itemId).effects[0];
       if (!effect) continue;
       if (effect.id === 'heal' && m.hp < m.maxHp) choices.push({ action: 'item', itemId });
+      if (effect.id === 'restore_mana' && m.mana < m.maxMana) choices.push({ action: 'item', itemId });
       if (effect.id === 'blink' && visible && d < 3) choices.push({ action: 'item', itemId });
       if (effect.id === 'lightning' && visible && d <= LIGHTNING_RANGE) choices.push({ action: 'item', itemId });
     }

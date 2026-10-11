@@ -1,13 +1,14 @@
 import type { World } from './types';
 import { activateItem } from './itemEffects';
+import { ITEM_DEFINITIONS } from '../data/itemCatalog';
+import { identifyItem } from './identification';
 
-export type ConsumableId = 'potion_healing' | 'scroll_blink' | 'wand_sparks';
-export const CONSUMABLES: Readonly<Record<ConsumableId, { name: string; action: string }>> = {
-  potion_healing: { name: '회복 물약', action: '마시기' },
-  scroll_blink: { name: '점멸 두루마리', action: '읽기' },
-  wand_sparks: { name: '전격 완드', action: '사용' },
-};
-export const consumableName = (id: string): string => CONSUMABLES[id as ConsumableId]?.name ?? id;
+export type ConsumableId = string;
+export const CONSUMABLES: Readonly<Record<string, { name: string; action: string }>> = Object.fromEntries(
+  ITEM_DEFINITIONS.filter((item) => item.enabled && ['potion', 'scroll', 'wand'].includes(item.kind)).map((item) =>
+    [item.id, { name: item.name, action: item.kind === 'potion' ? '마시기' : item.kind === 'scroll' ? '읽기' : '사용' }]),
+);
+export const consumableName = (id: string): string => CONSUMABLES[id]?.name ?? id;
 
 export function addConsumable(w: World, id: ConsumableId, count = 1): void {
   const entry = w.inventory.find((item) => item.kind === 'consumable' && item.id === id);
@@ -45,5 +46,6 @@ export function useConsumable(w: World, id: ConsumableId): boolean {
   if (!activateItem(w, id, 'hero')) return false;
   item.count--;
   if (item.count === 0) w.inventory.splice(index, 1);
+  identifyItem(w, id);
   return true;
 }

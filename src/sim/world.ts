@@ -14,6 +14,7 @@ import { tickHop, tryHop } from './hop';
 import { thinkMonster } from './monster';
 import { fillFloor, lingering } from './packs';
 import { makeRng } from './rng';
+import { initializeItemKnowledge } from './identification';
 import { heroSpeed, openStartingSkills } from './skills';
 import { castAt, stepSpells } from './spells';
 import type { Input, Stairs, World } from './types';
@@ -108,6 +109,8 @@ export function makeWorld(options: WorldOptions = {}): World {
       skills: {},
       invulnerable: 0,
       lastStandUsed: false,
+      might: 0,
+      haste: 0,
       axeSwings: 0,
       hopCooldown: 0,
       hopTime: 0,
@@ -128,6 +131,8 @@ export function makeWorld(options: WorldOptions = {}): World {
     seed,
     weapon,
     inventory: [],
+    identifiedItems: new Set<string>(),
+    itemAppearances: {},
     ammo: heroDef.startingAmmo,
     groundItems: [],
     pendingPickup: null,
@@ -150,6 +155,7 @@ export function makeWorld(options: WorldOptions = {}): World {
     over: false,
     won: false,
   };
+  initializeItemKnowledge(world);
   openStartingSkills(world);
   enter(world, floor, options.monsters !== false);
   return world;
@@ -247,6 +253,8 @@ export function stepWorld(w: World, input: Input, dt: number = STEP): void {
   w.time += dt;
   w.floorTime += dt;
   tickHop(w, dt);
+  h.might = Math.max(0, h.might - dt);
+  h.haste = Math.max(0, h.haste - dt);
   if (input.hop) tryHop(w, input);
   walkHero(w, input, dt);
   if (Math.floor(h.x) !== cx || Math.floor(h.y) !== cy) look(w);

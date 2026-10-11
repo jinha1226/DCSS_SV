@@ -10,7 +10,11 @@
     "range": 1.2,
     "knock": 1.2,
     "hands": 1,
-    "depthWeights": [8, 5, 2]
+    "depthWeights": [
+      8,
+      5,
+      2
+    ]
   },
   {
     "id": "war_axe",
@@ -23,7 +27,11 @@
     "range": 1.2,
     "knock": 1.2,
     "hands": 1,
-    "depthWeights": [2, 6, 5]
+    "depthWeights": [
+      2,
+      6,
+      5
+    ]
   },
   {
     "id": "battle_axe",
@@ -36,7 +44,11 @@
     "range": 1.2,
     "knock": 1.2,
     "hands": 2,
-    "depthWeights": [1, 2, 7]
+    "depthWeights": [
+      1,
+      2,
+      7
+    ]
   },
   {
     "id": "long_sword",
@@ -49,7 +61,11 @@
     "range": 1.3,
     "knock": 0.5,
     "hands": 1,
-    "depthWeights": [8, 5, 3]
+    "depthWeights": [
+      8,
+      5,
+      3
+    ]
   },
   {
     "id": "great_sword",
@@ -62,7 +78,11 @@
     "range": 1.5,
     "knock": 0.8,
     "hands": 2,
-    "depthWeights": [1, 3, 7]
+    "depthWeights": [
+      1,
+      3,
+      7
+    ]
   },
   {
     "id": "shortbow",
@@ -76,7 +96,11 @@
     "projectileSpeed": 20,
     "knock": 0,
     "hands": 2,
-    "depthWeights": [8, 4, 2]
+    "depthWeights": [
+      8,
+      4,
+      2
+    ]
   },
   {
     "id": "orcbow",
@@ -90,7 +114,11 @@
     "projectileSpeed": 20,
     "knock": 0,
     "hands": 2,
-    "depthWeights": [2, 7, 4]
+    "depthWeights": [
+      2,
+      7,
+      4
+    ]
   },
   {
     "id": "longbow",
@@ -104,7 +132,11 @@
     "projectileSpeed": 20,
     "knock": 0,
     "hands": 2,
-    "depthWeights": [1, 2, 8]
+    "depthWeights": [
+      1,
+      2,
+      8
+    ]
   },
   {
     "id": "boomerang",
@@ -250,8 +282,17 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [0, 0, 0],
-    "effects": [{ "id": "heal", "power": 30 }]
+    "depthWeights": [
+      5,
+      5,
+      5
+    ],
+    "effects": [
+      {
+        "id": "heal",
+        "power": 30
+      }
+    ]
   },
   {
     "id": "scroll_blink",
@@ -262,8 +303,17 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [0, 0, 0],
-    "effects": [{ "id": "blink", "power": 3 }]
+    "depthWeights": [
+      2,
+      2,
+      2
+    ],
+    "effects": [
+      {
+        "id": "blink",
+        "power": 3
+      }
+    ]
   },
   {
     "id": "wand_sparks",
@@ -273,8 +323,206 @@
     "enabled": true,
     "useMode": "store",
     "stackable": false,
-    "depthWeights": [0, 0, 0],
-    "effects": [{ "id": "lightning", "power": 8 }]
+    "depthWeights": [
+      2,
+      2,
+      2
+    ],
+    "effects": [
+      {
+        "id": "lightning",
+        "power": 8
+      }
+    ]
+  },
+  {
+    "id": "potion_magic",
+    "kind": "potion",
+    "name": "마력 회복 물약",
+    "tile": "item/stone",
+    "enabled": true,
+    "useMode": "store",
+    "stackable": true,
+    "maxStack": 9,
+    "depthWeights": [
+      2,
+      3,
+      4
+    ],
+    "effects": [
+      {
+        "id": "restore_mana",
+        "power": 15
+      }
+    ]
+  },
+  {
+    "id": "potion_might",
+    "kind": "potion",
+    "name": "힘의 물약",
+    "tile": "item/stone",
+    "enabled": true,
+    "useMode": "store",
+    "stackable": true,
+    "maxStack": 9,
+    "depthWeights": [
+      2,
+      2,
+      2
+    ],
+    "effects": [
+      {
+        "id": "might",
+        "power": 4
+      }
+    ]
+  },
+  {
+    "id": "potion_haste",
+    "kind": "potion",
+    "name": "가속 물약",
+    "tile": "item/stone",
+    "enabled": true,
+    "useMode": "store",
+    "stackable": true,
+    "maxStack": 9,
+    "depthWeights": [
+      1,
+      2,
+      2
+    ],
+    "effects": [
+      {
+        "id": "haste",
+        "power": 5
+      }
+    ]
+  },
+  {
+    "id": "potion_curing",
+    "kind": "potion",
+    "name": "치유 물약",
+    "tile": "item/stone",
+    "enabled": true,
+    "useMode": "store",
+    "stackable": true,
+    "maxStack": 9,
+    "depthWeights": [
+      3,
+      3,
+      3
+    ],
+    "effects": [
+      {
+        "id": "cure",
+        "power": 0
+      }
+    ]
+  },
+  {
+    "id": "potion_poison",
+    "kind": "potion",
+    "name": "독 물약",
+    "tile": "item/stone",
+    "enabled": true,
+    "useMode": "store",
+    "stackable": true,
+    "maxStack": 9,
+    "depthWeights": [
+      1,
+      1,
+      1
+    ],
+    "effects": [
+      {
+        "id": "poison",
+        "power": 6
+      }
+    ]
+  },
+  {
+    "id": "scroll_enchant_weapon",
+    "kind": "scroll",
+    "name": "무기 강화 두루마리",
+    "tile": "item/stone",
+    "enabled": true,
+    "useMode": "store",
+    "stackable": true,
+    "maxStack": 9,
+    "depthWeights": [
+      1,
+      2,
+      2
+    ],
+    "effects": [
+      {
+        "id": "enchant_weapon",
+        "power": 1
+      }
+    ]
+  },
+  {
+    "id": "scroll_identify",
+    "kind": "scroll",
+    "name": "감정 두루마리",
+    "tile": "item/stone",
+    "enabled": true,
+    "useMode": "store",
+    "stackable": true,
+    "maxStack": 9,
+    "depthWeights": [
+      3,
+      3,
+      3
+    ],
+    "effects": [
+      {
+        "id": "identify",
+        "power": 0
+      }
+    ]
+  },
+  {
+    "id": "scroll_teleport",
+    "kind": "scroll",
+    "name": "순간이동 두루마리",
+    "tile": "item/stone",
+    "enabled": true,
+    "useMode": "store",
+    "stackable": true,
+    "maxStack": 9,
+    "depthWeights": [
+      2,
+      2,
+      2
+    ],
+    "effects": [
+      {
+        "id": "teleport",
+        "power": 8
+      }
+    ]
+  },
+  {
+    "id": "scroll_fear",
+    "kind": "scroll",
+    "name": "공포 두루마리",
+    "tile": "item/stone",
+    "enabled": true,
+    "useMode": "store",
+    "stackable": true,
+    "maxStack": 9,
+    "depthWeights": [
+      1,
+      2,
+      2
+    ],
+    "effects": [
+      {
+        "id": "fear",
+        "power": 4
+      }
+    ]
   },
   {
     "id": "ring_warding",
@@ -283,8 +531,17 @@
     "enabled": false,
     "useMode": "equip",
     "stackable": false,
-    "depthWeights": [0, 0, 0],
-    "effects": [{ "id": "armour", "power": 1 }]
+    "depthWeights": [
+      0,
+      0,
+      0
+    ],
+    "effects": [
+      {
+        "id": "armour",
+        "power": 1
+      }
+    ]
   },
   {
     "id": "leather_armour",
@@ -293,8 +550,17 @@
     "enabled": false,
     "useMode": "equip",
     "stackable": false,
-    "depthWeights": [0, 0, 0],
-    "effects": [{ "id": "armour", "power": 2 }]
+    "depthWeights": [
+      0,
+      0,
+      0
+    ],
+    "effects": [
+      {
+        "id": "armour",
+        "power": 2
+      }
+    ]
   },
   {
     "id": "buckler",
@@ -303,14 +569,37 @@
     "enabled": false,
     "useMode": "equip",
     "stackable": false,
-    "depthWeights": [0, 0, 0],
-    "effects": [{ "id": "shield", "power": 1 }]
+    "depthWeights": [
+      0,
+      0,
+      0
+    ],
+    "effects": [
+      {
+        "id": "shield",
+        "power": 1
+      }
+    ]
   },
   {
     "id": "names",
     "kind": "names",
-    "prefixes": ["카르", "둠", "벨", "라크", "모르", "세른"],
-    "suffixes": ["둠", "라", "바르", "카", "린", "고르"]
+    "prefixes": [
+      "카르",
+      "둠",
+      "벨",
+      "라크",
+      "모르",
+      "세른"
+    ],
+    "suffixes": [
+      "둠",
+      "라",
+      "바르",
+      "카",
+      "린",
+      "고르"
+    ]
   },
   {
     "id": "equipment",

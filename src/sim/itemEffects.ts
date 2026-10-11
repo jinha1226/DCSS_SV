@@ -1,4 +1,5 @@
 import { itemDefinition } from '../data/itemCatalog';
+import { identifyItem } from './identification';
 import { hurtHero } from './effects';
 import { updateFlow } from './flow';
 import { computeFov } from './fov';
@@ -18,6 +19,64 @@ export function activateItem(w: World, id: string, side: ItemUser, source?: Mons
   if (!actor) return false;
   const power = effect.power ?? 0;
 
+  if (effect.id === 'restore_mana') {
+    if (actor.mana >= actor.maxMana) return false;
+    actor.mana = Math.min(actor.maxMana, actor.mana + power);
+    return true;
+  }
+  if (effect.id === 'might' && side === 'hero') {
+    w.hero.might = Math.max(w.hero.might, power);
+    return true;
+  }
+  if (effect.id === 'haste' && side === 'hero') {
+    w.hero.haste = Math.max(w.hero.haste, power);
+    return true;
+  }
+  if (effect.id === 'cure' && side === 'hero') {
+    if (w.hero.poison <= 0) return false;
+    w.hero.poison = 0;
+    return true;
+  }
+  if (effect.id === 'poison' && side === 'hero') {
+    w.hero.poison = Math.max(w.hero.poison, power);
+    return true;
+  }
+  if (effect.id === 'enchant_weapon' && side === 'hero') {
+    if (w.weapon.special || (w.weapon.enchantment ?? 0) >= 9) return false;
+    w.weapon = { ...w.weapon, enchantment: (w.weapon.enchantment ?? 0) + power };
+    return true;
+  }
+  if (effect.id === 'identify' && side === 'hero') {
+    const unknown = w.inventory.find((entry) => entry.kind === 'consumable' && !w.identifiedItems.has(entry.id) && entry.id !== id);
+    if (!unknown || unknown.kind !== 'consumable') return false;
+    identifyItem(w, unknown.id);
+    return true;
+  }
+  if (effect.id === 'fear' && side === 'hero') {
+    let affected = false;
+    for (const monster of w.monsters) {
+      if (monster.hp <= 0 || Math.hypot(monster.x - actor.x, monster.y - actor.y) > power) continue;
+      monster.stun = Math.max(monster.stun, 1.5);
+      affected = true;
+    }
+    return affected;
+  }
+  if (effect.id === 'teleport' && side === 'hero') {
+    const cells: { x: number; y: number }[] = [];
+    for (let y = 0; y < w.grid.h; y++) for (let x = 0; x < w.grid.w; x++) {
+      if (!walkable(w.grid, x, y) || Math.hypot(x + 0.5 - actor.x, y + 0.5 - actor.y) < power / 2) continue;
+      if (w.monsters.some((m) => m.hp > 0 && Math.hypot(m.x - x - 0.5, m.y - y - 0.5) < 1)) continue;
+      cells.push({ x: x + 0.5, y: y + 0.5 });
+    }
+    if (!cells.length) return false;
+    const dest = cells[Math.floor(w.rng() * cells.length)]!;
+    actor.x = actor.px = dest.x;
+    actor.y = actor.py = dest.y;
+    computeFov(w.grid, Math.floor(dest.x), Math.floor(dest.y), w.heroDef.sight, w.visible);
+    for (let i = 0; i < w.visible.length; i++) if (w.visible[i]) w.seen[i] = 1;
+    updateFlow(w.flow, w.grid, Math.floor(dest.x), Math.floor(dest.y));
+    return true;
+  }
   if (effect.id === 'heal') {
     if (actor.hp >= actor.maxHp) return false;
     actor.hp = Math.min(actor.maxHp, actor.hp + power);
