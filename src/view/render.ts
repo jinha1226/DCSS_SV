@@ -1,9 +1,11 @@
 import { brandData } from '../data/items';
 import { DUNGEON } from '../data/packs';
+import type { SpellData } from '../data/spells';
 import { bowTarget, throwTarget } from '../sim/combat';
 import type { TileName } from '../data/tiles';
 import { Cell, cellAt } from '../sim/grid';
 import { cellNoise } from '../sim/rng';
+import { spellCandidates } from '../sim/spells';
 import type { Monster, World } from '../sim/world';
 import { drawTile, type Atlas } from './atlas';
 import type { Fx } from './fx';
@@ -18,6 +20,7 @@ export interface View {
   readonly dpr: number;
   /** The hero's walk, made from its standing tile. */
   readonly heroWalk: WalkSheet;
+  readonly targetingSpell?: SpellData;
 }
 
 /** How dark a cell is drawn once it is out of sight but remembered. */
@@ -170,6 +173,18 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
     if (!w.seen[iy * w.grid.w + ix]) continue;
     const sx = ox + item.x * px,
       sy = oy + item.y * px;
+    if (item.kind === 'book') {
+      ctx.fillStyle = '#393052';
+      ctx.fillRect(sx - px * 0.25, sy - px * 0.3, px * 0.5, px * 0.6);
+      ctx.strokeStyle = '#b6a4da';
+      ctx.lineWidth = Math.max(1, px * 0.04);
+      ctx.strokeRect(sx - px * 0.25, sy - px * 0.3, px * 0.5, px * 0.6);
+      ctx.fillStyle = '#e3d9ff';
+      ctx.font = `${Math.max(10, px * 0.32)}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText('✦', sx, sy + px * 0.1);
+      continue;
+    }
     const tile = item.kind === 'ammo' ? 'item/boomerang1' : item.axe?.tile;
     if (!tile) continue;
     drawFigure(ctx, atlas.image, tile, sx, sy, px * 0.72, false);
@@ -198,6 +213,37 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
     drawMonster(ctx, atlas, w, m, px, ox, oy, between);
   }
 
+  for (const cloud of w.spellClouds) {
+    ctx.fillStyle = cloud.colour + '28';
+    ctx.beginPath();
+    ctx.arc(ox + cloud.x * px, oy + cloud.y * px, cloud.radius * px, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  for (const visual of w.spellVisuals) {
+    ctx.strokeStyle = visual.colour;
+    ctx.lineWidth = Math.max(2, px * 0.08);
+    ctx.globalAlpha = Math.min(1, visual.left / 0.12);
+    if (visual.shape === 'beam') {
+      ctx.beginPath();
+      ctx.moveTo(ox + visual.x1 * px, oy + visual.y1 * px);
+      ctx.lineTo(ox + visual.x2 * px, oy + visual.y2 * px);
+      ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.arc(ox + visual.x2 * px, oy + visual.y2 * px, visual.radius * px, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+  for (const shot of w.spellShots) {
+    const sx = ox + (shot.px + (shot.x - shot.px) * between) * px;
+    const sy = oy + (shot.py + (shot.y - shot.py) * between) * px;
+    ctx.fillStyle = shot.colour;
+    ctx.beginPath();
+    ctx.arc(sx, sy, Math.max(2, px * 0.11), 0, Math.PI * 2);
+    ctx.fill();
+  }
+
   drawThreatArrows(ctx, w, px, width, height, view.dpr);
 
   for (const shot of w.shots) {
@@ -224,15 +270,27 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
     drawTile(ctx, atlas.image, tile, -px * 0.26, -px * 0.26, px * 0.52);
     ctx.restore();
   }
-  const target = bowTarget(w) ?? throwTarget(w);
-  if (target) {
-    const tx = ox + target.x * px;
-    const ty = oy + target.y * px;
-    ctx.strokeStyle = '#e2ce83';
-    ctx.lineWidth = Math.max(1, px * 0.065);
-    ctx.beginPath();
-    ctx.ellipse(tx, ty + px * 0.26, px * 0.42, px * 0.2, 0, 0, Math.PI * 2);
-    ctx.stroke();
+  if (view.targetingSpell) {
+    for (const target of spellCandidates(w, view.targetingSpell)) {
+      const tx = ox + target.x * px;
+      const ty = oy + target.y * px;
+      ctx.strokeStyle = view.targetingSpell.colour;
+      ctx.lineWidth = Math.max(2, px * 0.075);
+      ctx.beginPath();
+      ctx.arc(tx, ty, px * 0.48, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  } else {
+    const target = bowTarget(w) ?? throwTarget(w);
+    if (target) {
+      const tx = ox + target.x * px;
+      const ty = oy + target.y * px;
+      ctx.strokeStyle = '#e2ce83';
+      ctx.lineWidth = Math.max(1, px * 0.065);
+      ctx.beginPath();
+      ctx.ellipse(tx, ty + px * 0.26, px * 0.42, px * 0.2, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
   }
   const down = w.stairs.find((stair) => stair.down && Math.floor(w.hero.x) === stair.x && Math.floor(w.hero.y) === stair.y);
   if (down && w.descending > 0) {
