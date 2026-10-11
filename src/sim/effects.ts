@@ -6,7 +6,8 @@ import { effectValue, hasEffect } from './skills';
 import { headbuttBack } from './traits';
 import type { Monster, World } from './types';
 
-export type HurtKind = 'melee' | 'stone';
+/** Hostile spells use their own hit category (not the stone-only defence perks). */
+export type HurtKind = 'melee' | 'stone' | 'spell';
 
 function heroResists(w: World): Readonly<Partial<Record<ResistName, number>>> {
   return w.heroDef.resists;

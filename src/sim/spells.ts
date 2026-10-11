@@ -1,11 +1,12 @@
 import { ACTIVE_SPELL_SHAPES, SPELLS, SPELL_SCHOOLS, spellData, type SpellData } from '../data/spells';
 import { walkable } from './grid';
-import { damageAfterDefense } from './damage';
+import { computeFov } from './fov';
+import { updateFlow } from './flow';
 import type { ResistName } from '../data/items';
-import { recordKill } from './kills';
 import { skillLevel } from './skills';
-import { wake } from './effects';
-import type { Monster, SpellCloud, SpellShot, World } from './types';
+import { hurtHero } from './effects';
+import { hurtMonster } from './hits';
+import type { Hero, Monster, SpellCloud, SpellShot, World } from './types';
 
 const VISUAL_TIME = 0.18;
 
@@ -86,30 +87,42 @@ export function spellTarget(w: World, spell: SpellData): Monster | undefined {
   return spellCandidates(w, spell)[0];
 }
 
-function hitMonster(w: World, m: Monster, amount: number, element?: ResistName): void {
-  if (m.hp <= 0) return;
-  const damage = element ? damageAfterDefense(amount, element, 0, m.stats.resists) : amount;
-  m.hp -= damage;
-  m.flash = 0.12;
-  wake(w, m);
-  if (element) w.events.push({ type: 'elemental', x: m.x, y: m.y, amount: damage, element, target: 'monster' });
-  else w.events.push({ type: 'hit', x: m.x, y: m.y, amount: damage, by: 'spell' });
-  recordKill(w, m);
-}
-
 function spellElement(spell: SpellData): ResistName | undefined {
   const types: readonly ResistName[] = ['fire', 'cold', 'electric', 'poison', 'negative'];
   return types.find((type) => spell.schools.includes(type)) ?? (spell.schools.includes('air') ? 'electric' : undefined);
 }
 
-function rayEnd(w: World, target: Monster, range: number): { x: number; y: number } {
-  const dx = target.x - w.hero.x;
-  const dy = target.y - w.hero.y;
+type SpellCaster = 'hero' | 'monster';
+type SpellActor = Hero | Monster;
+
+/** Both allegiances resolve spell hits through the same target defence rules. */
+function hitSpellTarget(
+  w: World,
+  caster: SpellCaster,
+  target: SpellActor,
+  damage: number,
+  element?: ResistName,
+  sourceMonster?: Monster,
+): void {
+  if (caster === 'hero') {
+    hurtMonster(w, target as Monster, damage, element ?? 'physical', 'spell');
+  } else {
+    hurtHero(w, element ? 0 : damage, 'spell', sourceMonster, element ? { type: element, damage } : undefined);
+  }
+}
+
+function enemiesOf(w: World, caster: SpellCaster): readonly SpellActor[] {
+  return caster === 'hero' ? w.monsters : [w.hero];
+}
+
+function rayEnd(w: World, from: SpellActor, target: SpellActor, range: number): { x: number; y: number } {
+  const dx = target.x - from.x;
+  const dy = target.y - from.y;
   const d = Math.hypot(dx, dy) || 1;
   const ux = dx / d;
   const uy = dy / d;
-  let x = w.hero.x;
-  let y = w.hero.y;
+  let x = from.x;
+  let y = from.y;
   const steps = Math.ceil(range * 10);
   for (let i = 0; i < steps; i++) {
     const nx = x + ux * 0.1;
@@ -121,17 +134,24 @@ function rayEnd(w: World, target: Monster, range: number): { x: number; y: numbe
   return { x, y };
 }
 
-function castProjectile(w: World, spell: SpellData, target: Monster, damage: number): void {
+function castProjectile(
+  w: World,
+  spell: SpellData,
+  caster: SpellCaster,
+  from: SpellActor,
+  target: SpellActor,
+  damage: number,
+  range: number,
+): void {
   const speed = spell.speed ?? 16;
-  const range = spellRange(w, spell);
-  const dx = target.x - w.hero.x;
-  const dy = target.y - w.hero.y;
+  const dx = target.x - from.x;
+  const dy = target.y - from.y;
   const d = Math.hypot(dx, dy) || 1;
   const shot: SpellShot = {
-    x: w.hero.x,
-    y: w.hero.y,
-    px: w.hero.x,
-    py: w.hero.y,
+    x: from.x,
+    y: from.y,
+    px: from.x,
+    py: from.y,
     vx: (dx / d) * speed,
     vy: (dy / d) * speed,
     left: (range + 0.5) / speed,
@@ -140,26 +160,39 @@ function castProjectile(w: World, spell: SpellData, target: Monster, damage: num
     colour: spell.colour,
     element: spellElement(spell),
     hit: [],
+    caster,
+    ...(caster === 'monster' ? { sourceMonster: from as Monster } : {}),
   };
   w.spellShots.push(shot);
 }
 
-function castBeam(w: World, spell: SpellData, target: Monster, damage: number): void {
-  const end = rayEnd(w, target, spellRange(w, spell));
-  const dx = end.x - w.hero.x;
-  const dy = end.y - w.hero.y;
+function castBeam(
+  w: World,
+  spell: SpellData,
+  caster: SpellCaster,
+  from: SpellActor,
+  target: SpellActor,
+  damage: number,
+  range: number,
+): void {
+  const end = rayEnd(w, from, target, range);
+  const dx = end.x - from.x;
+  const dy = end.y - from.y;
   const length2 = dx * dx + dy * dy || 1;
-  for (const m of w.monsters) {
-    if (m.hp <= 0) continue;
-    const t = Math.max(0, Math.min(1, ((m.x - w.hero.x) * dx + (m.y - w.hero.y) * dy) / length2));
-    const px = w.hero.x + dx * t;
-    const py = w.hero.y + dy * t;
-    if (Math.hypot(m.x - px, m.y - py) <= m.stats.radius + 0.18) hitMonster(w, m, damage, spellElement(spell));
+  for (const enemy of enemiesOf(w, caster)) {
+    if ('hp' in enemy && enemy.hp <= 0) continue;
+    const t = Math.max(0, Math.min(1, ((enemy.x - from.x) * dx + (enemy.y - from.y) * dy) / length2));
+    const px = from.x + dx * t;
+    const py = from.y + dy * t;
+    const radius = caster === 'hero' ? (enemy as Monster).stats.radius : w.heroDef.radius;
+    if (Math.hypot(enemy.x - px, enemy.y - py) <= radius + 0.18) {
+      hitSpellTarget(w, caster, enemy, damage, spellElement(spell), caster === 'monster' ? (from as Monster) : undefined);
+    }
   }
   w.spellVisuals.push({
     shape: 'beam',
-    x1: w.hero.x,
-    y1: w.hero.y,
+    x1: from.x,
+    y1: from.y,
     x2: end.x,
     y2: end.y,
     radius: 0,
@@ -168,10 +201,21 @@ function castBeam(w: World, spell: SpellData, target: Monster, damage: number): 
   });
 }
 
-function castBurst(w: World, spell: SpellData, target: Monster, damage: number): void {
+function castBurst(
+  w: World,
+  spell: SpellData,
+  caster: SpellCaster,
+  from: SpellActor,
+  target: SpellActor,
+  damage: number,
+): void {
   const radius = spell.radius ?? 1;
-  for (const m of w.monsters) {
-    if (m.hp > 0 && Math.hypot(m.x - target.x, m.y - target.y) <= radius + m.stats.radius) hitMonster(w, m, damage);
+  for (const enemy of enemiesOf(w, caster)) {
+    if (enemy.hp <= 0) continue;
+    const body = caster === 'hero' ? (enemy as Monster).stats.radius : w.heroDef.radius;
+    if (Math.hypot(enemy.x - target.x, enemy.y - target.y) <= radius + body) {
+      hitSpellTarget(w, caster, enemy, damage, spellElement(spell), caster === 'monster' ? (from as Monster) : undefined);
+    }
   }
   w.spellVisuals.push({
     shape: 'burst',
@@ -185,7 +229,14 @@ function castBurst(w: World, spell: SpellData, target: Monster, damage: number):
   });
 }
 
-function castCloud(w: World, spell: SpellData, target: Monster, damage: number): void {
+function castCloud(
+  w: World,
+  spell: SpellData,
+  caster: SpellCaster,
+  from: SpellActor,
+  target: SpellActor,
+  damage: number,
+): void {
   const cloud: SpellCloud = {
     x: target.x,
     y: target.y,
@@ -196,6 +247,8 @@ function castCloud(w: World, spell: SpellData, target: Monster, damage: number):
     nextTick: 0,
     colour: spell.colour,
     element: spellElement(spell),
+    caster,
+    ...(caster === 'monster' ? { sourceMonster: from as Monster } : {}),
   };
   w.spellClouds.push(cloud);
   w.spellVisuals.push({
@@ -210,15 +263,82 @@ function castCloud(w: World, spell: SpellData, target: Monster, damage: number):
   });
 }
 
+/** Shared shape dispatcher: no separate monster spell effect implementations. */
+function executeSpell(
+  w: World,
+  spell: SpellData,
+  caster: SpellCaster,
+  from: SpellActor,
+  target: SpellActor,
+  damage: number,
+  range: number,
+): void {
+  if (spell.shape === 'projectile') castProjectile(w, spell, caster, from, target, damage, range);
+  else if (spell.shape === 'beam') castBeam(w, spell, caster, from, target, damage, range);
+  else if (spell.shape === 'burst') castBurst(w, spell, caster, from, target, damage);
+  else if (spell.shape === 'cloud') castCloud(w, spell, caster, from, target, damage);
+}
+
+function refreshHeroSight(w: World): void {
+  computeFov(w.grid, Math.floor(w.hero.x), Math.floor(w.hero.y), w.heroDef.sight, w.visible);
+  for (let i = 0; i < w.visible.length; i++) if (w.visible[i]) w.seen[i] = 1;
+  updateFlow(w.flow, w.grid, Math.floor(w.hero.x), Math.floor(w.hero.y));
+}
+
+/** Shared utility effects with side-specific ownership (not separate spell data). */
+function applyUtilitySpell(w: World, spell: SpellData, caster: SpellCaster, actor: SpellActor): boolean {
+  if (spell.effect === 'guard') {
+    if (caster === 'hero') w.hero.invulnerable = Math.max(w.hero.invulnerable, spell.duration ?? 2);
+    else (actor as Monster).guard = Math.max((actor as Monster).guard, spell.duration ?? 2);
+    return true;
+  }
+  if (spell.effect !== 'blink') return false;
+  const monster = caster === 'monster' ? (actor as Monster) : undefined;
+  const fromHeroX = actor.x - w.hero.x;
+  const fromHeroY = actor.y - w.hero.y;
+  const d = Math.hypot(fromHeroX, fromHeroY) || 1;
+  const ux = monster ? fromHeroX / d : w.hero.facing;
+  const uy = monster ? fromHeroY / d : 0;
+  for (let step = spell.distance ?? 3; step >= 1; step--) {
+    const x = actor.x + ux * step;
+    const y = actor.y + uy * step;
+    if (!walkable(w.grid, Math.floor(x), Math.floor(y))) continue;
+    if (monster) {
+      if (Math.hypot(w.hero.x - x, w.hero.y - y) < monster.stats.radius + w.heroDef.radius) continue;
+      if (w.monsters.some((other) => other !== monster && other.hp > 0 && Math.hypot(other.x - x, other.y - y) < other.stats.radius + monster.stats.radius)) continue;
+    }
+    actor.x = actor.px = x;
+    actor.y = actor.py = y;
+    if (caster === 'hero') refreshHeroSight(w);
+    return true;
+  }
+  return false;
+}
+
 function execute(w: World, spell: SpellData, target: Monster): void {
-  const damage = spellDamage(w, spell);
-  if (spell.shape === 'projectile') castProjectile(w, spell, target, damage);
-  else if (spell.shape === 'beam') castBeam(w, spell, target, damage);
-  else if (spell.shape === 'burst') castBurst(w, spell, target, damage);
-  else if (spell.shape === 'cloud') castCloud(w, spell, target, damage);
-  else return;
+  executeSpell(w, spell, 'hero', w.hero, target, spellDamage(w, spell), spellRange(w, spell));
   const dx = target.x - w.hero.x;
   if (Math.abs(dx) > 0.15) w.hero.facing = dx < 0 ? -1 : 1;
+}
+
+/**
+ * Monster uses the player's spells.json and shared shape/effect dispatcher.
+ * Resources and ownership live on the caster, not on duplicate spell records.
+ */
+export function castMonsterSpell(w: World, monster: Monster, spellId: string): boolean {
+  const spell = spellData(spellId);
+  if (monster.mana < spell.mana || monster.spellCooldown > 0) return false;
+  if (spell.shape === 'utility') {
+    if (!applyUtilitySpell(w, spell, 'monster', monster)) return false;
+  } else {
+    if (!['projectile', 'beam', 'burst', 'cloud'].includes(spell.shape) || spell.damage === undefined || spell.range === undefined) return false;
+    const d = Math.hypot(w.hero.x - monster.x, w.hero.y - monster.y);
+    if (d > spell.range || !w.visible[Math.floor(monster.y) * w.grid.w + Math.floor(monster.x)]) return false;
+    executeSpell(w, spell, 'monster', monster, w.hero, spell.damage, spell.range);
+  }
+  monster.mana -= spell.mana;
+  monster.spellCooldown = Math.max(0.25, 0.45 - spell.level * 0.02);
+  return true;
 }
 
 export function castPaidSpell(w: World, spellId: string, target?: Monster): boolean {
@@ -226,22 +346,7 @@ export function castPaidSpell(w: World, spellId: string, target?: Monster): bool
   if (!ACTIVE_SPELL_SHAPES.includes(spell.shape) || !paidSpells(w).some((entry) => entry.id === spell.id)) return false;
   if (w.hero.mana < spell.mana) return false;
   if (spell.shape === 'utility') {
-    if (spell.effect === 'blink') {
-      const dx = Math.sign(w.hero.facing);
-      let moved = false;
-      for (let d = spell.distance ?? 3; d >= 1; d--) {
-        const nx = w.hero.x + dx * d;
-        if (walkable(w.grid, Math.floor(nx), Math.floor(w.hero.y))) {
-          w.hero.x = nx;
-          w.hero.px = nx;
-          moved = true;
-          break;
-        }
-      }
-      if (!moved) return false;
-    } else if (spell.effect === 'guard') {
-      w.hero.invulnerable = Math.max(w.hero.invulnerable, spell.duration ?? 2);
-    } else return false;
+    if (!applyUtilitySpell(w, spell, 'hero', w.hero)) return false;
     w.hero.mana -= spell.mana;
     return true;
   }
@@ -271,14 +376,24 @@ function tickProjectiles(w: World, dt: number): void {
     shot.y += shot.vy * dt;
     shot.left -= dt;
     if (shot.left <= 0 || !walkable(w.grid, Math.floor(shot.x), Math.floor(shot.y))) continue;
-    const hit = w.monsters.find(
-      (m) => m.hp > 0 && !shot.hit.includes(m) && Math.hypot(m.x - shot.x, m.y - shot.y) <= m.stats.radius + 0.16,
-    );
-    if (hit) {
-      shot.hit.push(hit);
-      hitMonster(w, hit, shot.damage, shot.element);
-      if (shot.pierce > 0) shot.pierce--;
-      else continue;
+
+    if (shot.caster === 'monster') {
+      if (!shot.hitHero && Math.hypot(w.hero.x - shot.x, w.hero.y - shot.y) <= w.heroDef.radius + 0.16) {
+        shot.hitHero = true;
+        hitSpellTarget(w, 'monster', w.hero, shot.damage, shot.element, shot.sourceMonster);
+        if (shot.pierce > 0) shot.pierce--;
+        else continue;
+      }
+    } else {
+      const hit = w.monsters.find(
+        (m) => m.hp > 0 && !shot.hit.includes(m) && Math.hypot(m.x - shot.x, m.y - shot.y) <= m.stats.radius + 0.16,
+      );
+      if (hit) {
+        shot.hit.push(hit);
+        hitSpellTarget(w, 'hero', hit, shot.damage, shot.element);
+        if (shot.pierce > 0) shot.pierce--;
+        else continue;
+      }
     }
     w.spellShots[kept++] = shot;
   }
@@ -292,9 +407,12 @@ function tickClouds(w: World, dt: number): void {
     cloud.nextTick -= dt;
     if (cloud.nextTick <= 0) {
       cloud.nextTick += cloud.tick;
-      for (const m of w.monsters) {
-        if (m.hp > 0 && Math.hypot(m.x - cloud.x, m.y - cloud.y) <= cloud.radius + m.stats.radius) {
-          hitMonster(w, m, cloud.damage, cloud.element);
+      const owner = cloud.caster ?? 'hero';
+      for (const target of enemiesOf(w, owner)) {
+        if (target.hp <= 0) continue;
+        const radius = owner === 'hero' ? (target as Monster).stats.radius : w.heroDef.radius;
+        if (Math.hypot(target.x - cloud.x, target.y - cloud.y) <= cloud.radius + radius) {
+          hitSpellTarget(w, owner, target, cloud.damage, cloud.element, cloud.sourceMonster);
         }
       }
     }

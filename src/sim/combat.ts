@@ -3,7 +3,7 @@ import { POISON } from '../data/monsters';
 import { DUNGEON } from '../data/packs';
 import { applyBrand, applyWeaponBrand, emberBurst, tickBrands } from './brands';
 import { dropAmmo, weaponOption } from './equipment';
-import { damageAfterDefense } from './damage';
+import { hurtMonster } from './hits';
 import { hurtHero, wake } from './effects';
 import { FAR } from './flow';
 import { walkable } from './grid';
@@ -37,15 +37,12 @@ function strike(
   dy: number,
 ): boolean {
   if (m.hp <= 0) return false;
-  amount = damageAfterDefense(power(w, amount), 'physical', m.stats.armour ?? 0, m.stats.resists);
+  const result = hurtMonster(w, m, power(w, amount), 'physical', by);
+  if (result.damage <= 0) return false;
   const d = Math.hypot(dx, dy);
-  m.hp -= amount;
-  m.flash = 0.12;
-  wake(w, m);
   m.kx = d > 1e-4 ? (dx / d) * knock : w.hero.facing * knock;
   m.ky = d > 1e-4 ? (dy / d) * knock : 0;
-  w.events.push({ type: 'hit', x: m.x, y: m.y, amount, by });
-  const killed = recordKill(w, m);
+  const killed = result.killed;
   if (killed) emberBurst(w, m);
   return killed;
 }
@@ -230,7 +227,7 @@ function flyShots(w: World, dt: number): void {
       continue;
     }
 
-    if (s.arrow) {
+    if (s.arrow && s.mine) {
       const hit = w.monsters.find((m) => m.hp > 0 && !s.hit.includes(m) && Math.hypot(m.x - s.x, m.y - s.y) <= m.stats.radius + 0.18);
       if (hit) {
         s.hit.push(hit);
@@ -265,7 +262,7 @@ function flyShots(w: World, dt: number): void {
         }
       }
     } else if (Math.hypot(s.x - w.hero.x, s.y - w.hero.y) <= w.heroDef.radius + 0.12) {
-      hurtHero(w, s.damage, 'stone');
+      hurtHero(w, s.damage, 'stone', s.sourceMonster);
       continue;
     }
     w.shots[kept++] = s;
