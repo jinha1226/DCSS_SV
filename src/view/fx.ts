@@ -19,7 +19,7 @@ interface Stroke {
 
 const RISE = 0.6;
 const STROKE = 0.2;
-const COLOUR = { axe: '#f4ecd6', horns: '#ffcf6a', hurt: '#ff7a6a' } as const;
+const COLOUR = { axe: '#f4ecd6', horns: '#ffcf6a', throw: '#d2e8ff', hurt: '#ff7a6a' } as const;
 
 /** What the screen shows of blows given and taken. It only listens to the rules; it never changes them. */
 export class Fx {

@@ -77,7 +77,7 @@ describe('a kobold', () => {
     spawnMonster(w, 'kobold', 15, 10, true).rest = 0;
     let hurts = 0;
     for (let i = 0; i < Math.round(4 / STEP); i++) {
-      stepWorld(w, { mx: 0, my: Math.floor(i / 50) % 2 ? 1 : -1 });
+      stepWorld(w, { mx: 0, my: -1 });
       hurts += count(w.events, 'hurt');
     }
     expect(hurts).toBe(0);

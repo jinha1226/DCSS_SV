@@ -12,6 +12,7 @@ export interface Switches {
   /** The seed of the run; 0 means "pick one". */
   seed: number;
   debug: boolean;
+  floor: number;
 }
 
 /** Cells across the screen. */
@@ -33,6 +34,7 @@ export function readSwitches(search: string): Switches {
     look: (LOOKS as readonly string[]).includes(look ?? '') ? (look as LookName) : 'dcss',
     seed: Number.isFinite(seed) && seed > 0 ? Math.floor(seed) : 0,
     debug: q.has('debug'),
+    floor: Math.round(within(q.get('floor'), 1, 3, 1)),
   };
 }
 
@@ -43,6 +45,7 @@ export function writeSwitches(s: Switches): string {
   if (s.speed !== SPEED.normal) q.set('speed', String(s.speed));
   if (s.look !== 'dcss') q.set('look', s.look);
   if (s.seed) q.set('seed', String(s.seed));
+  if (s.floor !== 1) q.set('floor', String(s.floor));
   const text = q.toString() + (s.debug ? (q.size ? '&debug' : 'debug') : '');
   return text ? `?${text}` : '';
 }

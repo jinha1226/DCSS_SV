@@ -166,3 +166,8 @@ canvas {
   text-align: center;
   font-size: 15px;
 }
+
+.hp.poison .hp-fill { background: #708b4a; }
+.throw-button { position: fixed; right: max(20px, env(safe-area-inset-right)); bottom: calc(40px + env(safe-area-inset-bottom, 0px)); width: 76px; height: 76px; border-radius: 50%; border: 2px solid #d7c48b; background: #302c24; color: #f6e7bf; font: 700 16px system-ui; touch-action: none; z-index: 5; }
+.throw-button:disabled { opacity: 0.55; }
+.throw-button .cooldown { display: block; font-size: 11px; }
