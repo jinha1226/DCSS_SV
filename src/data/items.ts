@@ -108,7 +108,8 @@ export const WEAPONS: readonly WeaponBase[] = rows
     const hands = number(row, 'hands');
     const family = text(row, 'family');
     const weights = row.depthWeights;
-    if (family !== 'axe' && family !== 'bow' && family !== 'long_blade') throw new Error('items.json: ' + String(row.id) + '.family: 잘못된 계열');
+    if (family !== 'axe' && family !== 'bow' && family !== 'long_blade')
+      throw new Error('items.json: ' + String(row.id) + '.family: 잘못된 계열');
     if (hands !== 1 && hands !== 2) throw new Error('items.json: ' + String(row.id) + '.hands: 1 또는 2여야 함');
     if (!Array.isArray(weights) || weights.some((v) => typeof v !== 'number')) {
       throw new Error('items.json: ' + String(row.id) + '.depthWeights: 숫자 배열이 아님');

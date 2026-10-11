@@ -612,5 +612,11 @@ canvas {
   opacity: 0.45;
 }
 
-.spell-buttons.with-hop { right: max(106px, calc(86px + env(safe-area-inset-right))); bottom: calc(40px + env(safe-area-inset-bottom, 0px)); }
-.spell-buttons.with-hop button { width: 84px; min-height: 56px; }
+.spell-buttons.with-hop {
+  right: max(106px, calc(86px + env(safe-area-inset-right)));
+  bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+}
+.spell-buttons.with-hop button {
+  width: 84px;
+  min-height: 56px;
+}
