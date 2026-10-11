@@ -13,6 +13,7 @@ import {
   type WeaponOption,
 } from '../data/items';
 import { Cell, cellAt, walkable } from './grid';
+import { addConsumable, type ConsumableId } from './consumables';
 import { openSkill } from './skills';
 import type { World } from './types';
 
@@ -151,6 +152,15 @@ export function populateFloorItems(w: World): void {
     const family = i < same ? w.weapon.family : other;
     putWeapon(w, generateWeapon(w, family), roomCell(w), i === same);
   }
+  if (w.itemsEnabled) {
+    const available: ConsumableId[] = ['potion_healing', 'scroll_blink', 'wand_sparks'];
+    for (let i = 0; i < 3; i++) {
+      const cell = roomCell(w);
+      if (!cell) continue;
+      const itemId = available[Math.floor(w.rng() * available.length)]!;
+      w.groundItems.push({ uid: uid(w, 'supply'), kind: 'consumable', itemId, x: cell.x, y: cell.y, ignored: false });
+    }
+  }
   const piles = rollInt(w, EQUIPMENT.ammoPilesMin, EQUIPMENT.ammoPilesMax);
   for (let i = 0; i < piles; i++) putAmmo(w, rollInt(w, EQUIPMENT.ammoPileMin, EQUIPMENT.ammoPileMax), roomCell(w));
   if (w.heroDef.attackMode === 'magic' && !w.openSkills.has('fire')) putBook(w, 'fire', roomCell(w));
@@ -188,6 +198,47 @@ export function acceptPickup(w: World): void {
   w.pickupStats.swapped++;
   w.pendingPickup = null;
 }
+/** Move a discovered weapon to the bag instead of replacing the equipped weapon. */
+export function storePickup(w: World): void {
+  const item = w.pendingPickup;
+  if (!item || item.kind !== 'axe' || !item.axe) return;
+  const index = w.groundItems.indexOf(item);
+  if (index < 0) return;
+  w.inventory.push({ uid: item.axe.uid, kind: 'weapon', weapon: item.axe });
+  w.groundItems.splice(index, 1);
+  w.pendingPickup = null;
+}
+
+/** Exchange the currently equipped weapon with a stored one. */
+export function equipStoredWeapon(w: World, uid: string): boolean {
+  const index = w.inventory.findIndex((item) => item.kind === 'weapon' && item.uid === uid);
+  const entry = w.inventory[index];
+  if (!entry || entry.kind !== 'weapon') return false;
+  const old = w.weapon;
+  const delta = hpBonus(entry.weapon) - hpBonus(old);
+  w.hero.maxHp += delta;
+  w.hero.hp = Math.min(w.hero.maxHp, Math.max(1, w.hero.hp + Math.max(0, delta)));
+  w.weapon = entry.weapon;
+  w.inventory[index] = { uid: old.uid, kind: 'weapon', weapon: old };
+  openSkill(w, w.weapon.family);
+  return true;
+}
+
+export function dropStoredWeapon(w: World, uid: string): boolean {
+  const index = w.inventory.findIndex((item) => item.kind === 'weapon' && item.uid === uid);
+  const entry = w.inventory[index];
+  if (!entry || entry.kind !== 'weapon') return false;
+  w.inventory.splice(index, 1);
+  w.groundItems.push({
+    uid: entry.uid,
+    kind: 'axe',
+    x: w.hero.x,
+    y: w.hero.y,
+    axe: entry.weapon,
+    ignored: true,
+  });
+  return true;
+}
 export function declinePickup(w: World): void {
   if (w.pendingPickup) w.pendingPickup.ignored = true;
   w.pendingPickup = null;
@@ -220,6 +271,9 @@ export function collectGround(w: World): void {
       w.groundItems.splice(i, 1);
     } else if (item.kind === 'book') {
       if (item.school) openSkill(w, item.school);
+      w.groundItems.splice(i, 1);
+    } else if (item.kind === 'consumable') {
+      if (item.itemId) addConsumable(w, item.itemId as ConsumableId);
       w.groundItems.splice(i, 1);
     } else if (item.kind === 'ammo') {
       const before = w.ammo;

@@ -127,6 +127,7 @@ export function makeWorld(options: WorldOptions = {}): World {
     events: [],
     seed,
     weapon,
+    inventory: [],
     ammo: heroDef.startingAmmo,
     groundItems: [],
     pendingPickup: null,

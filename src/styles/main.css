@@ -1387,3 +1387,24 @@ canvas {
   font: inherit;
   cursor: pointer;
 }
+
+/* Inventory actions are touch-sized and do not start movement input. */
+.inventory-row {
+  flex-wrap: wrap;
+}
+.inventory-action {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 5px 9px;
+  border: 1px solid #847252;
+  border-radius: 6px;
+  background: #373026;
+  color: #f5dfb4;
+  font-size: 12px;
+  touch-action: manipulation;
+}
+.inventory-weapon-detail {
+  width: 100%;
+  color: #b5a991;
+  font-size: 11px;
+}

@@ -1,5 +1,5 @@
 import { brandData, type WeaponItem } from '../data/items';
-import { acceptPickup, declinePickup } from '../sim/equipment';
+import { acceptPickup, declinePickup, storePickup } from '../sim/equipment';
 import type { World } from '../sim/world';
 
 export interface EquipmentPicker {
@@ -51,7 +51,10 @@ export function makeEquipmentPicker(root: HTMLElement): EquipmentPicker {
   const leave = document.createElement('button');
   leave.type = 'button';
   leave.textContent = '두고 가기';
-  actions.append(swap, leave);
+  const store = document.createElement('button');
+  store.type = 'button';
+  store.textContent = '가방에 넣기';
+  actions.append(swap, store, leave);
   let current: World | undefined,
     shownAt = 0,
     key = '';
@@ -61,6 +64,7 @@ export function makeEquipmentPicker(root: HTMLElement): EquipmentPicker {
   };
   swap.addEventListener('click', () => act(acceptPickup));
   leave.addEventListener('click', () => act(declinePickup));
+  store.addEventListener('click', () => act(storePickup));
   return {
     show(w) {
       current = w;
@@ -90,6 +94,7 @@ export function makeEquipmentPicker(root: HTMLElement): EquipmentPicker {
       }
       const ready = performance.now() - shownAt >= 400;
       swap.disabled = !ready;
+      store.disabled = !ready;
       leave.disabled = !ready;
     },
   };

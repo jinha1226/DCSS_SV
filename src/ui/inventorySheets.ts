@@ -1,5 +1,6 @@
 import { brandData } from '../data/items';
-import { weaponOption } from '../sim/equipment';
+import { CONSUMABLES, useConsumable, type ConsumableId } from '../sim/consumables';
+import { dropStoredWeapon, equipStoredWeapon, weaponOption } from '../sim/equipment';
 import type { World } from '../sim/world';
 
 export type BagTab = 'all' | 'equipment' | 'consumable' | 'other';
@@ -11,8 +12,7 @@ export interface EquipmentSlot {
   readonly value: string;
   readonly available: boolean;
 }
-
-const SLOTS: readonly { id: string; name: string }[] = [
+const SLOTS = [
   { id: 'weapon', name: '무기' },
   { id: 'offhand', name: '보조무기' },
   { id: 'armour', name: '갑옷' },
@@ -24,9 +24,7 @@ const SLOTS: readonly { id: string; name: string }[] = [
   { id: 'amulet', name: '목걸이' },
   { id: 'ring1', name: '반지 1' },
   { id: 'ring2', name: '반지 2' },
-];
-
-/** Only the weapon is currently equippable. Empty slots are not fake equipment. */
+] as const;
 export function equipmentSlots(w: World): EquipmentSlot[] {
   return SLOTS.map((slot) => ({
     ...slot,
@@ -34,7 +32,6 @@ export function equipmentSlots(w: World): EquipmentSlot[] {
     available: slot.id === 'weapon',
   }));
 }
-
 export interface BagEntry {
   readonly id: string;
   readonly name: string;
@@ -42,9 +39,21 @@ export interface BagEntry {
   readonly count: number;
   readonly equipped: boolean;
 }
-
 export function bagEntries(w: World): BagEntry[] {
   const items: BagEntry[] = [{ id: w.weapon.uid, name: w.weapon.name, group: 'equipment', count: 1, equipped: true }];
+  for (const item of w.inventory) {
+    if (item.kind === 'weapon') {
+      items.push({ id: item.uid, name: item.weapon.name, group: 'equipment', count: 1, equipped: false });
+    } else {
+      items.push({
+        id: item.uid,
+        name: CONSUMABLES[item.id as ConsumableId]?.name ?? item.id,
+        group: 'consumable',
+        count: item.count,
+        equipped: false,
+      });
+    }
+  }
   if (w.openSkills.has('throwing')) {
     items.push({ id: 'ammo', name: '부메랑', group: 'other', count: w.ammo, equipped: false });
   }
@@ -57,7 +66,6 @@ export interface InventorySheets {
   openSheet(sheet: SheetName): void;
   close(): void;
 }
-
 export function makeInventorySheets(root: HTMLElement): InventorySheets {
   const backdrop = document.createElement('button');
   backdrop.type = 'button';
@@ -80,11 +88,11 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
   content.className = 'inventory-content';
   panel.append(header, tabs, content);
   root.append(panel);
-
   let current: World | undefined;
   let sheet: SheetName | undefined;
   let tab: BagTab = 'all';
   let lastKey = '';
+  let feedback = '';
 
   const setSheet = (value: SheetName | undefined): void => {
     sheet = value;
@@ -105,9 +113,25 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
     line.append(label, data);
     return line;
   };
+  const action = (label: string, handler: () => void): HTMLButtonElement => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'inventory-action';
+    button.textContent = label;
+    button.addEventListener('click', handler);
+    return button;
+  };
   const draw = (w: World): void => {
     if (!sheet) return;
-    const key = [sheet, tab, w.weapon.uid, w.ammo, w.openSkills.has('throwing'), w.hero.hp].join('|');
+    const key = [
+      sheet,
+      tab,
+      w.weapon.uid,
+      w.ammo,
+      w.hero.hp,
+      w.inventory.map((item) => item.uid + ':' + (item.kind === 'consumable' ? item.count : 1)).join(','),
+      feedback,
+    ].join('|');
     if (key === lastKey) return;
     lastKey = key;
     title.textContent = sheet === 'equipment' ? '장비' : '가방';
@@ -115,7 +139,19 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
     content.replaceChildren();
 
     if (sheet === 'equipment') {
-      for (const slot of equipmentSlots(w)) content.append(row(slot.name, slot.value, !slot.available));
+      for (const slot of equipmentSlots(w)) {
+        const line = row(slot.name, slot.value, !slot.available);
+        if (slot.id === 'weapon') {
+          line.append(
+            action('교체', () => {
+              tab = 'equipment';
+              setSheet('bag');
+              draw(w);
+            }),
+          );
+        }
+        content.append(line);
+      }
       const summary = document.createElement('div');
       summary.className = 'inventory-summary';
       const brand = brandData(w.weapon.brand)?.name ?? '없음';
@@ -131,7 +167,7 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
       content.append(summary);
       const note = document.createElement('p');
       note.className = 'inventory-note';
-      note.textContent = '현재 무기 외 장비 슬롯은 추후 추가될 예정이야.';
+      note.textContent = '무기 교체가 가능해. 나머지 장비 슬롯은 아직 전투 규칙과 연결되지 않았어.';
       content.append(note);
     } else {
       const names: { id: BagTab; label: string }[] = [
@@ -155,7 +191,43 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
       const entries = bagEntries(w).filter((item) => tab === 'all' || tab === item.group);
       if (entries.length) {
         for (const item of entries) {
-          content.append(row(item.name, item.equipped ? '장착 중' : '×' + item.count));
+          const line = row(item.name, item.equipped ? '장착 중' : '×' + item.count);
+          if (!item.equipped && item.group === 'equipment') {
+            const stored = w.inventory.find((entry) => entry.uid === item.id);
+            if (stored?.kind === 'weapon') {
+              const detail = document.createElement('small');
+              detail.className = 'inventory-weapon-detail';
+              detail.textContent =
+                '피해 ' + stored.weapon.damage + ' / 간격 ' + stored.weapon.every.toFixed(2) + '초 / ' +
+                (stored.weapon.hands === 2 ? '양손' : '한손');
+              line.append(detail);
+              line.append(
+                action('장착', () => {
+                  equipStoredWeapon(w, item.id);
+                  lastKey = '';
+                  draw(w);
+                }),
+                action('버리기', () => {
+                  dropStoredWeapon(w, item.id);
+                  lastKey = '';
+                  draw(w);
+                }),
+              );
+            }
+          }
+          if (item.group === 'consumable') {
+            const config = CONSUMABLES[item.id as ConsumableId];
+            if (config) {
+              line.append(
+                action(config.action, () => {
+                  feedback = useConsumable(w, item.id as ConsumableId) ? config.name + ' 사용' : '지금은 사용할 수 없어.';
+                  lastKey = '';
+                  draw(w);
+                }),
+              );
+            }
+          }
+          content.append(line);
         }
       } else {
         const empty = document.createElement('p');
@@ -163,10 +235,12 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
         empty.textContent = '이 분류에 보유한 아이템이 없어.';
         content.append(empty);
       }
-      const note = document.createElement('p');
-      note.className = 'inventory-note';
-      note.textContent = '지금은 장착한 무기와 투척 탄약만 표시돼. 무기 보관·교체는 다음 단계에서 연결할게.';
-      content.append(note);
+      if (feedback) {
+        const note = document.createElement('p');
+        note.className = 'inventory-note';
+        note.textContent = feedback;
+        content.append(note);
+      }
     }
   };
   return {
@@ -181,6 +255,7 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
     openSheet(name) {
       if (!current || current.over) return;
       tab = 'all';
+      feedback = '';
       setSheet(name);
       draw(current);
     },

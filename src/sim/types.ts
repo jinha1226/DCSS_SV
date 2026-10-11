@@ -129,16 +129,20 @@ export interface SpellVisual {
 }
 export interface GroundItem {
   readonly uid: string;
-  readonly kind: 'axe' | 'ammo' | 'path' | 'book';
+  readonly kind: 'axe' | 'ammo' | 'path' | 'book' | 'consumable';
   x: number;
   y: number;
   axe?: WeaponItem;
   count?: number;
   skill?: string;
   school?: string;
+  itemId?: string;
   ignored: boolean;
   newPath?: boolean;
 }
+export type BagItem =
+  | { readonly uid: string; readonly kind: 'weapon'; readonly weapon: WeaponItem }
+  | { readonly uid: string; readonly kind: 'consumable'; readonly id: string; count: number };
 export interface PickupStats {
   offered: number;
   swapped: number;
@@ -193,6 +197,7 @@ export interface World {
   readonly events: SimEvent[];
   readonly seed: number;
   weapon: WeaponItem;
+  readonly inventory: BagItem[];
   ammo: number;
   readonly groundItems: GroundItem[];
   pendingPickup: GroundItem | null;
