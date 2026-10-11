@@ -22,6 +22,7 @@ const STROKE = 0.2;
 const COLOUR = {
   axe: '#f4ecd6',
   arrow: '#e8ddbd',
+  spell: '#c8c6ff',
   horns: '#ffcf6a',
   headbutt_back: '#ffcf6a',
   throw: '#d2e8ff',

@@ -1,22 +1,25 @@
 import '../styles/main.css';
 import { CHARACTERS } from '../data/characters';
 import { heroFor } from '../data/hero';
+import { spellData } from '../data/spells';
 import { guardZoom } from '../input/guards';
 import { keyPush, watchKeys } from '../input/keys';
 import { makeStick } from '../input/stick';
-import { STEP, makeWorld, stepWorld, type World } from '../sim/world';
+import { spellAtPoint, spellTarget } from '../sim/spells';
+import { STEP, makeWorld, stepWorld, type Input, type World } from '../sim/world';
 import { makeCharacterSelect, type CharacterChoice } from '../ui/characterSelect';
 import { makeEquipmentPicker } from '../ui/equipmentPicker';
 import { makeHud } from '../ui/hud';
 import { makeHopButton } from '../ui/hopButton';
 import { makeSkillPicker } from '../ui/skillPicker';
+import { makeSpellButtons } from '../ui/spellButtons';
 import { makeThrowButton } from '../ui/throwButton';
 import { makeTimeModeButton } from '../ui/timeModeButton';
 import { loadAtlas } from '../view/atlas';
 import { Fx } from '../view/fx';
 import { LOOK } from '../view/look';
 import { drawMiniMap } from '../view/minimap';
-import { drawWorld } from '../view/render';
+import { cellPixels, drawWorld } from '../view/render';
 import { makeWalk, type WalkSheet } from '../view/walk';
 import { runLoop } from './loop';
 import { readSwitches } from './switches';
@@ -41,11 +44,13 @@ async function start(): Promise<void> {
   const timeMode = makeTimeModeButton(root);
   const picker = makeSkillPicker(root);
   const gear = makeEquipmentPicker(root);
+  const spellButtons = makeSpellButtons(root);
 
   let selected: CharacterChoice | undefined;
   let world: World | undefined;
   let heroWalk: WalkSheet | undefined;
   let dpr = 1;
+  let queuedSpell: Input['spell'];
 
   const begin = (character: CharacterChoice): void => {
     selected = character;
@@ -59,6 +64,7 @@ async function start(): Promise<void> {
       depth: switches.floor,
     });
     fx.clear();
+    spellButtons.cancelTarget();
     selector.hide();
     if (debug) debug.world = world;
   };
@@ -66,6 +72,7 @@ async function start(): Promise<void> {
   const chooseCharacter = (): void => {
     world = undefined;
     selected = undefined;
+    spellButtons.cancelTarget();
     selector.show();
   };
 
@@ -95,18 +102,55 @@ async function start(): Promise<void> {
     }
   };
 
+  canvas.addEventListener(
+    'pointerdown',
+    (event) => {
+      if (!world || !spellButtons.targetingId) return;
+      const spell = spellData(spellButtons.targetingId);
+      const rect = canvas.getBoundingClientRect();
+      const sx = (event.clientX - rect.left) * (canvas.width / rect.width);
+      const sy = (event.clientY - rect.top) * (canvas.height / rect.height);
+      const px = cellPixels(canvas.width, switches.cols);
+      const x = world.hero.x + (sx - canvas.width / 2) / px;
+      const y = world.hero.y + (sy - canvas.height / 2) / px;
+      const target = spellAtPoint(world, spell, x, y);
+      if (!target) return;
+      queuedSpell = { id: spell.id, x: target.x, y: target.y };
+      spellButtons.cancelTarget();
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    },
+    true,
+  );
+
   runLoop(
     () => {
       if (!world) return;
+      const pressedSpell = spellButtons.takePress();
+      if (pressedSpell) {
+        if (timeMode.superhot) {
+          if (spellButtons.targetingId === pressedSpell) spellButtons.cancelTarget();
+          else spellButtons.beginTarget(pressedSpell);
+        } else {
+          const spell = spellData(pressedSpell);
+          const target = spellTarget(world, spell);
+          if (target) queuedSpell = { id: spell.id, x: target.x, y: target.y };
+        }
+      }
+      if (!timeMode.superhot && spellButtons.targetingId) spellButtons.cancelTarget();
+      stick.enabled = !spellButtons.targetingId;
+
       const key = keyPush(keys);
-      const input = {
+      const input: Input = {
         mx: stick.x + key.x,
         my: stick.y + key.y,
         throw: throwing.held || keys.has('Space') || keys.has('KeyJ'),
         hop: hop.held || keys.has('ShiftLeft') || keys.has('KeyK'),
+        ...(queuedSpell ? { spell: queuedSpell } : {}),
       };
-      const active = Math.hypot(input.mx, input.my) > 0.01 || input.throw || input.hop;
-      if (!timeMode.superhot || active) {
+      queuedSpell = undefined;
+      const active = Math.hypot(input.mx, input.my) > 0.01 || input.throw || input.hop || Boolean(input.spell);
+      if (!spellButtons.targetingId && (!timeMode.superhot || active)) {
         stepWorld(world, input);
         if (world.events.some((event) => event.type === 'floor')) fx.clear();
         fx.take(world.events);
@@ -116,10 +160,24 @@ async function start(): Promise<void> {
     (between) => {
       fit();
       if (!world || !heroWalk) return;
-      drawWorld(ctx, atlas, world, { cols: switches.cols, look: LOOK[switches.look], dpr, heroWalk }, fx, world.over ? 1 : between);
+      drawWorld(
+        ctx,
+        atlas,
+        world,
+        {
+          cols: switches.cols,
+          look: LOOK[switches.look],
+          dpr,
+          heroWalk,
+          targetingSpell: spellButtons.targetingId ? spellData(spellButtons.targetingId) : undefined,
+        },
+        fx,
+        world.over ? 1 : between,
+      );
       hud.show(world);
       picker.show(world);
       gear.show(world);
+      spellButtons.show(world);
       hop.show(world);
       throwing.show(world);
       drawMiniMap(ctx, world, dpr);

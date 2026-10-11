@@ -544,3 +544,70 @@ canvas {
   background: rgba(83, 24, 20, 0.9);
   color: #fff0ed;
 }
+
+.mana {
+  position: relative;
+  display: none;
+  height: 12px;
+  margin-top: 4px;
+  border: 1px solid #4d5f87;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #101725;
+}
+.mana.on {
+  display: block;
+}
+.mana-fill {
+  height: 100%;
+  background: #496fbb;
+}
+.mana-text {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #e5edff;
+  text-shadow: 0 1px 1px #000;
+}
+.spell-buttons {
+  position: fixed;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+  z-index: 6;
+  display: none;
+  flex-direction: column-reverse;
+  gap: 8px;
+}
+.spell-buttons.on {
+  display: flex;
+}
+.spell-buttons button {
+  width: 92px;
+  min-height: 64px;
+  padding: 7px 8px;
+  border: 2px solid #7770a8;
+  border-radius: 14px;
+  background: #28243d;
+  color: #eeeaff;
+  font: 700 13px system-ui;
+  touch-action: none;
+}
+.spell-buttons button strong,
+.spell-buttons button span {
+  display: block;
+}
+.spell-buttons button span {
+  margin-top: 3px;
+  font-size: 10px;
+  color: #bfc8ed;
+}
+.spell-buttons button.targeting {
+  border-color: #e4d8ff;
+  background: #4a3d68;
+}
+.spell-buttons button:disabled {
+  opacity: 0.45;
+}

@@ -28,6 +28,9 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
   const bar = el('div', 'hp', vitals);
   const fill = el('div', 'hp-fill', bar);
   const hpText = el('div', 'hp-text', bar);
+  const mana = el('div', 'mana', vitals);
+  const manaFill = el('div', 'mana-fill', mana);
+  const manaText = el('div', 'mana-text', mana);
   const levelRow = el('div', 'level-row', vitals);
   const levelText = el('span', 'level-text', levelRow);
   const xp = el('div', 'xp', levelRow);
@@ -60,13 +63,26 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
     show(w) {
       const hp = Math.ceil(w.hero.hp);
       const need = xpToNext(w.hero.level);
-      const line = [hp, Math.floor(w.time), w.kills, w.depth, w.hero.poison > 0, w.hero.level, w.hero.xp, need].join('|');
+      const line = [
+        hp,
+        Math.floor(w.hero.mana * 10),
+        Math.floor(w.time),
+        w.kills,
+        w.depth,
+        w.hero.poison > 0,
+        w.hero.level,
+        w.hero.xp,
+        need,
+      ].join('|');
       if (line !== last) {
         last = line;
         fill.style.width = (Math.max(0, w.hero.hp) / w.hero.maxHp) * 100 + '%';
         bar.classList.toggle('poison', w.hero.poison > 0);
         bar.classList.toggle('low', w.hero.hp <= w.hero.maxHp * 0.3);
         hpText.textContent = hp + ' / ' + w.hero.maxHp;
+        mana.classList.toggle('on', w.hero.maxMana > 0);
+        manaFill.style.width = (w.hero.maxMana > 0 ? w.hero.mana / w.hero.maxMana : 0) * 100 + '%';
+        manaText.textContent = Math.floor(w.hero.mana) + ' / ' + w.hero.maxMana;
         levelText.textContent = 'Lv ' + w.hero.level;
         xpFill.style.width = Math.min(1, w.hero.xp / need) * 100 + '%';
         stats.textContent = w.depth + '/3층 · ' + clock(w.time) + ' · 처치 ' + w.kills;
