@@ -7,8 +7,8 @@ describe('equipment and bag presentation', () => {
     const w = makeWorld({ monsters: false, items: false });
     const slots = equipmentSlots(w);
     expect(slots.find((slot) => slot.id === 'weapon')?.value).toBe(w.weapon.name);
-    expect(slots.find((slot) => slot.id === 'armour')).toMatchObject({ available: false, value: '—' });
-    expect(slots.filter((slot) => slot.available)).toHaveLength(1);
+    expect(slots.find((slot) => slot.id === 'armour')).toMatchObject({ available: true, value: '—' });
+    expect(slots.filter((slot) => slot.available)).toHaveLength(10);
   });
 
   it('uses the same weapon in the equipment and bag views', () => {

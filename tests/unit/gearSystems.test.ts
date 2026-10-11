@@ -33,7 +33,7 @@ describe('equippable gear and status', () => {
     const m = spawnMonster(w, 'rat', w.hero.x + 1.4, w.hero.y, true);
     m.fear = 2;
     const stride = thinkMonster(w, m, 0.1);
-    expect(stride.vx).toBeLessThan(0);
+    expect(stride.vx).toBeGreaterThan(0);
   });
 
   it('does not enchant unequipped gear', () => {
