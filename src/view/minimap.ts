@@ -2,7 +2,7 @@ import { Cell, cellAt } from '../sim/grid';
 import type { World } from '../sim/world';
 
 /** Draw into the dedicated HUD minimap canvas instead of the dungeon canvas. */
-export function drawMiniMap(ctx: CanvasRenderingContext2D, w: World, _dpr: number): void {
+export function drawMiniMap(ctx: CanvasRenderingContext2D, w: World): void {
   const { width, height } = ctx.canvas;
   const scale = Math.min((width - 8) / w.grid.w, (height - 8) / w.grid.h);
   const left = (width - scale * w.grid.w) / 2;

@@ -196,7 +196,7 @@ async function start(): Promise<void> {
       hop.show(world);
       throwing.show(world);
       const minimapContext = hud.minimap.getContext('2d');
-      if (minimapContext) drawMiniMap(minimapContext, world, dpr);
+      if (minimapContext) drawMiniMap(minimapContext, world);
     },
   );
 }
