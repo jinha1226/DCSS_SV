@@ -10,11 +10,7 @@
     "range": 1.2,
     "knock": 1.2,
     "hands": 1,
-    "depthWeights": [
-      8,
-      5,
-      2
-    ]
+    "depthWeights": [8, 5, 2]
   },
   {
     "id": "war_axe",
@@ -27,11 +23,7 @@
     "range": 1.2,
     "knock": 1.2,
     "hands": 1,
-    "depthWeights": [
-      2,
-      6,
-      5
-    ]
+    "depthWeights": [2, 6, 5]
   },
   {
     "id": "battle_axe",
@@ -44,11 +36,7 @@
     "range": 1.2,
     "knock": 1.2,
     "hands": 2,
-    "depthWeights": [
-      1,
-      2,
-      7
-    ]
+    "depthWeights": [1, 2, 7]
   },
   {
     "id": "long_sword",
@@ -61,11 +49,7 @@
     "range": 1.3,
     "knock": 0.5,
     "hands": 1,
-    "depthWeights": [
-      8,
-      5,
-      3
-    ]
+    "depthWeights": [8, 5, 3]
   },
   {
     "id": "great_sword",
@@ -78,11 +62,7 @@
     "range": 1.5,
     "knock": 0.8,
     "hands": 2,
-    "depthWeights": [
-      1,
-      3,
-      7
-    ]
+    "depthWeights": [1, 3, 7]
   },
   {
     "id": "shortbow",
@@ -96,11 +76,7 @@
     "projectileSpeed": 20,
     "knock": 0,
     "hands": 2,
-    "depthWeights": [
-      8,
-      4,
-      2
-    ]
+    "depthWeights": [8, 4, 2]
   },
   {
     "id": "orcbow",
@@ -114,11 +90,7 @@
     "projectileSpeed": 20,
     "knock": 0,
     "hands": 2,
-    "depthWeights": [
-      2,
-      7,
-      4
-    ]
+    "depthWeights": [2, 7, 4]
   },
   {
     "id": "longbow",
@@ -132,11 +104,7 @@
     "projectileSpeed": 20,
     "knock": 0,
     "hands": 2,
-    "depthWeights": [
-      1,
-      2,
-      8
-    ]
+    "depthWeights": [1, 2, 8]
   },
   {
     "id": "boomerang",
@@ -282,11 +250,7 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [
-      5,
-      5,
-      5
-    ],
+    "depthWeights": [5, 5, 5],
     "effects": [
       {
         "id": "heal",
@@ -303,11 +267,7 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [
-      2,
-      2,
-      2
-    ],
+    "depthWeights": [2, 2, 2],
     "effects": [
       {
         "id": "blink",
@@ -323,11 +283,7 @@
     "enabled": true,
     "useMode": "store",
     "stackable": false,
-    "depthWeights": [
-      2,
-      2,
-      2
-    ],
+    "depthWeights": [2, 2, 2],
     "effects": [
       {
         "id": "lightning",
@@ -344,11 +300,7 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [
-      2,
-      3,
-      4
-    ],
+    "depthWeights": [2, 3, 4],
     "effects": [
       {
         "id": "restore_mana",
@@ -365,11 +317,7 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [
-      2,
-      2,
-      2
-    ],
+    "depthWeights": [2, 2, 2],
     "effects": [
       {
         "id": "might",
@@ -386,11 +334,7 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [
-      1,
-      2,
-      2
-    ],
+    "depthWeights": [1, 2, 2],
     "effects": [
       {
         "id": "haste",
@@ -407,11 +351,7 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [
-      3,
-      3,
-      3
-    ],
+    "depthWeights": [3, 3, 3],
     "effects": [
       {
         "id": "cure",
@@ -428,11 +368,7 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [
-      1,
-      1,
-      1
-    ],
+    "depthWeights": [1, 1, 1],
     "effects": [
       {
         "id": "poison",
@@ -449,11 +385,7 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [
-      1,
-      2,
-      2
-    ],
+    "depthWeights": [1, 2, 2],
     "effects": [
       {
         "id": "enchant_weapon",
@@ -470,11 +402,7 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [
-      3,
-      3,
-      3
-    ],
+    "depthWeights": [3, 3, 3],
     "effects": [
       {
         "id": "identify",
@@ -491,11 +419,7 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [
-      2,
-      2,
-      2
-    ],
+    "depthWeights": [2, 2, 2],
     "effects": [
       {
         "id": "teleport",
@@ -512,11 +436,7 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [
-      1,
-      2,
-      2
-    ],
+    "depthWeights": [1, 2, 2],
     "effects": [
       {
         "id": "fear",
@@ -531,11 +451,7 @@
     "enabled": false,
     "useMode": "equip",
     "stackable": false,
-    "depthWeights": [
-      0,
-      0,
-      0
-    ],
+    "depthWeights": [0, 0, 0],
     "effects": [
       {
         "id": "armour",
@@ -550,11 +466,7 @@
     "enabled": false,
     "useMode": "equip",
     "stackable": false,
-    "depthWeights": [
-      0,
-      0,
-      0
-    ],
+    "depthWeights": [0, 0, 0],
     "effects": [
       {
         "id": "armour",
@@ -569,11 +481,7 @@
     "enabled": false,
     "useMode": "equip",
     "stackable": false,
-    "depthWeights": [
-      0,
-      0,
-      0
-    ],
+    "depthWeights": [0, 0, 0],
     "effects": [
       {
         "id": "shield",
@@ -584,22 +492,8 @@
   {
     "id": "names",
     "kind": "names",
-    "prefixes": [
-      "카르",
-      "둠",
-      "벨",
-      "라크",
-      "모르",
-      "세른"
-    ],
-    "suffixes": [
-      "둠",
-      "라",
-      "바르",
-      "카",
-      "린",
-      "고르"
-    ]
+    "prefixes": ["카르", "둠", "벨", "라크", "모르", "세른"],
+    "suffixes": ["둠", "라", "바르", "카", "린", "고르"]
   },
   {
     "id": "equipment",

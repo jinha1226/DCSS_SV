@@ -164,7 +164,10 @@ export function populateFloorItems(w: World): void {
       let itemId: ConsumableId | undefined;
       for (const item of available) {
         roll -= item.depthWeights[tier] ?? 0;
-        if (roll < 0) { itemId = item.id; break; }
+        if (roll < 0) {
+          itemId = item.id;
+          break;
+        }
       }
       if (!itemId) continue;
       w.groundItems.push({ uid: uid(w, 'supply'), kind: 'consumable', itemId, x: cell.x, y: cell.y, ignored: false });

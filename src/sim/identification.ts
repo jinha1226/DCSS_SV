@@ -8,16 +8,22 @@ const MARKS = ['IX', 'KIR', 'SEN', 'VOR', 'QUM', 'ASH', 'TEK', 'YEL', 'DRA', 'MO
 export function initializeItemKnowledge(w: World): void {
   for (const kind of ['potion', 'scroll'] as const) {
     const ids = ITEM_DEFINITIONS.filter((item) => item.enabled && item.kind === kind).map((item) => item.id);
-    const looks = ids.map((_, i) => kind === 'potion' ? COLOURS[i % COLOURS.length]! + ' 물약' : '「' + MARKS[i % MARKS.length] + '」 두루마리');
+    const looks = ids.map((_, i) =>
+      kind === 'potion' ? COLOURS[i % COLOURS.length]! + ' 물약' : '「' + MARKS[i % MARKS.length] + '」 두루마리',
+    );
     for (let i = looks.length - 1; i > 0; i--) {
       const j = Math.floor(w.rng() * (i + 1));
       [looks[i], looks[j]] = [looks[j]!, looks[i]!];
     }
-    ids.forEach((id, i) => { w.itemAppearances[id] = looks[i]!; });
+    ids.forEach((id, i) => {
+      w.itemAppearances[id] = looks[i]!;
+    });
   }
 }
 
-export function identifyItem(w: World, id: string): void { w.identifiedItems.add(id); }
+export function identifyItem(w: World, id: string): void {
+  w.identifiedItems.add(id);
+}
 
 export function itemDisplayName(w: World, id: string): string {
   const item = ITEM_DEFINITIONS.find((row) => row.id === id);

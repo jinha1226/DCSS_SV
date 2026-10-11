@@ -5,8 +5,10 @@ import { identifyItem } from './identification';
 
 export type ConsumableId = string;
 export const CONSUMABLES: Readonly<Record<string, { name: string; action: string }>> = Object.fromEntries(
-  ITEM_DEFINITIONS.filter((item) => item.enabled && ['potion', 'scroll', 'wand'].includes(item.kind)).map((item) =>
-    [item.id, { name: item.name, action: item.kind === 'potion' ? '마시기' : item.kind === 'scroll' ? '읽기' : '사용' }]),
+  ITEM_DEFINITIONS.filter((item) => item.enabled && ['potion', 'scroll', 'wand'].includes(item.kind)).map((item) => [
+    item.id,
+    { name: item.name, action: item.kind === 'potion' ? '마시기' : item.kind === 'scroll' ? '읽기' : '사용' },
+  ]),
 );
 export const consumableName = (id: string): string => CONSUMABLES[id]?.name ?? id;
 

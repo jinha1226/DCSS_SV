@@ -63,11 +63,12 @@ export function activateItem(w: World, id: string, side: ItemUser, source?: Mons
   }
   if (effect.id === 'teleport' && side === 'hero') {
     const cells: { x: number; y: number }[] = [];
-    for (let y = 0; y < w.grid.h; y++) for (let x = 0; x < w.grid.w; x++) {
-      if (!walkable(w.grid, x, y) || Math.hypot(x + 0.5 - actor.x, y + 0.5 - actor.y) < power / 2) continue;
-      if (w.monsters.some((m) => m.hp > 0 && Math.hypot(m.x - x - 0.5, m.y - y - 0.5) < 1)) continue;
-      cells.push({ x: x + 0.5, y: y + 0.5 });
-    }
+    for (let y = 0; y < w.grid.h; y++)
+      for (let x = 0; x < w.grid.w; x++) {
+        if (!walkable(w.grid, x, y) || Math.hypot(x + 0.5 - actor.x, y + 0.5 - actor.y) < power / 2) continue;
+        if (w.monsters.some((m) => m.hp > 0 && Math.hypot(m.x - x - 0.5, m.y - y - 0.5) < 1)) continue;
+        cells.push({ x: x + 0.5, y: y + 0.5 });
+      }
     if (!cells.length) return false;
     const dest = cells[Math.floor(w.rng() * cells.length)]!;
     actor.x = actor.px = dest.x;
