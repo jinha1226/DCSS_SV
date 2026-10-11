@@ -1,7 +1,7 @@
 // Written by tools/packTiles.mjs. Do not edit by hand.
 export const TILE_SIZE = 32;
 export const ATLAS_COLS = 16;
-export const SHEET_VERSION = '403cf2ec13';
+export const SHEET_VERSION = '9ed970693d';
 export const TILE_NAMES = [
   'feat/stone_stairs_down',
   'feat/stone_stairs_up',
@@ -24,6 +24,7 @@ export const TILE_NAMES = [
   'floor/limestone8',
   'floor/limestone9',
   'hero/barachi',
+  'hero/deep_elf_m',
   'hero/minotaur',
   'item/battle_axe1',
   'item/boomerang1',
