@@ -37,16 +37,21 @@ canvas {
   left: 0;
   right: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   padding: calc(10px + env(safe-area-inset-top, 0px)) 12px 22px;
   background: linear-gradient(rgba(0, 0, 0, 0.8) 45%, rgba(0, 0, 0, 0));
   pointer-events: none;
 }
 
+.vitals {
+  flex: 1;
+  min-width: 0;
+}
+
 .hp {
   position: relative;
-  flex: 1;
+  width: 100%;
   height: 20px;
   border: 1px solid #6d5a4a;
   border-radius: 5px;
@@ -171,3 +176,88 @@ canvas {
 .throw-button { position: fixed; right: max(20px, env(safe-area-inset-right)); bottom: calc(40px + env(safe-area-inset-bottom, 0px)); width: 76px; height: 76px; border-radius: 50%; border: 2px solid #d7c48b; background: #302c24; color: #f6e7bf; font: 700 16px system-ui; touch-action: none; z-index: 5; }
 .throw-button:disabled { opacity: 0.55; }
 .throw-button .cooldown { display: block; font-size: 11px; }
+
+.level-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  height: 8px;
+}
+.level-text {
+  font-size: 10px;
+  line-height: 8px;
+  white-space: nowrap;
+  color: #d8cfbb;
+}
+.xp {
+  flex: 1;
+  height: 5px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: #1a2230;
+}
+.xp-fill {
+  height: 100%;
+  background: #6f8fb7;
+}
+.skill-picker {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  padding: calc(28px + env(safe-area-inset-top, 0px)) 18px calc(24px + env(safe-area-inset-bottom, 0px));
+  background: rgba(0, 0, 0, 0.78);
+}
+.skill-picker.on { display: flex; }
+.skill-picker h2 {
+  margin: 0 0 14px;
+  text-align: center;
+  font-size: 22px;
+}
+.skill-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.skill-card {
+  min-height: 82px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #9f895d;
+  border-radius: 12px;
+  background: #29251e;
+  color: #f7edd3;
+  text-align: left;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 10px;
+  font: inherit;
+  touch-action: manipulation;
+}
+.skill-card strong { font-size: 18px; }
+.skill-card span {
+  font-size: 13px;
+  color: #cdbf9d;
+  align-self: center;
+}
+.skill-card small {
+  grid-column: 1 / -1;
+  font-size: 14px;
+  color: #eee2c5;
+}
+.skill-card:disabled { opacity: 0.72; }
+.skill-owned {
+  min-height: 34px;
+  margin-top: 14px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #bdb39e;
+  text-align: center;
+}
+.result-skills {
+  max-width: 320px;
+  line-height: 1.5;
+}

@@ -6,6 +6,7 @@ import { FAR, makeFlow, updateFlow } from '../../src/sim/flow';
 import { GEN, makeFloor } from '../../src/sim/gen';
 import { Cell, cellAt, walkable } from '../../src/sim/grid';
 import { spawnMonster } from '../../src/sim/monster';
+import { chooseSkill } from '../../src/sim/skills';
 import { STEP, floorSeed, makeWorld, stepWorld, type World } from '../../src/sim/world';
 import { STILL, arena, count, run } from './arena';
 
@@ -162,15 +163,22 @@ describe('lingering', () => {
   it('leaves a floor quiet at first, then sends bands up the stairs, sooner and sooner', () => {
     const w = makeWorld({ seed: 9 });
     w.hero.maxHp = w.hero.hp = 1e9;
+    const grow = (seconds: number): void => {
+      for (let i = 0; i < Math.round(seconds / STEP); i++) {
+        if (w.choosing) chooseSkill(w, w.choosing[0]!.id);
+        stepWorld(w, STILL);
+      }
+    };
     const before = w.monsters.length;
-    run(w, DUNGEON.calm - 1);
+    grow(DUNGEON.calm - 1);
     expect(w.monsters.length + w.kills).toBe(before);
-    run(w, 2);
+    grow(2);
     const first = w.monsters.length + w.kills;
     expect(first).toBeGreaterThan(before);
     const arrivals: number[] = [];
     let seen = first;
     for (let i = 0; i < Math.round(150 / STEP); i++) {
+      if (w.choosing) chooseSkill(w, w.choosing[0]!.id);
       stepWorld(w, STILL);
       if (w.monsters.length + w.kills > seen) {
         seen = w.monsters.length + w.kills;

@@ -19,7 +19,7 @@ interface Stroke {
 
 const RISE = 0.6;
 const STROKE = 0.2;
-const COLOUR = { axe: '#f4ecd6', horns: '#ffcf6a', throw: '#d2e8ff', hurt: '#ff7a6a' } as const;
+const COLOUR = { axe: '#f4ecd6', horns: '#ffcf6a', throw: '#d2e8ff', thorns: '#d8a6ff', hurt: '#ff7a6a', guard: '#b9dfef' } as const;
 
 /** What the screen shows of blows given and taken. It only listens to the rules; it never changes them. */
 export class Fx {
@@ -34,6 +34,8 @@ export class Fx {
         this.rising.push({ x: e.x, y: e.y - 0.45, text: String(e.amount), colour: COLOUR[e.by], big: e.by === 'horns', age: 0 });
       } else if (e.type === 'hurt') {
         this.rising.push({ x: e.x, y: e.y - 0.6, text: `-${e.amount}`, colour: COLOUR.hurt, big: true, age: 0 });
+      } else if (e.type === 'dodge' || e.type === 'block') {
+        this.rising.push({ x: e.x, y: e.y - 0.55, text: e.type === 'dodge' ? '피함' : '막음', colour: COLOUR.guard, big: false, age: 0 });
       } else if (e.type === 'swing') {
         // Each stroke starts a third of a turn on from the last, so they do not look stamped.
         this.turn = (this.turn + 2.1) % (Math.PI * 2);

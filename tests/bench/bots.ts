@@ -1,11 +1,11 @@
-import { HERO } from '../../src/data/hero';
 import { moveCircle, wallGap } from '../../src/sim/collide';
-import { makeWorld, stepWorld, type Input, type World } from '../../src/sim/world';
+import { throwTarget } from '../../src/sim/combat';
+import { Cell, cellAt, walkable } from '../../src/sim/grid';
+import { chooseSkill, effectValue, skillLevel } from '../../src/sim/skills';
+import { makeWorld, stepWorld, type Input, type SkillChoice, type World } from '../../src/sim/world';
 
-/** A stand-in for a player: looks at the world and says which way to walk. */
 export type Bot = (w: World) => Input;
-
-/** Stands where it starts. */
+export type Chooser = (cards: readonly SkillChoice[], w: World) => string;
 export const still: Bot = () => ({ mx: 0, my: 0 });
 
 function nearestAwake(w: World): { dx: number; dy: number; d: number } | undefined {
@@ -20,35 +20,28 @@ function nearestAwake(w: World): { dx: number; dy: number; d: number } | undefin
   return best;
 }
 
-/** Walks straight away from whatever is nearest, and stands when nothing is near. */
 export const flee: Bot = (w) => {
   const near = nearestAwake(w);
   if (!near || near.d > 6) return { mx: 0, my: 0 };
   return { mx: -near.dx / near.d, my: -near.dy / near.d };
 };
 
-/**
- * Fights the way the game means to be played: lets the pack come just into the axe's reach,
- * backs off when it presses closer, and circles rather than backing into a wall.
- */
 export const kite: Bot = (w) => {
   const near = nearestAwake(w);
   if (!near) return { mx: 0, my: 0 };
   const nx = near.dx / near.d;
   const ny = near.dy / near.d;
-  const want = HERO.axe.reach - 0.15;
-  if (near.d > want + 0.6) return { mx: 0, my: 0 }; // let them come
+  const want = w.heroDef.axe.reach + effectValue(w, 'axe.wide') - 0.15;
+  if (near.d > want + 0.6) return { mx: 0, my: 0 };
   const away = near.d < want ? 1 : 0.2;
   return { mx: -nx * away - ny * 0.7, my: -ny * away + nx * 0.7 };
 };
 
-const DIRS = Array.from({ length: 16 }, (_, i) => ({ x: Math.cos((i / 16) * Math.PI * 2), y: Math.sin((i / 16) * Math.PI * 2) }));
+const DIRS = Array.from({ length: 16 }, (_, i) => ({
+  x: Math.cos((i / 16) * Math.PI * 2),
+  y: Math.sin((i / 16) * Math.PI * 2),
+}));
 
-/**
- * Looks a quarter of a second ahead in sixteen directions (and standing still) and takes the one
- * that leaves it least threatened while keeping something in the axe's reach. This is the bot
- * that stands for a player who has the hang of it.
- */
 export const dance: Bot = (w) => {
   const ahead = 0.25;
   const near = w.monsters.filter((m) => m.awake && Math.hypot(m.x - w.hero.x, m.y - w.hero.y) < 8);
@@ -56,20 +49,18 @@ export const dance: Bot = (w) => {
   let best = { mx: 0, my: 0 };
   let bestScore = -Infinity;
   for (const dir of [{ x: 0, y: 0 }, ...DIRS]) {
-    const to = moveCircle(w.grid, w.hero, HERO.radius, dir.x * w.speed * ahead, dir.y * w.speed * ahead);
+    const to = moveCircle(w.grid, w.hero, w.heroDef.radius, dir.x * w.speed * ahead, dir.y * w.speed * ahead);
     let score = 0;
     let inReach = false;
     for (const m of near) {
       const d0 = Math.hypot(m.x - to.x, m.y - to.y);
       const d = Math.max(0.6, d0 - (m.stun > 0 ? 0 : m.stats.speed * ahead));
-      const strike = HERO.radius + m.stats.reach + 0.25;
+      const strike = w.heroDef.radius + m.stats.reach + 0.25;
       if (d < strike) score -= 10 * (strike - d + 0.3);
-      if (d0 <= HERO.axe.reach - 0.05) inReach = true;
+      if (d0 <= w.heroDef.axe.reach + effectValue(w, 'axe.wide') - 0.05) inReach = true;
     }
     if (inReach) score += 2;
-    // Open ground is worth a little: a corner has fewer ways out.
     score += Math.min(1.5, wallGap(w.grid, to)) * 0.4;
-    // Having moved less than asked means a wall or a body is in the way.
     if (dir.x || dir.y) score -= (1 - Math.hypot(to.x - w.hero.x, to.y - w.hero.y) / (w.speed * ahead)) * 2;
     if (score > bestScore) {
       bestScore = score;
@@ -79,23 +70,104 @@ export const dance: Bot = (w) => {
   return best;
 };
 
+function route(w: World, target: (x: number, y: number) => boolean): Input | undefined {
+  const sx = Math.floor(w.hero.x);
+  const sy = Math.floor(w.hero.y);
+  const size = w.grid.w * w.grid.h;
+  const prev = new Int32Array(size);
+  prev.fill(-2);
+  const start = sy * w.grid.w + sx;
+  const queue: number[] = [start];
+  prev[start] = -1;
+  let end = -1;
+  for (let at = 0; at < queue.length; at++) {
+    const i = queue[at]!;
+    const x = i % w.grid.w;
+    const y = Math.floor(i / w.grid.w);
+    if (target(x, y)) {
+      end = i;
+      break;
+    }
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = x + dx;
+      const ny = y + dy;
+      const ni = ny * w.grid.w + nx;
+      if (nx < 0 || ny < 0 || nx >= w.grid.w || ny >= w.grid.h) continue;
+      if (prev[ni] !== -2 || !w.seen[ni] || !walkable(w.grid, nx, ny)) continue;
+      prev[ni] = i;
+      queue.push(ni);
+    }
+  }
+  if (end < 0) return undefined;
+  if (end === start) return { mx: 0, my: 0 };
+  let step = end;
+  while (prev[step] !== start && prev[step]! >= 0) step = prev[step]!;
+  const tx = step % w.grid.w + 0.5;
+  const ty = Math.floor(step / w.grid.w) + 0.5;
+  const dx = tx - w.hero.x;
+  const dy = ty - w.hero.y;
+  const d = Math.hypot(dx, dy) || 1;
+  return { mx: dx / d, my: dy / d };
+}
+
+export const explore: Bot = (w) => {
+  const near = nearestAwake(w);
+  if (near && near.d < 7) return { ...dance(w), throw: Boolean(throwTarget(w)) };
+  if (cellAt(w.grid, Math.floor(w.hero.x), Math.floor(w.hero.y)) === Cell.StairsDown) return { mx: 0, my: 0 };
+  const stair = new Set(w.stairs.filter((s) => s.down && w.seen[s.y * w.grid.w + s.x]).map((s) => s.y * w.grid.w + s.x));
+  const toStair = route(w, (x, y) => stair.has(y * w.grid.w + x));
+  if (toStair) return { ...toStair, throw: Boolean(throwTarget(w)) };
+  const frontier = (x: number, y: number): boolean => {
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = x + dx;
+      const ny = y + dy;
+      if (nx >= 0 && ny >= 0 && nx < w.grid.w && ny < w.grid.h && !w.seen[ny * w.grid.w + nx]) return true;
+    }
+    return false;
+  };
+  return { ...(route(w, frontier) ?? { mx: 0, my: 0 }), throw: Boolean(throwTarget(w)) };
+};
+
+export const axeFirst: Chooser = (cards) =>
+  cards.find((c) => c.id === 'axe')?.id ?? cards.find((c) => c.id === 'fighting')?.id ?? cards[0]!.id;
+
+export const defenceFirst: Chooser = (cards, w) => {
+  for (const id of ['armour', 'shield', 'dodging']) {
+    if (skillLevel(w, id) >= 8) continue;
+    const card = cards.find((c) => c.id === id);
+    if (card) return id;
+  }
+  return cards[0]!.id;
+};
+
 export interface RunResult {
   readonly seconds: number;
   readonly kills: number;
   readonly hp: number;
   readonly fell: boolean;
+  readonly depth: number;
+  readonly won: boolean;
+  readonly level: number;
 }
 
-/** Plays one run with a bot, for at most `limit` seconds. */
-export function play(bot: Bot, seed: number, limit: number): RunResult {
+export function play(bot: Bot, seed: number, limit: number, chooser: Chooser = axeFirst): RunResult {
   const w = makeWorld({ seed });
-  while (!w.over && w.time < limit) stepWorld(w, bot(w));
-  return { seconds: w.time, kills: w.kills, hp: w.hero.hp, fell: w.over };
+  while (!w.over && w.time < limit) {
+    if (w.choosing) {
+      chooseSkill(w, chooser(w.choosing, w));
+      continue;
+    }
+    stepWorld(w, bot(w));
+  }
+  return { seconds: w.time, kills: w.kills, hp: w.hero.hp, fell: w.over && !w.won, depth: w.depth, won: w.won, level: w.hero.level };
 }
 
 export function summary(runs: readonly RunResult[]): string {
   const mean = (f: (r: RunResult) => number): number => runs.reduce((a, r) => a + f(r), 0) / runs.length;
-  const fell = runs.filter((r) => r.fell).length;
   const times = runs.map((r) => r.seconds).sort((a, b) => a - b);
-  return `fell ${fell}/${runs.length}, seconds ${mean((r) => r.seconds).toFixed(0)} (${times[0]!.toFixed(0)}-${times[times.length - 1]!.toFixed(0)}), kills ${mean((r) => r.kills).toFixed(0)}, hp left ${mean((r) => r.hp).toFixed(0)}`;
+  return 'won ' + runs.filter((r) => r.won).length + '/' + runs.length +
+    ', depth ' + mean((r) => r.depth).toFixed(1) +
+    ', seconds ' + mean((r) => r.seconds).toFixed(0) + ' (' + times[0]!.toFixed(0) + '-' + times[times.length - 1]!.toFixed(0) + ')' +
+    ', kills ' + mean((r) => r.kills).toFixed(0) +
+    ', level ' + mean((r) => r.level).toFixed(1);
 }

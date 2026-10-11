@@ -1,8 +1,40 @@
 [
-  {"id":"axe","name":"도끼","each":"피해 +1","aptitude":"axe","effects":["axe.damage","axe.wide","axe.spin","axe.stun","axe.reset"]},
-  {"id":"fighting","name":"전투","each":"최대 체력 +8","aptitude":"fighting","effects":["fighting.hp","fighting.regen","fighting.healKill","fighting.desperate","fighting.lastStand"]},
-  {"id":"armour","name":"갑옷","each":"받는 피해 -1","aptitude":"armour","effects":["armour.reduce","armour.stone","armour.deflect","armour.unmoved","armour.thorns"]},
-  {"id":"shield","name":"방패","each":"막을 확률 +4%","aptitude":"shield","effects":["shield.chance","shield.push","shield.missile","shield.stun","shield.reset"]},
-  {"id":"dodging","name":"회피","each":"피할 확률 +3%","aptitude":"dodging","effects":["dodging.chance","dodging.speed","dodging.delay","dodging.squeeze","dodging.grace"]},
-  {"id":"throwing","name":"투척","each":"피해 +1, 재사용 조금 짧게","aptitude":"throwing","effects":["throwing.power","throwing.pierce","throwing.double","throwing.slow","throwing.return"]}
+  {"id":"axe","name":"도끼","each":"피해 +1","aptitude":"axe","effects":[
+    {"effect":"axe.damage","perLevel":1},
+    {"effect":"axe.wide","level":2,"value":0.3,"text":"베는 범위가 넓어진다"},
+    {"effect":"axe.spin","level":4,"value":1.5,"text":"세 번째 휘두름은 크게 돈다"},
+    {"effect":"axe.stun","level":6,"value":0.25,"text":"맞은 적이 잠깐 멈칫한다"},
+    {"effect":"axe.reset","level":8,"value":1,"text":"쓰러뜨리면 바로 또 휘두른다"}]},
+  {"id":"fighting","name":"전투","each":"최대 체력 +8","aptitude":"fighting","effects":[
+    {"effect":"fighting.hp","perLevel":8},
+    {"effect":"fighting.regen","level":2,"value":2,"text":"체력이 두 배 빨리 찬다"},
+    {"effect":"fighting.healKill","level":4,"value":1,"text":"쓰러뜨릴 때마다 체력 +1"},
+    {"effect":"fighting.desperate","level":6,"value":1.3,"text":"체력이 낮으면 더 세게 친다"},
+    {"effect":"fighting.lastStand","level":8,"value":1,"text":"죽을 피해를 층마다 한 번 버틴다"}]},
+  {"id":"armour","name":"갑옷","each":"받는 피해 -1","aptitude":"armour","effects":[
+    {"effect":"armour.reduce","perLevel":1},
+    {"effect":"armour.stone","level":2,"value":0.5,"text":"돌 피해가 절반"},
+    {"effect":"armour.deflect","level":4,"value":3,"text":"약한 타격은 튕겨 낸다"},
+    {"effect":"armour.unmoved","level":6,"value":1,"text":"떼 속에서도 안 느려진다"},
+    {"effect":"armour.thorns","level":8,"value":2,"text":"때린 적이 되받아 다친다"}]},
+  {"id":"shield","name":"방패","each":"막을 확률 +4%","aptitude":"shield","effects":[
+    {"effect":"shield.chance","perLevel":0.04},
+    {"effect":"shield.push","level":2,"value":5,"text":"막으면 그 적을 밀쳐 낸다"},
+    {"effect":"shield.missile","level":4,"value":2,"text":"날아오는 건 두 배로 잘 막는다"},
+    {"effect":"shield.stun","level":6,"value":0.6,"text":"막힌 적이 잠깐 멍해진다"},
+    {"effect":"shield.reset","level":8,"value":1,"text":"막은 직후 기본 공격이 바로 나간다"}]},
+  {"id":"dodging","name":"회피","each":"피할 확률 +3%","aptitude":"dodging","effects":[
+    {"effect":"dodging.chance","perLevel":0.03},
+    {"effect":"dodging.speed","level":2,"value":0.06,"text":"걸음이 조금 빨라진다"},
+    {"effect":"dodging.delay","level":4,"value":0.8,"text":"피하면 그 적이 헛쳐서 다음 공격이 늦어진다"},
+    {"effect":"dodging.squeeze","level":6,"value":0.5,"text":"떼 사이를 덜 막히고 지난다"},
+    {"effect":"dodging.grace","level":8,"value":0.8,"text":"한 번 피하면 잠깐 동안 전부 피한다"}]},
+  {"id":"throwing","name":"투척","each":"피해 +1, 재사용 조금 짧게","aptitude":"throwing","effects":[
+    {"effect":"throwing.power","perLevel":1},
+    {"effect":"throwing.cooldown","perLevel":-0.07},
+    {"effect":"throwing.pierce","level":2,"value":1,"text":"맞은 적을 뚫고 하나 더"},
+    {"effect":"throwing.double","level":4,"value":2,"text":"한 번에 둘을 던진다"},
+    {"effect":"throwing.slow","level":6,"value":0.4,"text":"맞은 적이 느려진다"},
+    {"effect":"throwing.slowTime","level":6,"value":2},
+    {"effect":"throwing.return","level":8,"value":1,"text":"돌아오면서 한 번 더 때린다"}]}
 ]

@@ -9,7 +9,7 @@ export interface HeroDefinition {
   readonly walk:{readonly legs:number;readonly mid:number};
   readonly axe:{readonly damage:number;readonly reach:number;readonly every:number;readonly knock:number};
   readonly thrown:{readonly damage:number;readonly range:number;readonly speed:number;readonly every:number;readonly knock:number};
-  readonly horns:{readonly damage:number;readonly reach:number;readonly every:number;readonly knock:number;readonly stun:number};
+  readonly horns:{readonly damage:number;readonly reach:number;readonly every:number;readonly knock:number;readonly stun:number;readonly damageEveryLevel:number;readonly damageGain:number;readonly speedEveryLevel:number;readonly speedGain:number;readonly minEvery:number};
   readonly aptitudes:Readonly<Record<string,number>>;
 }
 type SpeciesRow=(typeof speciesRaw)[number]; type JobRow=(typeof jobsRaw)[number]; type ItemRow=(typeof itemsRaw)[number];

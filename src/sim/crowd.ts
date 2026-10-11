@@ -1,3 +1,4 @@
+import { heroGive } from './skills';
 import type { World } from './types';
 
 /** How much of an overlap between two monsters is undone in one step; less than all of it keeps a pack from shaking. */
@@ -88,10 +89,10 @@ export function shove(w: World): Shoves {
     const d = Math.hypot(dx, dy);
     if (d < need && d > 1e-4) {
       const over = need - d;
-      shoves.x[i]! += (dx / d) * over * (1 - w.heroDef.give);
-      shoves.y[i]! += (dy / d) * over * (1 - w.heroDef.give);
-      shoves.heroX -= (dx / d) * over * w.heroDef.give;
-      shoves.heroY -= (dy / d) * over * w.heroDef.give;
+      shoves.x[i]! += (dx / d) * over * (1 - heroGive(w));
+      shoves.y[i]! += (dy / d) * over * (1 - heroGive(w));
+      shoves.heroX -= (dx / d) * over * heroGive(w);
+      shoves.heroY -= (dy / d) * over * heroGive(w);
     }
   }
   return shoves;

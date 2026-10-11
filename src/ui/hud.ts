@@ -1,9 +1,8 @@
+import { skillData } from '../data/skills';
+import { xpToNext } from '../sim/skills';
 import type { World } from '../sim/world';
 
-export interface Hud {
-  /** Shows the world as it stands. Cheap to call every frame. */
-  show(w: World): void;
-}
+export interface Hud { show(w: World): void }
 
 function el(tag: string, className: string, parent: HTMLElement): HTMLElement {
   const node = document.createElement(tag);
@@ -11,21 +10,30 @@ function el(tag: string, className: string, parent: HTMLElement): HTMLElement {
   parent.append(node);
   return node;
 }
+const clock = (seconds: number): string => Math.floor(seconds / 60) + ':' + String(Math.floor(seconds % 60)).padStart(2, '0');
+function skillText(w: World): string {
+  return Object.entries(w.hero.skills)
+    .filter(([, level]) => level > 0)
+    .map(([id, level]) => skillData(id).name + ' ' + level)
+    .join(' · ');
+}
 
-const clock = (seconds: number): string => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
-
-/** The strip at the top (health, time, kills) and the screen shown when the hero has fallen. */
 export function makeHud(root: HTMLElement, again: () => void): Hud {
   const top = el('div', 'top', root);
-  const bar = el('div', 'hp', top);
+  const vitals = el('div', 'vitals', top);
+  const bar = el('div', 'hp', vitals);
   const fill = el('div', 'hp-fill', bar);
   const hpText = el('div', 'hp-text', bar);
+  const levelRow = el('div', 'level-row', vitals);
+  const levelText = el('span', 'level-text', levelRow);
+  const xp = el('div', 'xp', levelRow);
+  const xpFill = el('div', 'xp-fill', xp);
   const stats = el('div', 'stats', top);
 
   const over = el('div', 'over', root);
   const title = el('h1', '', over);
-  title.textContent = '쓰러졌다';
   const result = el('p', '', over);
+  const skills = el('p', 'result-skills', over);
   const button = el('button', '', over) as HTMLButtonElement;
   button.type = 'button';
   button.textContent = '다시 시작';
@@ -36,19 +44,23 @@ export function makeHud(root: HTMLElement, again: () => void): Hud {
   return {
     show(w) {
       const hp = Math.ceil(w.hero.hp);
-      const line = `${hp}|${Math.floor(w.time)}|${w.kills}|${w.depth}|${w.hero.poison > 0}`;
+      const need = xpToNext(w.hero.level);
+      const line = [hp, Math.floor(w.time), w.kills, w.depth, w.hero.poison > 0, w.hero.level, w.hero.xp, need].join('|');
       if (line !== last) {
         last = line;
-        fill.style.width = `${(Math.max(0, w.hero.hp) / w.hero.maxHp) * 100}%`;
+        fill.style.width = Math.max(0, w.hero.hp) / w.hero.maxHp * 100 + '%';
         bar.classList.toggle('poison', w.hero.poison > 0);
         bar.classList.toggle('low', w.hero.hp <= w.hero.maxHp * 0.3);
-        hpText.textContent = `${hp} / ${w.hero.maxHp}`;
-        stats.textContent = `${w.depth}/3층 · ${clock(w.time)} · 처치 ${w.kills}`;
+        hpText.textContent = hp + ' / ' + w.hero.maxHp;
+        levelText.textContent = 'Lv ' + w.hero.level;
+        xpFill.style.width = Math.min(1, w.hero.xp / need) * 100 + '%';
+        stats.textContent = w.depth + '/3층 · ' + clock(w.time) + ' · 처치 ' + w.kills;
       }
       if (w.over !== shown) {
         shown = w.over;
         title.textContent = w.won ? '던전을 빠져나왔다' : '쓰러졌다';
-        result.textContent = `${clock(w.time)} 버팀 · ${w.kills} 처치`;
+        result.textContent = clock(w.time) + ' 버팀 · ' + w.kills + ' 처치 · Lv ' + w.hero.level;
+        skills.textContent = skillText(w) || '고른 스킬 없음';
         over.classList.toggle('on', w.over);
       }
     },
