@@ -1,5 +1,8 @@
 import type { World } from './types';
 import { walkable } from './grid';
+import { computeFov } from './fov';
+import { updateFlow } from './flow';
+import { recordKill } from './kills';
 
 export type ConsumableId = 'potion_healing' | 'scroll_blink' | 'wand_sparks';
 export const CONSUMABLES: Readonly<Record<ConsumableId, { name: string; action: string }>> = {
@@ -39,6 +42,9 @@ export function useConsumable(w: World, id: ConsumableId): boolean {
     const destination = choices[Math.floor(w.rng() * choices.length)]!;
     w.hero.x = w.hero.px = destination.x;
     w.hero.y = w.hero.py = destination.y;
+    computeFov(w.grid, Math.floor(destination.x), Math.floor(destination.y), w.heroDef.sight, w.visible);
+    for (let i = 0; i < w.visible.length; i++) if (w.visible[i]) w.seen[i] = 1;
+    updateFlow(w.flow, w.grid, Math.floor(destination.x), Math.floor(destination.y));
   } else {
     const target = w.monsters
       .filter((monster) => monster.hp > 0 && w.visible[Math.floor(monster.y) * w.grid.w + Math.floor(monster.x)])
@@ -51,7 +57,7 @@ export function useConsumable(w: World, id: ConsumableId): boolean {
     if (target.hp <= 0) {
       // The kill pipeline handles experience, healing, and the message log.
       // Import lazily is unnecessary because kills only depends on skills.
-      recordWandKill(w, target);
+      recordKill(w, target);
     }
   }
   item.count--;
@@ -59,8 +65,3 @@ export function useConsumable(w: World, id: ConsumableId): boolean {
   return true;
 }
 
-import { recordKill } from './kills';
-import type { Monster } from './types';
-function recordWandKill(w: World, monster: Monster): void {
-  recordKill(w, monster);
-}
