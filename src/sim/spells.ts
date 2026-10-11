@@ -314,6 +314,7 @@ export function spellAtPoint(w: World, spell: SpellData, x: number, y: number): 
 
 export function castAt(w: World, spellId: string, x: number, y: number): boolean {
   const spell = spellData(spellId);
+  if (spell.shape === 'utility') return castPaidSpell(w, spellId);
   const target = spellAtPoint(w, spell, x, y);
   return target ? castPaidSpell(w, spellId, target) : false;
 }

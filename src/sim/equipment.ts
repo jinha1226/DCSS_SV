@@ -2,6 +2,7 @@ import {
   ARTEFACTS,
   AXES,
   BOWS,
+  WEAPONS,
   BRANDS,
   EQUIPMENT,
   NAME_PARTS,
@@ -23,7 +24,7 @@ const rollInt = (w: World, lo: number, hi: number): number => lo + Math.floor(w.
 const uid = (w: World, prefix: string): string => prefix + '-' + w.depth + '-' + w.nextItem++;
 
 function pool(family: WeaponFamily) {
-  return family === 'axe' ? AXES : BOWS;
+  return family === 'axe' ? AXES : family === 'bow' ? BOWS : WEAPONS.filter((weapon) => weapon.family === 'long_blade');
 }
 function weighted(w: World, family: WeaponFamily) {
   const choices = pool(family),

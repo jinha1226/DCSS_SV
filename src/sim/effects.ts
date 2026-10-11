@@ -9,6 +9,11 @@ export function hurtHero(w: World, amount: number, kind: HurtKind = 'melee', sou
   const hero = w.hero;
   if (hero.invulnerable > 0) return false;
   const dodge = effectValue(w, 'dodging.chance') + weaponOption(w.weapon, 'evasion');
+  if (kind === 'melee' && w.weapon.family === 'long_blade' && w.rng() < effectValue(w, 'long_blade.parry')) {
+    w.events.push({ type: 'block', x: hero.x, y: hero.y });
+    hero.swing = 0;
+    return false;
+  }
   if (dodge > 0 && w.rng() < dodge) {
     w.events.push({ type: 'dodge', x: hero.x, y: hero.y });
     headbuttBack(w, source, kind);

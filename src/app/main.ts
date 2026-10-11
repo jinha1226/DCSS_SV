@@ -5,7 +5,7 @@ import { spellData } from '../data/spells';
 import { guardZoom } from '../input/guards';
 import { keyPush, watchKeys } from '../input/keys';
 import { makeStick } from '../input/stick';
-import { castPaidSpell, spellAtPoint, spellTarget } from '../sim/spells';
+import { spellAtPoint, spellTarget } from '../sim/spells';
 import { STEP, makeWorld, stepWorld, type Input, type World } from '../sim/world';
 import { makeCharacterSelect, type CharacterChoice } from '../ui/characterSelect';
 import { makeEquipmentPicker } from '../ui/equipmentPicker';
@@ -131,7 +131,7 @@ async function start(): Promise<void> {
       if (pressedSpell) {
         const selectedSpell = spellData(pressedSpell);
         if (selectedSpell.shape === 'utility') {
-          castPaidSpell(world, pressedSpell);
+          queuedSpell = { id: pressedSpell, x: world.hero.x, y: world.hero.y };
         } else if (timeMode.superhot) {
           if (spellButtons.targetingId === pressedSpell) spellButtons.cancelTarget();
           else spellButtons.beginTarget(pressedSpell);
