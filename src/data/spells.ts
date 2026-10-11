@@ -63,7 +63,7 @@ for (const spell of SPELLS) {
     }
     for (const school of spell.schools) {
       const needed = spell.requirements[school];
-      if (!Number.isInteger(needed) || needed < 1 || needed > 8) {
+      if (needed === undefined || !Number.isInteger(needed) || needed < 1 || needed > 8) {
         throw new Error(label + ': requirements의 레벨은 1~8');
       }
     }
