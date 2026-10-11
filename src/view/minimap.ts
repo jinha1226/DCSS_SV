@@ -26,10 +26,5 @@ export function drawMiniMap(ctx: CanvasRenderingContext2D, w: World): void {
     ctx.fillRect(left + ix * scale, top + iy * scale, scale, scale);
   }
   ctx.fillStyle = '#ffedb6';
-  ctx.fillRect(
-    left + Math.floor(w.hero.x) * scale - 1,
-    top + Math.floor(w.hero.y) * scale - 1,
-    scale + 2,
-    scale + 2,
-  );
+  ctx.fillRect(left + Math.floor(w.hero.x) * scale - 1, top + Math.floor(w.hero.y) * scale - 1, scale + 2, scale + 2);
 }
