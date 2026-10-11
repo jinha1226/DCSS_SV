@@ -39,15 +39,24 @@ export function activateItem(w: World, id: string, side: ItemUser, source?: Mons
           if (w.monsters.some((monster) => monster.hp > 0 && Math.hypot(monster.x - cx, monster.y - cy) < 0.9)) continue;
         } else {
           if (Math.hypot(w.hero.x - cx, w.hero.y - cy) < w.heroDef.radius + source!.stats.radius) continue;
-          if (w.monsters.some((monster) => monster !== source && monster.hp > 0 && Math.hypot(monster.x - cx, monster.y - cy) < monster.stats.radius + source!.stats.radius)) continue;
+          if (
+            w.monsters.some(
+              (monster) =>
+                monster !== source &&
+                monster.hp > 0 &&
+                Math.hypot(monster.x - cx, monster.y - cy) < monster.stats.radius + source!.stats.radius,
+            )
+          )
+            continue;
         }
         candidates.push({ x: cx, y: cy });
       }
     }
     if (!candidates.length) return false;
-    const destination = side === 'hero'
-      ? candidates[Math.floor(w.rng() * candidates.length)]!
-      : candidates.sort((a, b) => Math.hypot(b.x - w.hero.x, b.y - w.hero.y) - Math.hypot(a.x - w.hero.x, a.y - w.hero.y))[0]!;
+    const destination =
+      side === 'hero'
+        ? candidates[Math.floor(w.rng() * candidates.length)]!
+        : candidates.sort((a, b) => Math.hypot(b.x - w.hero.x, b.y - w.hero.y) - Math.hypot(a.x - w.hero.x, a.y - w.hero.y))[0]!;
     actor.x = actor.px = destination.x;
     actor.y = actor.py = destination.y;
     if (side === 'hero') {
