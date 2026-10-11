@@ -57,9 +57,7 @@ export interface EquipmentDisplay {
 }
 
 export function displayedEquipment(w: World): EquipmentDisplay[] {
-  const entries: EquipmentDisplay[] = [
-    { id: w.weapon.uid, name: w.weapon.name, tile: w.weapon.tile },
-  ];
+  const entries: EquipmentDisplay[] = [{ id: w.weapon.uid, name: w.weapon.name, tile: w.weapon.tile }];
   if (w.openSkills.has('throwing')) {
     entries.push({ id: 'boomerang', name: '부메랑', tile: 'item/boomerang1', count: w.ammo });
   }
