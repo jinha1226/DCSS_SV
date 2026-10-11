@@ -5,6 +5,7 @@ import { hasTile, type TileName } from './tiles';
 import { spellData } from './spells';
 import { itemDefinition } from './itemCatalog';
 import { weaponBase } from './items';
+import speciesRaw from './json/species.json';
 
 export interface MonsterStats {
   readonly hp: number;
@@ -20,6 +21,10 @@ export interface MonsterStats {
   readonly weapon?: string;
   readonly mana?: number;
   readonly manaRegen?: number;
+  /** References species.json for shared racial resistances and mana defaults. */
+  readonly species?: string;
+  /** Consumables from items.json, one use per listed entry. */
+  readonly items?: readonly string[];
   /** Optional utility weights and shared spell IDs, configured in monsters.json. */
   readonly ai?: {
     readonly preferredRange?: number;
@@ -64,6 +69,17 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
     throw new Error('monsters.json: ' + row.id + '.armour: 잘못된 방어력');
   }
   const ai = 'ai' in row ? (row.ai as MonsterStats['ai']) : undefined;
+  const speciesId = 'species' in row ? row.species : undefined;
+  const species = typeof speciesId === 'string' ? speciesRaw.find((entry) => entry.id === speciesId) : undefined;
+  if (speciesId !== undefined && !species) throw new Error('monsters.json: ' + row.id + '.species: 없는 종족');
+  const itemIds: unknown = 'items' in row ? row.items : undefined;
+  if (itemIds !== undefined) {
+    if (!Array.isArray(itemIds) || itemIds.some((id) => typeof id !== 'string')) throw new Error('monsters.json: ' + row.id + '.items: 문자열 배열이 아님');
+    for (const id of itemIds) {
+      const item = itemDefinition(id);
+      if (!item.enabled || !['potion', 'scroll', 'wand'].includes(item.kind)) throw new Error('monsters.json: ' + row.id + '.items: 사용할 수 없는 아이템');
+    }
+  }
   const weapon = 'weapon' in row ? row.weapon : undefined;
   if (weapon !== undefined) {
     if (typeof weapon !== 'string') throw new Error('monsters.json: ' + row.id + '.weapon: 문자열이 아님');
@@ -89,6 +105,10 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
       if (weight !== undefined && !Number.isFinite(weight)) throw new Error('monsters.json: ' + row.id + '.ai: 잘못된 가중치');
     }
   }
+  const speciesResists = species && 'resists' in species ? (species.resists as Partial<Record<ResistName, number>>) : {};
+  const combinedResists = { ...speciesResists, ...resists };
+  const mana = typeof resources.mana === 'number' ? resources.mana : species?.mana;
+  const manaRegen = typeof resources.manaRegen === 'number' ? resources.manaRegen : species?.manaRegen;
   const stats: MonsterStats = {
     hp: row.hp,
     xp: row.xp,
@@ -99,10 +119,12 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
     windup: row.windup,
     rest: row.rest,
     notice: row.notice,
-    resists,
+    resists: combinedResists,
+    ...(typeof speciesId === 'string' ? { species: speciesId } : {}),
+    ...(Array.isArray(itemIds) ? { items: itemIds as string[] } : {}),
     ...(typeof weapon === 'string' ? { weapon } : {}),
-    ...(typeof resources.mana === 'number' ? { mana: resources.mana } : {}),
-    ...(typeof resources.manaRegen === 'number' ? { manaRegen: resources.manaRegen } : {}),
+    ...(typeof mana === 'number' ? { mana } : {}),
+    ...(typeof manaRegen === 'number' ? { manaRegen } : {}),
     ...(ai ? { ai } : {}),
     ...(typeof armour === 'number' ? { armour } : {}),
     ...(element ? { elemental: element as { type: ResistName; damage: number } } : {}),

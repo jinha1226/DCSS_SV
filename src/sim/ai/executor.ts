@@ -1,6 +1,7 @@
 import { hurtHero } from '../effects';
 import { downhill } from '../flow';
 import { castMonsterSpell } from '../spells';
+import { activateItem } from '../itemEffects';
 import type { Monster } from '../types';
 import type { ActionCandidate } from './actions';
 import type { MonsterContext } from './context';
@@ -36,8 +37,10 @@ export function executeMonsterAction(context: MonsterContext, choice: ActionCand
     case 'melee':
     case 'ranged':
     case 'spell':
+    case 'item':
       m.attackMode = choice.action;
       m.queuedSpell = choice.spellId;
+      m.queuedItem = choice.itemId;
       m.wind = m.stats.windup;
       return STILL;
     case 'approach':
@@ -81,11 +84,14 @@ export function finishMonsterAttack(context: MonsterContext): void {
     });
   } else if (m.attackMode === 'spell' && m.queuedSpell) {
     castMonsterSpell(w, m, m.queuedSpell);
+  } else if (m.attackMode === 'item' && m.queuedItem && (m.itemUses[m.queuedItem] ?? 0) > 0) {
+    if (activateItem(w, m.queuedItem, 'monster', m)) m.itemUses[m.queuedItem]!--;
   }
   // Keep the legacy windup/recovery timings unless an equipped item defines
   // a different cadence. The same item definition can equip a player.
   m.rest = m.weapon ? m.weapon.every : m.stats.rest;
   m.queuedSpell = undefined;
+  m.queuedItem = undefined;
   if (m.stats.flits && m.attackMode === 'melee') {
     const angle = Math.atan2(-dy, -dx) + (w.rng() - 0.5) * 2.4;
     m.flit = m.stats.flits * (0.6 + w.rng() * 0.8);

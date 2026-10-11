@@ -1,3 +1,4 @@
+import { spellData } from '../../data/spells';
 import type { Monster, World } from '../types';
 
 /** Read-only snapshot used by every action and scorer during one decision. */
@@ -9,6 +10,8 @@ export interface MonsterContext {
   readonly distance: number;
   readonly reach: number;
   readonly rangedRange: number;
+  /** Longest usable weapon/spell reach, used for positioning. */
+  readonly effectiveRange: number;
   readonly preferredRange: number;
   readonly visible: boolean;
   readonly ready: boolean;
@@ -21,7 +24,13 @@ export function monsterContext(world: World, monster: Monster): MonsterContext {
   const weapon = monster.weapon;
   const reach = world.heroDef.radius + (weapon && weapon.family !== 'bow' ? weapon.range : monster.stats.reach);
   const rangedRange = weapon?.family === 'bow' ? weapon.range : (monster.stats.throws?.range ?? 0);
-  const preferredRange = monster.stats.ai?.preferredRange ?? monster.stats.throws?.keep ?? (rangedRange ? rangedRange * 0.5 : 0);
+  const spells = monster.stats.ai?.spells ?? [];
+  const magicRange = Math.max(0, ...spells.map((id) => {
+    const spell = spellData(id);
+    return (spell.damage !== undefined && monster.maxMana >= spell.mana) ? spell.range ?? 0 : 0;
+  }));
+  const effectiveRange = Math.max(rangedRange, magicRange);
+  const preferredRange = monster.stats.ai?.preferredRange ?? monster.stats.throws?.keep ?? (effectiveRange ? effectiveRange * 0.6 : 0);
   return {
     world,
     monster,
@@ -30,6 +39,7 @@ export function monsterContext(world: World, monster: Monster): MonsterContext {
     distance: Math.hypot(dx, dy),
     reach,
     rangedRange,
+    effectiveRange,
     preferredRange,
     visible: world.visible[Math.floor(monster.y) * world.grid.w + Math.floor(monster.x)] === 1,
     ready: monster.rest <= 0,

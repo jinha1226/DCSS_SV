@@ -15,6 +15,8 @@ export function spawnMonster(w: World, id: string, x: number, y: number, awake: 
   const kind = monsterKind(id);
   const hp = Math.round(kind.stats.hp * (1 + DUNGEON.tougher * (w.depth - 1)));
   const mana = kind.stats.mana ?? 0;
+  const itemUses: Record<string, number> = {};
+  for (const itemId of kind.stats.items ?? []) itemUses[itemId] = (itemUses[itemId] ?? 0) + 1;
   const m: Monster = {
     kind,
     stats: kind.stats,
@@ -29,11 +31,13 @@ export function spawnMonster(w: World, id: string, x: number, y: number, awake: 
     maxMana: mana,
     spellCooldown: 0,
     guard: 0,
+    itemUses,
     ...(kind.stats.weapon ? { weapon: plainWeapon(kind.stats.weapon, 'monster-' + id) } : {}),
     awake,
     wind: -1,
     attackMode: 'melee',
     queuedSpell: undefined,
+    queuedItem: undefined,
     rest: w.rng() * 0.4,
     stun: 0,
     flit: 0,
@@ -82,6 +86,7 @@ export function thinkMonster(w: World, m: Monster, dt: number): Stride {
     m.stun -= dt;
     m.wind = -1;
     m.queuedSpell = undefined;
+    m.queuedItem = undefined;
     return STILL;
   }
   if (Math.abs(dx) > 0.05) m.facing = dx < 0 ? -1 : 1;
