@@ -43,7 +43,8 @@ export function paidSpells(w: World): SpellData[] {
     if (!known.length) continue;
     const top = known[known.length - 1]!;
     if (w.heroDef.attackMode === 'magic' && school === primarySchool(w) && known.length === 1) continue;
-    out.push(top);
+    if (top.shape === 'utility') out.push(...known.filter((spell) => spell.shape === 'utility'));
+    else out.push(top);
   }
   return out;
 }
