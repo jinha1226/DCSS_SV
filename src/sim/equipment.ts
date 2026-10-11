@@ -1,4 +1,16 @@
-import { ARTEFACTS, AXES, BRANDS, EQUIPMENT, NAME_PARTS, RANDART_OPTIONS, axeBase, type AxeItem, type AxeOption } from '../data/items';
+import {
+  ARTEFACTS,
+  AXES,
+  BOWS,
+  BRANDS,
+  EQUIPMENT,
+  NAME_PARTS,
+  RANDART_OPTIONS,
+  weaponBase,
+  type WeaponFamily,
+  type WeaponItem,
+  type WeaponOption,
+} from '../data/items';
 import { Cell, cellAt, walkable } from './grid';
 import { openSkill } from './skills';
 import type { World } from './types';
@@ -10,81 +22,96 @@ const PICKUP_RELEASE_RADIUS = 0.8;
 const rollInt = (w: World, lo: number, hi: number): number => lo + Math.floor(w.rng() * (hi - lo + 1));
 const uid = (w: World, prefix: string): string => prefix + '-' + w.depth + '-' + w.nextItem++;
 
-function weightedAxe(w: World): (typeof AXES)[number] {
-  const index = Math.max(0, Math.min(2, w.depth - 1));
-  const total = AXES.reduce((sum, axe) => sum + (axe.depthWeights[index] ?? 0), 0);
+function pool(family: WeaponFamily) {
+  return family === 'axe' ? AXES : BOWS;
+}
+function weighted(w: World, family: WeaponFamily) {
+  const choices = pool(family),
+    index = Math.max(0, Math.min(2, w.depth - 1));
+  const total = choices.reduce((sum, weapon) => sum + (weapon.depthWeights[index] ?? 0), 0);
   let roll = w.rng() * total;
-  for (const axe of AXES) {
-    roll -= axe.depthWeights[index] ?? 0;
-    if (roll <= 0) return axe;
+  for (const weapon of choices) {
+    roll -= weapon.depthWeights[index] ?? 0;
+    if (roll <= 0) return weapon;
   }
-  return AXES[0]!;
+  return choices[0]!;
 }
 const randomBrand = (w: World): string => BRANDS[Math.floor(w.rng() * BRANDS.length)]!.id;
-function option(w: World, row: (typeof RANDART_OPTIONS)[number]): AxeOption {
+function option(w: World, row: (typeof RANDART_OPTIONS)[number]): WeaponOption {
   const steps = Math.round((row.max - row.min) / row.step);
   return { id: row.id, name: row.name, value: row.min + rollInt(w, 0, steps) * row.step };
 }
-function randartName(w: World, base: string): string {
+function randomName(w: World, base: string): string {
   const a = NAME_PARTS.prefixes[Math.floor(w.rng() * NAME_PARTS.prefixes.length)] ?? '카르';
   const b = NAME_PARTS.suffixes[Math.floor(w.rng() * NAME_PARTS.suffixes.length)] ?? '둠';
   return a + b + '의 ' + base;
 }
-export function generateAxe(w: World): AxeItem {
-  const base = weightedAxe(w),
+export function generateWeapon(w: World, family: WeaponFamily): WeaponItem {
+  const base = weighted(w, family),
     index = Math.max(0, Math.min(2, w.depth - 1));
   const isRandart = w.rng() < RANDART[index]!;
   const brand = isRandart || w.rng() < BRAND[index]! ? randomBrand(w) : undefined;
-  const options: AxeOption[] = [];
+  const options: WeaponOption[] = [];
   if (isRandart) {
-    const pool = [...RANDART_OPTIONS],
+    const choices = [...RANDART_OPTIONS],
       count = rollInt(w, 2, 3);
-    while (options.length < count && pool.length) {
-      const at = Math.floor(w.rng() * pool.length);
-      options.push(option(w, pool.splice(at, 1)[0]!));
+    while (options.length < count && choices.length) {
+      const at = Math.floor(w.rng() * choices.length);
+      options.push(option(w, choices.splice(at, 1)[0]!));
     }
   }
   return {
-    uid: uid(w, 'axe'),
+    uid: uid(w, family),
     baseId: base.id,
-    name: isRandart ? randartName(w, base.name) : base.name,
+    family: base.family,
+    name: isRandart ? randomName(w, base.name) : base.name,
     tile: base.tile,
     damage: base.damage,
     every: base.every,
-    reach: base.reach,
+    range: base.range,
     knock: base.knock,
     hands: base.hands,
+    ...(base.projectileSpeed ? { projectileSpeed: base.projectileSpeed } : {}),
     ...(brand ? { brand } : {}),
     options,
     special: isRandart,
   };
 }
-export function artefactAxe(w: World): AxeItem {
-  const art = ARTEFACTS[Math.floor(w.rng() * ARTEFACTS.length)]!,
-    base = axeBase(art.base);
+export const generateAxe = (w: World): WeaponItem => generateWeapon(w, 'axe');
+export const generateBow = (w: World): WeaponItem => generateWeapon(w, 'bow');
+
+function artefactFor(w: World, family: WeaponFamily): WeaponItem {
+  const choices = ARTEFACTS.filter((art) => weaponBase(art.base).family === family);
+  const art = choices[Math.floor(w.rng() * choices.length)]!,
+    base = weaponBase(art.base);
   return {
     uid: uid(w, 'artefact'),
     baseId: base.id,
+    family: base.family,
     name: art.name,
     tile: art.tile,
     damage: base.damage,
     every: base.every,
-    reach: base.reach,
+    range: base.range,
     knock: base.knock,
     hands: base.hands,
-    brand: art.brand,
+    ...(base.projectileSpeed ? { projectileSpeed: base.projectileSpeed } : {}),
+    ...(art.brand ? { brand: art.brand } : {}),
     options: [],
     effect: art.effect,
     special: true,
   };
 }
+export const artefactAxe = (w: World): WeaponItem => artefactFor(w, 'axe');
+export const artefactBow = (w: World): WeaponItem => artefactFor(w, 'bow');
+
 function roomCell(w: World, roomIndex?: number): { x: number; y: number } | undefined {
-  const pool = roomIndex === undefined ? (w.rooms.length > 1 ? w.rooms.slice(1) : w.rooms) : [w.rooms[roomIndex]!];
+  const rooms = roomIndex === undefined ? (w.rooms.length > 1 ? w.rooms.slice(1) : w.rooms) : [w.rooms[roomIndex]!];
   for (let attempt = 0; attempt < 80; attempt++) {
-    const room = pool[Math.floor(w.rng() * pool.length)];
+    const room = rooms[Math.floor(w.rng() * rooms.length)];
     if (!room) return undefined;
-    const x = room.x + 1 + Math.floor(w.rng() * Math.max(1, room.w - 2)),
-      y = room.y + 1 + Math.floor(w.rng() * Math.max(1, room.h - 2));
+    const x = room.x + 1 + Math.floor(w.rng() * Math.max(1, room.w - 2));
+    const y = room.y + 1 + Math.floor(w.rng() * Math.max(1, room.h - 2));
     if (
       cellAt(w.grid, x, y) !== Cell.Floor ||
       w.stairs.some((s) => s.x === x && s.y === y) ||
@@ -95,8 +122,8 @@ function roomCell(w: World, roomIndex?: number): { x: number; y: number } | unde
   }
   return undefined;
 }
-function putAxe(w: World, axe: AxeItem, cell: { x: number; y: number } | undefined): void {
-  if (cell) w.groundItems.push({ uid: axe.uid, kind: 'axe', x: cell.x, y: cell.y, axe, ignored: false });
+function putWeapon(w: World, weapon: WeaponItem, cell: { x: number; y: number } | undefined, newPath = false): void {
+  if (cell) w.groundItems.push({ uid: weapon.uid, kind: 'axe', x: cell.x, y: cell.y, axe: weapon, ignored: false, newPath });
 }
 function putAmmo(w: World, count: number, cell: { x: number; y: number } | undefined): void {
   if (cell) w.groundItems.push({ uid: uid(w, 'ammo'), kind: 'ammo', x: cell.x, y: cell.y, count, ignored: false });
@@ -104,25 +131,30 @@ function putAmmo(w: World, count: number, cell: { x: number; y: number } | undef
 export function populateFloorItems(w: World): void {
   w.groundItems.length = 0;
   w.pendingPickup = null;
-  const axes = rollInt(w, EQUIPMENT.axesMin, EQUIPMENT.axesMax);
-  for (let i = 0; i < axes; i++) putAxe(w, generateAxe(w), roomCell(w));
+  const count = rollInt(w, EQUIPMENT.weaponsMin, EQUIPMENT.weaponsMax);
+  const same = Math.ceil((count * 2) / 3),
+    other: WeaponFamily = w.weapon.family === 'axe' ? 'bow' : 'axe';
+  for (let i = 0; i < count; i++) {
+    const family = i < same ? w.weapon.family : other;
+    putWeapon(w, generateWeapon(w, family), roomCell(w), i === same);
+  }
   const piles = rollInt(w, EQUIPMENT.ammoPilesMin, EQUIPMENT.ammoPilesMax);
   for (let i = 0; i < piles; i++) putAmmo(w, rollInt(w, EQUIPMENT.ammoPileMin, EQUIPMENT.ammoPileMax), roomCell(w));
   if (!w.artefactPlaced && (w.depth === 3 || (w.depth === 2 && w.rng() < 0.5))) {
     let biggest = 0;
     for (let i = 1; i < w.rooms.length; i++) if (w.rooms[i]!.w * w.rooms[i]!.h > w.rooms[biggest]!.w * w.rooms[biggest]!.h) biggest = i;
-    putAxe(w, artefactAxe(w), roomCell(w, biggest));
+    putWeapon(w, artefactFor(w, w.weapon.family), roomCell(w, biggest));
     w.artefactPlaced = true;
   }
 }
-export function weaponOption(weapon: AxeItem, id: string): number {
+export function weaponOption(weapon: WeaponItem, id: string): number {
   return weapon.options.find((entry) => entry.id === id)?.value ?? 0;
 }
-export function weaponScore(weapon: AxeItem): number {
+export function weaponScore(weapon: WeaponItem): number {
   return (
     (weapon.damage + weaponOption(weapon, 'damage')) / (weapon.every * (1 - weaponOption(weapon, 'haste'))) +
     (weapon.special ? 2 : 0) +
-    (weapon.brand ? 0.8 : 0)
+    (weapon.brand?.length ? 0.8 : 0)
   );
 }
 export function resistanceFactor(level: number): number {
@@ -130,7 +162,7 @@ export function resistanceFactor(level: number): number {
   if (level === -1) return 2;
   return Math.pow(0.5, Math.max(0, level));
 }
-const hpBonus = (weapon: AxeItem): number => weaponOption(weapon, 'maxHp');
+const hpBonus = (weapon: WeaponItem): number => weaponOption(weapon, 'maxHp');
 export function acceptPickup(w: World): void {
   const item = w.pendingPickup;
   if (!item || item.kind !== 'axe' || !item.axe) return;
@@ -141,7 +173,7 @@ export function acceptPickup(w: World): void {
   w.hero.maxHp += delta;
   w.hero.hp = Math.min(w.hero.maxHp, Math.max(1, w.hero.hp + Math.max(0, delta)));
   w.weapon = item.axe;
-  openSkill(w, 'axe');
+  openSkill(w, w.weapon.family);
   w.groundItems.splice(index, 1, { uid: old.uid, kind: 'axe', x: item.x, y: item.y, axe: old, ignored: true });
   w.pickupStats.swapped++;
   w.pendingPickup = null;
@@ -168,9 +200,8 @@ export function dropAmmo(w: World, x: number, y: number, count = 1): void {
   else w.groundItems.push({ uid: uid(w, 'spent'), kind: 'ammo', x: cx + 0.5, y: cy + 0.5, count, ignored: false });
 }
 export function collectGround(w: World): void {
-  for (const item of w.groundItems) {
+  for (const item of w.groundItems)
     if (item.ignored && Math.hypot(item.x - w.hero.x, item.y - w.hero.y) > PICKUP_RELEASE_RADIUS) item.ignored = false;
-  }
   for (let i = w.groundItems.length - 1; i >= 0; i--) {
     const item = w.groundItems[i]!;
     if (Math.hypot(item.x - w.hero.x, item.y - w.hero.y) > PICKUP_RADIUS) continue;
@@ -193,23 +224,20 @@ export function collectGround(w: World): void {
     }
   }
 }
-
 export interface NewPathOpener {
   readonly skill: string;
   readonly id: string;
 }
-
 export function placeNewPath(w: World, openers: readonly NewPathOpener[] = []): void {
   const available = openers.filter((opener) => !w.openSkills.has(opener.skill));
   if (!available.length) return;
-  const opener = available[Math.floor(w.rng() * available.length)]!;
-  const room = w.rooms.length > 1 ? w.rooms[1 + Math.floor(w.rng() * (w.rooms.length - 1))]! : w.rooms[0];
+  const opener = available[Math.floor(w.rng() * available.length)]!,
+    room = w.rooms.length > 1 ? w.rooms[1 + Math.floor(w.rng() * (w.rooms.length - 1))]! : w.rooms[0];
   if (!room) return;
   for (let attempt = 0; attempt < 40; attempt++) {
-    const x = room.x + 1 + Math.floor(w.rng() * Math.max(1, room.w - 2));
-    const y = room.y + 1 + Math.floor(w.rng() * Math.max(1, room.h - 2));
-    if (cellAt(w.grid, x, y) !== Cell.Floor) continue;
-    if (w.groundItems.some((item) => Math.floor(item.x) === x && Math.floor(item.y) === y)) continue;
+    const x = room.x + 1 + Math.floor(w.rng() * Math.max(1, room.w - 2)),
+      y = room.y + 1 + Math.floor(w.rng() * Math.max(1, room.h - 2));
+    if (cellAt(w.grid, x, y) !== Cell.Floor || w.groundItems.some((item) => Math.floor(item.x) === x && Math.floor(item.y) === y)) continue;
     w.groundItems.push({
       uid: 'path-' + opener.id + '-' + w.depth,
       kind: 'path',

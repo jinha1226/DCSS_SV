@@ -5,5 +5,12 @@
     "job": "berserker",
     "name": "미노타우로스 광전사",
     "tagline": "도끼로 떼를 베고, 뿔로 받아친다"
+  },
+  {
+    "id": "barachi-hunter",
+    "species": "barachi",
+    "job": "hunter",
+    "name": "바라치 궁수",
+    "tagline": "멀리서 쏘고, 몰리면 뛰어서 빠진다"
   }
 ]

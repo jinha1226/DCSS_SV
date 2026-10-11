@@ -1,42 +1,84 @@
 [
   {
     "id": "hand_axe",
-    "kind": "axe",
+    "kind": "weapon",
+    "family": "axe",
     "name": "손도끼",
     "tile": "item/hand_axe1",
-    "class": "light",
     "damage": 6,
     "every": 0.6,
-    "reach": 1.2,
+    "range": 1.2,
     "knock": 1.2,
     "hands": 1,
     "depthWeights": [8, 5, 2]
   },
   {
     "id": "war_axe",
-    "kind": "axe",
+    "kind": "weapon",
+    "family": "axe",
     "name": "전투도끼",
     "tile": "item/war_axe1",
-    "class": "heavy",
     "damage": 8,
     "every": 0.75,
-    "reach": 1.2,
+    "range": 1.2,
     "knock": 1.2,
     "hands": 1,
     "depthWeights": [2, 6, 5]
   },
   {
     "id": "battle_axe",
-    "kind": "axe",
+    "kind": "weapon",
+    "family": "axe",
     "name": "큰도끼",
     "tile": "item/battle_axe1",
-    "class": "twohand",
     "damage": 11,
     "every": 0.9,
-    "reach": 1.2,
+    "range": 1.2,
     "knock": 1.2,
     "hands": 2,
     "depthWeights": [1, 2, 7]
+  },
+  {
+    "id": "shortbow",
+    "kind": "weapon",
+    "family": "bow",
+    "name": "짧은 활",
+    "tile": "item/shortbow1",
+    "damage": 5,
+    "every": 0.55,
+    "range": 7,
+    "projectileSpeed": 20,
+    "knock": 0,
+    "hands": 2,
+    "depthWeights": [8, 4, 2]
+  },
+  {
+    "id": "orcbow",
+    "kind": "weapon",
+    "family": "bow",
+    "name": "오크 활",
+    "tile": "item/orcbow1",
+    "damage": 7,
+    "every": 0.7,
+    "range": 8,
+    "projectileSpeed": 20,
+    "knock": 0,
+    "hands": 2,
+    "depthWeights": [2, 7, 4]
+  },
+  {
+    "id": "longbow",
+    "kind": "weapon",
+    "family": "bow",
+    "name": "긴 활",
+    "tile": "item/longbow1",
+    "damage": 9,
+    "every": 0.9,
+    "range": 9,
+    "projectileSpeed": 20,
+    "knock": 0,
+    "hands": 2,
+    "depthWeights": [1, 2, 8]
   },
   {
     "id": "boomerang",
@@ -57,7 +99,7 @@
   { "id": "vampiric", "kind": "brand", "name": "흡혈", "resist": "negative", "colour": "#a66a87", "heal": 1 },
 
   { "id": "damage", "kind": "randartOption", "name": "피해", "min": 1, "max": 3, "step": 1 },
-  { "id": "haste", "kind": "randartOption", "name": "휘두르는 속도", "min": 0.05, "max": 0.15, "step": 0.05 },
+  { "id": "haste", "kind": "randartOption", "name": "공격 속도", "min": 0.05, "max": 0.15, "step": 0.05 },
   { "id": "maxHp", "kind": "randartOption", "name": "최대 체력", "min": 5, "max": 15, "step": 5 },
   { "id": "armour", "kind": "randartOption", "name": "갑옷", "min": 1, "max": 2, "step": 1 },
   { "id": "evasion", "kind": "randartOption", "name": "회피", "min": 0.03, "max": 0.06, "step": 0.01 },
@@ -81,6 +123,7 @@
     "brand": "vampiric",
     "effect": "glut"
   },
+  { "id": "piercer", "kind": "artefact", "name": "꿰는 활", "base": "longbow", "tile": "item/longbow2", "effect": "pierce_all" },
 
   {
     "id": "names",
@@ -91,13 +134,12 @@
   {
     "id": "equipment",
     "kind": "config",
-    "axesMin": 3,
-    "axesMax": 4,
+    "weaponsMin": 3,
+    "weaponsMax": 4,
     "ammoPilesMin": 3,
     "ammoPilesMax": 4,
     "ammoPileMin": 2,
     "ammoPileMax": 3,
-    "ammoStart": 5,
     "ammoMax": 9
   }
 ]

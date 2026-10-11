@@ -1,4 +1,5 @@
 import { throwCooldown } from '../sim/skills';
+import { hopTrait } from '../sim/traits';
 import type { World } from '../sim/world';
 
 export interface ThrowButton {
@@ -32,10 +33,13 @@ export function makeThrowButton(root: HTMLElement): ThrowButton {
       return active.size > 0;
     },
     show(w) {
-      const remaining = Math.max(0, w.hero.throwing);
-      button.disabled = w.ammo <= 0;
+      const open = w.openSkills.has('throwing'),
+        remaining = Math.max(0, w.hero.throwing);
+      button.classList.toggle('on', open);
+      button.classList.toggle('stacked', open && Boolean(hopTrait(w)));
+      button.disabled = !open || w.ammo <= 0;
       ammo.textContent = '×' + w.ammo;
-      cooldown.textContent = w.ammo <= 0 ? '탄약 없음' : remaining > 0 ? remaining.toFixed(1) + '초' : '준비';
+      cooldown.textContent = !open ? '' : w.ammo <= 0 ? '탄약 없음' : remaining > 0 ? remaining.toFixed(1) + '초' : '준비';
       button.style.setProperty('--ready', String(1 - remaining / throwCooldown(w)));
     },
   };

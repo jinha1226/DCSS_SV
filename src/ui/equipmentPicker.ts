@@ -1,4 +1,4 @@
-import { brandData, type AxeItem } from '../data/items';
+import { brandData, type WeaponItem } from '../data/items';
 import { acceptPickup, declinePickup } from '../sim/equipment';
 import type { World } from '../sim/world';
 
@@ -19,8 +19,8 @@ function line(parent: HTMLElement, label: string, current: string, found: string
   row.append(key, a, b);
   parent.append(row);
 }
-const brand = (axe: AxeItem): string => brandData(axe.brand)?.name ?? '없음';
-const options = (axe: AxeItem): string =>
+const brand = (axe: WeaponItem): string => brandData(axe.brand)?.name ?? '없음';
+const options = (axe: WeaponItem): string =>
   axe.options.length
     ? axe.options.map((o) => o.name + ' ' + (o.value < 1 ? Math.round(o.value * 100) + '%' : '+' + o.value)).join(', ')
     : '없음';
@@ -30,7 +30,7 @@ export function makeEquipmentPicker(root: HTMLElement): EquipmentPicker {
   wrap.className = 'gear-picker';
   root.append(wrap);
   const title = document.createElement('h2');
-  title.textContent = '도끼를 발견했다';
+  title.textContent = '무기를 발견했다';
   wrap.append(title);
   const heads = document.createElement('div');
   heads.className = 'gear-heads';
@@ -75,6 +75,7 @@ export function makeEquipmentPicker(root: HTMLElement): EquipmentPicker {
         const now = w.weapon;
         line(body, '이름', now.name, found.name, 0);
         line(body, '피해', String(now.damage), String(found.damage), found.damage - now.damage);
+        line(body, '거리', now.range.toFixed(1), found.range.toFixed(1), found.range - now.range);
         line(body, '간격', now.every.toFixed(2) + '초', found.every.toFixed(2) + '초', now.every - found.every);
         line(
           body,
@@ -85,7 +86,7 @@ export function makeEquipmentPicker(root: HTMLElement): EquipmentPicker {
         );
         line(body, '속성', brand(now), brand(found), found.brand && !now.brand ? 1 : 0);
         line(body, '옵션', options(now), options(found), found.options.length - now.options.length);
-        note.textContent = found.hands === 2 ? '양손: 들고 있는 동안 방패 스킬이 쉰다.' : found.special ? '특별한 도끼다.' : '';
+        note.textContent = found.hands === 2 ? '양손: 들고 있는 동안 방패 스킬이 쉰다.' : found.special ? '특별한 무기다.' : '';
       }
       const ready = performance.now() - shownAt >= 400;
       swap.disabled = !ready;

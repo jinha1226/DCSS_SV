@@ -37,5 +37,29 @@
       "throwing": "normal",
       "magic": "bad"
     }
+  },
+  {
+    "id": "barachi",
+    "name": "바라치",
+    "tile": "hero/barachi",
+    "hp": 55,
+    "radius": 0.35,
+    "speed": 5.4,
+    "sight": 8,
+    "regen": 0.5,
+    "give": 0.3,
+    "walk": { "legs": 23, "mid": 16 },
+    "traits": [{ "id": "hop", "distance": 3, "distanceLevel": 7, "distanceHigh": 4, "cooldown": 6, "duration": 0.25 }],
+    "aptitudes": {
+      "fighting": "good",
+      "armour": "normal",
+      "shield": "normal",
+      "dodging": "good",
+      "axe": "normal",
+      "long_blade": "normal",
+      "bow": "good",
+      "throwing": "good",
+      "magic": "normal"
+    }
   }
 ]

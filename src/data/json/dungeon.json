@@ -2,6 +2,7 @@
   "floors": 3,
   "tougher": 0.2,
   "loud": 8,
+  "arrowLoud": 4,
   "descend": 0.7,
   "calm": 30,
   "bandEvery": 16,

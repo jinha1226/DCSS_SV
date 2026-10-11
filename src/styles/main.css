@@ -181,6 +181,7 @@ canvas {
   background: #708b4a;
 }
 .throw-button {
+  display: none;
   position: fixed;
   right: max(20px, env(safe-area-inset-right));
   bottom: calc(40px + env(safe-area-inset-bottom, 0px));
@@ -193,6 +194,12 @@ canvas {
   font: 700 16px system-ui;
   touch-action: none;
   z-index: 5;
+}
+.throw-button.on {
+  display: block;
+}
+.throw-button.stacked {
+  bottom: calc(126px + env(safe-area-inset-bottom, 0px));
 }
 .throw-button:disabled {
   opacity: 0.55;
@@ -434,4 +441,30 @@ canvas {
 }
 .over button:disabled {
   opacity: 0.55;
+}
+
+.hop-button {
+  display: none;
+  position: fixed;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: 2px solid #83b9a7;
+  background: #24362f;
+  color: #e3fff5;
+  font: 700 16px system-ui;
+  touch-action: none;
+  z-index: 5;
+}
+.hop-button.on {
+  display: block;
+}
+.hop-button:disabled {
+  opacity: 0.55;
+}
+.hop-button .cooldown {
+  display: block;
+  font-size: 11px;
 }

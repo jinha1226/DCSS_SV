@@ -1,5 +1,5 @@
 import type { HeroDefinition } from '../data/hero';
-import type { AxeItem } from '../data/items';
+import type { WeaponItem } from '../data/items';
 import type { MonsterKind, MonsterStats } from '../data/monsters';
 import type { Room } from './floor';
 import type { Flow } from './flow';
@@ -15,7 +15,6 @@ export interface SkillChoice {
   readonly cap: number;
   readonly line: string;
 }
-
 export interface Hero {
   x: number;
   y: number;
@@ -36,8 +35,14 @@ export interface Hero {
   invulnerable: number;
   lastStandUsed: boolean;
   axeSwings: number;
+  hopCooldown: number;
+  hopTime: number;
+  hopDuration: number;
+  hopFromX: number;
+  hopFromY: number;
+  hopToX: number;
+  hopToY: number;
 }
-
 export interface Monster {
   readonly kind: MonsterKind;
   readonly stats: MonsterStats;
@@ -64,7 +69,6 @@ export interface Monster {
   burnDamage: number;
   facing: -1 | 1;
 }
-
 export interface Shot {
   x: number;
   y: number;
@@ -79,27 +83,28 @@ export interface Shot {
   readonly returns: boolean;
   returning: boolean;
   readonly hit: Monster[];
+  readonly arrow?: boolean;
+  readonly brand?: string;
+  readonly weaponEffect?: string;
+  readonly stun?: number;
 }
-
 export interface GroundItem {
   readonly uid: string;
   readonly kind: 'axe' | 'ammo' | 'path';
   x: number;
   y: number;
-  axe?: AxeItem;
+  axe?: WeaponItem;
   count?: number;
   skill?: string;
   ignored: boolean;
   newPath?: boolean;
 }
-
 export interface PickupStats {
   offered: number;
   swapped: number;
   throws: number;
   recovered: number;
 }
-
 export type SimEvent =
   | { readonly type: 'swing'; readonly x: number; readonly y: number; readonly reach: number }
   | {
@@ -107,7 +112,7 @@ export type SimEvent =
       readonly x: number;
       readonly y: number;
       readonly amount: number;
-      readonly by: 'axe' | 'horns' | 'headbutt_back' | 'throw' | 'thorns';
+      readonly by: 'axe' | 'arrow' | 'horns' | 'headbutt_back' | 'throw' | 'thorns';
     }
   | { readonly type: 'brand'; readonly x: number; readonly y: number; readonly amount: number; readonly resisted: boolean }
   | { readonly type: 'kill'; readonly x: number; readonly y: number }
@@ -117,13 +122,11 @@ export type SimEvent =
   | { readonly type: 'throw'; readonly x: number; readonly y: number }
   | { readonly type: 'wake'; readonly x: number; readonly y: number }
   | { readonly type: 'floor'; readonly depth: number };
-
 export interface Stairs {
   readonly x: number;
   readonly y: number;
   readonly down: boolean;
 }
-
 export interface World {
   grid: Grid;
   rooms: readonly Room[];
@@ -138,7 +141,7 @@ export interface World {
   readonly rng: Rng;
   readonly events: SimEvent[];
   readonly seed: number;
-  weapon: AxeItem;
+  weapon: WeaponItem;
   ammo: number;
   readonly groundItems: GroundItem[];
   pendingPickup: GroundItem | null;
@@ -161,9 +164,9 @@ export interface World {
   over: boolean;
   won: boolean;
 }
-
 export interface Input {
   readonly mx: number;
   readonly my: number;
   readonly throw?: boolean;
+  readonly hop?: boolean;
 }

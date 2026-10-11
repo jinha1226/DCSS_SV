@@ -19,10 +19,10 @@ DCSS의 `LICENSE`는 타일 대부분이 CC0라고 밝히면서, 오래된 타�
 | `floor` | `dngn/floor` | `grey_dirt0`–`7`, `limestone0`–`9` |
 | `wall` | `dngn/wall` | `brick_brown0`–`7`, `brick_gray0`–`3` |
 | `feat` | `dngn/gateways` | `stone_stairs_down`, `stone_stairs_up` |
-| `hero` | `mon/demihumanoids` | `minotaur` |
+| `hero` | `mon/demihumanoids` | `minotaur`, `barachi` |
 | `mon` | `mon/animals`, `mon/humanoids` | `rat`, `bat`, `jackal`, `adder`, `goblin`, `kobold`, `gnoll`, `ogre` |
 | `item` | `item/weapon` | `hand_axe1`, `war_axe1`, `broad_axe1`, `battle_axe1`, `executioner_axe1` |
-| `item` | `item/weapon/ranged` | `stone`, `boomerang1` |
+| `item` | `item/weapon/ranged` | `stone`, `boomerang1`, `shortbow1`, `orcbow1`, `longbow1`, `longbow2` |
 
 파일 이름과 그림은 원본 그대로다.
 

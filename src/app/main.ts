@@ -8,6 +8,7 @@ import { STEP, makeWorld, stepWorld, type World } from '../sim/world';
 import { makeCharacterSelect } from '../ui/characterSelect';
 import { makeEquipmentPicker } from '../ui/equipmentPicker';
 import { makeHud } from '../ui/hud';
+import { makeHopButton } from '../ui/hopButton';
 import { makeSkillPicker } from '../ui/skillPicker';
 import { makeThrowButton } from '../ui/throwButton';
 import { loadAtlas } from '../view/atlas';
@@ -34,6 +35,7 @@ async function start(): Promise<void> {
   const stick = makeStick(canvas, root);
   const keys = watchKeys();
   const fx = new Fx();
+  const hop = makeHopButton(root);
   const throwing = makeThrowButton(root);
   const picker = makeSkillPicker(root);
   const gear = makeEquipmentPicker(root);
@@ -99,6 +101,7 @@ async function start(): Promise<void> {
         mx: stick.x + key.x,
         my: stick.y + key.y,
         throw: throwing.held || keys.has('Space') || keys.has('KeyJ'),
+        hop: hop.held || keys.has('ShiftLeft') || keys.has('KeyK'),
       });
       if (world.events.some((event) => event.type === 'floor')) fx.clear();
       fx.take(world.events);
@@ -111,6 +114,7 @@ async function start(): Promise<void> {
       hud.show(world);
       picker.show(world);
       gear.show(world);
+      hop.show(world);
       throwing.show(world);
       drawMiniMap(ctx, world, dpr);
     },

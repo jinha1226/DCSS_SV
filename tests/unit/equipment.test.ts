@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { EQUIPMENT, plainAxe } from '../../src/data/items';
+import { plainAxe } from '../../src/data/items';
 import { applyWeaponBrand, emberBurst, tickBrands } from '../../src/sim/brands';
 import { heroStrikes } from '../../src/sim/combat';
 import { acceptPickup, artefactAxe, collectGround, declinePickup, dropAmmo, generateAxe, resistanceFactor } from '../../src/sim/equipment';
@@ -164,7 +164,7 @@ describe('floor pickup and ammunition', () => {
   });
   it('starts with five, spends ammunition, and drops it on walkable ground', () => {
     const w = arena();
-    expect(w.ammo).toBe(EQUIPMENT.ammoStart);
+    expect(w.ammo).toBe(w.heroDef.startingAmmo);
     const m = spawnMonster(w, 'ogre', 15, 10, true);
     m.stun = 99;
     stepWorld(w, { mx: 0, my: 0, throw: true });

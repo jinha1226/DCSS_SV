@@ -21,6 +21,7 @@ const RISE = 0.6;
 const STROKE = 0.2;
 const COLOUR = {
   axe: '#f4ecd6',
+  arrow: '#e8ddbd',
   horns: '#ffcf6a',
   headbutt_back: '#ffcf6a',
   throw: '#d2e8ff',

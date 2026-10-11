@@ -24,16 +24,19 @@ function tile(row: Row): TileName {
   return value as TileName;
 }
 
-export interface AxeBase {
+export type WeaponFamily = 'axe' | 'bow';
+
+export interface WeaponBase {
   readonly id: string;
+  readonly family: WeaponFamily;
   readonly name: string;
   readonly tile: TileName;
-  readonly class: string;
   readonly damage: number;
   readonly every: number;
-  readonly reach: number;
+  readonly range: number;
   readonly knock: number;
   readonly hands: 1 | 2;
+  readonly projectileSpeed?: number;
   readonly depthWeights: readonly number[];
 }
 export interface BrandData {
@@ -56,66 +59,78 @@ export interface RandartOptionData {
   readonly max: number;
   readonly step: number;
 }
-export interface AxeOption {
+export interface WeaponOption {
   readonly id: string;
   readonly name: string;
   readonly value: number;
 }
-export interface AxeItem {
+export interface WeaponItem {
   readonly uid: string;
   readonly baseId: string;
+  readonly family: WeaponFamily;
   readonly name: string;
   readonly tile: TileName;
   readonly damage: number;
   readonly every: number;
-  readonly reach: number;
+  readonly range: number;
   readonly knock: number;
   readonly hands: 1 | 2;
+  readonly projectileSpeed?: number;
   readonly brand?: string;
-  readonly options: readonly AxeOption[];
+  readonly options: readonly WeaponOption[];
   readonly effect?: string;
   readonly special: boolean;
 }
+export type AxeItem = WeaponItem;
+export type AxeOption = WeaponOption;
+
 export interface ArtefactData {
   readonly id: string;
   readonly name: string;
   readonly base: string;
   readonly tile: TileName;
-  readonly brand: string;
+  readonly brand?: string;
   readonly effect: string;
 }
 export interface EquipmentConfig {
-  readonly axesMin: number;
-  readonly axesMax: number;
+  readonly weaponsMin: number;
+  readonly weaponsMax: number;
   readonly ammoPilesMin: number;
   readonly ammoPilesMax: number;
   readonly ammoPileMin: number;
   readonly ammoPileMax: number;
-  readonly ammoStart: number;
   readonly ammoMax: number;
 }
 
-export const AXES: readonly AxeBase[] = rows
-  .filter((row) => row.kind === 'axe')
+export const WEAPONS: readonly WeaponBase[] = rows
+  .filter((row) => row.kind === 'weapon')
   .map((row) => {
     const hands = number(row, 'hands');
+    const family = text(row, 'family');
     const weights = row.depthWeights;
+    if (family !== 'axe' && family !== 'bow') throw new Error('items.json: ' + String(row.id) + '.family: 잘못된 계열');
     if (hands !== 1 && hands !== 2) throw new Error('items.json: ' + String(row.id) + '.hands: 1 또는 2여야 함');
-    if (!Array.isArray(weights) || weights.some((v) => typeof v !== 'number'))
+    if (!Array.isArray(weights) || weights.some((v) => typeof v !== 'number')) {
       throw new Error('items.json: ' + String(row.id) + '.depthWeights: 숫자 배열이 아님');
+    }
     return {
       id: text(row, 'id'),
+      family,
       name: text(row, 'name'),
       tile: tile(row),
-      class: text(row, 'class'),
       damage: number(row, 'damage'),
       every: number(row, 'every'),
-      reach: number(row, 'reach'),
+      range: number(row, 'range'),
       knock: number(row, 'knock'),
       hands,
+      ...(typeof row.projectileSpeed === 'number' ? { projectileSpeed: row.projectileSpeed } : {}),
       depthWeights: weights as number[],
     };
   });
+
+export const AXES = WEAPONS.filter((weapon) => weapon.family === 'axe');
+export const BOWS = WEAPONS.filter((weapon) => weapon.family === 'bow');
+
 export const BRANDS: readonly BrandData[] = rows
   .filter((row) => row.kind === 'brand')
   .map((row) => ({
@@ -130,15 +145,17 @@ export const BRANDS: readonly BrandData[] = rows
     ...(typeof row.chainShare === 'number' ? { chainShare: row.chainShare } : {}),
     ...(typeof row.heal === 'number' ? { heal: row.heal } : {}),
   }));
+
 export const RANDART_OPTIONS: readonly RandartOptionData[] = rows
   .filter((row) => row.kind === 'randartOption')
   .map((row) => {
-    const min = number(row, 'min'),
-      max = number(row, 'max'),
-      step = number(row, 'step');
+    const min = number(row, 'min');
+    const max = number(row, 'max');
+    const step = number(row, 'step');
     if (min > max || step <= 0) throw new Error('items.json: ' + String(row.id) + ': 잘못된 옵션 범위');
     return { id: text(row, 'id'), name: text(row, 'name'), min, max, step };
   });
+
 export const ARTEFACTS: readonly ArtefactData[] = rows
   .filter((row) => row.kind === 'artefact')
   .map((row) => ({
@@ -146,39 +163,56 @@ export const ARTEFACTS: readonly ArtefactData[] = rows
     name: text(row, 'name'),
     base: text(row, 'base'),
     tile: tile(row),
-    brand: text(row, 'brand'),
+    ...(typeof row.brand === 'string' ? { brand: row.brand } : {}),
     effect: text(row, 'effect'),
   }));
-export const ITEM_EFFECTS = new Set(['ember', 'glut']);
+
+export const ITEM_EFFECTS = new Set(['ember', 'glut', 'pierce_all']);
 for (const art of ARTEFACTS) {
   if (!ITEM_EFFECTS.has(art.effect)) throw new Error('items.json: ' + art.id + '.effect: 코드에 없는 effect ' + art.effect);
-  if (!AXES.some((axe) => axe.id === art.base)) throw new Error('items.json: ' + art.id + '.base: 없는 도끼 ' + art.base);
-  if (!BRANDS.some((brand) => brand.id === art.brand)) throw new Error('items.json: ' + art.id + '.brand: 없는 속성 ' + art.brand);
+  if (!WEAPONS.some((weapon) => weapon.id === art.base)) throw new Error('items.json: ' + art.id + '.base: 없는 무기 ' + art.base);
+  if (art.brand && !BRANDS.some((brand) => brand.id === art.brand))
+    throw new Error('items.json: ' + art.id + '.brand: 없는 속성 ' + art.brand);
 }
+
 const config = rowBy('equipment');
 export const EQUIPMENT: EquipmentConfig = {
-  axesMin: number(config, 'axesMin'),
-  axesMax: number(config, 'axesMax'),
+  weaponsMin: number(config, 'weaponsMin'),
+  weaponsMax: number(config, 'weaponsMax'),
   ammoPilesMin: number(config, 'ammoPilesMin'),
   ammoPilesMax: number(config, 'ammoPilesMax'),
   ammoPileMin: number(config, 'ammoPileMin'),
   ammoPileMax: number(config, 'ammoPileMax'),
-  ammoStart: number(config, 'ammoStart'),
   ammoMax: number(config, 'ammoMax'),
 };
 if (
-  EQUIPMENT.axesMin > EQUIPMENT.axesMax ||
+  EQUIPMENT.weaponsMin > EQUIPMENT.weaponsMax ||
   EQUIPMENT.ammoPilesMin > EQUIPMENT.ammoPilesMax ||
   EQUIPMENT.ammoPileMin > EQUIPMENT.ammoPileMax
-)
+) {
   throw new Error('items.json: equipment: 범위가 뒤집힘');
-const names = rowBy('names');
-export const NAME_PARTS = { prefixes: (names.prefixes as unknown[]).map(String), suffixes: (names.suffixes as unknown[]).map(String) };
+}
 
-export function axeBase(id: string): AxeBase {
-  const axe = AXES.find((entry) => entry.id === id);
-  if (!axe) throw new Error('items.json: ' + id + ': 없는 도끼');
-  return axe;
+const names = rowBy('names');
+export const NAME_PARTS = {
+  prefixes: (names.prefixes as unknown[]).map(String),
+  suffixes: (names.suffixes as unknown[]).map(String),
+};
+
+export function weaponBase(id: string): WeaponBase {
+  const weapon = WEAPONS.find((entry) => entry.id === id);
+  if (!weapon) throw new Error('items.json: ' + id + ': 없는 무기');
+  return weapon;
+}
+export function axeBase(id: string): WeaponBase {
+  const weapon = weaponBase(id);
+  if (weapon.family !== 'axe') throw new Error('items.json: ' + id + ': 도끼가 아님');
+  return weapon;
+}
+export function bowBase(id: string): WeaponBase {
+  const weapon = weaponBase(id);
+  if (weapon.family !== 'bow') throw new Error('items.json: ' + id + ': 활이 아님');
+  return weapon;
 }
 export function brandData(id: string | undefined): BrandData | undefined {
   if (!id) return undefined;
@@ -186,22 +220,35 @@ export function brandData(id: string | undefined): BrandData | undefined {
   if (!brand) throw new Error('items.json: ' + id + ': 없는 속성');
   return brand;
 }
-export function plainAxe(id: string, uid = id): AxeItem {
-  const axe = axeBase(id);
+export function plainWeapon(id: string, uid = id): WeaponItem {
+  const weapon = weaponBase(id);
   return {
     uid,
-    baseId: axe.id,
-    name: axe.name,
-    tile: axe.tile,
-    damage: axe.damage,
-    every: axe.every,
-    reach: axe.reach,
-    knock: axe.knock,
-    hands: axe.hands,
+    baseId: weapon.id,
+    family: weapon.family,
+    name: weapon.name,
+    tile: weapon.tile,
+    damage: weapon.damage,
+    every: weapon.every,
+    range: weapon.range,
+    knock: weapon.knock,
+    hands: weapon.hands,
+    ...(weapon.projectileSpeed ? { projectileSpeed: weapon.projectileSpeed } : {}),
     options: [],
     special: false,
   };
 }
+export function plainAxe(id: string, uid = id): WeaponItem {
+  const weapon = plainWeapon(id, uid);
+  if (weapon.family !== 'axe') throw new Error('items.json: ' + id + ': 도끼가 아님');
+  return weapon;
+}
+export function plainBow(id: string, uid = id): WeaponItem {
+  const weapon = plainWeapon(id, uid);
+  if (weapon.family !== 'bow') throw new Error('items.json: ' + id + ': 활이 아님');
+  return weapon;
+}
+
 export const THROW_DATA = (() => {
   const row = rowBy('boomerang');
   tile(row);
@@ -213,4 +260,5 @@ export const THROW_DATA = (() => {
     knock: number(row, 'knock'),
   };
 })();
+
 export const ITEM_TILES = rows.filter((row) => typeof row.tile === 'string').map((row) => tile(row));

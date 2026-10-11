@@ -32,7 +32,7 @@ export const kite: Bot = (w) => {
   if (!near) return { mx: 0, my: 0 };
   const nx = near.dx / near.d;
   const ny = near.dy / near.d;
-  const want = w.weapon.reach + effectValue(w, 'axe.wide') - 0.15;
+  const want = w.weapon.range + effectValue(w, 'axe.wide') - 0.15;
   if (near.d > want + 0.6) return { mx: 0, my: 0 };
   const away = near.d < want ? 1 : 0.2;
   return { mx: -nx * away - ny * 0.7, my: -ny * away + nx * 0.7 };
@@ -58,7 +58,7 @@ export const dance: Bot = (w) => {
       const d = Math.max(0.6, d0 - (m.stun > 0 ? 0 : m.stats.speed * ahead));
       const strike = w.heroDef.radius + m.stats.reach + 0.25;
       if (d < strike) score -= 10 * (strike - d + 0.3);
-      if (d0 <= w.weapon.reach + effectValue(w, 'axe.wide') - 0.05) inReach = true;
+      if (d0 <= w.weapon.range + effectValue(w, 'axe.wide') - 0.05) inReach = true;
     }
     if (inReach) score += 2;
     score += Math.min(1.5, wallGap(w.grid, to)) * 0.4;
@@ -139,6 +139,12 @@ export const explore: Bot = (w) => {
   return { ...(route(w, frontier) ?? { mx: 0, my: 0 }), throw: Boolean(throwTarget(w)) };
 };
 
+export const bowFirst: Chooser = (cards) =>
+  cards.find((c) => c.id === 'bow')?.id ??
+  cards.find((c) => c.id === 'fighting')?.id ??
+  cards.find((c) => c.id === 'dodging')?.id ??
+  cards[0]!.id;
+
 export const axeFirst: Chooser = (cards) =>
   cards.find((c) => c.id === 'axe')?.id ?? cards.find((c) => c.id === 'fighting')?.id ?? cards[0]!.id;
 
@@ -149,6 +155,36 @@ export const defenceFirst: Chooser = (cards, w) => {
     if (card) return id;
   }
   return cards[0]!.id;
+};
+
+export const hunterExplore: Bot = (w) => {
+  const visible = w.monsters
+    .filter((m) => m.awake && m.hp > 0 && Boolean(w.visible[Math.floor(m.y) * w.grid.w + Math.floor(m.x)]))
+    .map((m) => ({ m, dx: m.x - w.hero.x, dy: m.y - w.hero.y, d: Math.hypot(m.x - w.hero.x, m.y - w.hero.y) }))
+    .sort((a, b) => a.d - b.d);
+  if (!visible.length) return explore(w);
+
+  const near = visible.filter((entry) => entry.d < 2.6);
+  let awayX = 0;
+  let awayY = 0;
+  for (const entry of visible) {
+    const weight = 1 / Math.max(0.5, entry.d);
+    awayX -= (entry.dx / (entry.d || 1)) * weight;
+    awayY -= (entry.dy / (entry.d || 1)) * weight;
+  }
+  const awayD = Math.hypot(awayX, awayY) || 1;
+  awayX /= awayD;
+  awayY /= awayD;
+
+  if (near.length >= 2 && w.hero.hopCooldown <= 0) {
+    return { mx: awayX, my: awayY, hop: true, throw: Boolean(throwTarget(w)) };
+  }
+
+  const nearest = visible[0]!;
+  const ideal = Math.min(w.heroDef.sight - 0.4, w.weapon.range + effectValue(w, 'bow.range') - 0.5);
+  if (nearest.d < ideal - 0.8) return { mx: awayX, my: awayY, throw: Boolean(throwTarget(w)) };
+  if (nearest.d > ideal + 0.6) return { mx: nearest.dx / nearest.d, my: nearest.dy / nearest.d, throw: Boolean(throwTarget(w)) };
+  return { mx: (-nearest.dy / nearest.d) * 0.55, my: (nearest.dx / nearest.d) * 0.55, throw: Boolean(throwTarget(w)) };
 };
 
 export interface RunResult {
@@ -165,8 +201,13 @@ export interface RunResult {
   readonly recovered: number;
 }
 
-export function play(bot: Bot, seed: number, limit: number, chooser: Chooser = axeFirst): RunResult {
-  const w = makeWorld({ seed });
+export interface PlayOptions {
+  readonly species?: string;
+  readonly job?: string;
+}
+
+export function play(bot: Bot, seed: number, limit: number, chooser: Chooser = axeFirst, options: PlayOptions = {}): RunResult {
+  const w = makeWorld({ seed, ...options });
   while (!w.over && w.time < limit) {
     if (w.pendingPickup) {
       const found = w.pendingPickup.axe;

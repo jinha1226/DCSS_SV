@@ -1,15 +1,16 @@
 import { heroFor } from '../data/hero';
-import { EQUIPMENT, plainAxe } from '../data/items';
+import { plainWeapon } from '../data/items';
 import { DUNGEON } from '../data/packs';
 import { moveCircle } from './collide';
 import { KNOCK_FADE, heroStrikes } from './combat';
 import { shove } from './crowd';
-import { collectGround, placeNewPath, populateFloorItems } from './equipment';
+import { collectGround, populateFloorItems } from './equipment';
 import type { Floor } from './floor';
 import { makeFlow, updateFlow } from './flow';
 import { computeFov } from './fov';
 import { makeFloor } from './gen';
 import { Cell, cellAt } from './grid';
+import { tickHop, tryHop } from './hop';
 import { thinkMonster } from './monster';
 import { fillFloor, lingering } from './packs';
 import { makeRng } from './rng';
@@ -66,17 +67,14 @@ function enter(w: World, floor: Floor, monsters: boolean): void {
   w.hero.y = w.hero.py = floor.start.y;
   look(w);
   if (monsters) fillFloor(w);
-  if (w.itemsEnabled) {
-    populateFloorItems(w);
-    placeNewPath(w);
-  }
+  if (w.itemsEnabled) populateFloorItems(w);
 }
 export function makeWorld(options: WorldOptions = {}): World {
   const seed = options.seed ?? 1,
     depth = Math.min(DUNGEON.floors, Math.max(1, options.depth ?? 1)),
     floor = options.floor ?? makeFloor(floorSeed(seed, depth)),
     heroDef = options.definition ?? heroFor(options.species, options.job);
-  const weapon = plainAxe(heroDef.startingWeapon, 'start');
+  const weapon = plainWeapon(heroDef.startingWeapon, 'start');
   const world: World = {
     grid: floor.grid,
     rooms: floor.rooms,
@@ -104,6 +102,13 @@ export function makeWorld(options: WorldOptions = {}): World {
       invulnerable: 0,
       lastStandUsed: false,
       axeSwings: 0,
+      hopCooldown: 0,
+      hopTime: 0,
+      hopDuration: 0,
+      hopFromX: 0,
+      hopFromY: 0,
+      hopToX: 0,
+      hopToY: 0,
     },
     heroDef,
     monsters: [],
@@ -112,7 +117,7 @@ export function makeWorld(options: WorldOptions = {}): World {
     events: [],
     seed,
     weapon,
-    ammo: EQUIPMENT.ammoStart,
+    ammo: heroDef.startingAmmo,
     groundItems: [],
     pendingPickup: null,
     artefactPlaced: false,
@@ -139,24 +144,28 @@ export function makeWorld(options: WorldOptions = {}): World {
   return world;
 }
 function walkHero(w: World, input: Input, dt: number): void {
-  const hero = w.hero;
+  const h = w.hero;
+  if (h.hopTime > 0) {
+    h.moving = false;
+    return;
+  }
   let { mx, my } = input;
   const length = Math.hypot(mx, my);
   if (length > 1) {
     mx /= length;
     my /= length;
   }
-  hero.moving = length > 0;
-  if (!hero.moving) return;
+  h.moving = length > 0;
+  if (!h.moving) return;
   const speed = heroSpeed(w),
-    to = moveCircle(w.grid, hero, w.heroDef.radius, mx * speed * dt, my * speed * dt);
-  hero.x = to.x;
-  hero.y = to.y;
-  if (mx < -0.15) hero.facing = -1;
-  else if (mx > 0.15) hero.facing = 1;
+    to = moveCircle(w.grid, h, w.heroDef.radius, mx * speed * dt, my * speed * dt);
+  h.x = to.x;
+  h.y = to.y;
+  if (mx < -0.15) h.facing = -1;
+  else if (mx > 0.15) h.facing = 1;
 }
 function shoveHero(w: World, dx: number, dy: number): void {
-  if (dx === 0 && dy === 0) return;
+  if ((dx === 0 && dy === 0) || w.hero.hopTime > 0) return;
   const to = moveCircle(w.grid, w.hero, w.heroDef.radius, dx, dy);
   w.hero.x = to.x;
   w.hero.y = to.y;
@@ -219,15 +228,17 @@ function stairsUnderfoot(w: World, dt: number): void {
 export function stepWorld(w: World, input: Input, dt: number = STEP): void {
   w.events.length = 0;
   if (w.over || w.choosing || w.pendingPickup) return;
-  const hero = w.hero,
-    cx = Math.floor(hero.x),
-    cy = Math.floor(hero.y);
-  hero.px = hero.x;
-  hero.py = hero.y;
+  const h = w.hero,
+    cx = Math.floor(h.x),
+    cy = Math.floor(h.y);
+  h.px = h.x;
+  h.py = h.y;
   w.time += dt;
   w.floorTime += dt;
+  tickHop(w, dt);
+  if (input.hop) tryHop(w, input);
   walkHero(w, input, dt);
-  if (Math.floor(hero.x) !== cx || Math.floor(hero.y) !== cy) look(w);
+  if (Math.floor(h.x) !== cx || Math.floor(h.y) !== cy) look(w);
   if (w.itemsEnabled) {
     collectGround(w);
     if (w.pendingPickup) return;

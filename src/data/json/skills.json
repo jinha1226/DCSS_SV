@@ -13,6 +13,20 @@
     ]
   },
   {
+    "id": "bow",
+    "name": "활",
+    "each": "더 세게, 더 빨리 쏜다",
+    "aptitude": "bow",
+    "effects": [
+      { "effect": "bow.damage", "perLevel": 1 },
+      { "effect": "bow.haste", "perLevel": -0.04 },
+      { "effect": "bow.range", "level": 2, "value": 1, "text": "더 멀리 닿는다" },
+      { "effect": "bow.pierce", "level": 4, "value": 1, "text": "화살이 첫 적을 뚫는다" },
+      { "effect": "bow.stun", "level": 6, "value": 0.25, "text": "맞은 적이 멈칫한다" },
+      { "effect": "bow.double", "level": 8, "value": 2, "text": "두 발을 한 번에 쏜다" }
+    ]
+  },
+  {
     "id": "fighting",
     "name": "전투",
     "each": "최대 체력 +8",

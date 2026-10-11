@@ -26,8 +26,8 @@ export function emberBurst(w: World, dead: Monster): void {
   }
 }
 
-export function applyWeaponBrand(w: World, m: Monster): void {
-  const brand = brandData(w.weapon.brand);
+export function applyBrand(w: World, m: Monster, brandId: string | undefined): void {
+  const brand = brandData(brandId);
   if (!brand) return;
   const factor = resistanceFactor(resist(m, brand.resist));
   if (factor <= 0) {
@@ -67,6 +67,10 @@ export function applyWeaponBrand(w: World, m: Monster): void {
   } else if (brand.id === 'vampiric') {
     w.hero.hp = Math.min(w.hero.maxHp, w.hero.hp + (brand.heal ?? 1) * factor);
   }
+}
+
+export function applyWeaponBrand(w: World, m: Monster): void {
+  applyBrand(w, m, w.weapon.brand);
 }
 
 export function tickBrands(w: World, dt: number): void {

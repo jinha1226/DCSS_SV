@@ -11,6 +11,7 @@ export const DUNGEON = {
   floors: dungeonRaw.floors,
   tougher: dungeonRaw.tougher,
   loud: dungeonRaw.loud,
+  arrowLoud: dungeonRaw.arrowLoud,
   descend: dungeonRaw.descend,
   calm: dungeonRaw.calm,
   bandEvery: dungeonRaw.bandEvery,

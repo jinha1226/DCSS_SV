@@ -1,4 +1,4 @@
-export const TRAIT_IDS = new Set(['horns', 'headbutt_back']);
+export const TRAIT_IDS = new Set(['horns', 'headbutt_back', 'hop']);
 
 export interface HornTrait {
   readonly id: 'horns';
@@ -18,4 +18,13 @@ export interface HeadbuttBackTrait {
   readonly id: 'headbutt_back';
 }
 
-export type TraitData = HornTrait | HeadbuttBackTrait;
+export interface HopTrait {
+  readonly id: 'hop';
+  readonly distance: number;
+  readonly distanceLevel: number;
+  readonly distanceHigh: number;
+  readonly cooldown: number;
+  readonly duration: number;
+}
+
+export type TraitData = HornTrait | HeadbuttBackTrait | HopTrait;

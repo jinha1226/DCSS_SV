@@ -1,6 +1,6 @@
 import { brandData } from '../data/items';
 import { DUNGEON } from '../data/packs';
-import { throwTarget } from '../sim/combat';
+import { bowTarget, throwTarget } from '../sim/combat';
 import type { TileName } from '../data/tiles';
 import { Cell, cellAt } from '../sim/grid';
 import { cellNoise } from '../sim/rng';
@@ -173,7 +173,11 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
     const tile = item.kind === 'ammo' ? 'item/boomerang1' : item.axe?.tile;
     if (!tile) continue;
     drawFigure(ctx, atlas.image, tile, sx, sy, px * 0.72, false);
-    if (item.axe?.special) {
+    if (item.newPath) {
+      ctx.strokeStyle = '#5ad8c0';
+      ctx.lineWidth = Math.max(2, px * 0.06);
+      ctx.strokeRect(sx - px * 0.39, sy - px * 0.39, px * 0.78, px * 0.78);
+    } else if (item.axe?.special) {
       ctx.strokeStyle = '#d6b96d';
       ctx.lineWidth = Math.max(1, px * 0.04);
       ctx.strokeRect(sx - px * 0.35, sy - px * 0.35, px * 0.7, px * 0.7);
@@ -199,6 +203,20 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
   for (const shot of w.shots) {
     const sx = ox + (shot.px + (shot.x - shot.px) * between) * px;
     const sy = oy + (shot.py + (shot.y - shot.py) * between) * px;
+    if (shot.arrow) {
+      const angle = Math.atan2(shot.vy, shot.vx);
+      ctx.save();
+      ctx.translate(sx, sy);
+      ctx.rotate(angle);
+      ctx.strokeStyle = '#e8ddbd';
+      ctx.lineWidth = Math.max(1, px * 0.045);
+      ctx.beginPath();
+      ctx.moveTo(-px * 0.22, 0);
+      ctx.lineTo(px * 0.22, 0);
+      ctx.stroke();
+      ctx.restore();
+      continue;
+    }
     const tile = shot.mine ? 'item/boomerang1' : 'item/stone';
     ctx.save();
     ctx.translate(sx, sy);
@@ -206,7 +224,7 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
     drawTile(ctx, atlas.image, tile, -px * 0.26, -px * 0.26, px * 0.52);
     ctx.restore();
   }
-  const target = throwTarget(w);
+  const target = bowTarget(w) ?? throwTarget(w);
   if (target) {
     const tx = ox + target.x * px;
     const ty = oy + target.y * px;
@@ -230,12 +248,28 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
     );
     ctx.stroke();
   }
-  const cx = ox + hx * px;
-  const cy = oy + hy * px;
-  fx.drawStrokes(ctx, cx, cy, px);
+  let heroX = hx;
+  let heroY = hy;
+  let lift = 0;
+  if (w.hero.hopTime > 0 && w.hero.hopDuration > 0) {
+    const t = 1 - w.hero.hopTime / w.hero.hopDuration;
+    heroX = w.hero.hopFromX + (w.hero.hopToX - w.hero.hopFromX) * t;
+    heroY = w.hero.hopFromY + (w.hero.hopToY - w.hero.hopFromY) * t;
+    lift = Math.sin(t * Math.PI) * px * 0.55;
+  }
+  const cx = ox + heroX * px;
+  const groundCy = oy + heroY * px;
+  const cy = groundCy - lift;
+  if (w.hero.hopTime > 0) {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.38)';
+    ctx.beginPath();
+    ctx.ellipse(cx, groundCy + px * 0.25, px * 0.28, px * 0.11, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  fx.drawStrokes(ctx, cx, groundCy, px);
   // DCSS figures are drawn facing left.
   const sheet = w.hero.hurt > 0 ? view.heroWalk.hurt : view.heroWalk.image;
-  drawWalker(ctx, sheet, walkFrame(w.hero.moving && !w.over, w.time), cx, cy, px, w.hero.facing === 1);
+  drawWalker(ctx, sheet, walkFrame(w.hero.moving && !w.over && w.hero.hopTime <= 0, w.time), cx, cy, px, w.hero.facing === 1);
   fx.drawNumbers(ctx, ox, oy, px, view.dpr);
   const icon = Math.max(24 * view.dpr, px * 0.65);
   drawTile(ctx, atlas.image, w.weapon.tile, width - icon - 10 * view.dpr, height - icon - 126 * view.dpr, icon);
