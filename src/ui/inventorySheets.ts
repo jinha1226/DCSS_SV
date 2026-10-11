@@ -107,14 +107,7 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
   };
   const draw = (w: World): void => {
     if (!sheet) return;
-    const key = [
-      sheet,
-      tab,
-      w.weapon.uid,
-      w.ammo,
-      w.openSkills.has('throwing'),
-      w.hero.hp,
-    ].join('|');
+    const key = [sheet, tab, w.weapon.uid, w.ammo, w.openSkills.has('throwing'), w.hero.hp].join('|');
     if (key === lastKey) return;
     lastKey = key;
     title.textContent = sheet === 'equipment' ? '장비' : '가방';
@@ -127,9 +120,14 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
       summary.className = 'inventory-summary';
       const brand = brandData(w.weapon.brand)?.name ?? '없음';
       summary.textContent =
-        '피해 ' + (w.weapon.damage + weaponOption(w.weapon, 'damage')) +
-        ' · 공격 간격 ' + w.weapon.every.toFixed(2) + '초 · ' +
-        (w.weapon.hands === 2 ? '양손' : '한손') + ' · 속성 ' + brand;
+        '피해 ' +
+        (w.weapon.damage + weaponOption(w.weapon, 'damage')) +
+        ' · 공격 간격 ' +
+        w.weapon.every.toFixed(2) +
+        '초 · ' +
+        (w.weapon.hands === 2 ? '양손' : '한손') +
+        ' · 속성 ' +
+        brand;
       content.append(summary);
       const note = document.createElement('p');
       note.className = 'inventory-note';
