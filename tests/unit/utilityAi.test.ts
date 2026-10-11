@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { plainWeapon } from '../../src/data/items';
 import { itemDefinition } from '../../src/data/itemCatalog';
+import { activateItem } from '../../src/sim/itemEffects';
 import { monsterContext } from '../../src/sim/ai/context';
 import { availableMonsterActions } from '../../src/sim/ai/actions';
 import { selectMonsterAction } from '../../src/sim/ai/selector';
@@ -136,5 +137,60 @@ describe('shared spell effect executor for player and monster', () => {
     expect(castMonsterSpell(blinking.world, blinking.monster, 'blink_step')).toBe(true);
     expect(blinking.monster.x).toBeGreaterThan(x);
     expect(blinking.monster.mana).toBeLessThan(40);
+  });
+});
+
+describe('shared item effects and finite monster inventory', () => {
+  it('selects a healing potion at low HP and consumes exactly one use', () => {
+    const w = quietArena();
+    const baseline = spawnMonster(w, 'goblin', 15, 10, true);
+    const monster: Monster = {
+      ...baseline,
+      hp: 3,
+      rest: 0,
+      stats: { ...baseline.stats, windup: 0.05 },
+      itemUses: { potion_healing: 1 },
+    };
+    w.monsters[0] = monster;
+    expect(selectMonsterAction(monsterContext(w, monster))).toMatchObject({ action: 'item', itemId: 'potion_healing' });
+    run(w, 0.18);
+    expect(monster.hp).toBe(monster.maxHp);
+    expect(monster.itemUses.potion_healing).toBe(0);
+    expect(availableMonsterActions(monsterContext(w, monster)).some((a) => a.itemId === 'potion_healing')).toBe(false);
+  });
+
+  it('casts an items.json wand against the hero through the same elemental damage resolver', () => {
+    const w = quietArena();
+    const baseline = spawnMonster(w, 'goblin', 14, 10, true);
+    const monster: Monster = {
+      ...baseline,
+      rest: 0,
+      stats: { ...baseline.stats, windup: 0.05 },
+      itemUses: { wand_sparks: 1 },
+    };
+    w.monsters[0] = monster;
+    const before = w.hero.hp;
+    expect(selectMonsterAction(monsterContext(w, monster))).toMatchObject({ action: 'item', itemId: 'wand_sparks' });
+    run(w, 0.18);
+    expect(w.hero.hp).toBeLessThan(before);
+    expect(monster.itemUses.wand_sparks).toBe(0);
+    expect(itemDefinition('wand_sparks').effects[0]?.power).toBe(8);
+  });
+
+  it('uses the same blink item rules for both actors and respects monster collision', () => {
+    const w = quietArena();
+    const monster = spawnMonster(w, 'goblin', 11.5, 10, true);
+    const old = monster.x;
+    expect(activateItem(w, 'scroll_blink', 'monster', monster)).toBe(true);
+    expect(monster.x).toBeGreaterThan(old);
+    expect(Math.hypot(monster.x - w.hero.x, monster.y - w.hero.y)).toBeGreaterThan(w.heroDef.radius + monster.stats.radius);
+  });
+
+  it('holds spellcasting distance during cooldown rather than walking into melee', () => {
+    const { monster, world } = caster('ember_dart');
+    monster.spellCooldown = 2;
+    const context = monsterContext(world, monster);
+    expect(context.effectiveRange).toBe(6);
+    expect(selectMonsterAction(context).action).toBe('hold');
   });
 });
