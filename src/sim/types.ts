@@ -1,5 +1,6 @@
 import type { HeroDefinition } from '../data/hero';
 import type { WeaponItem } from '../data/items';
+import type { SpellShape } from '../data/spells';
 import type { MonsterKind, MonsterStats } from '../data/monsters';
 import type { Room } from './floor';
 import type { Flow } from './flow';
@@ -24,11 +25,14 @@ export interface Hero {
   moving: boolean;
   hp: number;
   maxHp: number;
+  mana: number;
+  maxMana: number;
   swing: number;
   butt: number;
   hurt: number;
   poison: number;
   throwing: number;
+  spellCooldown: number;
   level: number;
   xp: number;
   skills: Record<string, number>;
@@ -88,14 +92,48 @@ export interface Shot {
   readonly weaponEffect?: string;
   readonly stun?: number;
 }
+export interface SpellShot {
+  x: number;
+  y: number;
+  px: number;
+  py: number;
+  vx: number;
+  vy: number;
+  left: number;
+  damage: number;
+  pierce: number;
+  colour: string;
+  readonly hit: Monster[];
+}
+export interface SpellCloud {
+  x: number;
+  y: number;
+  radius: number;
+  damage: number;
+  left: number;
+  tick: number;
+  nextTick: number;
+  colour: string;
+}
+export interface SpellVisual {
+  readonly shape: SpellShape;
+  readonly x1: number;
+  readonly y1: number;
+  readonly x2: number;
+  readonly y2: number;
+  readonly radius: number;
+  readonly colour: string;
+  left: number;
+}
 export interface GroundItem {
   readonly uid: string;
-  readonly kind: 'axe' | 'ammo' | 'path';
+  readonly kind: 'axe' | 'ammo' | 'path' | 'book';
   x: number;
   y: number;
   axe?: WeaponItem;
   count?: number;
   skill?: string;
+  school?: string;
   ignored: boolean;
   newPath?: boolean;
 }
@@ -112,7 +150,7 @@ export type SimEvent =
       readonly x: number;
       readonly y: number;
       readonly amount: number;
-      readonly by: 'axe' | 'arrow' | 'horns' | 'headbutt_back' | 'throw' | 'thorns';
+      readonly by: 'axe' | 'arrow' | 'spell' | 'horns' | 'headbutt_back' | 'throw' | 'thorns';
     }
   | { readonly type: 'brand'; readonly x: number; readonly y: number; readonly amount: number; readonly resisted: boolean }
   | { readonly type: 'kill'; readonly x: number; readonly y: number }
@@ -138,6 +176,9 @@ export interface World {
   readonly heroDef: HeroDefinition;
   readonly monsters: Monster[];
   readonly shots: Shot[];
+  readonly spellShots: SpellShot[];
+  readonly spellClouds: SpellCloud[];
+  readonly spellVisuals: SpellVisual[];
   readonly rng: Rng;
   readonly events: SimEvent[];
   readonly seed: number;
@@ -169,4 +210,5 @@ export interface Input {
   readonly my: number;
   readonly throw?: boolean;
   readonly hop?: boolean;
+  readonly spell?: { readonly id: string; readonly x: number; readonly y: number };
 }

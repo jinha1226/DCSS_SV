@@ -1,65 +1,23 @@
 [
   {
-    "id": "minotaur",
-    "name": "미노타우로스",
-    "tile": "hero/minotaur",
-    "hp": 60,
-    "radius": 0.35,
-    "speed": 6.5,
-    "sight": 7,
-    "regen": 0.5,
-    "give": 0.3,
-    "walk": { "legs": 25, "mid": 17 },
-    "traits": [
-      {
-        "id": "horns",
-        "damage": 5,
-        "reach": 0.75,
-        "every": 2.4,
-        "knock": 13,
-        "stun": 0.6,
-        "damageEveryLevel": 2,
-        "damageGain": 1,
-        "speedEveryLevel": 3,
-        "speedGain": 0.1,
-        "minEvery": 1.5
-      },
-      { "id": "headbutt_back" }
+    "id":"minotaur","name":"미노타우로스","tile":"hero/minotaur","hp":60,"mana":0,"manaRegen":0,
+    "radius":0.35,"speed":6.5,"sight":7,"regen":0.5,"give":0.3,"walk":{"legs":25,"mid":17},
+    "traits":[
+      {"id":"horns","damage":5,"reach":0.75,"every":2.4,"knock":13,"stun":0.6,"damageEveryLevel":2,"damageGain":1,"speedEveryLevel":3,"speedGain":0.1,"minEvery":1.5},
+      {"id":"headbutt_back"}
     ],
-    "aptitudes": {
-      "fighting": "good",
-      "armour": "good",
-      "shield": "good",
-      "dodging": "normal",
-      "axe": "good",
-      "long_blade": "good",
-      "bow": "normal",
-      "throwing": "normal",
-      "magic": "bad"
-    }
+    "aptitudes":{"fighting":"good","armour":"good","shield":"good","dodging":"normal","axe":"good","long_blade":"good","bow":"normal","throwing":"normal","magic":"bad"}
   },
   {
-    "id": "barachi",
-    "name": "바라치",
-    "tile": "hero/barachi",
-    "hp": 55,
-    "radius": 0.35,
-    "speed": 5.4,
-    "sight": 8,
-    "regen": 0.5,
-    "give": 0.3,
-    "walk": { "legs": 23, "mid": 16 },
-    "traits": [{ "id": "hop", "distance": 3, "distanceLevel": 7, "distanceHigh": 4, "cooldown": 6, "duration": 0.25 }],
-    "aptitudes": {
-      "fighting": "good",
-      "armour": "normal",
-      "shield": "normal",
-      "dodging": "good",
-      "axe": "normal",
-      "long_blade": "normal",
-      "bow": "good",
-      "throwing": "good",
-      "magic": "normal"
-    }
+    "id":"barachi","name":"바라치","tile":"hero/barachi","hp":55,"mana":8,"manaRegen":0.8,
+    "radius":0.35,"speed":5.4,"sight":8,"regen":0.5,"give":0.3,"walk":{"legs":23,"mid":16},
+    "traits":[{"id":"hop","distance":3,"distanceLevel":7,"distanceHigh":4,"cooldown":6,"duration":0.25}],
+    "aptitudes":{"fighting":"good","armour":"normal","shield":"normal","dodging":"good","axe":"normal","long_blade":"normal","bow":"good","throwing":"good","magic":"normal"}
+  },
+  {
+    "id":"deep_elf","name":"딥엘프","tile":"hero/deep_elf","hp":42,"mana":30,"manaRegen":3,
+    "radius":0.33,"speed":6.5,"sight":7,"regen":0.4,"give":0.3,"walk":{"legs":25,"mid":17},
+    "traits":[],
+    "aptitudes":{"fighting":"bad","armour":"bad","shield":"bad","dodging":"good","axe":"bad","long_blade":"normal","bow":"normal","throwing":"normal","magic":"good"}
   }
 ]

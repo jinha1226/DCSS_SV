@@ -128,6 +128,18 @@ function putWeapon(w: World, weapon: WeaponItem, cell: { x: number; y: number } 
 function putAmmo(w: World, count: number, cell: { x: number; y: number } | undefined): void {
   if (cell) w.groundItems.push({ uid: uid(w, 'ammo'), kind: 'ammo', x: cell.x, y: cell.y, count, ignored: false });
 }
+function putBook(w: World, school: string, cell: { x: number; y: number } | undefined): void {
+  if (!cell) return;
+  w.groundItems.push({
+    uid: uid(w, 'book'),
+    kind: 'book',
+    x: cell.x,
+    y: cell.y,
+    school,
+    ignored: false,
+    newPath: true,
+  });
+}
 export function populateFloorItems(w: World): void {
   w.groundItems.length = 0;
   w.pendingPickup = null;
@@ -140,6 +152,7 @@ export function populateFloorItems(w: World): void {
   }
   const piles = rollInt(w, EQUIPMENT.ammoPilesMin, EQUIPMENT.ammoPilesMax);
   for (let i = 0; i < piles; i++) putAmmo(w, rollInt(w, EQUIPMENT.ammoPileMin, EQUIPMENT.ammoPileMax), roomCell(w));
+  if (w.heroDef.attackMode === 'magic' && !w.openSkills.has('fire')) putBook(w, 'fire', roomCell(w));
   if (!w.artefactPlaced && (w.depth === 3 || (w.depth === 2 && w.rng() < 0.5))) {
     let biggest = 0;
     for (let i = 1; i < w.rooms.length; i++) if (w.rooms[i]!.w * w.rooms[i]!.h > w.rooms[biggest]!.w * w.rooms[biggest]!.h) biggest = i;
@@ -207,6 +220,9 @@ export function collectGround(w: World): void {
     if (Math.hypot(item.x - w.hero.x, item.y - w.hero.y) > PICKUP_RADIUS) continue;
     if (item.kind === 'path') {
       if (item.skill) openSkill(w, item.skill);
+      w.groundItems.splice(i, 1);
+    } else if (item.kind === 'book') {
+      if (item.school) openSkill(w, item.school);
       w.groundItems.splice(i, 1);
     } else if (item.kind === 'ammo') {
       const before = w.ammo;

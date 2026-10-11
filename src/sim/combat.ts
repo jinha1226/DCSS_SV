@@ -284,7 +284,9 @@ export function heroStrikes(w: World, dt: number, wantsThrow: boolean): void {
   if (h.hopTime > 0) return;
   if (wantsThrow && h.throwing <= 0) throwNow(w);
 
-  if (w.weapon.family === 'bow') {
+  if (w.heroDef.attackMode === 'magic') {
+    h.swing = Math.max(0, h.swing);
+  } else if (w.weapon.family === 'bow') {
     if (h.swing <= 0) shootNow(w);
   } else if (h.swing <= 0) {
     const axeLevel = skillLevel(w, 'axe'),

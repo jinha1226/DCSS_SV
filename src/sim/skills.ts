@@ -57,7 +57,7 @@ export function openStartingSkills(w: World): void {
     openSkill(w, id, false);
     w.hero.skills[id] = level;
   }
-  openSkill(w, w.weapon.family, false);
+  if (w.heroDef.attackMode !== 'magic') openSkill(w, w.weapon.family, false);
   if (w.ammo > 0) openSkill(w, 'throwing', false);
 }
 

@@ -15,6 +15,7 @@ import { thinkMonster } from './monster';
 import { fillFloor, lingering } from './packs';
 import { makeRng } from './rng';
 import { heroSpeed, openStartingSkills } from './skills';
+import { stepSpells } from './spells';
 import type { Input, Stairs, World } from './types';
 export type { GroundItem, Hero, Input, Monster, PickupStats, Shot, SimEvent, SkillChoice, Stairs, World } from './types';
 export const STEP = 1 / 60;
@@ -57,6 +58,9 @@ function enter(w: World, floor: Floor, monsters: boolean): void {
   w.seen = new Uint8Array(size);
   w.monsters.length = 0;
   w.shots.length = 0;
+  w.spellShots.length = 0;
+  w.spellClouds.length = 0;
+  w.spellVisuals.length = 0;
   w.groundItems.length = 0;
   w.pendingPickup = null;
   w.floorTime = 0;
@@ -91,11 +95,14 @@ export function makeWorld(options: WorldOptions = {}): World {
       moving: false,
       hp: heroDef.hp,
       maxHp: heroDef.hp,
+      mana: heroDef.mana,
+      maxMana: heroDef.mana,
       swing: 0,
       butt: 0,
       hurt: 0,
       poison: 0,
       throwing: 0,
+      spellCooldown: 0,
       level: 1,
       xp: 0,
       skills: {},
@@ -113,6 +120,9 @@ export function makeWorld(options: WorldOptions = {}): World {
     heroDef,
     monsters: [],
     shots: [],
+    spellShots: [],
+    spellClouds: [],
+    spellVisuals: [],
     rng: makeRng(seed ^ 0x5bd1e995),
     events: [],
     seed,
@@ -246,6 +256,7 @@ export function stepWorld(w: World, input: Input, dt: number = STEP): void {
   walkMonsters(w, dt);
   if (w.over) return;
   heroStrikes(w, dt, input.throw === true);
+  stepSpells(w, dt);
   if (w.over || w.choosing) return;
   if (w.itemsEnabled) collectGround(w);
   lingering(w, dt);

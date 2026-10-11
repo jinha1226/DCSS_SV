@@ -6,6 +6,7 @@ import { hasTile, type TileName } from './tiles';
 import { TRAIT_IDS, type TraitData } from './traits';
 
 export type Aptitude = 'good' | 'normal' | 'bad';
+export type AttackMode = 'weapon' | 'magic';
 
 export interface HeroDefinition {
   readonly species: string;
@@ -16,6 +17,8 @@ export interface HeroDefinition {
   readonly speed: number;
   readonly sight: number;
   readonly hp: number;
+  readonly mana: number;
+  readonly manaRegen: number;
   readonly regen: number;
   readonly give: number;
   readonly walk: { readonly legs: number; readonly mid: number };
@@ -32,6 +35,7 @@ export interface HeroDefinition {
   readonly startingWeapon: string;
   readonly startingAmmo: number;
   readonly startingSkills: Readonly<Record<string, number>>;
+  readonly attackMode: AttackMode;
 }
 
 type SpeciesRow = (typeof speciesRaw)[number];
@@ -42,7 +46,9 @@ function species(id: string): SpeciesRow {
   if (!row) throw new Error('species.json: ' + id + ': 없는 종족');
   if (!hasTile(row.tile)) throw new Error('species.json: ' + id + '.tile: 없는 타일 ' + row.tile);
   for (const aptitude of Object.values(row.aptitudes)) {
-    if (!['good', 'normal', 'bad'].includes(aptitude)) throw new Error('species.json: ' + id + '.aptitudes: 잘못된 적성 ' + aptitude);
+    if (!['good', 'normal', 'bad'].includes(aptitude)) {
+      throw new Error('species.json: ' + id + '.aptitudes: 잘못된 적성 ' + aptitude);
+    }
   }
   for (const trait of row.traits) {
     if (!TRAIT_IDS.has(trait.id)) throw new Error('species.json: ' + id + '.traits: 없는 특성 ' + trait.id);
@@ -55,7 +61,9 @@ function job(id: string): JobRow {
   if (!row) throw new Error('jobs.json: ' + id + ': 없는 직업');
   weaponBase(row.startingWeapon);
   for (const skill of Object.keys(row.startingSkills)) {
-    if (!SKILLS.some((entry) => entry.id === skill)) throw new Error('jobs.json: ' + id + '.startingSkills: 없는 스킬 ' + skill);
+    if (!SKILLS.some((entry) => entry.id === skill)) {
+      throw new Error('jobs.json: ' + id + '.startingSkills: 없는 스킬 ' + skill);
+    }
   }
   return row;
 }
@@ -65,7 +73,9 @@ export function heroFor(speciesId = 'minotaur', jobId = 'berserker'): HeroDefini
   const j = job(jobId);
   const weapon = weaponBase(j.startingWeapon);
   const startingSkills: Record<string, number> = {};
-  for (const [id, level] of Object.entries(j.startingSkills)) if (typeof level === 'number') startingSkills[id] = level;
+  for (const [id, level] of Object.entries(j.startingSkills)) {
+    if (typeof level === 'number') startingSkills[id] = level;
+  }
   return {
     species: s.id,
     job: j.id,
@@ -75,6 +85,8 @@ export function heroFor(speciesId = 'minotaur', jobId = 'berserker'): HeroDefini
     speed: s.speed,
     sight: s.sight,
     hp: s.hp,
+    mana: s.mana,
+    manaRegen: s.manaRegen,
     regen: s.regen,
     give: s.give,
     walk: s.walk,
@@ -85,6 +97,7 @@ export function heroFor(speciesId = 'minotaur', jobId = 'berserker'): HeroDefini
     startingWeapon: j.startingWeapon,
     startingAmmo: j.startingAmmo,
     startingSkills,
+    attackMode: j.attackMode,
   };
 }
 
