@@ -36,7 +36,7 @@ export function hurtHero(
   }
   if (dodge > 0 && w.rng() < dodge) {
     w.events.push({ type: 'dodge', x: hero.x, y: hero.y });
-    headbuttBack(w, source, kind);
+    if (kind !== 'spell') headbuttBack(w, source, kind);
     if (source && hasEffect(w, 'dodging.delay')) source.rest += effectValue(w, 'dodging.delay');
     const grace = effectValue(w, 'dodging.grace');
     if (grace > 0) hero.invulnerable = Math.max(hero.invulnerable, grace);
@@ -46,7 +46,7 @@ export function hurtHero(
   if (kind === 'stone' && hasEffect(w, 'shield.missile')) block *= effectValue(w, 'shield.missile');
   if (block > 0 && w.rng() < Math.min(1, block)) {
     w.events.push({ type: 'block', x: hero.x, y: hero.y });
-    headbuttBack(w, source, kind);
+    if (kind !== 'spell') headbuttBack(w, source, kind);
     if (source && hasEffect(w, 'shield.push')) {
       const dx = source.x - hero.x,
         dy = source.y - hero.y,

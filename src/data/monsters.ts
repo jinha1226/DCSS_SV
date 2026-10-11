@@ -69,8 +69,10 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
     if (typeof weapon !== 'string') throw new Error('monsters.json: ' + row.id + '.weapon: 문자열이 아님');
     weaponBase(weapon);
   }
+  const resources = row as unknown as Record<string, unknown>;
   for (const key of ['mana', 'manaRegen'] as const) {
-    if (key in row && (typeof row[key] !== 'number' || !Number.isFinite(row[key]) || row[key] < 0)) {
+    const value = resources[key];
+    if (value !== undefined && (typeof value !== 'number' || !Number.isFinite(value) || value < 0)) {
       throw new Error('monsters.json: ' + row.id + '.' + key + ': 잘못된 마나 수치');
     }
   }
@@ -99,8 +101,8 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
     notice: row.notice,
     resists,
     ...(typeof weapon === 'string' ? { weapon } : {}),
-    ...('mana' in row ? { mana: row.mana } : {}),
-    ...('manaRegen' in row ? { manaRegen: row.manaRegen } : {}),
+    ...(typeof resources.mana === 'number' ? { mana: resources.mana } : {}),
+    ...(typeof resources.manaRegen === 'number' ? { manaRegen: resources.manaRegen } : {}),
     ...(ai ? { ai } : {}),
     ...(typeof armour === 'number' ? { armour } : {}),
     ...(element ? { elemental: element as { type: ResistName; damage: number } } : {}),
