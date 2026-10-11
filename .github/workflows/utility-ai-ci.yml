@@ -1,0 +1,28 @@
+name: Utility AI branch CI
+on:
+  push:
+    branches: ['feature/utility-ai-integration']
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Apply repository formatting
+        run: npm run format
+      - name: Commit formatting to feature branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src tests
+          if ! git diff --cached --quiet; then
+            git commit -m "Format utility AI integration"
+            git push origin HEAD:feature/utility-ai-integration
+          fi
+      - run: npm run check
