@@ -237,7 +237,7 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
                   draw(w);
                 }),
                 action('버리기', () => {
-                  feedback = dropConsumable(w, item.id as ConsumableId) ? config.name + ' 1개 버림' : '버릴 수 없어.';
+                  feedback = dropConsumable(w, item.id as ConsumableId) ? itemDisplayName(w, item.id) + ' 1개 버림' : '버릴 수 없어.';
                   lastKey = '';
                   draw(w);
                 }),

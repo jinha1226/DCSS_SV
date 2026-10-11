@@ -24,7 +24,7 @@ export function noise(w: World, steps: number): void {
 
 function power(w: World, amount: number): number {
   const scale = w.hero.hp <= w.hero.maxHp * 0.3 ? effectValue(w, 'fighting.desperate') : 0;
-  return Math.round(amount * (scale || 1));
+  return Math.round((amount + (w.hero.might > 0 ? 3 : 0)) * (scale || 1));
 }
 
 function strike(
@@ -154,7 +154,7 @@ function makeArrow(w: World, target: Monster): Shot {
     py: h.y,
     vx: (dx / d) * speed,
     vy: (dy / d) * speed,
-    damage: w.weapon.damage + weaponOption(w.weapon, 'damage') + effectValue(w, 'bow.damage'),
+    damage: w.weapon.damage + (w.weapon.enchantment ?? 0) + weaponOption(w.weapon, 'damage') + effectValue(w, 'bow.damage'),
     left: (range + 0.25) / speed,
     mine: true,
     pierce,
@@ -170,7 +170,7 @@ function makeArrow(w: World, target: Monster): Shot {
 function bowCooldown(w: World): number {
   const skill = Math.max(-0.6, effectValue(w, 'bow.haste'));
   const randart = Math.min(0.5, weaponOption(w.weapon, 'haste'));
-  return Math.max(0.18, w.weapon.every * (1 + skill) * (1 - randart));
+  return Math.max(0.18, w.weapon.every * (1 + skill) * (1 - randart) * (w.hero.haste > 0 ? 0.7 : 1));
 }
 function shootNow(w: World): void {
   const targets = bowTargets(w);
@@ -295,6 +295,7 @@ export function heroStrikes(w: World, dt: number, wantsThrow: boolean): void {
       reach = baseReach * spin;
     const damage =
       (w.weapon.damage +
+        (w.weapon.enchantment ?? 0) +
         weaponOption(w.weapon, 'damage') +
         (isBlade ? effectValue(w, 'long_blade.damage') : effectValue(w, 'axe.damage'))) *
       spin;
@@ -317,7 +318,7 @@ export function heroStrikes(w: World, dt: number, wantsThrow: boolean): void {
       h.swing =
         kill && hasEffect(w, isBlade ? 'long_blade.reset' : 'axe.reset')
           ? 0
-          : w.weapon.every * (1 - haste) * (1 + (isBlade ? effectValue(w, 'long_blade.haste') : 0));
+          : w.weapon.every * (1 - haste) * (1 + (isBlade ? effectValue(w, 'long_blade.haste') : 0)) * (w.hero.haste > 0 ? 0.7 : 1);
       noise(w, DUNGEON.loud);
     } else h.swing = 0;
   }

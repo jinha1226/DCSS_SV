@@ -161,7 +161,7 @@ export function chooseSkill(w: World, id: string): void {
 }
 
 export function heroSpeed(w: World): number {
-  return w.speed * (1 + effectValue(w, 'dodging.speed') + (w.weapon.options.find((option) => option.id === 'speed')?.value ?? 0));
+  return w.speed * (1 + effectValue(w, 'dodging.speed') + (w.weapon.options.find((option) => option.id === 'speed')?.value ?? 0)) * (w.hero.haste > 0 ? 1.3 : 1);
 }
 
 export function heroGive(w: World): number {
