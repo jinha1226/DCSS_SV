@@ -52,6 +52,12 @@ export interface Monster {
   readonly stats: MonsterStats;
   readonly pack: number;
   readonly maxHp: number;
+  /** Equipped weapon uses the same items.json definition as the hero. */
+  readonly weapon?: WeaponItem;
+  mana: number;
+  maxMana: number;
+  spellCooldown: number;
+  guard: number;
   x: number;
   y: number;
   px: number;
@@ -93,6 +99,7 @@ export interface Shot {
   readonly brand?: string;
   readonly weaponEffect?: string;
   readonly stun?: number;
+  readonly sourceMonster?: Monster;
 }
 export interface SpellShot {
   x: number;
@@ -107,6 +114,9 @@ export interface SpellShot {
   colour: string;
   readonly hit: Monster[];
   readonly element?: ResistName;
+  readonly caster?: 'hero' | 'monster';
+  readonly sourceMonster?: Monster;
+  hitHero?: boolean;
 }
 export interface SpellCloud {
   x: number;
@@ -118,6 +128,8 @@ export interface SpellCloud {
   nextTick: number;
   colour: string;
   element?: ResistName;
+  readonly caster?: 'hero' | 'monster';
+  readonly sourceMonster?: Monster;
 }
 export interface SpellVisual {
   readonly shape: SpellShape;

@@ -3,6 +3,8 @@ import monstersRaw from './json/monsters.json';
 import type { ResistName } from './items';
 import { hasTile, type TileName } from './tiles';
 import { spellData } from './spells';
+import { itemDefinition } from './itemCatalog';
+import { weaponBase } from './items';
 
 export interface MonsterStats {
   readonly hp: number;
@@ -14,7 +16,10 @@ export interface MonsterStats {
   readonly windup: number;
   readonly rest: number;
   readonly notice: number;
-  readonly throws?: { readonly range: number; readonly keep: number; readonly speed: number };
+  readonly throws?: { readonly range: number; readonly keep: number; readonly speed: number; readonly item?: string };
+  readonly weapon?: string;
+  readonly mana?: number;
+  readonly manaRegen?: number;
   /** Optional utility weights and shared spell IDs, configured in monsters.json. */
   readonly ai?: { readonly preferredRange?: number; readonly aggression?: number; readonly rangedBias?: number; readonly spellBias?: number; readonly spells?: readonly string[] };
   readonly flits?: number;
@@ -52,10 +57,28 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
   if ('armour' in row && (typeof row.armour !== 'number' || !Number.isFinite(row.armour) || row.armour < 0)) {
     throw new Error('monsters.json: ' + row.id + '.armour: 잘못된 방어력');
   }
-  const ai = 'ai' in row ? row.ai as MonsterStats['ai'] : undefined;
+  const ai = 'ai' in row ? (row.ai as MonsterStats['ai']) : undefined;
+  const weapon = 'weapon' in row ? row.weapon : undefined;
+  if (weapon !== undefined) {
+    if (typeof weapon !== 'string') throw new Error('monsters.json: ' + row.id + '.weapon: 문자열이 아님');
+    weaponBase(weapon);
+  }
+  for (const key of ['mana', 'manaRegen'] as const) {
+    if (key in row && (typeof row[key] !== 'number' || !Number.isFinite(row[key]) || row[key] < 0)) {
+      throw new Error('monsters.json: ' + row.id + '.' + key + ': 잘못된 마나 수치');
+    }
+  }
+  if ('throws' in row && row.throws) {
+    if (row.throws.item && itemDefinition(row.throws.item).kind !== 'missile') {
+      throw new Error('monsters.json: ' + row.id + '.throws.item: 투사체가 아님');
+    }
+  }
   if (ai) {
     if (ai.preferredRange !== undefined && (!Number.isFinite(ai.preferredRange) || ai.preferredRange < 0)) throw new Error('monsters.json: ' + row.id + '.ai.preferredRange');
     for (const id of ai.spells ?? []) spellData(id);
+    for (const weight of [ai.aggression, ai.rangedBias, ai.spellBias]) {
+      if (weight !== undefined && !Number.isFinite(weight)) throw new Error('monsters.json: ' + row.id + '.ai: 잘못된 가중치');
+    }
   }
   const stats: MonsterStats = {
     hp: row.hp,
@@ -68,6 +91,9 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
     rest: row.rest,
     notice: row.notice,
     resists,
+    ...(typeof weapon === 'string' ? { weapon } : {}),
+    ...('mana' in row ? { mana: row.mana } : {}),
+    ...('manaRegen' in row ? { manaRegen: row.manaRegen } : {}),
     ...(ai ? { ai } : {}),
     ...(typeof armour === 'number' ? { armour } : {}),
     ...(element ? { elemental: element as { type: ResistName; damage: number } } : {}),
