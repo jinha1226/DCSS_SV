@@ -273,7 +273,7 @@ export function collectGround(w: World): void {
       if (item.school) openSkill(w, item.school);
       w.groundItems.splice(i, 1);
     } else if (item.kind === 'consumable') {
-      if (item.itemId) addConsumable(w, item.itemId as ConsumableId);
+      if (item.itemId) addConsumable(w, item.itemId as ConsumableId, item.count ?? 1);
       w.groundItems.splice(i, 1);
     } else if (item.kind === 'ammo') {
       const before = w.ammo;

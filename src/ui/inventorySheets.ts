@@ -1,6 +1,6 @@
 import { brandData } from '../data/items';
-import { CONSUMABLES, useConsumable, type ConsumableId } from '../sim/consumables';
-import { dropStoredWeapon, equipStoredWeapon, weaponOption } from '../sim/equipment';
+import { CONSUMABLES, dropConsumable, useConsumable, type ConsumableId } from '../sim/consumables';
+import { dropStoredWeapon, equipStoredWeapon, weaponOption, weaponScore } from '../sim/equipment';
 import type { World } from '../sim/world';
 
 export type BagTab = 'all' | 'equipment' | 'consumable' | 'other';
@@ -129,6 +129,7 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
       w.weapon.uid,
       w.ammo,
       w.hero.hp,
+      w.hero.maxHp,
       w.inventory.map((item) => item.uid + ':' + (item.kind === 'consumable' ? item.count : 1)).join(','),
       feedback,
     ].join('|');
@@ -197,13 +198,17 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
             if (stored?.kind === 'weapon') {
               const detail = document.createElement('small');
               detail.className = 'inventory-weapon-detail';
+              const compared = weaponScore(stored.weapon) - weaponScore(w.weapon);
               detail.textContent =
                 '피해 ' +
-                stored.weapon.damage +
+                (stored.weapon.damage + weaponOption(stored.weapon, 'damage')) +
                 ' / 간격 ' +
                 stored.weapon.every.toFixed(2) +
                 '초 / ' +
-                (stored.weapon.hands === 2 ? '양손' : '한손');
+                (stored.weapon.hands === 2 ? '양손' : '한손') +
+                ' / 현재 무기 대비 ' +
+                (compared >= 0 ? '+' : '') +
+                compared.toFixed(1);
               line.append(detail);
               line.append(
                 action('장착', () => {
@@ -225,6 +230,11 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
               line.append(
                 action(config.action, () => {
                   feedback = useConsumable(w, item.id as ConsumableId) ? config.name + ' 사용' : '지금은 사용할 수 없어.';
+                  lastKey = '';
+                  draw(w);
+                }),
+                action('버리기', () => {
+                  feedback = dropConsumable(w, item.id as ConsumableId) ? config.name + ' 1개 버림' : '버릴 수 없어.';
                   lastKey = '';
                   draw(w);
                 }),

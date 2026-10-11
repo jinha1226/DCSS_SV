@@ -3,6 +3,7 @@ import { walkable } from './grid';
 import { computeFov } from './fov';
 import { updateFlow } from './flow';
 import { recordKill } from './kills';
+import { damageAfterDefense } from './damage';
 
 export type ConsumableId = 'potion_healing' | 'scroll_blink' | 'wand_sparks';
 export const CONSUMABLES: Readonly<Record<ConsumableId, { name: string; action: string }>> = {
@@ -19,6 +20,26 @@ export function addConsumable(w: World, id: ConsumableId, count = 1): void {
 }
 
 /** Uses one item only when its effect can actually be applied. */
+/** Drop one unit from a stack at the hero's feet. */
+export function dropConsumable(w: World, id: ConsumableId): boolean {
+  if (w.over || w.pendingPickup || w.choosing) return false;
+  const index = w.inventory.findIndex((entry) => entry.kind === 'consumable' && entry.id === id);
+  const entry = w.inventory[index];
+  if (!entry || entry.kind !== 'consumable' || entry.count <= 0) return false;
+  entry.count--;
+  if (entry.count === 0) w.inventory.splice(index, 1);
+  w.groundItems.push({
+    uid: 'dropped-' + w.nextItem++,
+    kind: 'consumable',
+    itemId: id,
+    count: 1,
+    x: w.hero.x,
+    y: w.hero.y,
+    ignored: true,
+  });
+  return true;
+}
+
 export function useConsumable(w: World, id: ConsumableId): boolean {
   if (w.over || w.choosing || w.pendingPickup) return false;
   const index = w.inventory.findIndex((item) => item.kind === 'consumable' && item.id === id);
@@ -51,9 +72,10 @@ export function useConsumable(w: World, id: ConsumableId): boolean {
       .filter((monster) => Math.hypot(monster.x - w.hero.x, monster.y - w.hero.y) <= 7)
       .sort((a, b) => Math.hypot(a.x - w.hero.x, a.y - w.hero.y) - Math.hypot(b.x - w.hero.x, b.y - w.hero.y))[0];
     if (!target) return false;
-    target.hp = Math.max(0, target.hp - 8);
+    const damage = damageAfterDefense(8, 'electric', 0, target.stats.resists);
+    target.hp = Math.max(0, target.hp - damage);
     target.flash = 0.12;
-    w.events.push({ type: 'elemental', x: target.x, y: target.y, amount: 8, element: 'electric', target: 'monster' });
+    w.events.push({ type: 'elemental', x: target.x, y: target.y, amount: damage, element: 'electric', target: 'monster' });
     if (target.hp <= 0) {
       // The kill pipeline handles experience, healing, and the message log.
       // Import lazily is unnecessary because kills only depends on skills.
