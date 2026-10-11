@@ -201,14 +201,7 @@ function castBeam(
   });
 }
 
-function castBurst(
-  w: World,
-  spell: SpellData,
-  caster: SpellCaster,
-  from: SpellActor,
-  target: SpellActor,
-  damage: number,
-): void {
+function castBurst(w: World, spell: SpellData, caster: SpellCaster, from: SpellActor, target: SpellActor, damage: number): void {
   const radius = spell.radius ?? 1;
   for (const enemy of enemiesOf(w, caster)) {
     if (enemy.hp <= 0) continue;
@@ -229,14 +222,7 @@ function castBurst(
   });
 }
 
-function castCloud(
-  w: World,
-  spell: SpellData,
-  caster: SpellCaster,
-  from: SpellActor,
-  target: SpellActor,
-  damage: number,
-): void {
+function castCloud(w: World, spell: SpellData, caster: SpellCaster, from: SpellActor, target: SpellActor, damage: number): void {
   const cloud: SpellCloud = {
     x: target.x,
     y: target.y,
@@ -305,7 +291,12 @@ function applyUtilitySpell(w: World, spell: SpellData, caster: SpellCaster, acto
     if (!walkable(w.grid, Math.floor(x), Math.floor(y))) continue;
     if (monster) {
       if (Math.hypot(w.hero.x - x, w.hero.y - y) < monster.stats.radius + w.heroDef.radius) continue;
-      if (w.monsters.some((other) => other !== monster && other.hp > 0 && Math.hypot(other.x - x, other.y - y) < other.stats.radius + monster.stats.radius)) continue;
+      if (
+        w.monsters.some(
+          (other) => other !== monster && other.hp > 0 && Math.hypot(other.x - x, other.y - y) < other.stats.radius + monster.stats.radius,
+        )
+      )
+        continue;
     }
     actor.x = actor.px = x;
     actor.y = actor.py = y;
@@ -331,7 +322,8 @@ export function castMonsterSpell(w: World, monster: Monster, spellId: string): b
   if (spell.shape === 'utility') {
     if (!applyUtilitySpell(w, spell, 'monster', monster)) return false;
   } else {
-    if (!['projectile', 'beam', 'burst', 'cloud'].includes(spell.shape) || spell.damage === undefined || spell.range === undefined) return false;
+    if (!['projectile', 'beam', 'burst', 'cloud'].includes(spell.shape) || spell.damage === undefined || spell.range === undefined)
+      return false;
     const d = Math.hypot(w.hero.x - monster.x, w.hero.y - monster.y);
     if (d > spell.range || !w.visible[Math.floor(monster.y) * w.grid.w + Math.floor(monster.x)]) return false;
     executeSpell(w, spell, 'monster', monster, w.hero, spell.damage, spell.range);

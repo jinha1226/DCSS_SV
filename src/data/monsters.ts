@@ -21,7 +21,13 @@ export interface MonsterStats {
   readonly mana?: number;
   readonly manaRegen?: number;
   /** Optional utility weights and shared spell IDs, configured in monsters.json. */
-  readonly ai?: { readonly preferredRange?: number; readonly aggression?: number; readonly rangedBias?: number; readonly spellBias?: number; readonly spells?: readonly string[] };
+  readonly ai?: {
+    readonly preferredRange?: number;
+    readonly aggression?: number;
+    readonly rangedBias?: number;
+    readonly spellBias?: number;
+    readonly spells?: readonly string[];
+  };
   readonly flits?: number;
   readonly poison?: number;
   readonly resists: Readonly<Partial<Record<ResistName, number>>>;
@@ -74,7 +80,8 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
     }
   }
   if (ai) {
-    if (ai.preferredRange !== undefined && (!Number.isFinite(ai.preferredRange) || ai.preferredRange < 0)) throw new Error('monsters.json: ' + row.id + '.ai.preferredRange');
+    if (ai.preferredRange !== undefined && (!Number.isFinite(ai.preferredRange) || ai.preferredRange < 0))
+      throw new Error('monsters.json: ' + row.id + '.ai.preferredRange');
     for (const id of ai.spells ?? []) spellData(id);
     for (const weight of [ai.aggression, ai.rangedBias, ai.spellBias]) {
       if (weight !== undefined && !Number.isFinite(weight)) throw new Error('monsters.json: ' + row.id + '.ai: 잘못된 가중치');

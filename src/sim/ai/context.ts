@@ -20,7 +20,7 @@ export function monsterContext(world: World, monster: Monster): MonsterContext {
   const dy = world.hero.y - monster.y;
   const weapon = monster.weapon;
   const reach = world.heroDef.radius + (weapon && weapon.family !== 'bow' ? weapon.range : monster.stats.reach);
-  const rangedRange = weapon?.family === 'bow' ? weapon.range : monster.stats.throws?.range ?? 0;
+  const rangedRange = weapon?.family === 'bow' ? weapon.range : (monster.stats.throws?.range ?? 0);
   const preferredRange = monster.stats.ai?.preferredRange ?? monster.stats.throws?.keep ?? (rangedRange ? rangedRange * 0.5 : 0);
   return {
     world,

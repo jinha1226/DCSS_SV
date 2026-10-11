@@ -74,7 +74,6 @@ export function useConsumable(w: World, id: ConsumableId): boolean {
       .sort((a, b) => Math.hypot(a.x - w.hero.x, a.y - w.hero.y) - Math.hypot(b.x - w.hero.x, b.y - w.hero.y))[0];
     if (!target) return false;
     hurtMonster(w, target, power, 'electric');
-
   }
   item.count--;
   if (item.count === 0) w.inventory.splice(index, 1);
