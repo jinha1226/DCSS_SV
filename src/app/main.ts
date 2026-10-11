@@ -12,6 +12,7 @@ import { makeEquipmentPicker } from '../ui/equipmentPicker';
 import { makeHud } from '../ui/hud';
 import { makeHopButton } from '../ui/hopButton';
 import { makeSkillPicker } from '../ui/skillPicker';
+import { makeSkillBar } from '../ui/skillBar';
 import { makeSpellButtons } from '../ui/spellButtons';
 import { makeThrowButton } from '../ui/throwButton';
 import { makeTimeModeButton } from '../ui/timeModeButton';
@@ -43,6 +44,7 @@ async function start(): Promise<void> {
   const throwing = makeThrowButton(root);
   const timeMode = makeTimeModeButton(root);
   const picker = makeSkillPicker(root);
+  const skillBar = makeSkillBar(root);
   const gear = makeEquipmentPicker(root);
   const spellButtons = makeSpellButtons(root);
 
@@ -64,6 +66,7 @@ async function start(): Promise<void> {
       depth: switches.floor,
     });
     fx.clear();
+    skillBar.close();
     spellButtons.cancelTarget();
     selector.hide();
     if (debug) debug.world = world;
@@ -71,6 +74,7 @@ async function start(): Promise<void> {
 
   const chooseCharacter = (): void => {
     world = undefined;
+    skillBar.close();
     selected = undefined;
     spellButtons.cancelTarget();
     selector.show();
@@ -179,6 +183,7 @@ async function start(): Promise<void> {
         world.over ? 1 : between,
       );
       hud.show(world);
+      skillBar.show(world);
       picker.show(world);
       gear.show(world);
       spellButtons.show(world);

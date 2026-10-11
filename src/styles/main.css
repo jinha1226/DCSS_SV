@@ -620,3 +620,167 @@ canvas {
   width: 84px;
   min-height: 56px;
 }
+
+/* Compact, one-line skill summary below the vitals (portrait phones). */
+.skillbar {
+  position: fixed;
+  top: calc(78px + env(safe-area-inset-top, 0px));
+  left: 10px;
+  right: 10px;
+  z-index: 7;
+  display: none;
+  pointer-events: none;
+}
+
+.skillbar.on {
+  display: block;
+}
+
+.skillbar-rail {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px;
+  pointer-events: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.skillbar-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.skillbar-chip {
+  flex: 0 0 38px;
+  height: 38px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(187, 174, 141, 0.44);
+  border-radius: 7px;
+  background: rgba(17, 19, 23, 0.84);
+  color: #eae2cb;
+  font: inherit;
+  touch-action: manipulation;
+}
+
+.skillbar-icon {
+  font-size: 21px;
+  line-height: 1;
+}
+
+.skillbar-level {
+  position: absolute;
+  right: 2px;
+  bottom: 1px;
+  min-width: 13px;
+  border-radius: 3px;
+  background: #24221f;
+  color: #f4dd98;
+  font: 700 11px/14px system-ui, sans-serif;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.skillbar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 16;
+  width: 100%;
+  border: 0;
+  background: rgba(0, 0, 0, 0.48);
+}
+
+.skillbar-backdrop.on {
+  display: block;
+}
+
+.skillbar-drawer {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 17;
+  max-height: min(55dvh, 440px);
+  padding: 12px 14px calc(14px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid #786b54;
+  border-radius: 16px 16px 0 0;
+  background: #1c1b1a;
+  color: #f2ead8;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.36);
+}
+
+.skillbar-drawer.on {
+  display: flex;
+  flex-direction: column;
+}
+
+.skillbar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 4px 8px;
+  font-size: 16px;
+}
+
+.skillbar-close {
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid #786b54;
+  border-radius: 8px;
+  background: #333028;
+  color: #f2ead8;
+  font: 600 13px system-ui, sans-serif;
+}
+
+.skillbar-list {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  min-height: 0;
+}
+
+.skillbar-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 50px;
+  padding: 6px 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.skillbar-row-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 30px;
+  height: 30px;
+  color: #e7d5a0;
+  font-size: 22px;
+}
+
+.skillbar-row-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.skillbar-row-info strong {
+  font-size: 14px;
+}
+
+.skillbar-row-info small {
+  color: #b8ad98;
+  font-size: 11px;
+}
+
+.skillbar-row-level {
+  font-size: 16px;
+  color: #efd38a;
+  font-variant-numeric: tabular-nums;
+}
