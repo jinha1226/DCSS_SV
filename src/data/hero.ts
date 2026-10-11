@@ -97,7 +97,7 @@ export function heroFor(speciesId = 'minotaur', jobId = 'berserker'): HeroDefini
     startingWeapon: j.startingWeapon,
     startingAmmo: j.startingAmmo,
     startingSkills,
-    attackMode: j.attackMode,
+    attackMode: j.attackMode as AttackMode,
   };
 }
 
