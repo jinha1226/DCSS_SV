@@ -61,8 +61,22 @@ describe('floor pickup and ammunition',()=>{
     const w=arena();const found={...plainAxe('war_axe','found'),uid:'found'};w.groundItems.push({uid:'found',kind:'axe',x:w.hero.x,y:w.hero.y,axe:found,ignored:false});
     collectGround(w);expect(w.pendingPickup?.axe).toBe(found);const time=w.time;stepWorld(w,STILL);expect(w.time).toBe(time);const old=w.weapon;acceptPickup(w);expect(w.weapon).toBe(found);expect(w.groundItems[0]?.axe).toBe(old);
   });
-  it('does not ask again after leave until the cell is left',()=>{
-    const w=arena(),found={...plainAxe('war_axe','found'),uid:'found'};w.groundItems.push({uid:'found',kind:'axe',x:w.hero.x,y:w.hero.y,axe:found,ignored:false});collectGround(w);declinePickup(w);collectGround(w);expect(w.pendingPickup).toBeNull();w.hero.x+=1;collectGround(w);w.hero.x-=1;collectGround(w);expect(w.pendingPickup).not.toBeNull();
+  it('does not ask again after leave until the pickup radius is clearly left',()=>{
+    const w=arena(),found={...plainAxe('war_axe','found'),uid:'found'};
+    w.groundItems.push({uid:'found',kind:'axe',x:w.hero.x,y:w.hero.y,axe:found,ignored:false});
+    collectGround(w);declinePickup(w);collectGround(w);expect(w.pendingPickup).toBeNull();
+    w.hero.x+=1;collectGround(w);w.hero.x-=1;collectGround(w);expect(w.pendingPickup).not.toBeNull();
+  });
+
+  it('does not reopen immediately when declined from the neighbouring tile edge',()=>{
+    const w=arena(),found={...plainAxe('war_axe','edge'),uid:'edge'};
+    w.groundItems.push({uid:'edge',kind:'axe',x:10.5,y:10.5,axe:found,ignored:false});
+    w.hero.x=11.01;w.hero.y=10.5;
+    collectGround(w);expect(w.pendingPickup).not.toBeNull();
+    declinePickup(w);
+    collectGround(w);expect(w.pendingPickup).toBeNull();
+    w.hero.x=11.4;collectGround(w);
+    w.hero.x=11.01;collectGround(w);expect(w.pendingPickup).not.toBeNull();
   });
   it('starts with five, spends ammunition, and drops it on walkable ground',()=>{
     const w=arena();expect(w.ammo).toBe(EQUIPMENT.ammoStart);const m=spawnMonster(w,'ogre',15,10,true);m.stun=99;stepWorld(w,{mx:0,my:0,throw:true});expect(w.ammo).toBe(4);run(w,1);expect(w.groundItems.some((item)=>item.kind==='ammo')).toBe(true);

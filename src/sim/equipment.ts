@@ -4,6 +4,8 @@ import type { World } from './types';
 
 const RANDART = [0.1, 0.3, 0.5] as const;
 const BRAND = [0.12, 0.3, 0.5] as const;
+const PICKUP_RADIUS = 0.55;
+const PICKUP_RELEASE_RADIUS = 0.8;
 const rollInt=(w:World,lo:number,hi:number):number=>lo+Math.floor(w.rng()*(hi-lo+1));
 const uid=(w:World,prefix:string):string=>prefix+'-'+w.depth+'-'+w.nextItem++;
 
@@ -69,9 +71,10 @@ export function dropAmmo(w:World,x:number,y:number,count=1):void{
   if(existing)existing.count=(existing.count??0)+count;else w.groundItems.push({uid:uid(w,'spent'),kind:'ammo',x:cx+0.5,y:cy+0.5,count,ignored:false});
 }
 export function collectGround(w:World):void{
-  const hx=Math.floor(w.hero.x),hy=Math.floor(w.hero.y);
-  for(const item of w.groundItems)if(item.ignored&&(Math.floor(item.x)!==hx||Math.floor(item.y)!==hy))item.ignored=false;
-  for(let i=w.groundItems.length-1;i>=0;i--){const item=w.groundItems[i]!;if(Math.hypot(item.x-w.hero.x,item.y-w.hero.y)>0.55)continue;
+  for(const item of w.groundItems) {
+    if(item.ignored&&Math.hypot(item.x-w.hero.x,item.y-w.hero.y)>PICKUP_RELEASE_RADIUS) item.ignored=false;
+  }
+  for(let i=w.groundItems.length-1;i>=0;i--){const item=w.groundItems[i]!;if(Math.hypot(item.x-w.hero.x,item.y-w.hero.y)>PICKUP_RADIUS)continue;
     if(item.kind==='ammo'){const before=w.ammo;w.ammo=Math.min(EQUIPMENT.ammoMax,w.ammo+(item.count??1));const took=w.ammo-before;if(took<=0)continue;w.pickupStats.recovered+=took;const left=(item.count??1)-took;if(left>0)item.count=left;else w.groundItems.splice(i,1);}
     else if(!item.ignored&&!w.pendingPickup){w.pendingPickup=item;w.pickupStats.offered++;}
   }
