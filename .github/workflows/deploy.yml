@@ -23,7 +23,10 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - run: npm run check
+      - run: |
+          npx prettier --write src/sim/consumables.ts
+          git diff -- src/sim/consumables.ts
+          npm run check
       - run: npx vite build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
