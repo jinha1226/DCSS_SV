@@ -32,11 +32,7 @@ const APTITUDE_VALUES = {
   bad: '나쁨',
 } as const;
 
-export function makeCharacterSelect(
-  root: HTMLElement,
-  atlas: Atlas,
-  choose: (choice: CharacterChoice) => void,
-): CharacterSelect {
+export function makeCharacterSelect(root: HTMLElement, atlas: Atlas, choose: (choice: CharacterChoice) => void): CharacterSelect {
   const wrap = document.createElement('div');
   wrap.className = 'character-select';
   const title = document.createElement('h1');
@@ -80,9 +76,7 @@ export function makeCharacterSelect(
         .filter(([, level]) => typeof level === 'number' && level > 0)
         .map(([id, level]) => skillData(id).name + ' ' + level)
         .join(' · ');
-      const items = [weapon.name, job.startingAmmo > 0 ? '부메랑 ×' + job.startingAmmo : '']
-        .filter(Boolean)
-        .join(' · ');
+      const items = [weapon.name, job.startingAmmo > 0 ? '부메랑 ×' + job.startingAmmo : ''].filter(Boolean).join(' · ');
       details.innerHTML = '<b>시작 아이템</b> ' + items + '<br><b>시작 스킬</b> ' + skills;
 
       button.append(portrait, name, details);
@@ -117,8 +111,7 @@ export function makeCharacterSelect(
       for (const [id, value] of Object.entries(species.aptitudes)) {
         const row = document.createElement('span');
         row.className = 'aptitude aptitude-' + value;
-        row.textContent =
-          (APTITUDE_NAMES[id] ?? id) + ' ' + APTITUDE_VALUES[value as keyof typeof APTITUDE_VALUES];
+        row.textContent = (APTITUDE_NAMES[id] ?? id) + ' ' + APTITUDE_VALUES[value as keyof typeof APTITUDE_VALUES];
         aptitudes.append(row);
       }
 

@@ -23,8 +23,6 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - run: npm run format
-      - run: cat src/ui/characterSelect.ts
       - run: npm run check
       - run: npx vite build
       - uses: actions/configure-pages@v5
