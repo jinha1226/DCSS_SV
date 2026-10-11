@@ -10,7 +10,11 @@
     "range": 1.2,
     "knock": 1.2,
     "hands": 1,
-    "depthWeights": [8, 5, 2]
+    "depthWeights": [
+      8,
+      5,
+      2
+    ]
   },
   {
     "id": "war_axe",
@@ -23,7 +27,11 @@
     "range": 1.2,
     "knock": 1.2,
     "hands": 1,
-    "depthWeights": [2, 6, 5]
+    "depthWeights": [
+      2,
+      6,
+      5
+    ]
   },
   {
     "id": "battle_axe",
@@ -36,33 +44,45 @@
     "range": 1.2,
     "knock": 1.2,
     "hands": 2,
-    "depthWeights": [1, 2, 7]
+    "depthWeights": [
+      1,
+      2,
+      7
+    ]
   },
   {
     "id": "long_sword",
     "kind": "weapon",
     "family": "long_blade",
     "name": "장검",
-    "tile": "item/hand_axe1",
+    "tile": "item/long_sword1",
     "damage": 7,
     "every": 0.55,
     "range": 1.3,
     "knock": 0.5,
     "hands": 1,
-    "depthWeights": [8, 5, 3]
+    "depthWeights": [
+      8,
+      5,
+      3
+    ]
   },
   {
     "id": "great_sword",
     "kind": "weapon",
     "family": "long_blade",
     "name": "대검",
-    "tile": "item/battle_axe1",
+    "tile": "item/greatsword1",
     "damage": 11,
     "every": 0.85,
     "range": 1.5,
     "knock": 0.8,
     "hands": 2,
-    "depthWeights": [1, 3, 7]
+    "depthWeights": [
+      1,
+      3,
+      7
+    ]
   },
   {
     "id": "shortbow",
@@ -76,7 +96,11 @@
     "projectileSpeed": 20,
     "knock": 0,
     "hands": 2,
-    "depthWeights": [8, 4, 2]
+    "depthWeights": [
+      8,
+      4,
+      2
+    ]
   },
   {
     "id": "orcbow",
@@ -90,7 +114,11 @@
     "projectileSpeed": 20,
     "knock": 0,
     "hands": 2,
-    "depthWeights": [2, 7, 4]
+    "depthWeights": [
+      2,
+      7,
+      4
+    ]
   },
   {
     "id": "longbow",
@@ -104,7 +132,11 @@
     "projectileSpeed": 20,
     "knock": 0,
     "hands": 2,
-    "depthWeights": [1, 2, 8]
+    "depthWeights": [
+      1,
+      2,
+      8
+    ]
   },
   {
     "id": "boomerang",
@@ -237,15 +269,29 @@
     "kind": "artefact",
     "name": "월광검",
     "base": "great_sword",
-    "tile": "item/battle_axe1",
+    "tile": "item/greatsword1",
     "brand": "cold",
     "effect": "ember"
   },
   {
     "id": "names",
     "kind": "names",
-    "prefixes": ["카르", "둠", "벨", "라크", "모르", "세른"],
-    "suffixes": ["둠", "라", "바르", "카", "린", "고르"]
+    "prefixes": [
+      "카르",
+      "둠",
+      "벨",
+      "라크",
+      "모르",
+      "세른"
+    ],
+    "suffixes": [
+      "둠",
+      "라",
+      "바르",
+      "카",
+      "린",
+      "고르"
+    ]
   },
   {
     "id": "equipment",
