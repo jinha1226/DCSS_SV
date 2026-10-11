@@ -1,0 +1,272 @@
+[
+  {
+    "id": "minotaur",
+    "name": "미노타우로스",
+    "role": "melee",
+    "identity": "뿔 자동 반격",
+    "signatureTrait": "horns",
+    "implementation": "ready",
+    "playable": true,
+    "requires": []
+  },
+  {
+    "id": "barachi",
+    "name": "바라치",
+    "role": "hybrid",
+    "identity": "느린 걸음과 방향 도약",
+    "signatureTrait": "hop",
+    "implementation": "ready",
+    "playable": true,
+    "requires": []
+  },
+  {
+    "id": "deep_elf",
+    "name": "딥엘프",
+    "role": "caster",
+    "identity": "낮은 체력, 강력한 주문 성장",
+    "signatureTrait": "magic_affinity",
+    "implementation": "ready",
+    "playable": true,
+    "requires": []
+  },
+  {
+    "id": "human",
+    "name": "인간",
+    "role": "balanced",
+    "identity": "탐험 중 회복 보너스",
+    "signatureTrait": "exploration_regen",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["exploration"]
+  },
+  {
+    "id": "mountain_dwarf",
+    "name": "산악 드워프",
+    "role": "armoured_caster",
+    "identity": "중갑에서 주문 방해 감소",
+    "signatureTrait": "armour_casting",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["equipment", "spellcasting"]
+  },
+  {
+    "id": "gargoyle",
+    "name": "가고일",
+    "role": "tank",
+    "identity": "돌 피부와 독 면역",
+    "signatureTrait": "stone_skin",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["resistance", "defence"]
+  },
+  {
+    "id": "troll",
+    "name": "트롤",
+    "role": "bruiser",
+    "identity": "발톱 공격과 빠른 재생",
+    "signatureTrait": "claws_regen",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["natural_attack", "regeneration"]
+  },
+  {
+    "id": "oni",
+    "name": "오니",
+    "role": "bruiser",
+    "identity": "근접 난전 중 추가 타격",
+    "signatureTrait": "followup_strike",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["melee_combo"]
+  },
+  {
+    "id": "armataur",
+    "name": "아르마타우르",
+    "role": "charger",
+    "identity": "이동 뒤 돌진 타격과 회복",
+    "signatureTrait": "rampage",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["movement", "melee_combo"]
+  },
+  {
+    "id": "naga",
+    "name": "나가",
+    "role": "poison",
+    "identity": "느린 걸음과 독 압박",
+    "signatureTrait": "venomous_bite",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["poison", "movement"]
+  },
+  {
+    "id": "merfolk",
+    "name": "머포크",
+    "role": "water",
+    "identity": "물 지형에서 이동·회피 강화",
+    "signatureTrait": "water_affinity",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["terrain"]
+  },
+  {
+    "id": "octopode",
+    "name": "옥토포드",
+    "role": "grappler",
+    "identity": "촉수로 적을 붙잡음",
+    "signatureTrait": "constriction",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["grapple", "equipment"]
+  },
+  {
+    "id": "spriggan",
+    "name": "스프리건",
+    "role": "skirmisher",
+    "identity": "빠른 이동, 낮은 체력",
+    "signatureTrait": "fleetfoot",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["movement", "equipment"]
+  },
+  {
+    "id": "tengu",
+    "name": "텐구",
+    "role": "evasion",
+    "identity": "부리·발톱 추가 공격과 비행",
+    "signatureTrait": "flight_talons",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["flight", "natural_attack"]
+  },
+  {
+    "id": "kobold",
+    "name": "코볼트",
+    "role": "ambusher",
+    "identity": "첫 타격과 어두운 곳에서 유리",
+    "signatureTrait": "ambush",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["stealth"]
+  },
+  {
+    "id": "gnoll",
+    "name": "놀",
+    "role": "generalist",
+    "identity": "여러 계열을 동시에 성장",
+    "signatureTrait": "distributed_training",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["skill_growth"]
+  },
+  {
+    "id": "formicid",
+    "name": "포미시드",
+    "role": "defender",
+    "identity": "양손 무기와 방패 동시 사용",
+    "signatureTrait": "four_arms",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["equipment", "terrain"]
+  },
+  {
+    "id": "coglin",
+    "name": "코글린",
+    "role": "dual_wield",
+    "identity": "양손에 서로 다른 무기 장착",
+    "signatureTrait": "dual_wield",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["equipment"]
+  },
+  {
+    "id": "draconian",
+    "name": "드라코니언",
+    "role": "evolving",
+    "identity": "레벨에 따라 용종과 숨결 결정",
+    "signatureTrait": "draconian_maturation",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["level_mutation", "breath_attack"]
+  },
+  {
+    "id": "demonspawn",
+    "name": "데몬스폰",
+    "role": "evolving",
+    "identity": "레벨마다 악마 변이 분기",
+    "signatureTrait": "demonic_mutations",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["level_mutation"]
+  },
+  {
+    "id": "demigod",
+    "name": "데미갓",
+    "role": "growth",
+    "identity": "높은 성장 잠재력, 신 선택 불가",
+    "signatureTrait": "no_gods",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["god_restriction", "level_growth"]
+  },
+  {
+    "id": "djinni",
+    "name": "지니",
+    "role": "hp_caster",
+    "identity": "마나 대신 체력을 사용해 주문 시전",
+    "signatureTrait": "hp_spellcasting",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["resource_rules", "spell_unlock"]
+  },
+  {
+    "id": "mummy",
+    "name": "미라",
+    "role": "undead",
+    "identity": "독 면역, 물약 사용 불가",
+    "signatureTrait": "mummy_restrictions",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["immunity", "consumable_restriction"]
+  },
+  {
+    "id": "revenant",
+    "name": "레버넌트",
+    "role": "undead_caster",
+    "identity": "공격 주문에 반응하는 영혼 손톱",
+    "signatureTrait": "spellclaws",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["natural_attack", "spellcasting"]
+  },
+  {
+    "id": "poltergeist",
+    "name": "폴터가이스트",
+    "role": "hexer",
+    "identity": "적 약화에 연동한 방어",
+    "signatureTrait": "hex_barrier",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["hex_status", "equipment"]
+  },
+  {
+    "id": "felid",
+    "name": "펠리드",
+    "role": "lives",
+    "identity": "장비 제한, 여러 목숨",
+    "signatureTrait": "extra_lives",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["extra_lives", "equipment"]
+  },
+  {
+    "id": "vine_stalker",
+    "name": "바인 스토커",
+    "role": "drainer",
+    "identity": "흡마 물기와 매우 빠른 재생",
+    "signatureTrait": "mana_bite",
+    "implementation": "planned",
+    "playable": false,
+    "requires": ["mana_drain", "regeneration"]
+  }
+]
