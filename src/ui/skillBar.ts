@@ -81,12 +81,13 @@ export function makeSkillBar(root: HTMLElement, atlas: Atlas): SkillBar {
   equipment.setAttribute('aria-label', '장착한 장비');
   bar.append(equipment);
   root.append(bar);
+  const overlayRoot = root.closest('#app') ?? root;
 
   const backdrop = document.createElement('button');
   backdrop.type = 'button';
   backdrop.className = 'skillbar-backdrop';
   backdrop.setAttribute('aria-label', '스킬 정보 닫기');
-  root.append(backdrop);
+  overlayRoot.append(backdrop);
 
   const drawer = document.createElement('section');
   drawer.className = 'skillbar-drawer';
@@ -103,7 +104,7 @@ export function makeSkillBar(root: HTMLElement, atlas: Atlas): SkillBar {
   const rows = document.createElement('div');
   rows.className = 'skillbar-list';
   drawer.append(header, rows);
-  root.append(drawer);
+  overlayRoot.append(drawer);
 
   let current: World | undefined;
   let open = false;
