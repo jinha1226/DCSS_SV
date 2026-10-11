@@ -10,11 +10,7 @@
     "range": 1.2,
     "knock": 1.2,
     "hands": 1,
-    "depthWeights": [
-      8,
-      5,
-      2
-    ]
+    "depthWeights": [8, 5, 2]
   },
   {
     "id": "war_axe",
@@ -27,11 +23,7 @@
     "range": 1.2,
     "knock": 1.2,
     "hands": 1,
-    "depthWeights": [
-      2,
-      6,
-      5
-    ]
+    "depthWeights": [2, 6, 5]
   },
   {
     "id": "battle_axe",
@@ -44,11 +36,7 @@
     "range": 1.2,
     "knock": 1.2,
     "hands": 2,
-    "depthWeights": [
-      1,
-      2,
-      7
-    ]
+    "depthWeights": [1, 2, 7]
   },
   {
     "id": "long_sword",
@@ -61,11 +49,7 @@
     "range": 1.3,
     "knock": 0.5,
     "hands": 1,
-    "depthWeights": [
-      8,
-      5,
-      3
-    ]
+    "depthWeights": [8, 5, 3]
   },
   {
     "id": "great_sword",
@@ -78,11 +62,7 @@
     "range": 1.5,
     "knock": 0.8,
     "hands": 2,
-    "depthWeights": [
-      1,
-      3,
-      7
-    ]
+    "depthWeights": [1, 3, 7]
   },
   {
     "id": "shortbow",
@@ -96,11 +76,7 @@
     "projectileSpeed": 20,
     "knock": 0,
     "hands": 2,
-    "depthWeights": [
-      8,
-      4,
-      2
-    ]
+    "depthWeights": [8, 4, 2]
   },
   {
     "id": "orcbow",
@@ -114,11 +90,7 @@
     "projectileSpeed": 20,
     "knock": 0,
     "hands": 2,
-    "depthWeights": [
-      2,
-      7,
-      4
-    ]
+    "depthWeights": [2, 7, 4]
   },
   {
     "id": "longbow",
@@ -132,11 +104,7 @@
     "projectileSpeed": 20,
     "knock": 0,
     "hands": 2,
-    "depthWeights": [
-      1,
-      2,
-      8
-    ]
+    "depthWeights": [1, 2, 8]
   },
   {
     "id": "boomerang",
@@ -277,63 +245,36 @@
     "id": "potion_healing",
     "kind": "potion",
     "name": "회복 물약",
+    "tile": "item/stone",
     "enabled": true,
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [
-      0,
-      0,
-      0
-    ],
-    "effects": [
-      {
-        "id": "heal",
-        "power": 30
-      }
-    ],
-    "tile": "item/stone"
+    "depthWeights": [0, 0, 0],
+    "effects": [{ "id": "heal", "power": 30 }]
   },
   {
     "id": "scroll_blink",
     "kind": "scroll",
     "name": "점멸 두루마리",
+    "tile": "item/stone",
     "enabled": true,
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [
-      0,
-      0,
-      0
-    ],
-    "effects": [
-      {
-        "id": "blink",
-        "power": 3
-      }
-    ],
-    "tile": "item/stone"
+    "depthWeights": [0, 0, 0],
+    "effects": [{ "id": "blink", "power": 3 }]
   },
   {
     "id": "wand_sparks",
     "kind": "wand",
     "name": "전격 완드",
+    "tile": "item/stone",
     "enabled": true,
     "useMode": "store",
     "stackable": false,
-    "depthWeights": [
-      0,
-      0,
-      0
-    ],
-    "effects": [
-      {
-        "id": "lightning",
-        "power": 8
-      }
-    ],
-    "tile": "item/stone"
+    "depthWeights": [0, 0, 0],
+    "effects": [{ "id": "lightning", "power": 8 }]
   },
   {
     "id": "ring_warding",
@@ -342,17 +283,8 @@
     "enabled": false,
     "useMode": "equip",
     "stackable": false,
-    "depthWeights": [
-      0,
-      0,
-      0
-    ],
-    "effects": [
-      {
-        "id": "armour",
-        "power": 1
-      }
-    ]
+    "depthWeights": [0, 0, 0],
+    "effects": [{ "id": "armour", "power": 1 }]
   },
   {
     "id": "leather_armour",
@@ -361,17 +293,8 @@
     "enabled": false,
     "useMode": "equip",
     "stackable": false,
-    "depthWeights": [
-      0,
-      0,
-      0
-    ],
-    "effects": [
-      {
-        "id": "armour",
-        "power": 2
-      }
-    ]
+    "depthWeights": [0, 0, 0],
+    "effects": [{ "id": "armour", "power": 2 }]
   },
   {
     "id": "buckler",
@@ -380,37 +303,14 @@
     "enabled": false,
     "useMode": "equip",
     "stackable": false,
-    "depthWeights": [
-      0,
-      0,
-      0
-    ],
-    "effects": [
-      {
-        "id": "shield",
-        "power": 1
-      }
-    ]
+    "depthWeights": [0, 0, 0],
+    "effects": [{ "id": "shield", "power": 1 }]
   },
   {
     "id": "names",
     "kind": "names",
-    "prefixes": [
-      "카르",
-      "둠",
-      "벨",
-      "라크",
-      "모르",
-      "세른"
-    ],
-    "suffixes": [
-      "둠",
-      "라",
-      "바르",
-      "카",
-      "린",
-      "고르"
-    ]
+    "prefixes": ["카르", "둠", "벨", "라크", "모르", "세른"],
+    "suffixes": ["둠", "라", "바르", "카", "린", "고르"]
   },
   {
     "id": "equipment",
