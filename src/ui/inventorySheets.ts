@@ -30,7 +30,12 @@ const SLOTS = [
 export function equipmentSlots(w: World): EquipmentSlot[] {
   return SLOTS.map((slot) => ({
     ...slot,
-    value: slot.id === 'weapon' ? w.weapon.name + ((w.weapon.enchantment ?? 0) > 0 ? ' +' + w.weapon.enchantment : '') : w.gear[slot.id as GearSlot] ? gearName(w, w.gear[slot.id as GearSlot]!) : '—',
+    value:
+      slot.id === 'weapon'
+        ? w.weapon.name + ((w.weapon.enchantment ?? 0) > 0 ? ' +' + w.weapon.enchantment : '')
+        : w.gear[slot.id as GearSlot]
+          ? gearName(w, w.gear[slot.id as GearSlot]!)
+          : '—',
     available: slot.id === 'weapon' || slot.id !== 'offhand',
   }));
 }
@@ -161,11 +166,13 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
           );
         }
         if (slot.id !== 'weapon' && slot.id !== 'offhand' && w.gear[slot.id as GearSlot]) {
-          line.append(action('해제', () => {
-            feedback = unequipGear(w, slot.id as GearSlot) ? '장비 해제' : '저주받은 장비는 해제할 수 없어.';
-            lastKey = '';
-            draw(w);
-          }));
+          line.append(
+            action('해제', () => {
+              feedback = unequipGear(w, slot.id as GearSlot) ? '장비 해제' : '저주받은 장비는 해제할 수 없어.';
+              lastKey = '';
+              draw(w);
+            }),
+          );
         }
         content.append(line);
       }
@@ -184,7 +191,15 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
       content.append(summary);
       const note = document.createElement('p');
       note.className = 'inventory-note';
-      note.textContent = '방어력 +' + gearBonus(w, 'armour') + ' · 방패 +' + gearBonus(w, 'shield') + ' · 화염 저항 +' + gearBonus(w, 'fire_resist') + ' · 냉기 저항 +' + gearBonus(w, 'cold_resist');
+      note.textContent =
+        '방어력 +' +
+        gearBonus(w, 'armour') +
+        ' · 방패 +' +
+        gearBonus(w, 'shield') +
+        ' · 화염 저항 +' +
+        gearBonus(w, 'fire_resist') +
+        ' · 냉기 저항 +' +
+        gearBonus(w, 'cold_resist');
       content.append(note);
     } else {
       const names: { id: BagTab; label: string }[] = [
@@ -259,14 +274,27 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
               line.append(
                 action(config.action, () => {
                   if (item.id === 'scroll_identify') {
-                    const targets = w.inventory.filter((entry) => entry.kind === 'consumable' && entry.id !== item.id && !w.identifiedItems.has(entry.id));
+                    const targets = w.inventory.filter(
+                      (entry) => entry.kind === 'consumable' && entry.id !== item.id && !w.identifiedItems.has(entry.id),
+                    );
                     if (targets.length > 0) {
-                      const target = window.prompt('감정할 아이템 번호를 입력하세요:\\n' + targets.map((entry, index) => (index + 1) + '. ' + itemDisplayName(w, entry.id)).join('\\n'));
+                      const target = window.prompt(
+                        '감정할 아이템 번호를 입력하세요:\\n' +
+                          targets.map((entry, index) => index + 1 + '. ' + itemDisplayName(w, entry.id)).join('\\n'),
+                      );
                       const selected = target === null ? undefined : targets[Number(target) - 1];
-                      if (!selected || selected.kind !== 'consumable') { feedback = '감정을 취소했어.'; lastKey = ''; draw(w); return; }
-                      feedback = useConsumable(w, item.id, selected.id) ? '감정 완료: ' + itemDisplayName(w, selected.id) : '감정할 수 없어.';
+                      if (!selected || selected.kind !== 'consumable') {
+                        feedback = '감정을 취소했어.';
+                        lastKey = '';
+                        draw(w);
+                        return;
+                      }
+                      feedback = useConsumable(w, item.id, selected.id)
+                        ? '감정 완료: ' + itemDisplayName(w, selected.id)
+                        : '감정할 수 없어.';
                     } else feedback = '감정할 아이템이 없어.';
-                  } else feedback = useConsumable(w, item.id as ConsumableId) ? itemDisplayName(w, item.id) + ' 사용' : '지금은 사용할 수 없어.';
+                  } else
+                    feedback = useConsumable(w, item.id as ConsumableId) ? itemDisplayName(w, item.id) + ' 사용' : '지금은 사용할 수 없어.';
                   lastKey = '';
                   draw(w);
                 }),

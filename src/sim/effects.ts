@@ -11,7 +11,11 @@ import type { Monster, World } from './types';
 export type HurtKind = 'melee' | 'stone' | 'spell';
 
 function heroResists(w: World): Readonly<Partial<Record<ResistName, number>>> {
-  return { ...w.heroDef.resists, fire: (w.heroDef.resists.fire ?? 0) + gearBonus(w, 'fire_resist'), cold: (w.heroDef.resists.cold ?? 0) + gearBonus(w, 'cold_resist') };
+  return {
+    ...w.heroDef.resists,
+    fire: (w.heroDef.resists.fire ?? 0) + gearBonus(w, 'fire_resist'),
+    cold: (w.heroDef.resists.cold ?? 0) + gearBonus(w, 'cold_resist'),
+  };
 }
 
 function pushDamageEvents(w: World, physical: number, elemental: number, element?: ResistName): void {

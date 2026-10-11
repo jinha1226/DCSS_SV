@@ -49,7 +49,12 @@ export function dropGear(w: World, uid: string): boolean {
 export function gearBonus(w: World, effect: string): number {
   return Object.values(w.gear).reduce((sum, id) => {
     if (!id) return sum;
-    return sum + itemDefinition(id).effects.filter((e) => e.id === effect).reduce((n, e) => n + (e.power ?? 0) + (effect === 'armour' ? (w.gearEnchantment[id] ?? 0) : 0), 0);
+    return (
+      sum +
+      itemDefinition(id)
+        .effects.filter((e) => e.id === effect)
+        .reduce((n, e) => n + (e.power ?? 0) + (effect === 'armour' ? (w.gearEnchantment[id] ?? 0) : 0), 0)
+    );
   }, 0);
 }
 export function enchantArmour(w: World, id: string): boolean {

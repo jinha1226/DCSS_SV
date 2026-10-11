@@ -48,7 +48,9 @@ export function activateItem(w: World, id: string, side: ItemUser, source?: Mons
     return true;
   }
   if (effect.id === 'enchant_armour' && side === 'hero') {
-    const target = Object.values(w.gear).find((gearId) => gearId && ['armour', 'shield'].includes(itemDefinition(gearId).kind) && (w.gearEnchantment[gearId] ?? 0) < 9);
+    const target = Object.values(w.gear).find(
+      (gearId) => gearId && ['armour', 'shield'].includes(itemDefinition(gearId).kind) && (w.gearEnchantment[gearId] ?? 0) < 9,
+    );
     return target ? enchantArmour(w, target) : false;
   }
   if (effect.id === 'remove_curse' && side === 'hero') {
