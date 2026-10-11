@@ -64,4 +64,3 @@ export function useConsumable(w: World, id: ConsumableId): boolean {
   if (item.count === 0) w.inventory.splice(index, 1);
   return true;
 }
-
