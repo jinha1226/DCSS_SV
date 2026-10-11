@@ -103,8 +103,11 @@ export function parseItemDefinition(row: Row): ItemDefinition {
       }
     }
   }
-  // Effect handlers must be explicitly registered before prototypes can become active.
-  if (enabled && effects.length) throw new Error(label + ': effects 실행기는 아직 연결되지 않음');
+  // Only consumable effects with implemented handlers may be activated.
+  const supported = new Set(['heal', 'blink', 'lightning']);
+  if (enabled && effects.some((effect) => !supported.has((effect as ItemEffect).id))) {
+    throw new Error(label + ': effects 실행기는 아직 연결되지 않음');
+  }
 
   return {
     id,

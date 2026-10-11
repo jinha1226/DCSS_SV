@@ -198,7 +198,11 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
               const detail = document.createElement('small');
               detail.className = 'inventory-weapon-detail';
               detail.textContent =
-                '피해 ' + stored.weapon.damage + ' / 간격 ' + stored.weapon.every.toFixed(2) + '초 / ' +
+                '피해 ' +
+                stored.weapon.damage +
+                ' / 간격 ' +
+                stored.weapon.every.toFixed(2) +
+                '초 / ' +
                 (stored.weapon.hands === 2 ? '양손' : '한손');
               line.append(detail);
               line.append(

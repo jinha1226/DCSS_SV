@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { ITEM_DEFINITIONS, ITEM_KINDS, itemDefinition, parseItemDefinition, validateItemDefinitions } from '../../src/data/itemCatalog';
 
 describe('extensible item definitions', () => {
-  it('recognizes old weapons and new inactive item categories', () => {
+  it('recognizes weapons and newly usable consumables', () => {
     expect(itemDefinition('hand_axe')).toMatchObject({ kind: 'weapon', enabled: true, useMode: 'equip' });
-    expect(itemDefinition('potion_healing')).toMatchObject({ kind: 'potion', enabled: false, useMode: 'store' });
+    expect(itemDefinition('potion_healing')).toMatchObject({ kind: 'potion', enabled: true, useMode: 'store' });
     expect(itemDefinition('scroll_blink').effects[0]).toMatchObject({ id: 'blink', power: 3 });
     for (const kind of ['wand', 'jewellery', 'armour', 'shield']) expect(ITEM_KINDS).toContain(kind);
-    expect(ITEM_DEFINITIONS.some((item) => item.kind === 'potion' && item.enabled)).toBe(false);
+    expect(ITEM_DEFINITIONS.some((item) => item.kind === 'potion' && item.enabled)).toBe(true);
     expect(() => validateItemDefinitions()).not.toThrow();
   });
 
