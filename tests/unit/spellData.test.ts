@@ -27,10 +27,14 @@ describe('expanded spell data', () => {
       schools: ['conjuration', 'fire'],
       requirements: { conjuration: 2, fire: 3 },
     };
-    expect(combined.schools.every((id) => (w.hero.skills[id] ?? 0) >= combined.requirements[id as keyof typeof combined.requirements])).toBe(false);
+    expect(
+      combined.schools.every((id) => (w.hero.skills[id] ?? 0) >= combined.requirements[id as keyof typeof combined.requirements]),
+    ).toBe(false);
     w.hero.skills.conjuration = 4;
     w.hero.skills.fire = 3;
-    expect(combined.schools.every((id) => (w.hero.skills[id] ?? 0) >= combined.requirements[id as keyof typeof combined.requirements])).toBe(true);
+    expect(
+      combined.schools.every((id) => (w.hero.skills[id] ?? 0) >= combined.requirements[id as keyof typeof combined.requirements]),
+    ).toBe(true);
     expect(spellDamage(w, combined)).toBe(combined.damage!);
     expect(spellRange(w, combined)).toBe(combined.range);
     expect(knownSpells(w, 'conjuration').some((spell) => spell.schools.includes('fire'))).toBe(false);
