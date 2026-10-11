@@ -33,14 +33,20 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
   for (const [name, level] of Object.entries(resists))
     if (!['fire', 'cold', 'electric', 'negative', 'poison'].includes(name) || typeof level !== 'number' || level < -1 || level > 3)
       throw new Error('monsters.json: ' + row.id + '.resists: 잘못된 저항');
-  const rawElement = 'elemental' in row ? row.elemental : undefined;
+  const rawElement: unknown = 'elemental' in row ? row.elemental : undefined;
+  const element = rawElement as { type?: string; damage?: number } | undefined;
   if (
-    rawElement &&
-    (!['fire', 'cold', 'electric', 'negative', 'poison'].includes(rawElement.type) ||
-      !Number.isFinite(rawElement.damage) ||
-      rawElement.damage < 0)
+    element &&
+    (!element.type ||
+      !['fire', 'cold', 'electric', 'negative', 'poison'].includes(element.type) ||
+      typeof element.damage !== 'number' ||
+      !Number.isFinite(element.damage) ||
+      element.damage < 0)
   ) {
     throw new Error('monsters.json: ' + row.id + '.elemental: 잘못된 속성 공격');
+  }
+  if ('armour' in row && (typeof row.armour !== 'number' || !Number.isFinite(row.armour) || row.armour < 0)) {
+    throw new Error('monsters.json: ' + row.id + '.armour: 잘못된 방어력');
   }
   const stats: MonsterStats = {
     hp: row.hp,
@@ -53,8 +59,8 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
     rest: row.rest,
     notice: row.notice,
     resists,
-    ...('armour' in row ? { armour: row.armour } : {}),
-    ...(rawElement ? { elemental: rawElement as { type: ResistName; damage: number } } : {}),
+    ...(typeof row.armour === 'number' ? { armour: row.armour } : {}),
+    ...(element ? { elemental: element as { type: ResistName; damage: number } } : {}),
     ...('throws' in row ? { throws: row.throws } : {}),
     ...('flits' in row ? { flits: row.flits } : {}),
     ...('poison' in row ? { poison: row.poison } : {}),
