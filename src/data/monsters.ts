@@ -2,6 +2,7 @@ import dungeonRaw from './json/dungeon.json';
 import monstersRaw from './json/monsters.json';
 import type { ResistName } from './items';
 import { hasTile, type TileName } from './tiles';
+import { spellData } from './spells';
 
 export interface MonsterStats {
   readonly hp: number;
@@ -14,6 +15,8 @@ export interface MonsterStats {
   readonly rest: number;
   readonly notice: number;
   readonly throws?: { readonly range: number; readonly keep: number; readonly speed: number };
+  /** Optional utility weights and shared spell IDs, configured in monsters.json. */
+  readonly ai?: { readonly preferredRange?: number; readonly aggression?: number; readonly rangedBias?: number; readonly spellBias?: number; readonly spells?: readonly string[] };
   readonly flits?: number;
   readonly poison?: number;
   readonly resists: Readonly<Partial<Record<ResistName, number>>>;
@@ -49,6 +52,11 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
   if ('armour' in row && (typeof row.armour !== 'number' || !Number.isFinite(row.armour) || row.armour < 0)) {
     throw new Error('monsters.json: ' + row.id + '.armour: 잘못된 방어력');
   }
+  const ai = 'ai' in row ? row.ai as MonsterStats['ai'] : undefined;
+  if (ai) {
+    if (ai.preferredRange !== undefined && (!Number.isFinite(ai.preferredRange) || ai.preferredRange < 0)) throw new Error('monsters.json: ' + row.id + '.ai.preferredRange');
+    for (const id of ai.spells ?? []) spellData(id);
+  }
   const stats: MonsterStats = {
     hp: row.hp,
     xp: row.xp,
@@ -60,6 +68,7 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
     rest: row.rest,
     notice: row.notice,
     resists,
+    ...(ai ? { ai } : {}),
     ...(typeof armour === 'number' ? { armour } : {}),
     ...(element ? { elemental: element as { type: ResistName; damage: number } } : {}),
     ...('throws' in row ? { throws: row.throws } : {}),

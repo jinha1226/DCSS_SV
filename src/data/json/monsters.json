@@ -79,6 +79,7 @@
     "rest": 1.7,
     "notice": 7,
     "throws": { "range": 7, "keep": 3.5, "speed": 9 },
+    "ai": { "preferredRange": 3.5, "rangedBias": 15 },
     "resists": {}
   },
   {

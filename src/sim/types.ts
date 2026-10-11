@@ -59,7 +59,8 @@ export interface Monster {
   hp: number;
   awake: boolean;
   wind: number;
-  attackMode: 'melee' | 'ranged';
+  attackMode: 'melee' | 'ranged' | 'spell';
+  queuedSpell?: string;
   rest: number;
   stun: number;
   flit: number;
