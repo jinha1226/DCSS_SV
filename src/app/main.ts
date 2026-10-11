@@ -1,11 +1,11 @@
 import '../styles/main.css';
-import { CHARACTERS, type CharacterData } from '../data/characters';
+import { CHARACTERS } from '../data/characters';
 import { heroFor } from '../data/hero';
 import { guardZoom } from '../input/guards';
 import { keyPush, watchKeys } from '../input/keys';
 import { makeStick } from '../input/stick';
 import { STEP, makeWorld, stepWorld, type World } from '../sim/world';
-import { makeCharacterSelect } from '../ui/characterSelect';
+import { makeCharacterSelect, type CharacterChoice } from '../ui/characterSelect';
 import { makeEquipmentPicker } from '../ui/equipmentPicker';
 import { makeHud } from '../ui/hud';
 import { makeHopButton } from '../ui/hopButton';
@@ -40,12 +40,12 @@ async function start(): Promise<void> {
   const picker = makeSkillPicker(root);
   const gear = makeEquipmentPicker(root);
 
-  let selected: CharacterData | undefined;
+  let selected: CharacterChoice | undefined;
   let world: World | undefined;
   let heroWalk: WalkSheet | undefined;
   let dpr = 1;
 
-  const begin = (character: CharacterData): void => {
+  const begin = (character: CharacterChoice): void => {
     selected = character;
     const hero = heroFor(character.species, character.job);
     heroWalk = makeWalk(atlas, hero.tile, hero.walk);

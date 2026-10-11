@@ -468,3 +468,60 @@ canvas {
   display: block;
   font-size: 11px;
 }
+
+
+.choice-details {
+  align-self: start;
+  color: #cfc2a4;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.choice-details b {
+  color: #f2e4c3;
+  font-weight: 700;
+}
+.aptitude-grid {
+  align-self: start;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px 8px;
+  width: 100%;
+}
+.aptitude {
+  font-size: 12px;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+.aptitude-good {
+  color: #d7ebb7;
+}
+.aptitude-normal {
+  color: #cfc2a4;
+}
+.aptitude-bad {
+  color: #b58f88;
+}
+.choice-back {
+  min-height: 46px;
+  border: 0;
+  background: transparent;
+  color: #cfc2a4;
+  font: 600 14px system-ui;
+}
+.species-card,
+.job-card {
+  min-height: 142px;
+}
+@media (max-height: 760px) {
+  .character-select {
+    justify-content: flex-start;
+    overflow-y: auto;
+  }
+  .character-card {
+    min-height: 126px;
+  }
+  .character-card canvas {
+    width: 82px;
+    height: 82px;
+  }
+}
