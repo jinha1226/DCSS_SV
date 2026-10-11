@@ -1,4 +1,4 @@
-import { TILE_SIZE, tileRect, type TileName } from '../data/tiles';
+import { SHEET_VERSION, TILE_SIZE, tileRect, type TileName } from '../data/tiles';
 
 export type Sheet = HTMLImageElement | HTMLCanvasElement;
 
@@ -31,7 +31,8 @@ export function loadAtlas(): Promise<Atlas> {
     image.onload = () =>
       resolve({ image, struck: washed(image, 'rgba(255, 246, 220, 0.55)'), hurt: washed(image, 'rgba(210, 40, 30, 0.5)') });
     image.onerror = () => reject(new Error('타일 그림을 불러오지 못했다'));
-    image.src = `${import.meta.env.BASE_URL}tiles.png`;
+    // Asked for by its stamp: a sheet with tiles added must not be served from an old copy.
+    image.src = `${import.meta.env.BASE_URL}tiles.png?v=${SHEET_VERSION}`;
   });
 }
 

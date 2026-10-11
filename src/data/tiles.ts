@@ -1,6 +1,6 @@
-import { ATLAS_COLS, TILE_NAMES, TILE_SIZE } from './tiles.gen';
+import { ATLAS_COLS, SHEET_VERSION, TILE_NAMES, TILE_SIZE } from './tiles.gen';
 
-export { ATLAS_COLS, TILE_SIZE };
+export { ATLAS_COLS, SHEET_VERSION, TILE_SIZE };
 
 /** The name of a tile on the sheet: its path under assets/tiles, e.g. "mon/goblin". */
 export type TileName = (typeof TILE_NAMES)[number];

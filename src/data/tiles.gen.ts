@@ -1,6 +1,7 @@
 // Written by tools/packTiles.mjs. Do not edit by hand.
 export const TILE_SIZE = 32;
 export const ATLAS_COLS = 16;
+export const SHEET_VERSION = 'dc557184e0';
 export const TILE_NAMES = [
   'feat/stone_stairs_down',
   'feat/stone_stairs_up',

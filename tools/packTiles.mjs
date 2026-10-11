@@ -3,6 +3,7 @@
 //   src/data/tiles.gen.ts   where each tile sits in it
 // A tile's name is its path under assets/tiles without ".png", e.g. "mon/goblin".
 // Run with `npm run tiles` after adding or removing a tile.
+import { createHash } from 'node:crypto';
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import UPNG from 'upng-js';
@@ -46,13 +47,18 @@ files.forEach((file, i) => {
   names.push(name);
 });
 
-writeFileSync(join(root, 'public/tiles.png'), new Uint8Array(UPNG.encode([sheet.buffer], width, rows * SIZE, 0)));
+const png = new Uint8Array(UPNG.encode([sheet.buffer], width, rows * SIZE, 0));
+// The sheet keeps one address, so a browser would go on using an old copy after tiles are added
+// and draw every later tile one place off. The page asks for it by this stamp instead.
+const version = createHash('sha1').update(png).digest('hex').slice(0, 10);
+writeFileSync(join(root, 'public/tiles.png'), png);
 writeFileSync(
   join(root, 'src/data/tiles.gen.ts'),
   [
     '// Written by tools/packTiles.mjs. Do not edit by hand.',
     `export const TILE_SIZE = ${SIZE};`,
     `export const ATLAS_COLS = ${COLS};`,
+    `export const SHEET_VERSION = '${version}';`,
     'export const TILE_NAMES = [',
     ...names.map((n) => `  '${n}',`),
     '] as const;',

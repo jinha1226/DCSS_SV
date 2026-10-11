@@ -1,8 +1,9 @@
+import { createHash } from 'node:crypto';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { MONSTERS } from '../../src/data/monsters';
-import { ATLAS_COLS, TILE_SIZE, hasTile, tileRect, tileSet } from '../../src/data/tiles';
+import { ATLAS_COLS, SHEET_VERSION, TILE_SIZE, hasTile, tileRect, tileSet } from '../../src/data/tiles';
 import { TILE_NAMES } from '../../src/data/tiles.gen';
 import { LOOK } from '../../src/view/look';
 
@@ -28,6 +29,11 @@ describe('the tile sheet', () => {
     const rows = Math.ceil(TILE_NAMES.length / ATLAS_COLS);
     expect(png.readUInt32BE(16)).toBe(ATLAS_COLS * TILE_SIZE);
     expect(png.readUInt32BE(20)).toBe(rows * TILE_SIZE);
+  });
+
+  it('is the very sheet the list was written for (run `npm run tiles` if not)', () => {
+    const png = readFileSync(join(root, 'public/tiles.png'));
+    expect(createHash('sha1').update(png).digest('hex').slice(0, 10)).toBe(SHEET_VERSION);
   });
 
   it('gives every tile its own place', () => {

@@ -5,7 +5,8 @@ import type { World } from '../sim/world';
 export function drawMiniMap(ctx: CanvasRenderingContext2D, w: World, dpr: number): void {
   const scale = Math.max(2, Math.round(2 * dpr));
   const width = w.grid.w * scale;
-  const x = ctx.canvas.width - width - Math.round(12 * dpr);
+  // Top left, under the strip of health and time.
+  const x = Math.round(12 * dpr);
   const y = Math.round(72 * dpr);
   ctx.fillStyle = 'rgba(0,0,0,0.65)';
   ctx.fillRect(x - 3, y - 3, width + 6, w.grid.h * scale + 6);
