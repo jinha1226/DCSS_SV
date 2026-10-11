@@ -65,11 +65,13 @@ export function displayedEquipment(w: World): EquipmentDisplay[] {
 }
 
 export interface SkillBar {
+  readonly expanded: boolean;
   show(w: World): void;
+  openDetails(): void;
   close(): void;
 }
 
-export function makeSkillBar(root: HTMLElement, atlas: Atlas): SkillBar {
+export function makeSkillBar(root: HTMLElement, atlas: Atlas, onEquipment?: () => void): SkillBar {
   const bar = document.createElement('div');
   bar.className = 'skillbar';
   bar.setAttribute('aria-label', '현재 스킬 레벨');
@@ -156,6 +158,14 @@ export function makeSkillBar(root: HTMLElement, atlas: Atlas): SkillBar {
   });
 
   return {
+    get expanded() {
+      return open;
+    },
+    openDetails() {
+      if (!current || current.over) return;
+      setOpen(true);
+      showDetails(current);
+    },
     show(w) {
       if (current !== w) {
         current = w;
@@ -192,8 +202,10 @@ export function makeSkillBar(root: HTMLElement, atlas: Atlas): SkillBar {
         lastEquipmentKey = gearKey;
         equipment.replaceChildren();
         for (const item of gear) {
-          const chip = document.createElement('span');
+          const chip = document.createElement('button');
+          chip.type = 'button';
           chip.className = 'skillbar-gear';
+          chip.addEventListener('click', () => onEquipment?.());
           chip.title = item.name + (item.count === undefined ? '' : ' ×' + item.count);
           chip.setAttribute('aria-label', chip.title);
           const icon = document.createElement('canvas');

@@ -1241,3 +1241,149 @@ canvas {
   width: 18px;
   height: 18px;
 }
+
+/* Read-only first-stage equipment and bag sheets. */
+.inventory-shade {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 23;
+  border: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.inventory-shade.on {
+  display: block;
+}
+
+.inventory-sheet {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 24;
+  max-height: 72dvh;
+  padding: 12px 14px calc(14px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid #786b54;
+  border-radius: 16px 16px 0 0;
+  background: #1c1b1a;
+  color: #f2ead8;
+}
+
+.inventory-sheet.on {
+  display: flex;
+  flex-direction: column;
+}
+
+.inventory-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px 10px;
+  font-size: 17px;
+}
+
+.inventory-header button {
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid #786b54;
+  border-radius: 8px;
+  background: #333028;
+  color: #f2ead8;
+}
+
+.inventory-tabs {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.inventory-tabs:empty {
+  display: none;
+}
+
+.inventory-tabs button {
+  flex: 1;
+  min-width: 0;
+  min-height: 36px;
+  padding: 5px 2px;
+  border: 1px solid #5b5242;
+  border-radius: 6px;
+  background: #27251f;
+  color: #bdb3a0;
+  font-size: 12px;
+}
+
+.inventory-tabs button.selected {
+  border-color: #d3ba7c;
+  color: #fff1c5;
+}
+
+.inventory-content {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.inventory-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  min-height: 40px;
+  padding: 7px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 13px;
+}
+
+.inventory-row span:last-child {
+  color: #e5cf9d;
+  text-align: right;
+}
+
+.inventory-row.unavailable {
+  color: #857d6d;
+}
+
+.inventory-row.unavailable span:last-child {
+  color: #857d6d;
+}
+
+.inventory-summary {
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid #5b5242;
+  border-radius: 7px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.inventory-note {
+  color: #a79c88;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.hud-menu-popup {
+  z-index: 10;
+  width: 146px;
+}
+
+.hud-menu-action {
+  display: block;
+  width: 100%;
+  min-height: 39px;
+  padding: 7px 10px;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: #f2ead8;
+  text-align: left;
+  font-size: 13px;
+}
+
+.hud-skill-slot .skillbar-gear {
+  font: inherit;
+  cursor: pointer;
+}

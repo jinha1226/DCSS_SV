@@ -10,6 +10,7 @@ import { STEP, makeWorld, stepWorld, type Input, type World } from '../sim/world
 import { makeCharacterSelect, type CharacterChoice } from '../ui/characterSelect';
 import { makeEquipmentPicker } from '../ui/equipmentPicker';
 import { makeHud } from '../ui/hud';
+import { makeInventorySheets } from '../ui/inventorySheets';
 import { makeGameLog } from '../ui/gameLog';
 import { makeHopButton } from '../ui/hopButton';
 import { makeSkillPicker } from '../ui/skillPicker';
@@ -67,6 +68,7 @@ async function start(): Promise<void> {
     fx.clear();
     gameLog.reset(world);
     skillBar.close();
+    inventory.close();
     spellButtons.cancelTarget();
     selector.hide();
     if (debug) debug.world = world;
@@ -76,6 +78,7 @@ async function start(): Promise<void> {
     world = undefined;
     gameLog.hide();
     skillBar.close();
+    inventory.close();
     selected = undefined;
     spellButtons.cancelTarget();
     selector.show();
@@ -92,9 +95,30 @@ async function start(): Promise<void> {
     },
     chooseCharacter,
   );
-  const skillBar = makeSkillBar(hud.skillSlot, atlas);
+  const inventory = makeInventorySheets(root);
+  const skillBar = makeSkillBar(hud.skillSlot, atlas, () => {
+    skillBar.close();
+    inventory.openSheet('equipment');
+  });
   const timeMode = makeTimeModeButton(hud.menuSlot);
   const gameLog = makeGameLog(root);
+  const menuAction = (label: string, action: () => void): void => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'hud-menu-action';
+    button.textContent = label;
+    button.addEventListener('click', () => {
+      hud.closeMenu();
+      inventory.close();
+      skillBar.close();
+      action();
+    });
+    hud.menuSlot.append(button);
+  };
+  menuAction('⚔ 장비', () => inventory.openSheet('equipment'));
+  menuAction('▣ 가방', () => inventory.openSheet('bag'));
+  menuAction('✦ 스킬', () => skillBar.openDetails());
+  menuAction('▤ 게임 로그', () => gameLog.openHistory());
 
   const requested = CHARACTERS.find((character) => character.id === switches.who || character.name === switches.who);
   if (requested) begin(requested);
@@ -162,7 +186,7 @@ async function start(): Promise<void> {
       };
       queuedSpell = undefined;
       const active = Math.hypot(input.mx, input.my) > 0.01 || input.throw || input.hop || Boolean(input.spell);
-      if (!gameLog.expanded && !spellButtons.targetingId && (!timeMode.superhot || active)) {
+      if (!inventory.open && !skillBar.expanded && !gameLog.expanded && !spellButtons.targetingId && (!timeMode.superhot || active)) {
         stepWorld(world, input);
         if (world.events.some((event) => event.type === 'floor')) fx.clear();
         fx.take(world.events);
@@ -190,6 +214,7 @@ async function start(): Promise<void> {
       hud.show(world);
       gameLog.show(world);
       skillBar.show(world);
+      inventory.show(world);
       picker.show(world);
       gear.show(world);
       spellButtons.show(world);

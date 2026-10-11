@@ -6,6 +6,7 @@ export interface Hud {
   readonly minimap: HTMLCanvasElement;
   readonly menuSlot: HTMLElement;
   readonly skillSlot: HTMLElement;
+  closeMenu(): void;
   show(w: World): void;
 }
 
@@ -97,6 +98,7 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
     minimap,
     menuSlot,
     skillSlot,
+    closeMenu,
     show(w) {
       const hp = Math.ceil(w.hero.hp);
       const need = xpToNext(w.hero.level);

@@ -53,6 +53,7 @@ export interface GameLog {
   reset(w: World): void;
   take(w: World): void;
   show(w: World): void;
+  openHistory(): void;
   hide(): void;
 }
 
@@ -170,6 +171,9 @@ export function makeGameLog(root: HTMLElement): GameLog {
         history.replaceChildren(...lines.map(item));
         history.scrollTop = history.scrollHeight;
       }
+    },
+    openHistory() {
+      if (current && !current.over) setOpen(true);
     },
     hide() {
       current = undefined;
