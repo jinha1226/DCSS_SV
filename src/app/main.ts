@@ -11,6 +11,7 @@ import { makeHud } from '../ui/hud';
 import { makeHopButton } from '../ui/hopButton';
 import { makeSkillPicker } from '../ui/skillPicker';
 import { makeThrowButton } from '../ui/throwButton';
+import { makeTimeModeButton } from '../ui/timeModeButton';
 import { loadAtlas } from '../view/atlas';
 import { Fx } from '../view/fx';
 import { LOOK } from '../view/look';
@@ -37,6 +38,7 @@ async function start(): Promise<void> {
   const fx = new Fx();
   const hop = makeHopButton(root);
   const throwing = makeThrowButton(root);
+  const timeMode = makeTimeModeButton(root);
   const picker = makeSkillPicker(root);
   const gear = makeEquipmentPicker(root);
 
@@ -97,15 +99,22 @@ async function start(): Promise<void> {
     () => {
       if (!world) return;
       const key = keyPush(keys);
-      stepWorld(world, {
+      const input = {
         mx: stick.x + key.x,
         my: stick.y + key.y,
         throw: throwing.held || keys.has('Space') || keys.has('KeyJ'),
         hop: hop.held || keys.has('ShiftLeft') || keys.has('KeyK'),
-      });
-      if (world.events.some((event) => event.type === 'floor')) fx.clear();
-      fx.take(world.events);
-      fx.step(STEP);
+      };
+      const active =
+        Math.hypot(input.mx, input.my) > 0.01 ||
+        input.throw ||
+        input.hop;
+      if (!timeMode.superhot || active) {
+        stepWorld(world, input);
+        if (world.events.some((event) => event.type === 'floor')) fx.clear();
+        fx.take(world.events);
+        fx.step(STEP);
+      }
     },
     (between) => {
       fit();
