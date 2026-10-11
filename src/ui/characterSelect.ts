@@ -32,7 +32,11 @@ const APTITUDE_VALUES = {
   bad: '나쁨',
 } as const;
 
-export function makeCharacterSelect(root: HTMLElement, atlas: Atlas, choose: (choice: CharacterChoice) => void): CharacterSelect {
+export function makeCharacterSelect(
+  root: HTMLElement,
+  atlas: Atlas,
+  choose: (choice: CharacterChoice) => void,
+): CharacterSelect {
   const wrap = document.createElement('div');
   wrap.className = 'character-select';
   const title = document.createElement('h1');
@@ -113,7 +117,8 @@ export function makeCharacterSelect(root: HTMLElement, atlas: Atlas, choose: (ch
       for (const [id, value] of Object.entries(species.aptitudes)) {
         const row = document.createElement('span');
         row.className = 'aptitude aptitude-' + value;
-        row.textContent = (APTITUDE_NAMES[id] ?? id) + ' ' + APTITUDE_VALUES[value as keyof typeof APTITUDE_VALUES];
+        row.textContent =
+          (APTITUDE_NAMES[id] ?? id) + ' ' + APTITUDE_VALUES[value as keyof typeof APTITUDE_VALUES];
         aptitudes.append(row);
       }
 

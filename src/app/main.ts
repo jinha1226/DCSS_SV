@@ -105,10 +105,7 @@ async function start(): Promise<void> {
         throw: throwing.held || keys.has('Space') || keys.has('KeyJ'),
         hop: hop.held || keys.has('ShiftLeft') || keys.has('KeyK'),
       };
-      const active =
-        Math.hypot(input.mx, input.my) > 0.01 ||
-        input.throw ||
-        input.hop;
+      const active = Math.hypot(input.mx, input.my) > 0.01 || input.throw || input.hop;
       if (!timeMode.superhot || active) {
         stepWorld(world, input);
         if (world.events.some((event) => event.type === 'floor')) fx.clear();
