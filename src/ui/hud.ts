@@ -66,9 +66,9 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
   const manaFill = el('div', 'mana-fill', mana);
   const manaText = el('div', 'mana-text', mana);
   const levelRow = el('div', 'level-row', vitals);
-  const levelText = el('span', 'level-text', levelRow);
   const xp = el('div', 'xp', levelRow);
   const xpFill = el('div', 'xp-fill', xp);
+  const levelText = el('span', 'level-text', xp);
   const skillSlot = el('div', 'hud-skill-slot', top);
 
   const over = el('div', 'over', root);

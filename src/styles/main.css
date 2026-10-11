@@ -1137,3 +1137,107 @@ canvas {
   image-rendering: pixelated;
   touch-action: none;
 }
+
+/* Portrait compact top row: matching minimap and menu button. */
+.hud-header {
+  grid-template-columns: 38px minmax(0, 1fr) 38px;
+  height: 38px;
+}
+
+.hud-minimap,
+.hud-menu-button {
+  width: 38px;
+  height: 38px;
+}
+
+.hud-menu-button {
+  border-radius: 6px;
+  font-size: 17px;
+}
+
+.hud-location {
+  padding-top: 0;
+  gap: 0;
+}
+
+.hud-menu-popup {
+  top: 43px;
+}
+
+/* Level appears in the middle of XP, just like HP and MP numbers. */
+.top .level-row {
+  height: 12px;
+  gap: 0;
+}
+
+.top .xp {
+  position: relative;
+  width: 100%;
+  height: 12px;
+  border: 1px solid #4d5f87;
+  border-radius: 4px;
+  background: #101725;
+}
+
+.top .xp-fill {
+  height: 100%;
+}
+
+.top .xp .level-text {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #e5edff;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 11px;
+  text-shadow: 0 1px 1px #000;
+  pointer-events: none;
+}
+
+/* Exactly eight visible icon slots per half-width section; extra slots scroll. */
+.hud-skill-slot .skillbar-rail,
+.hud-skill-slot .skillbar-equipment {
+  gap: 2px;
+  overflow-x: auto;
+}
+
+.hud-skill-slot .skillbar-equipment {
+  padding-left: 3px;
+}
+
+.hud-skill-slot .skillbar-chip,
+.hud-skill-slot .skillbar-gear {
+  flex: 0 0 calc((100% - 14px - 2px) / 8);
+  width: calc((100% - 14px - 2px) / 8);
+  min-width: 0;
+  height: 22px;
+  border-radius: 3px;
+}
+
+.hud-skill-slot .skillbar-rail,
+.hud-skill-slot .skillbar-equipment {
+  height: 24px;
+}
+
+.hud-skill-slot .skillbar {
+  height: 24px;
+}
+
+.hud-skill-slot .skillbar-icon {
+  font-size: 12px;
+}
+
+.hud-skill-slot .skillbar-level {
+  right: 0;
+  bottom: 0;
+  min-width: 7px;
+  font-size: 8px;
+  line-height: 8px;
+}
+
+.hud-skill-slot .skillbar-gear-icon {
+  width: 18px;
+  height: 18px;
+}
