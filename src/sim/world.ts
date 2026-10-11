@@ -15,7 +15,7 @@ import { thinkMonster } from './monster';
 import { fillFloor, lingering } from './packs';
 import { makeRng } from './rng';
 import { heroSpeed, openStartingSkills } from './skills';
-import { stepSpells } from './spells';
+import { castAt, stepSpells } from './spells';
 import type { Input, Stairs, World } from './types';
 export type { GroundItem, Hero, Input, Monster, PickupStats, Shot, SimEvent, SkillChoice, Stairs, World } from './types';
 export const STEP = 1 / 60;
@@ -253,6 +253,8 @@ export function stepWorld(w: World, input: Input, dt: number = STEP): void {
     collectGround(w);
     if (w.pendingPickup) return;
   }
+  if (input.spell) castAt(w, input.spell.id, input.spell.x, input.spell.y);
+  if (w.choosing) return;
   walkMonsters(w, dt);
   if (w.over) return;
   heroStrikes(w, dt, input.throw === true);

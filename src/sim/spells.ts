@@ -291,3 +291,10 @@ export function spellAtPoint(w: World, spell: SpellData, x: number, y: number): 
     .filter((entry) => entry.d <= entry.m.stats.radius + 0.55)
     .sort((a, b) => a.d - b.d)[0]?.m;
 }
+
+
+export function castAt(w: World, spellId: string, x: number, y: number): boolean {
+  const spell = spellData(spellId);
+  const target = spellAtPoint(w, spell, x, y);
+  return target ? castPaidSpell(w, spellId, target) : false;
+}
