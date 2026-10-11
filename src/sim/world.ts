@@ -1,16 +1,19 @@
 import { HERO } from '../data/hero';
+import { DUNGEON } from '../data/packs';
 import { moveCircle } from './collide';
 import { KNOCK_FADE, heroStrikes } from './combat';
 import { shove } from './crowd';
+import type { Floor } from './floor';
 import { makeFlow, updateFlow } from './flow';
 import { computeFov } from './fov';
+import { makeFloor } from './gen';
+import { Cell, cellAt } from './grid';
 import { thinkMonster } from './monster';
+import { fillFloor, lingering } from './packs';
 import { makeRng } from './rng';
-import type { Floor } from './testFloor';
-import type { Input, World } from './types';
-import { arrive, placeBands } from './waves';
+import type { Input, Stairs, World } from './types';
 
-export type { Hero, Input, Monster, SimEvent, World } from './types';
+export type { Hero, Input, Monster, Shot, SimEvent, Stairs, World } from './types';
 
 /** The rules move in steps of this many seconds, whatever the screen's refresh rate. */
 export const STEP = 1 / 60;
@@ -19,31 +22,82 @@ export interface WorldOptions {
   readonly seed?: number;
   /** Cells the hero walks in a second. */
   readonly speed?: number;
+  /** The floor to start on; 1 unless a switch says otherwise. */
+  readonly depth?: number;
+  /** A floor laid out by hand, for tests; without one, floors are made from the seed. */
+  readonly floor?: Floor;
   /** False for an empty floor to walk about on. */
   readonly monsters?: boolean;
 }
 
-export function makeWorld(floor: Floor, options: WorldOptions = {}): World {
+/** How many more times a step eases overlapping bodies apart after they have walked. */
+const SETTLE = 2;
+
+/** The seed of one floor of a run: the same run always has the same floors. */
+export const floorSeed = (seed: number, depth: number): number => (Math.imul(seed, 2654435761) + depth * 97) >>> 0;
+
+function stairsOf(floor: Floor): Stairs[] {
+  const out: Stairs[] = [];
+  const { grid } = floor;
+  for (let y = 0; y < grid.h; y++) {
+    for (let x = 0; x < grid.w; x++) {
+      const c = cellAt(grid, x, y);
+      if (c === Cell.StairsDown || c === Cell.StairsUp) out.push({ x, y, down: c === Cell.StairsDown });
+    }
+  }
+  return out;
+}
+
+/** Lays a floor under the hero's feet and, unless told not to, fills it with sleeping bands. */
+function enter(w: World, floor: Floor, monsters: boolean): void {
   const size = floor.grid.w * floor.grid.h;
-  const { x, y } = floor.start;
+  w.grid = floor.grid;
+  w.rooms = floor.rooms;
+  w.stairs = stairsOf(floor);
+  w.flow = makeFlow(floor.grid);
+  w.visible = new Uint8Array(size);
+  w.seen = new Uint8Array(size);
+  w.monsters.length = 0;
+  w.shots.length = 0;
+  w.floorTime = 0;
+  w.descending = 0;
+  w.nextBand = Infinity;
+  const hero = w.hero;
+  hero.x = hero.px = floor.start.x;
+  hero.y = hero.py = floor.start.y;
+  look(w);
+  if (monsters) fillFloor(w);
+}
+
+export function makeWorld(options: WorldOptions = {}): World {
+  const seed = options.seed ?? 1;
+  const depth = Math.min(DUNGEON.floors, Math.max(1, options.depth ?? 1));
+  const floor = options.floor ?? makeFloor(floorSeed(seed, depth));
   const world: World = {
     grid: floor.grid,
     rooms: floor.rooms,
-    hero: { x, y, px: x, py: y, facing: -1, moving: false, hp: HERO.hp, maxHp: HERO.hp, swing: 0, butt: 0, hurt: 0 },
-    monsters: [],
+    stairs: [],
     flow: makeFlow(floor.grid),
-    visible: new Uint8Array(size),
-    seen: new Uint8Array(size),
-    rng: makeRng(options.seed ?? 1),
+    visible: new Uint8Array(0),
+    seen: new Uint8Array(0),
+    hero: { x: 0, y: 0, px: 0, py: 0, facing: -1, moving: false, hp: HERO.hp, maxHp: HERO.hp, swing: 0, butt: 0, hurt: 0, poison: 0, throwing: 0 },
+    monsters: [],
+    shots: [],
+    rng: makeRng(seed ^ 0x5bd1e995),
     events: [],
+    seed,
+    depth,
     time: 0,
+    floorTime: 0,
     speed: options.speed ?? HERO.speed,
     kills: 0,
-    nextWave: Infinity,
+    nextPack: 1,
+    nextBand: Infinity,
+    descending: 0,
     over: false,
+    won: false,
   };
-  look(world);
-  if (options.monsters !== false) placeBands(world);
+  enter(world, floor, options.monsters !== false);
   return world;
 }
 
@@ -103,14 +157,45 @@ function walkMonsters(w: World, dt: number): void {
     m.x = to.x;
     m.y = to.y;
   });
-  if (push.heroX !== 0 || push.heroY !== 0) {
-    const to = moveCircle(w.grid, w.hero, HERO.radius, push.heroX, push.heroY);
-    w.hero.x = to.x;
-    w.hero.y = to.y;
+  shoveHero(w, push.heroX, push.heroY);
+  // Once is not enough in a crush: bodies still overlapping are eased apart again.
+  for (let pass = 0; pass < SETTLE; pass++) {
+    const more = shove(w);
+    w.monsters.forEach((m, i) => {
+      const sx = more.x[i]!;
+      const sy = more.y[i]!;
+      if (sx === 0 && sy === 0) return;
+      const to = moveCircle(w.grid, m, m.stats.radius, sx, sy);
+      m.x = to.x;
+      m.y = to.y;
+    });
+    shoveHero(w, more.heroX, more.heroY);
   }
 }
 
-/** Moves the world on by `dt` seconds. A world whose hero has fallen stands still. */
+function shoveHero(w: World, dx: number, dy: number): void {
+  if (dx === 0 && dy === 0) return;
+  const to = moveCircle(w.grid, w.hero, HERO.radius, dx, dy);
+  w.hero.x = to.x;
+  w.hero.y = to.y;
+}
+
+/** Standing on a way down takes it after a moment; the last floor's way down leads out. */
+function stairsUnderfoot(w: World, dt: number): void {
+  const onStairs = cellAt(w.grid, Math.floor(w.hero.x), Math.floor(w.hero.y)) === Cell.StairsDown;
+  w.descending = onStairs ? w.descending + dt : 0;
+  if (w.descending < DUNGEON.descend) return;
+  if (w.depth >= DUNGEON.floors) {
+    w.over = true;
+    w.won = true;
+    return;
+  }
+  w.depth++;
+  enter(w, makeFloor(floorSeed(w.seed, w.depth)), true);
+  w.events.push({ type: 'floor', depth: w.depth });
+}
+
+/** Moves the world on by `dt` seconds. A world whose run has ended stands still. */
 export function stepWorld(w: World, input: Input, dt: number = STEP): void {
   w.events.length = 0;
   if (w.over) return;
@@ -120,11 +205,14 @@ export function stepWorld(w: World, input: Input, dt: number = STEP): void {
   hero.px = hero.x;
   hero.py = hero.y;
   w.time += dt;
+  w.floorTime += dt;
 
   walkHero(w, input, dt);
   walkMonsters(w, dt);
   if (Math.floor(hero.x) !== cellX || Math.floor(hero.y) !== cellY) look(w);
   if (w.over) return;
-  heroStrikes(w, dt);
-  arrive(w, dt);
+  heroStrikes(w, dt, input.throw === true);
+  if (w.over) return;
+  lingering(w, dt);
+  stairsUnderfoot(w, dt);
 }

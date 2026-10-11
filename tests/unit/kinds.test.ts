@@ -1,0 +1,229 @@
+import { describe, expect, it } from 'vitest';
+import { HERO } from '../../src/data/hero';
+import { MONSTERS, POISON, monsterKind } from '../../src/data/monsters';
+import { DUNGEON, PACKS } from '../../src/data/packs';
+import { throwTarget } from '../../src/sim/combat';
+import { Cell, setCell } from '../../src/sim/grid';
+import { spawnMonster } from '../../src/sim/monster';
+import { STEP, stepWorld } from '../../src/sim/world';
+import { STILL, arena, count, quietArena, run } from './arena';
+
+const stats = (id: string) => monsterKind(id).stats;
+const far = (m: { x: number; y: number }, w: { hero: { x: number; y: number } }): number => Math.hypot(m.x - w.hero.x, m.y - w.hero.y);
+
+describe('the eight monsters', () => {
+  it('all fit a corridor one cell wide, and are wide enough that two do not share a cell', () => {
+    expect(MONSTERS).toHaveLength(8);
+    for (const m of MONSTERS) {
+      expect(m.stats.radius, m.id).toBeLessThan(0.5);
+      expect(m.stats.radius, m.id).toBeGreaterThanOrEqual(0.38);
+    }
+  });
+
+  it('can each strike a hero they stand touching', () => {
+    for (const m of MONSTERS) {
+      if (m.stats.throws) continue;
+      expect(m.stats.reach, m.id).toBeGreaterThan(m.stats.radius);
+    }
+  });
+
+  it('are slower than the hero, all but the bat', () => {
+    for (const m of MONSTERS) {
+      if (m.id === 'bat') expect(m.stats.speed).toBeGreaterThan(HERO.speed);
+      else expect(m.stats.speed, m.id).toBeLessThan(HERO.speed);
+    }
+  });
+
+  it('are tougher on deeper floors', () => {
+    const shallow = spawnMonster(arena(1), 'goblin', 5, 5, false);
+    const deep = spawnMonster(arena(3), 'goblin', 5, 5, false);
+    expect(shallow.hp).toBe(stats('goblin').hp);
+    expect(deep.hp).toBe(Math.round(stats('goblin').hp * (1 + DUNGEON.tougher * 2)));
+  });
+});
+
+describe('a bat', () => {
+  it('darts off after it bites, then comes back', () => {
+    const w = quietArena();
+    const bat = spawnMonster(w, 'bat', 10.9, 10, true);
+    bat.rest = 0;
+    let bitten = false;
+    let farthest = 0;
+    for (let i = 0; i < Math.round(1.2 / STEP); i++) {
+      stepWorld(w, STILL);
+      if (count(w.events, 'hurt')) bitten = true;
+      if (bitten) farthest = Math.max(farthest, far(bat, w));
+    }
+    expect(bitten).toBe(true);
+    expect(farthest).toBeGreaterThan(2);
+    run(w, 2.5);
+    expect(count(run(w, 3), 'hurt')).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe('a kobold', () => {
+  it('keeps its distance and throws stones that hurt a hero who stands', () => {
+    const w = quietArena();
+    const k = spawnMonster(w, 'kobold', 15, 10, true);
+    k.rest = 0;
+    const events = run(w, 3);
+    expect(count(events, 'hurt')).toBeGreaterThanOrEqual(1);
+    expect(far(k, w)).toBeGreaterThan(3);
+    expect(w.hero.hp).toBeLessThan(HERO.hp);
+  });
+
+  it('misses a hero who keeps moving across its aim', () => {
+    const w = quietArena();
+    spawnMonster(w, 'kobold', 15, 10, true).rest = 0;
+    let hurts = 0;
+    for (let i = 0; i < Math.round(4 / STEP); i++) {
+      stepWorld(w, { mx: 0, my: Math.floor(i / 50) % 2 ? 1 : -1 });
+      hurts += count(w.events, 'hurt');
+    }
+    expect(hurts).toBe(0);
+  });
+
+  it('cannot throw through a wall', () => {
+    const w = quietArena();
+    for (let y = 6; y <= 14; y++) setCell(w.grid, 12, y, Cell.Wall);
+    run(w, 0.05, { mx: 0, my: 1 }); // a step, so the hero looks again
+    spawnMonster(w, 'kobold', 14.5, 10.5, true).rest = 0;
+    expect(count(run(w, 1), 'hurt')).toBe(0);
+    expect(w.shots).toHaveLength(0);
+  });
+
+  it('backs away from a hero who closes in', () => {
+    const w = quietArena();
+    const k = spawnMonster(w, 'kobold', 12, 10, true);
+    k.rest = 5;
+    run(w, 0.5);
+    expect(k.x).toBeGreaterThan(12.5);
+  });
+});
+
+describe('an adder', () => {
+  it('poisons with its bite: health drains and does not come back until the poison is spent', () => {
+    const w = quietArena();
+    const adder = spawnMonster(w, 'adder', 10.85, 10, true);
+    adder.rest = 0;
+    run(w, stats('adder').windup + 0.05);
+    expect(w.hero.poison).toBeGreaterThan(stats('adder').poison! - 0.2);
+    w.monsters.length = 0;
+    const hp = w.hero.hp;
+    run(w, 1);
+    expect(w.hero.hp).toBeCloseTo(hp - POISON, 1);
+    run(w, stats('adder').poison! + 1);
+    expect(w.hero.poison).toBeLessThanOrEqual(0);
+    expect(w.hero.hp).toBeGreaterThan(hp - POISON * stats('adder').poison!);
+  });
+});
+
+describe('a gnoll', () => {
+  it('strikes from a cell away, over the heads of the front rank', () => {
+    const w = quietArena();
+    const gnoll = spawnMonster(w, 'gnoll', 11.6, 10, true);
+    gnoll.rest = 0;
+    gnoll.x = 11.6;
+    const reach = HERO.radius + stats('gnoll').reach;
+    expect(far(gnoll, w)).toBeLessThan(reach);
+    expect(far(gnoll, w)).toBeGreaterThan(HERO.radius + stats('goblin').reach);
+    stepWorld(w, STILL);
+    expect(gnoll.wind).toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe('an ogre', () => {
+  it('hits hard, but draws back long enough to walk away from', () => {
+    const w = quietArena();
+    const ogre = spawnMonster(w, 'ogre', 10.9, 10, true);
+    ogre.rest = 0;
+    run(w, 0.3);
+    expect(ogre.wind).toBeGreaterThanOrEqual(0);
+    expect(count(run(w, stats('ogre').windup, { mx: -1, my: 0 }), 'hurt')).toBe(0);
+
+    const s = quietArena();
+    spawnMonster(s, 'ogre', 10.9, 10, true).rest = 0;
+    run(s, stats('ogre').windup + 0.1);
+    expect(s.hero.hp).toBeCloseTo(HERO.hp - stats('ogre').damage, 0);
+  });
+});
+
+describe('the throw', () => {
+  it('is not made unless asked for', () => {
+    const w = arena();
+    spawnMonster(w, 'goblin', 15, 10, true).stun = 99;
+    expect(count(run(w, 2), 'throw')).toBe(0);
+  });
+
+  it('flies to the target and hurts it', () => {
+    const w = arena();
+    const g = spawnMonster(w, 'goblin', 15, 10, true);
+    g.stun = 99;
+    stepWorld(w, { mx: 0, my: 0, throw: true });
+    expect(count(w.events, 'throw')).toBe(1);
+    expect(w.shots).toHaveLength(1);
+    const events = run(w, 0.6);
+    expect(events.filter((e) => e.type === 'hit')[0]).toMatchObject({ by: 'throw', amount: HERO.thrown.damage });
+    expect(g.hp).toBe(stats('goblin').hp - HERO.thrown.damage);
+    expect(w.shots).toHaveLength(0);
+  });
+
+  it('must wait before the next', () => {
+    const w = arena();
+    spawnMonster(w, 'goblin', 15, 10, true).hp = 9999;
+    const throws = count(run(w, 5, { mx: 0, my: 0, throw: true }), 'throw');
+    expect(throws).toBe(Math.floor(5 / HERO.thrown.every) + 1);
+  });
+
+  it('goes for one that throws before one that is nearer', () => {
+    const w = arena();
+    const goblin = spawnMonster(w, 'goblin', 12.5, 10, true);
+    const kobold = spawnMonster(w, 'kobold', 10, 4, true);
+    expect(throwTarget(w)).toBe(kobold);
+    kobold.hp = 0;
+    expect(throwTarget(w)).toBe(goblin);
+  });
+
+  it('goes for one that is awake before a sleeper, and for a sleeper only when nothing else is there', () => {
+    const w = arena();
+    const sleeper = spawnMonster(w, 'goblin', 10 + stats('goblin').notice + 0.5, 10, false);
+    expect(throwTarget(w)).toBe(sleeper);
+    const awake = spawnMonster(w, 'rat', 10, 3, true);
+    expect(throwTarget(w)).toBe(awake);
+  });
+
+  it('has nothing to aim at out of range or out of sight', () => {
+    const w = arena();
+    spawnMonster(w, 'goblin', 10, 10 - HERO.thrown.range - 0.6, true).stun = 99;
+    expect(throwTarget(w)).toBeUndefined();
+    stepWorld(w, { mx: 0, my: 0, throw: true });
+    expect(count(w.events, 'throw')).toBe(0);
+    expect(w.hero.throwing).toBeLessThanOrEqual(0);
+  });
+
+  it('wakes the band of a sleeper it hits', () => {
+    const w = arena();
+    const a = spawnMonster(w, 'goblin', 10 + stats('goblin').notice + 0.5, 10, false, 77);
+    const b = spawnMonster(w, 'goblin', 10 + stats('goblin').notice + 1.5, 11, false, 77);
+    run(w, 0.8, { mx: 0, my: 0, throw: true });
+    expect(a.awake).toBe(true);
+    expect(b.awake).toBe(true);
+  });
+});
+
+describe('the bands', () => {
+  it('name only monsters that exist, on floors that exist', () => {
+    for (const p of PACKS) {
+      for (const member of p.members) expect(() => monsterKind(member.kind)).not.toThrow();
+      expect(p.floors[0]).toBeGreaterThanOrEqual(1);
+      expect(p.floors[1]).toBeLessThanOrEqual(DUNGEON.floors);
+      expect(p.floors[0]).toBeLessThanOrEqual(p.floors[1]);
+    }
+  });
+
+  it('bring every monster in somewhere, and the ogre only on the last floor', () => {
+    const met = new Set(PACKS.flatMap((p) => p.members.map((m) => m.kind)));
+    for (const m of MONSTERS) expect(met.has(m.id), m.id).toBe(true);
+    for (const p of PACKS) if (p.members.some((m) => m.kind === 'ogre')) expect(p.floors[0]).toBe(DUNGEON.floors);
+  });
+});

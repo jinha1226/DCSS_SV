@@ -10,7 +10,7 @@
 
 DCSS의 `LICENSE`는 타일 대부분이 CC0라고 밝히면서, 오래된 타일은 사정이 복잡할 수 있으니 <https://github.com/crawl/tiles> 를 보라고 한다. 그 저장소의 `TILES_UNDER_UNKNOWN_LICENSE.md`가 권리가 불분명해 재사용할 수 없는 타일의 목록이다.
 
-아래 타일은 가져올 때 그 목록과 이름을 대조했고, 겹치는 것이 없었다. 목록은 2010년 기준이라는 점은 알아 둔다. **타일을 더 가져올 때마다 같은 대조를 한다.**
+아래 타일은 가져올 때 그 목록과 이름을 대조했고, 겹치는 것이 없었다. 목록은 2010년 기준이라는 점은 알아 둔다. **타일을 더 가져올 때마다 같은 대조를 한다.** 예를 들어 투창(`javelin`) 타일은 전부 그 목록에 있어서 쓰지 않고, 던지는 무기는 부메랑 타일로 했다.
 
 ## 가져온 타일
 
@@ -22,6 +22,7 @@ DCSS의 `LICENSE`는 타일 대부분이 CC0라고 밝히면서, 오래된 타�
 | `hero` | `mon/demihumanoids` | `minotaur` |
 | `mon` | `mon/animals`, `mon/humanoids` | `rat`, `bat`, `jackal`, `adder`, `goblin`, `kobold`, `gnoll`, `ogre` |
 | `item` | `item/weapon` | `hand_axe1`, `war_axe1`, `broad_axe1`, `battle_axe1`, `executioner_axe1` |
+| `item` | `item/weapon/ranged` | `stone`, `boomerang1` |
 
 파일 이름과 그림은 원본 그대로다.
 

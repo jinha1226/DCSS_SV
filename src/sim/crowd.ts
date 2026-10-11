@@ -2,7 +2,7 @@ import { HERO } from '../data/hero';
 import type { World } from './types';
 
 /** How much of an overlap between two monsters is undone in one step; less than all of it keeps a pack from shaking. */
-const FIRM = 0.8;
+const FIRM = 0.5;
 
 let head = new Int32Array(0);
 let next = new Int32Array(0);

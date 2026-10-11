@@ -1,24 +1,9 @@
-import { Cell, carve, makeGrid, setCell, type Grid } from './grid';
-import type { Point } from './collide';
-
-export interface Room {
-  readonly x: number;
-  readonly y: number;
-  readonly w: number;
-  readonly h: number;
-}
-
-export interface Floor {
-  readonly grid: Grid;
-  /** Where the hero arrives, in cells (the middle of a cell). */
-  readonly start: Point;
-  /** The rooms, the hero's own first. */
-  readonly rooms: readonly Room[];
-}
+import { Cell, carve, makeGrid, setCell } from './grid';
+import type { Floor, Room } from './floor';
 
 /**
- * The floor of stages 1 and 2, laid out by hand: five rooms, corridors two and three cells wide,
- * and two rings to walk round. Generated floors replace it in stage 3.
+ * A floor laid out by hand, kept for tests that need walls in known places: five rooms,
+ * corridors two and three cells wide, and two rings to walk round.
  */
 export function makeTestFloor(): Floor {
   const grid = makeGrid(40, 46);
