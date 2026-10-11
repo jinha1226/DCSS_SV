@@ -74,7 +74,7 @@ describe('brands and resistance', () => {
     Object.defineProperty(immune, 'stats', { value: { ...immune.stats, resists: { fire: 3 } } });
     applyWeaponBrand(w, immune);
     expect(immune.burning).toBe(0);
-    expect(w.events.at(-1)).toMatchObject({ type: 'brand', resisted: true });
+    expect(w.events.at(-1)).toMatchObject({ type: 'elemental', element: 'fire', amount: 0, target: 'monster' });
   });
   it('cold slows, shock can chain, and vampiric heals', () => {
     const w = arena(),
