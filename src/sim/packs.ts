@@ -51,7 +51,9 @@ export function placePack(
   kind.members.forEach((member, i) => {
     let count = member.min + Math.floor(w.rng() * (member.max - member.min + 1));
     if (i === 0) {
-      const floor = kind.branch ? (w.dungeonGraph.nodes.get(w.depth)?.floor ?? 1) : (w.dungeonGraph.nodes.get(w.depth)?.difficulty ?? w.depth);
+      const floor = kind.branch
+        ? (w.dungeonGraph.nodes.get(w.depth)?.floor ?? 1)
+        : (w.dungeonGraph.nodes.get(w.depth)?.difficulty ?? w.depth);
       count += Math.min(3, Math.max(0, floor - kind.floors[0]));
     }
     for (let n = 0; n < count; n++) {
