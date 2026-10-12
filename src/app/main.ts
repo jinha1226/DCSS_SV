@@ -124,6 +124,7 @@ async function start(): Promise<void> {
   menuAction('@ 상태', () => statusSheet.openSheet());
   menuAction('⚔ 장비', () => inventory.openSheet('equipment'));
   menuAction('▣ 가방', () => inventory.openSheet('bag'));
+  menuAction('◈ 오크 상점', () => inventory.openSheet('shop'));
   menuAction('✦ 스킬', () => skillBar.openDetails());
   menuAction('▤ 게임 로그', () => gameLog.openHistory());
 
