@@ -1538,6 +1538,7 @@ canvas {
   font: 600 14px system-ui, sans-serif;
   touch-action: manipulation;
 }
+
 .shop-interact[hidden] {
   display: none;
 }
