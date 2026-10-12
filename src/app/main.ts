@@ -57,7 +57,7 @@ async function start(): Promise<void> {
   if (!ctx) return;
 
   const atlas = await loadAtlas();
-  const world3d = canvas3d ? new World3D(canvas3d, atlas.image, switches.quality) : undefined;
+  const world3d = canvas3d ? new World3D(canvas3d, atlas, switches.quality, switches.figures) : undefined;
   let aimFocus: Monster | undefined;
   let lastFrame = performance.now();
   // ?sprite=haven swaps the DCSS hero tile for the layered 8-facing sprites; a missing set keeps the tile.
@@ -90,7 +90,7 @@ async function start(): Promise<void> {
     const hero = heroFor(character.species, character.job);
     heroWalk = makeWalk(atlas, hero.tile, hero.walk);
     Object.assign(heroPose, makeHeroPose());
-    if (world3d) void world3d.prepare(character.job);
+    if (world3d) void world3d.prepare(character.species, character.job);
     world = makeWorld({
       species: character.species,
       job: character.job,

@@ -16,6 +16,7 @@ describe('the address switches', () => {
     sprite: '',
     renderer: '3d',
     quality: 'high',
+    figures: 'tiles',
   };
 
   it('fall back to the usual values', () => {
@@ -39,6 +40,7 @@ describe('the address switches', () => {
       sprite: '',
       renderer: '3d',
       quality: 'high',
+      figures: 'tiles',
     });
   });
 
@@ -58,6 +60,8 @@ describe('the address switches', () => {
     expect(readSwitches('?r=2d').renderer).toBe('2d');
     expect(writeSwitches(readSwitches('?r=2d&fx=low'))).toBe('?r=2d&fx=low');
     expect(readSwitches('?fx=ultra').quality).toBe('high');
+    expect(readSwitches('?models=3d').figures).toBe('models');
+    expect(writeSwitches(readSwitches('?models=3d'))).toBe('?models=3d');
     for (const text of ['?zoom=13&speed=3.5&look=bright&seed=42&debug', '?debug', '?look=bright']) {
       expect(readSwitches(writeSwitches(readSwitches(text)))).toEqual(readSwitches(text));
     }

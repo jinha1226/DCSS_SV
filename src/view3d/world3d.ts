@@ -7,9 +7,11 @@ import type { SpellData } from '../data/spells';
 import { DUNGEON } from '../data/packs';
 import { objectiveFor } from '../sim/objectives';
 import { STEP, type Monster, type SimEvent, type World } from '../sim/world';
-import type { Sheet } from '../view/atlas';
+import { heroFor } from '../data/hero';
+import type { Atlas } from '../view/atlas';
+import { makeWalk } from '../view/walk';
 import type { Fx } from '../view/fx';
-import { HeroActor, type Actor } from './actors';
+import { HeroActor, type Figure, type HeroFigure } from './actors';
 import { lookFor, makeMonsterActor, type Look } from './bestiary';
 import { DungeonView } from './dungeon';
 import { Effects } from './effects';
@@ -17,6 +19,7 @@ import { LootView } from './loot';
 import { ModelLibrary } from './models';
 import { Overlay } from './overlay';
 import { Particles } from './particles';
+import { HeroTile, makeMonsterTile, tileFigureHeight } from './tileFigures';
 
 const PITCH = THREE.MathUtils.degToRad(56);
 const FOV = 34;
@@ -35,7 +38,7 @@ const HIT_COLOURS: Record<string, number> = {
 };
 
 interface Creature {
-  actor?: Actor;
+  actor?: Figure;
   readonly look: Look;
   wind: number;
   dead: number;
@@ -64,10 +67,10 @@ export class World3D {
   private readonly effects: Effects;
   private readonly lootView: LootView;
   readonly overlay: Overlay;
-  private hero?: HeroActor;
-  private heroJob = '';
+  private hero?: HeroFigure;
+  private heroKey = '';
   private readonly creatures = new Map<Monster, Creature>();
-  private readonly corpses: { actor: Actor; age: number }[] = [];
+  private readonly corpses: { actor: Figure; age: number }[] = [];
   private readonly sun = new THREE.DirectionalLight(0xe6ecff, 1.15);
   private readonly heroLight = new THREE.PointLight(0xffc27a, 5, 8, 1.3);
   private readonly torchLights: THREE.PointLight[] = [];
@@ -81,8 +84,10 @@ export class World3D {
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
-    atlas: Sheet,
+    private readonly atlas: Atlas,
     private readonly quality: 'high' | 'low',
+    /** 'tiles' stands DCSS tiles on the 3D floor; 'models' uses the rigged KayKit and Quaternius figures. */
+    private readonly figures: 'tiles' | 'models' = 'tiles',
   ) {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: quality === 'high', powerPreference: 'high-performance' });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -111,7 +116,7 @@ export class World3D {
     }
 
     this.effects = new Effects(this.particles);
-    this.lootView = new LootView(this.models, atlas);
+    this.lootView = new LootView(this.models, atlas.image, figures === 'tiles');
     this.overlay = new Overlay(this.camera);
     this.scene.add(this.dungeon.group, this.effects.group, this.lootView.group, this.particles.points);
 
@@ -124,12 +129,18 @@ export class World3D {
     }
   }
 
-  /** Loads the shared clips and the hero for this job before the first frame. */
-  async prepare(job: string): Promise<void> {
-    if (this.hero && this.heroJob === job) return;
+  /** Makes the hero figure for this species and job before the first frame. */
+  async prepare(species: string, job: string): Promise<void> {
+    const key = `${species}|${job}`;
+    if (this.hero && this.heroKey === key) return;
     this.hero?.dispose();
-    this.heroJob = job;
-    this.hero = await HeroActor.create(this.models, job);
+    this.heroKey = key;
+    if (this.figures === 'tiles') {
+      const def = heroFor(species, job);
+      this.hero = new HeroTile(this.atlas, makeWalk(this.atlas, def.tile, def.walk));
+    } else {
+      this.hero = await HeroActor.create(this.models, job);
+    }
     this.scene.add(this.hero.root);
   }
 
@@ -195,7 +206,7 @@ export class World3D {
           this.shake = Math.max(this.shake, 0.22);
           break;
         case 'block':
-          hero?.animator.play('Block', 0.35);
+          hero?.block();
           break;
         case 'throw':
           hero?.throwAt(0.4);
@@ -261,6 +272,7 @@ export class World3D {
 
   private heightOf(m: Monster): number {
     const look = this.creatures.get(m)?.look ?? lookFor(m.kind.id);
+    if (this.figures === 'tiles') return tileFigureHeight(m.kind.id) + (look.hover ?? 0);
     return look.height + (look.hover ?? 0);
   }
 
@@ -283,7 +295,7 @@ export class World3D {
     hero.place(x, y, lift);
     const dx = h.x - h.px;
     const dy = h.y - h.py;
-    if (h.moving && !hero.animator.busy) hero.face(dx, dy);
+    if (h.moving && !hero.busy) hero.face(dx, dy);
     hero.move(h.moving && !w.over ? Math.max(2, Math.hypot(dx, dy) / STEP) : 0);
     if (h.level > this.lastLevel && this.lastLevel > 0) {
       this.effects.levelUp(x, y);
@@ -294,7 +306,7 @@ export class World3D {
     this.lastLevel = h.level;
     if (h.mana < this.lastMana - 0.5 && !w.over) hero.cast(0.45);
     this.lastMana = h.mana;
-    if (w.over && !hero.animator.busy) hero.die();
+    if (w.over && !hero.busy) hero.die();
     hero.update(dt);
   }
 
@@ -308,14 +320,18 @@ export class World3D {
         c = { look: lookFor(m.kind.id), wind: -1, dead: 0 };
         this.creatures.set(m, c);
         const slot = c;
-        void makeMonsterActor(this.models, m.kind.id).then(({ actor }) => {
-          if (!this.creatures.has(m)) {
-            actor.dispose();
-            return;
-          }
-          slot.actor = actor;
-          this.scene.add(actor.root);
-        });
+        if (this.figures === 'tiles') {
+          slot.actor = makeMonsterTile(this.atlas, m.kind.id, m.kind.tile);
+          this.scene.add(slot.actor.root);
+        } else
+          void makeMonsterActor(this.models, m.kind.id).then(({ actor }) => {
+            if (!this.creatures.has(m)) {
+              actor.dispose();
+              return;
+            }
+            slot.actor = actor;
+            this.scene.add(actor.root);
+          });
       }
       const actor = c.actor;
       if (!actor) continue;

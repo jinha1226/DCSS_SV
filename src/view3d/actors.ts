@@ -94,8 +94,34 @@ export class Animator {
   }
 }
 
+/** What the world view asks of any figure, whether a rigged 3D model or a flat DCSS tile. */
+export interface Figure {
+  readonly root: THREE.Object3D;
+  readonly busy: boolean;
+  place(x: number, y: number, lift?: number): void;
+  face(dx: number, dy: number): void;
+  move(speed: number): void;
+  attack(seconds?: number): void;
+  hit(): void;
+  die(): void;
+  strike(amount?: number): void;
+  setOpacity(value: number): void;
+  update(dt: number): void;
+  dispose(): void;
+}
+
+/** The hero's extra moves. */
+export interface HeroFigure extends Figure {
+  dress(look: HeroLook): Promise<void>;
+  cast(seconds: number): void;
+  throwAt(seconds: number): void;
+  hop(seconds: number): void;
+  cheer(): void;
+  block(): void;
+}
+
 /** A posed model in the world: position, smooth turning, a white flash when struck, fading out. */
-export class Actor {
+export class Actor implements Figure {
   readonly root = new THREE.Group();
   readonly model: THREE.Object3D;
   readonly animator: Animator;
@@ -178,6 +204,10 @@ export class Actor {
     }
   }
 
+  get busy(): boolean {
+    return this.animator.busy;
+  }
+
   dispose(): void {
     this.root.removeFromParent();
     for (const m of this.materials) m.dispose();
@@ -231,7 +261,7 @@ export function heldFor(weapon: WeaponItem): { model?: string; twoHanded: boolea
 const SHIELDS: Record<string, string> = { buckler: 'held/shield_round.glb', kite_shield: 'held/shield_badge.glb' };
 
 /** The hero: a KayKit adventurer with the worn weapon, shield, helmet and cape attached to the rig. */
-export class HeroActor extends Actor {
+export class HeroActor extends Actor implements HeroFigure {
   private lookKey = '';
   private readonly right?: THREE.Object3D;
   private readonly left?: THREE.Object3D;
@@ -321,6 +351,10 @@ export class HeroActor extends Actor {
 
   cheer(): void {
     this.animator.play('Cheer', 1.2);
+  }
+
+  block(): void {
+    this.animator.play('Block', 0.35);
   }
 }
 

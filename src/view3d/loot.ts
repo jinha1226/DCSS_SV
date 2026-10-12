@@ -19,6 +19,8 @@ export class LootView {
   constructor(
     private readonly models: ModelLibrary,
     private readonly atlas: Sheet,
+    /** Show every item, weapons too, as its DCSS tile rather than a 3D model. */
+    private readonly tilesOnly = false,
   ) {}
 
   private orb(colour: THREE.ColorRepresentation, size: number): THREE.Sprite {
@@ -61,7 +63,7 @@ export class LootView {
       (halo.material as THREE.MeshBasicMaterial).color.set(0xffcf4a);
       return g;
     }
-    if (item.kind === 'axe' && item.axe) {
+    if (item.kind === 'axe' && item.axe && !this.tilesOnly) {
       const held = heldFor(item.axe);
       if (held.model) {
         const weapon = await this.models.instance(held.model);
@@ -75,7 +77,14 @@ export class LootView {
       else if (item.axe.brand) (halo.material as THREE.MeshBasicMaterial).color.set(0x8ad0ff);
       return g;
     }
-    const tile = item.kind === 'ammo' ? 'item/boomerang1' : item.itemId ? (itemDefinition(item.itemId).tile as TileName) : undefined;
+    const tile =
+      item.kind === 'ammo'
+        ? 'item/boomerang1'
+        : item.axe
+          ? item.axe.tile
+          : item.itemId
+            ? (itemDefinition(item.itemId).tile as TileName)
+            : undefined;
     if (tile) {
       const sprite = new THREE.Sprite(this.tileMaterial(tile));
       sprite.scale.setScalar(0.55);
