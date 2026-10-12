@@ -11,6 +11,7 @@ import { makeFlow, updateFlow } from './flow';
 import { computeFov } from './fov';
 import { makeFloor } from './gen';
 import { collectObjective, placeObjectiveGuards } from './objectives';
+import { populateBranchLoot } from './branchLoot';
 import { Cell, cellAt, setCell } from './grid';
 import { tickHop, tryHop } from './hop';
 import { thinkMonster } from './monster';
@@ -89,7 +90,10 @@ function enter(w: World, floor: Floor, monsters: boolean): void {
   look(w);
   if (monsters) fillFloor(w);
   placeObjectiveGuards(w);
-  if (w.itemsEnabled) populateFloorItems(w);
+  if (w.itemsEnabled) {
+    populateFloorItems(w);
+    populateBranchLoot(w);
+  }
 }
 export function makeWorld(options: WorldOptions = {}): World {
   const seed = options.seed ?? 1,
@@ -179,6 +183,8 @@ export function makeWorld(options: WorldOptions = {}): World {
     dungeonGraph,
     runes: new Set(),
     orbCollected: false,
+    gold: 0,
+    shopStock: [],
     floorStates: new Map<number, FloorState>(),
     floorRng,
     stairConnections: new Map(),

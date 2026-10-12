@@ -190,6 +190,16 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
       ctx.fillText('✦', sx, sy + px * 0.1);
       continue;
     }
+    if (item.kind === 'gold') {
+      ctx.fillStyle = '#f3ca56';
+      ctx.beginPath();
+      ctx.arc(sx, sy, px * 0.22, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#77521e';
+      ctx.lineWidth = Math.max(1, px * 0.05);
+      ctx.stroke();
+      continue;
+    }
     if (item.kind === 'consumable') {
       ctx.fillStyle = item.itemId === 'potion_healing' ? '#c95463' : item.itemId === 'scroll_blink' ? '#d6c18b' : '#93b7e1';
       ctx.beginPath();
