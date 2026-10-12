@@ -1,5 +1,5 @@
 import { skillData } from '../data/skills';
-import { chooseReward } from '../sim/rewards';
+import { chooseReward, skipReward } from '../sim/rewards';
 import type { World } from '../sim/world';
 
 export interface SkillPicker {
@@ -16,6 +16,15 @@ export function makeSkillPicker(root: HTMLElement): SkillPicker {
   const cards = document.createElement('div');
   cards.className = 'skill-cards';
   wrap.append(cards);
+  const skip = document.createElement('div');
+  skip.className = 'reward-skip';
+  const skipHeal = document.createElement('button');
+  skipHeal.textContent = '건너뛰기: 회복';
+  const skipGold = document.createElement('button');
+  skipGold.textContent = '건너뛰기: 금화';
+  for (const button of [skipHeal, skipGold]) button.type = 'button';
+  skip.append(skipHeal, skipGold);
+  wrap.append(skip);
   const owned = document.createElement('div');
   owned.className = 'skill-owned';
   wrap.append(owned);
@@ -23,6 +32,13 @@ export function makeSkillPicker(root: HTMLElement): SkillPicker {
   let key = '';
   let shownAt = 0;
   let current: World | undefined;
+
+  skipHeal.addEventListener('click', () => {
+    if (current && performance.now() - shownAt >= 400) skipReward(current, 'heal');
+  });
+  skipGold.addEventListener('click', () => {
+    if (current && performance.now() - shownAt >= 400) skipReward(current, 'gold');
+  });
 
   return {
     show(w) {
@@ -55,6 +71,7 @@ export function makeSkillPicker(root: HTMLElement): SkillPicker {
         }
       }
       const ready = performance.now() - shownAt >= 400;
+      skipHeal.disabled = skipGold.disabled = !ready;
       for (const node of cards.querySelectorAll<HTMLButtonElement>('button')) node.disabled = !ready;
       const list = Object.entries(w.hero.skills)
         .filter(([, level]) => level > 0)

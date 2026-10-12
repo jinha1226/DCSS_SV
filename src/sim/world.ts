@@ -166,7 +166,7 @@ export function makeWorld(options: WorldOptions = {}): World {
     seed,
     weapon,
     inventory: [],
-    gear: {},
+    gear: heroDef.startingOffhand ? { offhand: heroDef.startingOffhand } : {},
     gearEnchantment: {},
     cursedGear: new Set<string>(),
     identifiedItems: new Set<string>(),

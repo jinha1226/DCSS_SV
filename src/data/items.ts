@@ -1,4 +1,5 @@
 import itemsRaw from './json/items.json';
+import { itemDefinition } from './itemCatalog';
 import { hasTile, type TileName } from './tiles';
 
 type Row = Record<string, unknown>;
@@ -24,7 +25,8 @@ function tile(row: Row): TileName {
   return value as TileName;
 }
 
-export type WeaponFamily = 'axe' | 'bow' | 'long_blade';
+export type WeaponFamily = 'blade' | 'axe' | 'mace' | 'polearm' | 'unarmed' | 'ranged';
+export type MagicWeaponKind = 'staff' | 'rod';
 
 export interface WeaponBase {
   readonly id: string;
@@ -68,6 +70,10 @@ export interface WeaponItem {
   readonly uid: string;
   readonly baseId: string;
   readonly family: WeaponFamily;
+  readonly kind?: MagicWeaponKind;
+  readonly school?: string;
+  readonly tier?: 0 | 1 | 2;
+  readonly power?: number;
   readonly name: string;
   readonly tile: TileName;
   readonly damage: number;
@@ -110,7 +116,7 @@ export const WEAPONS: readonly WeaponBase[] = rows
     const hands = number(row, 'hands');
     const family = text(row, 'family');
     const weights = row.depthWeights;
-    if (family !== 'axe' && family !== 'bow' && family !== 'long_blade')
+    if (!['blade', 'axe', 'mace', 'polearm', 'unarmed', 'ranged'].includes(family))
       throw new Error('items.json: ' + String(row.id) + '.family: 잘못된 계열');
     if (hands !== 1 && hands !== 2) throw new Error('items.json: ' + String(row.id) + '.hands: 1 또는 2여야 함');
     if (!Array.isArray(weights) || weights.some((v) => typeof v !== 'number')) {
@@ -118,7 +124,7 @@ export const WEAPONS: readonly WeaponBase[] = rows
     }
     return {
       id: text(row, 'id'),
-      family,
+      family: family as WeaponFamily,
       name: text(row, 'name'),
       tile: tile(row),
       damage: number(row, 'damage'),
@@ -132,7 +138,8 @@ export const WEAPONS: readonly WeaponBase[] = rows
   });
 
 export const AXES = WEAPONS.filter((weapon) => weapon.family === 'axe');
-export const BOWS = WEAPONS.filter((weapon) => weapon.family === 'bow');
+export const RANGED_WEAPONS = WEAPONS.filter((weapon) => weapon.family === 'ranged');
+export const BOWS = RANGED_WEAPONS;
 
 export const BRANDS: readonly BrandData[] = rows
   .filter((row) => row.kind === 'brand')
@@ -214,7 +221,7 @@ export function axeBase(id: string): WeaponBase {
 }
 export function bowBase(id: string): WeaponBase {
   const weapon = weaponBase(id);
-  if (weapon.family !== 'bow') throw new Error('items.json: ' + id + ': 활이 아님');
+  if (weapon.family !== 'ranged') throw new Error('items.json: ' + id + ': 활이 아님');
   return weapon;
 }
 export function brandData(id: string | undefined): BrandData | undefined {
@@ -224,6 +231,27 @@ export function brandData(id: string | undefined): BrandData | undefined {
   return brand;
 }
 export function plainWeapon(id: string, uid = id): WeaponItem {
+  const magic = itemDefinition(id);
+  if (magic.kind === 'staff' || magic.kind === 'rod') {
+    return {
+      uid,
+      baseId: magic.id,
+      family: 'unarmed',
+      kind: magic.kind,
+      school: magic.school,
+      tier: magic.tier,
+      power: magic.power,
+      name: magic.name,
+      tile: magic.tile as TileName,
+      damage: 0,
+      every: 0.8,
+      range: 7,
+      knock: 0,
+      hands: magic.kind === 'staff' ? 2 : 1,
+      options: [],
+      special: false,
+    };
+  }
   const weapon = weaponBase(id);
   return {
     uid,
@@ -248,7 +276,7 @@ export function plainAxe(id: string, uid = id): WeaponItem {
 }
 export function plainBow(id: string, uid = id): WeaponItem {
   const weapon = plainWeapon(id, uid);
-  if (weapon.family !== 'bow') throw new Error('items.json: ' + id + ': 활이 아님');
+  if (weapon.family !== 'ranged') throw new Error('items.json: ' + id + ': 활이 아님');
   return weapon;
 }
 

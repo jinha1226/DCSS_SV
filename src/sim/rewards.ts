@@ -1,6 +1,7 @@
 import { ITEM_DEFINITIONS } from '../data/itemCatalog';
 import { DUNGEON } from '../data/packs';
-import { generateRewardWeapon } from './equipment';
+import { generateWeapon, generateMagicWeapon } from './equipment';
+import { lootTier } from './lootTier';
 import { addConsumable } from './consumables';
 import type { ItemChoice, World } from './types';
 
@@ -23,13 +24,18 @@ function gearCard(w: World): ItemChoice {
   const options = ITEM_DEFINITIONS.filter(
     (item) =>
       item.enabled &&
-      ['armour', 'shield', 'jewellery'].includes(item.kind) &&
-      !(item.kind === 'shield' && w.weapon.hands === 2) &&
+      ['armour', 'shield', 'jewellery', 'spellbook'].includes(item.kind) &&
+      !(['shield', 'spellbook'].includes(item.kind) && w.weapon.hands === 2) &&
+      (item.depthWeights[lootTier(w)] ?? 0) > 0 &&
       !Object.values(w.gear).includes(item.id) &&
       !w.inventory.some((owned) => owned.kind === 'gear' && owned.id === item.id),
   );
   const fallback = ITEM_DEFINITIONS.filter((item) => item.enabled && ['armour', 'jewellery'].includes(item.kind));
-  const picked = choose(w, options.length ? options : fallback);
+  const candidates = options.length ? options : fallback;
+  const tier = lootTier(w);
+  const total = candidates.reduce((sum, item) => sum + (item.depthWeights[tier] ?? 0), 0);
+  let roll = w.rng() * total;
+  const picked = candidates.find((item) => (roll -= item.depthWeights[tier] ?? 0) <= 0) ?? candidates[candidates.length - 1]!;
   return {
     id: 'gear:' + picked.id,
     kind: 'gear',
@@ -42,7 +48,7 @@ function gearCard(w: World): ItemChoice {
 function consumableCard(w: World): ItemChoice {
   const eligible = SUPPLIES.filter((id) => {
     if (id === 'scroll_enchant_weapon') return !w.weapon.special && (w.weapon.enchantment ?? 0) < 9;
-    if (id === 'scroll_enchant_armour') return Boolean(w.gear.armour || w.gear.shield);
+    if (id === 'scroll_enchant_armour') return Boolean(w.gear.armour || w.gear.offhand);
     return true;
   });
   const itemId = choose(w, eligible);

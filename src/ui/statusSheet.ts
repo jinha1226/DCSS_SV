@@ -1,5 +1,6 @@
 import { brandData, type ResistName } from '../data/items';
 import { weaponOption } from '../sim/equipment';
+import { gearName } from '../sim/gear';
 import { effectValue, xpToNext } from '../sim/skills';
 import type { World } from '../sim/world';
 
@@ -28,9 +29,8 @@ export function statusValues(w: World): { vitals: StatusValue[]; resists: Status
   });
   const slots = [
     ['무기', w.weapon.name + (w.weapon.brand ? ' (' + brandData(w.weapon.brand)?.name + ')' : '')],
-    ['보조장비', '미착용'],
+    ['보조손', w.weapon.hands === 2 ? '양손 무기 사용 중' : w.gear.offhand ? gearName(w, w.gear.offhand) : '미착용'],
     ['갑옷', '미착용'],
-    ['방패', w.weapon.hands === 2 ? '양손 무기 사용 중' : '미착용'],
     ['투구', '미착용'],
     ['장갑', '미착용'],
     ['장화', '미착용'],
@@ -41,7 +41,7 @@ export function statusValues(w: World): { vitals: StatusValue[]; resists: Status
   ] as const;
   const armour = effectValue(w, 'armour.reduce') + weaponOption(w.weapon, 'armour');
   const evasion = effectValue(w, 'dodging.chance') + weaponOption(w.weapon, 'evasion');
-  const shield = w.weapon.hands === 2 ? 0 : effectValue(w, 'shield.chance');
+  const shield = effectValue(w, 'shield.chance');
   return {
     vitals: [
       { label: '체력', value: Math.ceil(w.hero.hp) + '/' + w.hero.maxHp },
@@ -139,6 +139,7 @@ export function makeStatusSheet(root: HTMLElement): StatusSheet {
         w.kills,
         w.ammo,
         w.weapon.uid,
+        w.gear.offhand,
         w.heroDef.species,
         [...w.runes].sort().join(','),
         w.orbCollected,

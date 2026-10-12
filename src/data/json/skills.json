@@ -1,81 +1,5 @@
 [
   {
-    "id": "axe",
-    "name": "도끼",
-    "each": "공격 피해 및 무기 숙련도 상승",
-    "aptitude": "axe",
-    "effects": [
-      {
-        "effect": "axe.damage",
-        "perLevel": 0.45
-      },
-      {
-        "effect": "axe.wide",
-        "level": 2,
-        "value": 0.3,
-        "text": "베는 범위가 넓어진다"
-      },
-      {
-        "effect": "axe.spin",
-        "level": 4,
-        "value": 1.5,
-        "text": "세 번째 휘두름은 크게 돈다"
-      },
-      {
-        "effect": "axe.stun",
-        "level": 6,
-        "value": 0.25,
-        "text": "맞은 적이 잠깐 멈칫한다"
-      },
-      {
-        "effect": "axe.reset",
-        "level": 8,
-        "value": 1,
-        "text": "쓰러뜨리면 바로 또 휘두른다"
-      }
-    ]
-  },
-  {
-    "id": "bow",
-    "name": "활",
-    "each": "화살 피해와 사격 속도 상승",
-    "aptitude": "bow",
-    "effects": [
-      {
-        "effect": "bow.damage",
-        "perLevel": 0.45
-      },
-      {
-        "effect": "bow.haste",
-        "perLevel": -0.012
-      },
-      {
-        "effect": "bow.range",
-        "level": 2,
-        "value": 1,
-        "text": "더 멀리 닿는다"
-      },
-      {
-        "effect": "bow.pierce",
-        "level": 4,
-        "value": 1,
-        "text": "화살이 첫 적을 뚫는다"
-      },
-      {
-        "effect": "bow.stun",
-        "level": 6,
-        "value": 0.25,
-        "text": "맞은 적이 멈칫한다"
-      },
-      {
-        "effect": "bow.double",
-        "level": 8,
-        "value": 2,
-        "text": "두 발을 한 번에 쏜다"
-      }
-    ]
-  },
-  {
     "id": "fighting",
     "name": "전투",
     "each": "최대 체력 +3/숙련도",
@@ -148,6 +72,42 @@
     ]
   },
   {
+    "id": "dodging",
+    "name": "회피",
+    "each": "회피 확률 상승",
+    "aptitude": "dodging",
+    "effects": [
+      {
+        "effect": "dodging.chance",
+        "perLevel": 0.009
+      },
+      {
+        "effect": "dodging.speed",
+        "level": 2,
+        "value": 0.06,
+        "text": "걸음이 조금 빨라진다"
+      },
+      {
+        "effect": "dodging.delay",
+        "level": 4,
+        "value": 0.8,
+        "text": "피하면 그 적이 헛쳐서 다음 공격이 늦어진다"
+      },
+      {
+        "effect": "dodging.squeeze",
+        "level": 6,
+        "value": 0.5,
+        "text": "떼 사이를 덜 막히고 지난다"
+      },
+      {
+        "effect": "dodging.grace",
+        "level": 8,
+        "value": 0.8,
+        "text": "한 번 피하면 잠깐 동안 전부 피한다"
+      }
+    ]
+  },
+  {
     "id": "shield",
     "name": "방패",
     "each": "방패 막기 확률 상승",
@@ -184,40 +144,18 @@
     ]
   },
   {
-    "id": "dodging",
-    "name": "회피",
-    "each": "회피 확률 상승",
-    "aptitude": "dodging",
-    "effects": [
-      {
-        "effect": "dodging.chance",
-        "perLevel": 0.009
-      },
-      {
-        "effect": "dodging.speed",
-        "level": 2,
-        "value": 0.06,
-        "text": "걸음이 조금 빨라진다"
-      },
-      {
-        "effect": "dodging.delay",
-        "level": 4,
-        "value": 0.8,
-        "text": "피하면 그 적이 헛쳐서 다음 공격이 늦어진다"
-      },
-      {
-        "effect": "dodging.squeeze",
-        "level": 6,
-        "value": 0.5,
-        "text": "떼 사이를 덜 막히고 지난다"
-      },
-      {
-        "effect": "dodging.grace",
-        "level": 8,
-        "value": 0.8,
-        "text": "한 번 피하면 잠깐 동안 전부 피한다"
-      }
-    ]
+    "id": "stealth",
+    "name": "은신",
+    "each": "은신 숙련 상승",
+    "aptitude": "stealth",
+    "effects": []
+  },
+  {
+    "id": "spellcasting",
+    "name": "주문시전술",
+    "each": "2숙련도마다 최대 마나 +1",
+    "aptitude": "spellcasting",
+    "effects": []
   },
   {
     "id": "throwing",
@@ -265,47 +203,33 @@
     ]
   },
   {
-    "id": "conjuration",
-    "name": "파괴술",
-    "each": "새 공격 주문, 주문 강화",
-    "aptitude": "magic",
-    "effects": []
-  },
-  {
-    "id": "fire",
-    "name": "화염술",
-    "each": "새 화염 주문, 주문 강화",
-    "aptitude": "magic",
-    "effects": []
-  },
-  {
-    "id": "long_blade",
-    "name": "장검",
+    "id": "blade",
+    "name": "검",
     "each": "검 피해·공격 속도 상승",
-    "aptitude": "long_blade",
+    "aptitude": "blade",
     "effects": [
       {
-        "effect": "long_blade.damage",
+        "effect": "blade.damage",
         "perLevel": 0.45
       },
       {
-        "effect": "long_blade.haste",
+        "effect": "blade.haste",
         "perLevel": -0.01
       },
       {
-        "effect": "long_blade.parry",
+        "effect": "blade.parry",
         "level": 2,
         "text": "적의 공격을 가끔 받아넘긴다",
         "perLevel": 0.008
       },
       {
-        "effect": "long_blade.reach",
+        "effect": "blade.reach",
         "level": 4,
         "value": 0.25,
         "text": "검의 공격 범위가 넓어진다"
       },
       {
-        "effect": "long_blade.reset",
+        "effect": "blade.reset",
         "level": 8,
         "value": 1,
         "text": "처치 후 바로 다시 벤다"
@@ -313,17 +237,164 @@
     ]
   },
   {
-    "id": "translocation",
-    "name": "공간술",
-    "each": "새 이동 주문, 재사용 효율 향상",
-    "aptitude": "magic",
+    "id": "axe",
+    "name": "도끼",
+    "each": "공격 피해 및 무기 숙련도 상승",
+    "aptitude": "axe",
+    "effects": [
+      {
+        "effect": "axe.damage",
+        "perLevel": 0.45
+      },
+      {
+        "effect": "axe.wide",
+        "level": 2,
+        "value": 0.3,
+        "text": "베는 범위가 넓어진다"
+      },
+      {
+        "effect": "axe.spin",
+        "level": 4,
+        "value": 1.5,
+        "text": "세 번째 휘두름은 크게 돈다"
+      },
+      {
+        "effect": "axe.stun",
+        "level": 6,
+        "value": 0.25,
+        "text": "맞은 적이 잠깐 멈칫한다"
+      },
+      {
+        "effect": "axe.reset",
+        "level": 8,
+        "value": 1,
+        "text": "쓰러뜨리면 바로 또 휘두른다"
+      }
+    ]
+  },
+  {
+    "id": "mace",
+    "name": "둔기",
+    "each": "공격 피해 및 무기 숙련도 상승",
+    "aptitude": "mace",
+    "effects": [
+      {
+        "effect": "mace.damage",
+        "perLevel": 0.45
+      }
+    ]
+  },
+  {
+    "id": "polearm",
+    "name": "창",
+    "each": "공격 피해 및 무기 숙련도 상승",
+    "aptitude": "polearm",
+    "effects": [
+      {
+        "effect": "polearm.damage",
+        "perLevel": 0.45
+      }
+    ]
+  },
+  {
+    "id": "unarmed",
+    "name": "맨손",
+    "each": "공격 피해 및 무기 숙련도 상승",
+    "aptitude": "unarmed",
+    "effects": [
+      {
+        "effect": "unarmed.damage",
+        "perLevel": 0.45
+      }
+    ]
+  },
+  {
+    "id": "ranged",
+    "name": "활",
+    "each": "화살 피해와 사격 속도 상승",
+    "aptitude": "ranged",
+    "effects": [
+      {
+        "effect": "ranged.damage",
+        "perLevel": 0.45
+      },
+      {
+        "effect": "ranged.haste",
+        "perLevel": -0.012
+      },
+      {
+        "effect": "ranged.range",
+        "level": 2,
+        "value": 1,
+        "text": "더 멀리 닿는다"
+      },
+      {
+        "effect": "ranged.pierce",
+        "level": 4,
+        "value": 1,
+        "text": "화살이 첫 적을 뚫는다"
+      },
+      {
+        "effect": "ranged.stun",
+        "level": 6,
+        "value": 0.25,
+        "text": "맞은 적이 멈칫한다"
+      },
+      {
+        "effect": "ranged.double",
+        "level": 8,
+        "value": 2,
+        "text": "두 발을 한 번에 쏜다"
+      }
+    ]
+  },
+  {
+    "id": "fire",
+    "name": "화염술",
+    "each": "새 화염 주문, 주문 강화",
+    "aptitude": "fire",
     "effects": []
   },
   {
-    "id": "spellcasting",
-    "name": "주문시전술",
-    "each": "2숙련도마다 최대 마나 +1",
-    "aptitude": "magic",
+    "id": "ice",
+    "name": "빙결술",
+    "each": "학파 숙련 상승",
+    "aptitude": "ice",
+    "effects": []
+  },
+  {
+    "id": "air",
+    "name": "대기술",
+    "each": "학파 숙련 상승",
+    "aptitude": "air",
+    "effects": []
+  },
+  {
+    "id": "earth",
+    "name": "대지술",
+    "each": "학파 숙련 상승",
+    "aptitude": "earth",
+    "effects": []
+  },
+  {
+    "id": "summoning",
+    "name": "소환술",
+    "each": "학파 숙련 상승",
+    "aptitude": "summoning",
+    "effects": []
+  },
+  {
+    "id": "hexes",
+    "name": "주술",
+    "each": "새 이동 주문, 재사용 효율 향상",
+    "aptitude": "hexes",
+    "effects": []
+  },
+  {
+    "id": "necromancy",
+    "name": "강령술",
+    "each": "학파 숙련 상승",
+    "aptitude": "necromancy",
     "effects": []
   }
 ]

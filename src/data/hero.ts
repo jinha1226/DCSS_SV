@@ -1,12 +1,12 @@
 import jobsRaw from './json/jobs.json';
 import speciesRaw from './json/species.json';
-import { THROW_DATA, weaponBase, type ResistName } from './items';
+import { THROW_DATA, plainWeapon, type ResistName } from './items';
+import { itemDefinition } from './itemCatalog';
 import { SKILLS } from './skills';
 import { hasTile, type TileName } from './tiles';
 import { TRAIT_IDS, type TraitData } from './traits';
 
 export type Aptitude = 'good' | 'normal' | 'bad';
-export type AttackMode = 'weapon' | 'magic';
 
 export interface HeroDefinition {
   readonly species: string;
@@ -34,9 +34,9 @@ export interface HeroDefinition {
   readonly resists: Readonly<Partial<Record<ResistName, number>>>;
   readonly aptitudes: Readonly<Record<string, Aptitude>>;
   readonly startingWeapon: string;
+  readonly startingOffhand?: string;
   readonly startingAmmo: number;
   readonly startingSkills: Readonly<Record<string, number>>;
-  readonly attackMode: AttackMode;
 }
 
 type SpeciesRow = (typeof speciesRaw)[number];
@@ -60,7 +60,10 @@ function species(id: string): SpeciesRow {
 function job(id: string): JobRow {
   const row = jobsRaw.find((entry) => entry.id === id);
   if (!row) throw new Error('jobs.json: ' + id + ': 없는 직업');
-  weaponBase(row.startingWeapon);
+  plainWeapon(row.startingWeapon);
+  if ('startingOffhand' in row && typeof row.startingOffhand === 'string' && itemDefinition(row.startingOffhand).kind !== 'spellbook') {
+    throw new Error('jobs.json: ' + row.id + '.startingOffhand: 마법서가 아님');
+  }
   for (const skill of Object.keys(row.startingSkills)) {
     if (!SKILLS.some((entry) => entry.id === skill)) {
       throw new Error('jobs.json: ' + id + '.startingSkills: 없는 스킬 ' + skill);
@@ -72,7 +75,7 @@ function job(id: string): JobRow {
 export function heroFor(speciesId = 'minotaur', jobId = 'berserker'): HeroDefinition {
   const s = species(speciesId);
   const j = job(jobId);
-  const weapon = weaponBase(j.startingWeapon);
+  const weapon = plainWeapon(j.startingWeapon);
   const startingSkills: Record<string, number> = {};
   for (const [id, level] of Object.entries(j.startingSkills)) {
     if (typeof level === 'number') startingSkills[id] = level;
@@ -97,9 +100,9 @@ export function heroFor(speciesId = 'minotaur', jobId = 'berserker'): HeroDefini
     resists: 'resists' in s ? (s.resists as Readonly<Partial<Record<ResistName, number>>>) : {},
     aptitudes: s.aptitudes as Readonly<Record<string, Aptitude>>,
     startingWeapon: j.startingWeapon,
+    ...('startingOffhand' in j ? { startingOffhand: j.startingOffhand } : {}),
     startingAmmo: j.startingAmmo,
     startingSkills,
-    attackMode: j.attackMode as AttackMode,
   };
 }
 

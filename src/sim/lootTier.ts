@@ -5,6 +5,7 @@ import type { World } from './types';
 export function lootTier(w: World): 0 | 1 | 2 {
   const difficulty = w.dungeonGraph.nodes.get(w.depth)?.difficulty;
   if (difficulty === undefined) throw new Error('Unknown dungeon node for loot tier: ' + w.depth);
-  const [low, mid] = DUNGEON.lootTierDifficulty;
+  const low = DUNGEON.lootTierDifficulty[0]!;
+  const mid = DUNGEON.lootTierDifficulty[1]!;
   return difficulty <= low ? 0 : difficulty <= mid ? 1 : 2;
 }

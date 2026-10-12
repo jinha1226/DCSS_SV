@@ -30,7 +30,7 @@ describe('automatic skill training', () => {
     const oldXp = w.hero.skillXp.axe;
     w.weapon = plainBow('shortbow', 'test-bow');
     trainSkills(w, 150);
-    expect(skillLevel(w, 'bow')).toBeGreaterThan(0);
+    expect(skillLevel(w, 'ranged')).toBeGreaterThan(0);
     expect(skillLevel(w, 'axe')).toBe(oldAxe);
     expect(w.hero.skillXp.axe).toBe(oldXp);
     w.weapon = plainAxe('hand_axe', 'test-axe');
@@ -43,7 +43,7 @@ describe('automatic skill training', () => {
     const before = skillLevel(w, 'axe');
     trainSkills(w, 150);
     expect(skillLevel(w, 'axe')).toBe(before);
-    expect(skillLevel(w, 'conjuration')).toBeGreaterThan(1);
+    expect(skillLevel(w, 'air')).toBeGreaterThan(1);
     expect(skillLevel(w, 'spellcasting')).toBeGreaterThan(0);
   });
 
@@ -51,7 +51,7 @@ describe('automatic skill training', () => {
     const w = arena();
     trainSkills(w, 120);
     expect(skillLevel(w, 'shield')).toBe(0);
-    w.gear.shield = 'buckler';
+    w.gear.offhand = 'buckler';
     trainSkills(w, 120);
     const trained = skillLevel(w, 'shield');
     expect(trained).toBeGreaterThan(0);
@@ -63,13 +63,13 @@ describe('automatic skill training', () => {
     expect(skillLevel(w, 'shield')).toBeGreaterThan(trained);
   });
 
-  it('grows unlocked magic schools even without casting them', () => {
+  it('does not train unequipped schools, because equipment determines training', () => {
     const w = arena();
     trainSkills(w, 200);
     expect(skillLevel(w, 'fire')).toBe(0);
     openSkill(w, 'fire');
     trainSkills(w, 200);
-    expect(skillLevel(w, 'fire')).toBeGreaterThan(0);
+    expect(skillLevel(w, 'fire')).toBe(0);
   });
 
   it('keeps the same cap for all aptitudes but a fast aptitude advances sooner', () => {

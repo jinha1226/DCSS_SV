@@ -30,9 +30,9 @@ describe('stage 8 Barachi hunter', () => {
     const w = hunter();
     expect(w.heroDef.speed).toBe(5.4);
     expect(w.heroDef.sight).toBe(8);
-    expect(w.weapon.family).toBe('bow');
-    expect(w.hero.skills).toMatchObject({ bow: 2, fighting: 1, dodging: 1 });
-    expect(w.openSkills.has('bow')).toBe(true);
+    expect(w.weapon.family).toBe('ranged');
+    expect(w.hero.skills).toMatchObject({ ranged: 2, fighting: 1, dodging: 1 });
+    expect(w.openSkills.has('ranged')).toBe(true);
     expect(w.openSkills.has('throwing')).toBe(false);
     const x = Math.floor(w.hero.x),
       y = Math.floor(w.hero.y);
@@ -122,15 +122,15 @@ describe('automatic bow fire', () => {
 describe('bow skill', () => {
   it('adds damage and speed every level and range at two', () => {
     const w = hunter();
-    w.hero.skills.bow = 2;
-    expect(effectValue(w, 'bow.damage')).toBeCloseTo(0.9);
-    expect(effectValue(w, 'bow.haste')).toBeCloseTo(-0.024);
-    expect(effectValue(w, 'bow.range')).toBe(1);
+    w.hero.skills.ranged = 2;
+    expect(effectValue(w, 'ranged.damage')).toBeCloseTo(0.9);
+    expect(effectValue(w, 'ranged.haste')).toBeCloseTo(-0.024);
+    expect(effectValue(w, 'ranged.range')).toBe(1);
   });
 
   it('pierces one extra enemy at four', () => {
     const w = hunter();
-    w.hero.skills.bow = 4;
+    w.hero.skills.ranged = 4;
     const a = spawnMonster(w, 'ogre', w.hero.x + 3, w.hero.y, true),
       b = spawnMonster(w, 'ogre', w.hero.x + 5, w.hero.y, true);
     a.stun = b.stun = 99;
@@ -144,7 +144,7 @@ describe('bow skill', () => {
 
   it('stuns at six', () => {
     const w = hunter();
-    w.hero.skills.bow = 6;
+    w.hero.skills.ranged = 6;
     const m = spawnMonster(w, 'ogre', w.hero.x + 4, w.hero.y, true);
     const hp = m.hp;
     stepWorld(w, { mx: 0, my: 0 });
@@ -155,7 +155,7 @@ describe('bow skill', () => {
 
   it('fires two arrows at eight, including twice at one target', () => {
     const w = hunter();
-    w.hero.skills.bow = 8;
+    w.hero.skills.ranged = 8;
     spawnMonster(w, 'ogre', w.hero.x + 5, w.hero.y, true).stun = 99;
     stepWorld(w, { mx: 0, my: 0 });
     expect(w.shots.filter((shot) => shot.arrow)).toHaveLength(2);
@@ -238,17 +238,14 @@ describe('Barachi hop', () => {
   });
 });
 
-describe('cross-family weapon opens a new path', () => {
-  it('opens bow for the berserker and guarantees it on the next card', () => {
+describe('weapon-driven training', () => {
+  it('trains ranged only after equipping a ranged weapon', () => {
     const w = berserker();
-    expect(w.openSkills.has('bow')).toBe(false);
     const bow = plainBow('shortbow', 'found-bow');
-    w.groundItems.push({ uid: bow.uid, kind: 'axe', x: w.hero.x, y: w.hero.y, axe: bow, ignored: false, newPath: true });
+    w.groundItems.push({ uid: bow.uid, kind: 'axe', x: w.hero.x, y: w.hero.y, axe: bow, ignored: false });
     collectGround(w);
     acceptPickup(w);
-    expect(w.openSkills.has('bow')).toBe(true);
-    w.pendingChoices = 1;
-    dealSkillChoices(w);
-    expect(w.choosing!.some((card) => card.id === 'bow')).toBe(true);
+    expect(w.weapon.family).toBe('ranged');
+    expect(w.openSkills.has('ranged')).toBe(true);
   });
 });

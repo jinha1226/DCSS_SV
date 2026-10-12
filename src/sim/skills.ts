@@ -1,25 +1,13 @@
 import type { Aptitude } from '../data/hero';
 import { DUNGEON } from '../data/packs';
 import { SKILLS, skillData, type SkillData, type SkillEffect } from '../data/skills';
+import { hasShield, offhandSchool } from './gear';
 import type { SkillChoice, World } from './types';
 import { dealItemRewards } from './rewards';
 
 export const MAX_SKILL = 27;
-const COMMON = ['fighting', 'armour', 'dodging', 'spellcasting'] as const;
+const COMMON = ['fighting', 'armour', 'dodging', 'stealth', 'spellcasting', 'throwing'] as const;
 const APTITUDE_RATE: Readonly<Record<Aptitude, number>> = { good: 1.5, normal: 1, bad: 0.6 };
-const SCHOOLS = new Set([
-  'conjuration',
-  'fire',
-  'translocation',
-  'ice',
-  'air',
-  'earth',
-  'alchemy',
-  'hexes',
-  'necromancy',
-  'summoning',
-  'forgecraft',
-]);
 
 export function skillLevel(w: World, id: string): number {
   return w.hero.skills[id] ?? 0;
@@ -44,7 +32,7 @@ function owner(effect: string): { skill: string; rule: SkillEffect } | undefined
 export function effectValue(w: World, effect: string): number {
   const found = owner(effect);
   if (!found) return 0;
-  if (found.skill === 'shield' && (w.weapon.hands === 2 || !w.gear.shield)) return 0;
+  if (found.skill === 'shield' && !hasShield(w)) return 0;
   const level = skillLevel(w, found.skill);
   if (found.rule.perLevel !== undefined) {
     return found.rule.level === undefined || level >= found.rule.level ? found.rule.perLevel * level : 0;
@@ -67,13 +55,13 @@ export function openSkill(w: World, id: string, guaranteed = true): void {
 }
 
 export function openStartingSkills(w: World): void {
-  for (const id of [...COMMON, 'shield']) openSkill(w, id, false);
   for (const [id, level] of Object.entries(w.heroDef.startingSkills)) {
     openSkill(w, id, false);
     w.hero.skills[id] = level;
   }
-  if (w.heroDef.attackMode !== 'magic') openSkill(w, w.weapon.family, false);
-  if (w.ammo > 0) openSkill(w, 'throwing', false);
+  openSkill(w, w.weapon.school ?? w.weapon.family, false);
+  const secondary = offhandSchool(w);
+  if (secondary) openSkill(w, secondary, false);
 }
 
 /** Skills grow only from earned XP, not by waiting, moving, or getting hit. */
@@ -81,41 +69,53 @@ export function skillXpToNext(level: number): number {
   return 6 + 4 * Math.max(0, level);
 }
 
-function activeTraining(w: World): string[] {
+export function activeTraining(w: World): string[] {
   const active: string[] = [...COMMON];
-  if (w.heroDef.attackMode !== 'magic') active.push(w.weapon.family);
-  if (w.gear.shield && w.weapon.hands !== 2) active.push('shield');
-  if (w.ammo > 0) active.push('throwing');
-  for (const id of w.openSkills) if (SCHOOLS.has(id)) active.push(id);
+  if (hasShield(w)) active.push('shield');
+  const main = w.weapon.school ?? w.weapon.family;
+  active.push(main);
+  const secondary = offhandSchool(w);
+  if (secondary) active.push(secondary);
   return [...new Set(active)];
+}
+
+function earnSkillXp(w: World, id: string, amount: number): void {
+  if (amount <= 0) return;
+  const rate = APTITUDE_RATE[aptitude(w, id)];
+  let level = skillLevel(w, id);
+  let progress = (w.hero.skillXp[id] ?? 0) + amount * rate;
+  openSkill(w, id, false);
+  while (level < skillCap(w, id) && progress >= skillXpToNext(level)) {
+    progress -= skillXpToNext(level);
+    level++;
+    if (id === 'fighting') {
+      w.hero.maxHp += 3;
+      w.hero.hp = Math.min(w.hero.maxHp, w.hero.hp + 3);
+    }
+    if (id === 'spellcasting' && level % 2 === 0) {
+      w.hero.maxMana++;
+      w.hero.mana = Math.min(w.hero.maxMana, w.hero.mana + 1);
+    }
+  }
+  w.hero.skills[id] = level;
+  w.hero.skillXp[id] = level >= MAX_SKILL ? 0 : progress;
 }
 
 export function trainSkills(w: World, amount: number): void {
   if (amount <= 0) return;
-  for (const id of activeTraining(w)) {
-    const rate = APTITUDE_RATE[aptitude(w, id)];
-    let level = skillLevel(w, id);
-    let progress = (w.hero.skillXp[id] ?? 0) + amount * rate;
-    while (level < skillCap(w, id) && progress >= skillXpToNext(level)) {
-      progress -= skillXpToNext(level);
-      level++;
-      if (id === 'fighting') {
-        w.hero.maxHp += 3;
-        w.hero.hp = Math.min(w.hero.maxHp, w.hero.hp + 3);
-      }
-      if (id === 'spellcasting' && level % 2 === 0) {
-        w.hero.maxMana++;
-        w.hero.mana = Math.min(w.hero.maxMana, w.hero.mana + 1);
-      }
-    }
-    w.hero.skills[id] = level;
-    w.hero.skillXp[id] = level >= MAX_SKILL ? 0 : progress;
+  for (const id of COMMON) earnSkillXp(w, id, amount);
+  if (hasShield(w)) earnSkillXp(w, 'shield', amount);
+  const main = w.weapon.school ?? w.weapon.family;
+  const secondary = offhandSchool(w);
+  if (!secondary || main === secondary) earnSkillXp(w, main, amount);
+  else {
+    earnSkillXp(w, main, amount / 2);
+    earnSkillXp(w, secondary, amount / 2);
   }
 }
 
 function allowed(w: World, skill: SkillData): boolean {
-  if (!w.openSkills.has(skill.id)) return false;
-  if (skill.id === 'shield' && w.weapon.hands === 2) return false;
+  if (skill.id === 'shield' && !hasShield(w)) return false;
   return skillLevel(w, skill.id) < skillCap(w, skill.id);
 }
 

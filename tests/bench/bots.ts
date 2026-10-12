@@ -141,7 +141,7 @@ export const explore: Bot = (w) => {
 };
 
 export const bowFirst: Chooser = (cards) =>
-  cards.find((c) => c.id === 'bow')?.id ??
+  cards.find((c) => c.id === 'ranged')?.id ??
   cards.find((c) => c.id === 'fighting')?.id ??
   cards.find((c) => c.id === 'dodging')?.id ??
   cards[0]!.id;
@@ -182,7 +182,7 @@ export const hunterExplore: Bot = (w) => {
   }
 
   const nearest = visible[0]!;
-  const ideal = Math.min(w.heroDef.sight - 0.4, w.weapon.range + effectValue(w, 'bow.range') - 0.5);
+  const ideal = Math.min(w.heroDef.sight - 0.4, w.weapon.range + effectValue(w, 'ranged.range') - 0.5);
   if (nearest.d < ideal - 0.8) return { mx: awayX, my: awayY, throw: Boolean(throwTarget(w)) };
   if (nearest.d > ideal + 0.6) return { mx: nearest.dx / nearest.d, my: nearest.dy / nearest.d, throw: Boolean(throwTarget(w)) };
   return { mx: (-nearest.dy / nearest.d) * 0.55, my: (nearest.dx / nearest.d) * 0.55, throw: Boolean(throwTarget(w)) };

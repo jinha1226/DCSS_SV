@@ -25,6 +25,8 @@ export const DUNGEON = {
   levelXpBase: dungeonRaw.levelXpBase,
   levelXpStep: dungeonRaw.levelXpStep,
   lootTierDifficulty: dungeonRaw.lootTierDifficulty,
+  spellRequirementStep: dungeonRaw.spellRequirementStep,
+  magicTierMaxLevel: dungeonRaw.magicTierMaxLevel,
   rewardSkipHealFraction: dungeonRaw.rewardSkipHealFraction,
   rewardSkipGoldBase: dungeonRaw.rewardSkipGoldBase,
   rewardSkipGoldPerDifficulty: dungeonRaw.rewardSkipGoldPerDifficulty,

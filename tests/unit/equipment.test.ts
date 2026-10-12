@@ -25,7 +25,7 @@ describe('axe equipment', () => {
   it('turns shield off and removes its card while a two handed axe is held', () => {
     const w = arena();
     w.hero.skills.shield = 8;
-    w.gear.shield = 'buckler';
+    w.gear.offhand = 'buckler';
     expect(effectValue(w, 'shield.chance')).toBeGreaterThan(0);
     w.weapon = plainAxe('battle_axe', 'two');
     expect(effectValue(w, 'shield.chance')).toBe(0);

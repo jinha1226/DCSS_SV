@@ -1,4 +1,5 @@
 import { brandData } from '../data/items';
+import { itemDefinition } from '../data/itemCatalog';
 import { DUNGEON } from '../data/packs';
 import type { SpellData } from '../data/spells';
 import { bowTarget, throwTarget } from '../sim/combat';
@@ -179,18 +180,6 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
     if (!w.seen[iy * w.grid.w + ix]) continue;
     const sx = ox + item.x * px,
       sy = oy + item.y * px;
-    if (item.kind === 'book') {
-      ctx.fillStyle = '#393052';
-      ctx.fillRect(sx - px * 0.25, sy - px * 0.3, px * 0.5, px * 0.6);
-      ctx.strokeStyle = '#b6a4da';
-      ctx.lineWidth = Math.max(1, px * 0.04);
-      ctx.strokeRect(sx - px * 0.25, sy - px * 0.3, px * 0.5, px * 0.6);
-      ctx.fillStyle = '#e3d9ff';
-      ctx.font = `${Math.max(10, px * 0.32)}px sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.fillText('✦', sx, sy + px * 0.1);
-      continue;
-    }
     if (item.kind === 'gold') {
       ctx.fillStyle = '#f3ca56';
       ctx.beginPath();
@@ -211,14 +200,10 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
       ctx.stroke();
       continue;
     }
-    const tile = item.kind === 'ammo' ? 'item/boomerang1' : item.axe?.tile;
+    const tile = item.kind === 'ammo' ? 'item/boomerang1' : item.kind === 'gear' && item.itemId ? itemDefinition(item.itemId).tile as TileName : item.axe?.tile;
     if (!tile) continue;
     drawFigure(ctx, atlas.image, tile, sx, sy, px * 0.72, false);
-    if (item.newPath) {
-      ctx.strokeStyle = '#5ad8c0';
-      ctx.lineWidth = Math.max(2, px * 0.06);
-      ctx.strokeRect(sx - px * 0.39, sy - px * 0.39, px * 0.78, px * 0.78);
-    } else if (item.axe?.special) {
+    if (item.axe?.special) {
       ctx.strokeStyle = '#d6b96d';
       ctx.lineWidth = Math.max(1, px * 0.04);
       ctx.strokeRect(sx - px * 0.35, sy - px * 0.35, px * 0.7, px * 0.7);

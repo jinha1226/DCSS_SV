@@ -34,7 +34,7 @@ export function hurtHero(
   const hero = w.hero;
   if (hero.invulnerable > 0) return false;
   const dodge = effectValue(w, 'dodging.chance') + weaponOption(w.weapon, 'evasion');
-  if (kind === 'melee' && w.weapon.family === 'long_blade' && w.rng() < effectValue(w, 'long_blade.parry')) {
+  if (kind === 'melee' && w.weapon.family === 'blade' && w.rng() < effectValue(w, 'blade.parry')) {
     w.events.push({ type: 'block', x: hero.x, y: hero.y });
     hero.swing = 0;
     return false;

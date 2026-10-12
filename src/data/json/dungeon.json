@@ -20,5 +20,11 @@
   ],
   "rewardSkipHealFraction": 0.3,
   "rewardSkipGoldBase": 10,
-  "rewardSkipGoldPerDifficulty": 5
+  "rewardSkipGoldPerDifficulty": 5,
+  "spellRequirementStep": 3,
+  "magicTierMaxLevel": [
+    3,
+    6,
+    9
+  ]
 }

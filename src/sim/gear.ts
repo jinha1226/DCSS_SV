@@ -1,13 +1,26 @@
 import { itemDefinition, type ItemDefinition } from '../data/itemCatalog';
 import type { World } from './types';
-export type GearSlot = 'armour' | 'shield' | 'helmet' | 'gloves' | 'boots' | 'cloak' | 'amulet' | 'ring1' | 'ring2';
-export const GEAR_SLOTS: readonly GearSlot[] = ['armour', 'shield', 'helmet', 'gloves', 'boots', 'cloak', 'amulet', 'ring1', 'ring2'];
+export type GearSlot = 'armour' | 'offhand' | 'helmet' | 'gloves' | 'boots' | 'cloak' | 'amulet' | 'ring1' | 'ring2';
+export const GEAR_SLOTS: readonly GearSlot[] = ['armour', 'offhand', 'helmet', 'gloves', 'boots', 'cloak', 'amulet', 'ring1', 'ring2'];
+export function hasShield(w: World): boolean {
+  return w.weapon.hands === 1 && Boolean(w.gear.offhand && itemDefinition(w.gear.offhand).kind === 'shield');
+}
+export function offhandSchool(w: World): string | undefined {
+  const item = w.gear.offhand ? itemDefinition(w.gear.offhand) : undefined;
+  return item?.kind === 'spellbook' ? item.school : undefined;
+}
+export function stowOffhand(w: World): void {
+  const current = w.gear.offhand;
+  if (!current) return;
+  delete w.gear.offhand;
+  w.inventory.push({ uid: 'gear-' + w.nextItem++, kind: 'gear', id: current });
+}
 export function gearName(w: World, id: string): string {
   const level = w.gearEnchantment[id] ?? 0;
   return itemDefinition(id).name + (level ? ' +' + level : '') + (w.cursedGear.has(id) ? ' (저주)' : '');
 }
 export function gearSlot(item: ItemDefinition, w: World): GearSlot | undefined {
-  if (item.kind === 'shield') return 'shield';
+  if (item.kind === 'shield' || item.kind === 'spellbook') return 'offhand';
   if (item.kind === 'armour') {
     for (const slot of ['helmet', 'gloves', 'boots', 'cloak'] as const) if (item.id.includes(slot)) return slot;
     return 'armour';
@@ -22,7 +35,7 @@ export function equipGear(w: World, uid: string): boolean {
   const entry = w.inventory[index];
   if (!entry || entry.kind !== 'gear') return false;
   const slot = gearSlot(itemDefinition(entry.id), w);
-  if (!slot || (slot === 'shield' && w.weapon.hands === 2)) return false;
+  if (!slot || (slot === 'offhand' && w.weapon.hands === 2)) return false;
   const previous = w.gear[slot];
   if (previous && w.cursedGear.has(previous)) return false;
   w.gear[slot] = entry.id;

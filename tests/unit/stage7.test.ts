@@ -3,7 +3,6 @@ import { heroFor, type HeroDefinition } from '../../src/data/hero';
 import { plainAxe } from '../../src/data/items';
 import { throwTarget } from '../../src/sim/combat';
 import { hurtHero } from '../../src/sim/effects';
-import { placeNewPath } from '../../src/sim/equipment';
 import { carve, makeGrid } from '../../src/sim/grid';
 import { spawnMonster } from '../../src/sim/monster';
 import { dealSkillChoices, openSkill, skillCap, skillLevel } from '../../src/sim/skills';
@@ -41,73 +40,25 @@ describe('stage 7 character data', () => {
   it('starts the berserker with axe, fighting and dodging one', () => {
     const w = makeWorld({ floor: openFloor(), monsters: false, items: false });
     expect(w.hero.skills).toMatchObject({ axe: 1, fighting: 1, dodging: 1 });
-    expect(w.openSkills).toEqual(new Set(['fighting', 'armour', 'dodging', 'spellcasting', 'shield', 'axe', 'throwing']));
+    expect(w.openSkills).toEqual(new Set(['axe', 'fighting', 'dodging']));
   });
 });
 
-describe('stage 7 skill cards', () => {
-  it('only deals opened skills and guarantees a newly opened skill once', () => {
+describe('legacy skill card compatibility', () => {
+  it('keeps the direct skill-card helper available independently of automatic training', () => {
     const w = makeWorld({ floor: openFloor(), monsters: false, items: false });
-    w.openSkills.clear();
-    openSkill(w, 'fighting', false);
-    openSkill(w, 'armour', false);
-    openSkill(w, 'dodging', false);
-    openSkill(w, 'throwing');
     w.pendingChoices = 1;
     dealSkillChoices(w);
-    expect(w.choosing!.map((card) => card.id)).toContain('throwing');
-    expect(w.choosing!.every((card) => w.openSkills.has(card.id))).toBe(true);
+    expect(w.choosing).toHaveLength(3);
+    expect(w.choosing!.every((card) => card.cap === 27)).toBe(true);
   });
 
-  it('legacy card helper supports +2 while every aptitude now caps at 27', () => {
-    const good = makeWorld({ floor: openFloor(), monsters: false, items: false });
-    good.openSkills.clear();
-    good.openSkills.add('axe');
-    let sawTwo = false;
-    for (let i = 0; i < 30; i++) {
-      good.choosing = null;
-      good.pendingChoices = 1;
-      dealSkillChoices(good);
-      const card = good.choosing![0]!;
-      if (card.gain === 2) sawTwo = true;
-      good.pendingChoices = 0;
-    }
-    expect(sawTwo).toBe(true);
-
-    const badDef = definition({ ...heroFor().aptitudes, armour: 'bad' });
-    const bad = makeWorld({ definition: badDef, floor: openFloor(), monsters: false, items: false });
-    bad.hero.skills.armour = 27;
-    expect(skillCap(bad, 'armour')).toBe(27);
-    bad.openSkills.clear();
-    bad.openSkills.add('armour');
-    bad.pendingChoices = 1;
-    bad.hero.hp = 1;
-    dealSkillChoices(bad);
-    expect(bad.choosing).toBeNull();
-    expect(bad.pendingChoices).toBe(0);
-    expect(bad.hero.hp).toBe(bad.hero.maxHp);
-  });
-
-  it('weights good aptitude above normal with the same deterministic run', () => {
-    const w = makeWorld({ seed: 12345, floor: openFloor(), monsters: false, items: false });
-    w.openSkills.clear();
-    for (const id of ['axe', 'fighting', 'dodging', 'throwing']) w.openSkills.add(id);
-    const counts = new Map<string, number>();
-    for (let i = 0; i < 1000; i++) {
-      w.choosing = null;
-      w.pendingChoices = 1;
-      dealSkillChoices(w);
-      for (const card of w.choosing!) counts.set(card.id, (counts.get(card.id) ?? 0) + 1);
-      w.pendingChoices = 0;
-    }
-    expect(counts.get('axe')!).toBeGreaterThan(counts.get('throwing')!);
-  });
-
-  it('keeps opened weapon skills after swapping away', () => {
+  it('keeps unlocked training progress after a weapon swap', () => {
     const w = makeWorld({ floor: openFloor(), monsters: false, items: false });
     openSkill(w, 'axe');
     w.weapon = plainAxe('battle_axe', 'other');
     expect(w.openSkills.has('axe')).toBe(true);
+    expect(skillCap(w, 'axe')).toBe(27);
   });
 });
 
@@ -138,7 +89,7 @@ describe('stage 7 sight and traits', () => {
 
     const block = makeWorld({ floor: openFloor(), monsters: false, items: false });
     block.hero.skills.shield = 8;
-    block.gear.shield = 'buckler';
+    block.gear.offhand = 'buckler';
     const blocker = spawnMonster(block, 'ogre', block.hero.x + 1, block.hero.y, true);
     Object.defineProperty(block, 'rng', { value: () => 0.15 });
     const blockHp = blocker.hp;
@@ -155,13 +106,9 @@ describe('stage 7 sight and traits', () => {
   });
 });
 
-describe('stage 7 new path placement', () => {
-  it('places one opener for a closed skill and none without an opener', () => {
-    const w = makeWorld({ floor: openFloor(), monsters: false, items: false });
-    placeNewPath(w, [{ skill: 'bow', id: 'test-bow' }]);
-    expect(w.groundItems.filter((item) => item.newPath)).toHaveLength(1);
-    const none = makeWorld({ floor: openFloor(), monsters: false, items: false });
-    placeNewPath(none, []);
-    expect(none.groundItems.filter((item) => item.newPath)).toHaveLength(0);
+describe('path unlock items removed', () => {
+  it('no longer places unlock items on a newly created floor', () => {
+    const w = makeWorld({ floor: openFloor(), monsters: false, items: true });
+    expect(w.groundItems.some((item) => item.kind === 'path')).toBe(false);
   });
 });

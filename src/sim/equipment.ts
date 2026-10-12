@@ -1,7 +1,6 @@
 import {
   ARTEFACTS,
   AXES,
-  BOWS,
   WEAPONS,
   BRANDS,
   EQUIPMENT,
@@ -16,6 +15,8 @@ import { Cell, cellAt, walkable } from './grid';
 import { addConsumable, type ConsumableId } from './consumables';
 import { ITEM_DEFINITIONS } from '../data/itemCatalog';
 import { openSkill } from './skills';
+import { stowOffhand } from './gear';
+import { plainWeapon } from '../data/items';
 import { lootTier } from './lootTier';
 import type { World } from './types';
 
@@ -27,7 +28,7 @@ const rollInt = (w: World, lo: number, hi: number): number => lo + Math.floor(w.
 const uid = (w: World, prefix: string): string => prefix + '-' + w.depth + '-' + w.nextItem++;
 
 function pool(family: WeaponFamily) {
-  return family === 'axe' ? AXES : family === 'bow' ? BOWS : WEAPONS.filter((weapon) => weapon.family === 'long_blade');
+  return family === 'axe' ? AXES : WEAPONS.filter((weapon) => weapon.family === family);
 }
 function weighted(w: World, family: WeaponFamily) {
   const choices = pool(family),
@@ -81,19 +82,23 @@ export function generateWeapon(w: World, family: WeaponFamily): WeaponItem {
     special: isRandart,
   };
 }
-/** Level-up rewards never roll artefact properties, brands, or special modifiers. */
-export function generateRewardWeapon(w: World, family: WeaponFamily): WeaponItem {
-  const base = weighted(w, family);
-  return {
-    uid: uid(w, family), baseId: base.id, family: base.family, name: base.name,
-    tile: base.tile, damage: base.damage, every: base.every, range: base.range,
-    knock: base.knock, hands: base.hands,
-    ...(base.projectileSpeed ? { projectileSpeed: base.projectileSpeed } : {}),
-    options: [], special: false,
-  };
+/** Seeded magic equipment follows the same tier weights as dungeon drops. */
+export function generateMagicWeapon(w: World, kind: 'staff' | 'rod', school: string): WeaponItem {
+  const tier = lootTier(w);
+  const choices = ITEM_DEFINITIONS.filter(
+    (item) => item.enabled && item.kind === kind && item.school === school && (item.depthWeights[tier] ?? 0) > 0,
+  );
+  const total = choices.reduce((sum, item) => sum + (item.depthWeights[tier] ?? 0), 0);
+  if (!total) throw new Error('No magic weapon available: ' + kind + ' ' + school);
+  let roll = w.rng() * total;
+  for (const item of choices) {
+    roll -= item.depthWeights[tier] ?? 0;
+    if (roll <= 0) return plainWeapon(item.id, uid(w, kind));
+  }
+  return plainWeapon(choices[choices.length - 1]!.id, uid(w, kind));
 }
 export const generateAxe = (w: World): WeaponItem => generateWeapon(w, 'axe');
-export const generateBow = (w: World): WeaponItem => generateWeapon(w, 'bow');
+export const generateBow = (w: World): WeaponItem => generateWeapon(w, 'ranged');
 
 function artefactFor(w: World, family: WeaponFamily): WeaponItem {
   const choices = ARTEFACTS.filter((art) => weaponBase(art.base).family === family);
@@ -118,7 +123,7 @@ function artefactFor(w: World, family: WeaponFamily): WeaponItem {
   };
 }
 export const artefactAxe = (w: World): WeaponItem => artefactFor(w, 'axe');
-export const artefactBow = (w: World): WeaponItem => artefactFor(w, 'bow');
+export const artefactBow = (w: World): WeaponItem => artefactFor(w, 'ranged');
 
 function roomCell(w: World, roomIndex?: number): { x: number; y: number } | undefined {
   const rooms = roomIndex === undefined ? (w.rooms.length > 1 ? w.rooms.slice(1) : w.rooms) : [w.rooms[roomIndex]!];
@@ -137,33 +142,24 @@ function roomCell(w: World, roomIndex?: number): { x: number; y: number } | unde
   }
   return undefined;
 }
-function putWeapon(w: World, weapon: WeaponItem, cell: { x: number; y: number } | undefined, newPath = false): void {
-  if (cell) w.groundItems.push({ uid: weapon.uid, kind: 'axe', x: cell.x, y: cell.y, axe: weapon, ignored: false, newPath });
+function putWeapon(w: World, weapon: WeaponItem, cell: { x: number; y: number } | undefined): void {
+  if (cell) w.groundItems.push({ uid: weapon.uid, kind: 'axe', x: cell.x, y: cell.y, axe: weapon, ignored: false });
 }
 function putAmmo(w: World, count: number, cell: { x: number; y: number } | undefined): void {
   if (cell) w.groundItems.push({ uid: uid(w, 'ammo'), kind: 'ammo', x: cell.x, y: cell.y, count, ignored: false });
-}
-function putBook(w: World, school: string, cell: { x: number; y: number } | undefined): void {
-  if (!cell) return;
-  w.groundItems.push({
-    uid: uid(w, 'book'),
-    kind: 'book',
-    x: cell.x,
-    y: cell.y,
-    school,
-    ignored: false,
-    newPath: true,
-  });
 }
 export function populateFloorItems(w: World): void {
   w.groundItems.length = 0;
   w.pendingPickup = null;
   const count = rollInt(w, EQUIPMENT.weaponsMin, EQUIPMENT.weaponsMax);
   const same = Math.ceil((count * 2) / 3),
-    other: WeaponFamily = w.weapon.family === 'axe' ? 'bow' : 'axe';
+    other: WeaponFamily = w.weapon.family === 'axe' ? 'ranged' : 'axe';
   for (let i = 0; i < count; i++) {
-    const family = i < same ? w.weapon.family : other;
-    putWeapon(w, generateWeapon(w, family), roomCell(w), i === same);
+    const magic = w.weapon.kind === 'staff' || w.weapon.kind === 'rod';
+    const weapon = magic && i < same
+      ? generateMagicWeapon(w, w.weapon.kind!, w.weapon.school!)
+      : generateWeapon(w, magic ? 'axe' : i < same ? w.weapon.family : other);
+    putWeapon(w, weapon, roomCell(w));
   }
   if (w.itemsEnabled) {
     const available = ITEM_DEFINITIONS.filter((item) => item.enabled && ['potion', 'scroll', 'wand'].includes(item.kind));
@@ -187,7 +183,7 @@ export function populateFloorItems(w: World): void {
   }
   if (w.itemsEnabled) {
     const tier = lootTier(w);
-    const gear = ITEM_DEFINITIONS.filter((item) => item.enabled && ['armour', 'shield', 'jewellery'].includes(item.kind));
+    const gear = ITEM_DEFINITIONS.filter((item) => item.enabled && ['armour', 'shield', 'jewellery', 'spellbook'].includes(item.kind));
     const total = gear.reduce((sum, item) => sum + (item.depthWeights[tier] ?? 0), 0);
     for (let i = 0; i < 2 && total > 0; i++) {
       const cell = roomCell(w);
@@ -204,11 +200,10 @@ export function populateFloorItems(w: World): void {
   }
   const piles = rollInt(w, EQUIPMENT.ammoPilesMin, EQUIPMENT.ammoPilesMax);
   for (let i = 0; i < piles; i++) putAmmo(w, rollInt(w, EQUIPMENT.ammoPileMin, EQUIPMENT.ammoPileMax), roomCell(w));
-  if (w.heroDef.attackMode === 'magic' && !w.openSkills.has('fire')) putBook(w, 'fire', roomCell(w));
   if (!w.artefactPlaced && (w.depth === 3 || (w.depth === 2 && w.rng() < 0.5))) {
     let biggest = 0;
     for (let i = 1; i < w.rooms.length; i++) if (w.rooms[i]!.w * w.rooms[i]!.h > w.rooms[biggest]!.w * w.rooms[biggest]!.h) biggest = i;
-    putWeapon(w, artefactFor(w, w.weapon.family), roomCell(w, biggest));
+    putWeapon(w, artefactFor(w, w.weapon.kind ? 'axe' : w.weapon.family), roomCell(w, biggest));
     w.artefactPlaced = true;
   }
 }
@@ -234,7 +229,8 @@ export function acceptPickup(w: World): void {
   w.hero.maxHp += delta;
   w.hero.hp = Math.min(w.hero.maxHp, Math.max(1, w.hero.hp + Math.max(0, delta)));
   w.weapon = item.axe;
-  openSkill(w, w.weapon.family);
+  if (w.weapon.hands === 2) stowOffhand(w);
+  openSkill(w, w.weapon.school ?? w.weapon.family);
   w.groundItems.splice(index, 1, { uid: old.uid, kind: 'axe', x: item.x, y: item.y, axe: old, ignored: true });
   w.pickupStats.swapped++;
   w.pendingPickup = null;
@@ -261,7 +257,8 @@ export function equipStoredWeapon(w: World, uid: string): boolean {
   w.hero.hp = Math.min(w.hero.maxHp, Math.max(1, w.hero.hp + Math.max(0, delta)));
   w.weapon = entry.weapon;
   w.inventory[index] = { uid: old.uid, kind: 'weapon', weapon: old };
-  openSkill(w, w.weapon.family);
+  if (w.weapon.hands === 2) stowOffhand(w);
+  openSkill(w, w.weapon.school ?? w.weapon.family);
   return true;
 }
 
@@ -310,12 +307,6 @@ export function collectGround(w: World): void {
     if (item.kind === 'gold') {
       w.gold += item.count ?? 0;
       w.groundItems.splice(i, 1);
-    } else if (item.kind === 'path') {
-      if (item.skill) openSkill(w, item.skill);
-      w.groundItems.splice(i, 1);
-    } else if (item.kind === 'book') {
-      if (item.school) openSkill(w, item.school);
-      w.groundItems.splice(i, 1);
     } else if (item.kind === 'gear') {
       if (item.itemId) w.inventory.push({ uid: item.uid, kind: 'gear', id: item.itemId });
       w.groundItems.splice(i, 1);
@@ -336,31 +327,5 @@ export function collectGround(w: World): void {
       w.pendingPickup = item;
       w.pickupStats.offered++;
     }
-  }
-}
-export interface NewPathOpener {
-  readonly skill: string;
-  readonly id: string;
-}
-export function placeNewPath(w: World, openers: readonly NewPathOpener[] = []): void {
-  const available = openers.filter((opener) => !w.openSkills.has(opener.skill));
-  if (!available.length) return;
-  const opener = available[Math.floor(w.rng() * available.length)]!,
-    room = w.rooms.length > 1 ? w.rooms[1 + Math.floor(w.rng() * (w.rooms.length - 1))]! : w.rooms[0];
-  if (!room) return;
-  for (let attempt = 0; attempt < 40; attempt++) {
-    const x = room.x + 1 + Math.floor(w.rng() * Math.max(1, room.w - 2)),
-      y = room.y + 1 + Math.floor(w.rng() * Math.max(1, room.h - 2));
-    if (cellAt(w.grid, x, y) !== Cell.Floor || w.groundItems.some((item) => Math.floor(item.x) === x && Math.floor(item.y) === y)) continue;
-    w.groundItems.push({
-      uid: 'path-' + opener.id + '-' + w.depth,
-      kind: 'path',
-      x: x + 0.5,
-      y: y + 0.5,
-      skill: opener.skill,
-      ignored: false,
-      newPath: true,
-    });
-    return;
   }
 }

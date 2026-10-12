@@ -10,7 +10,11 @@
     "range": 1.2,
     "knock": 1.2,
     "hands": 1,
-    "depthWeights": [8, 5, 2]
+    "depthWeights": [
+      8,
+      5,
+      2
+    ]
   },
   {
     "id": "war_axe",
@@ -23,7 +27,11 @@
     "range": 1.2,
     "knock": 1.2,
     "hands": 1,
-    "depthWeights": [2, 6, 5]
+    "depthWeights": [
+      2,
+      6,
+      5
+    ]
   },
   {
     "id": "battle_axe",
@@ -36,12 +44,16 @@
     "range": 1.2,
     "knock": 1.2,
     "hands": 2,
-    "depthWeights": [1, 2, 7]
+    "depthWeights": [
+      1,
+      2,
+      7
+    ]
   },
   {
     "id": "long_sword",
     "kind": "weapon",
-    "family": "long_blade",
+    "family": "blade",
     "name": "장검",
     "tile": "item/long_sword1",
     "damage": 7,
@@ -49,12 +61,16 @@
     "range": 1.3,
     "knock": 0.5,
     "hands": 1,
-    "depthWeights": [8, 5, 3]
+    "depthWeights": [
+      8,
+      5,
+      3
+    ]
   },
   {
     "id": "great_sword",
     "kind": "weapon",
-    "family": "long_blade",
+    "family": "blade",
     "name": "대검",
     "tile": "item/greatsword1",
     "damage": 11,
@@ -62,12 +78,16 @@
     "range": 1.5,
     "knock": 0.8,
     "hands": 2,
-    "depthWeights": [1, 3, 7]
+    "depthWeights": [
+      1,
+      3,
+      7
+    ]
   },
   {
     "id": "shortbow",
     "kind": "weapon",
-    "family": "bow",
+    "family": "ranged",
     "name": "짧은 활",
     "tile": "item/shortbow1",
     "damage": 5,
@@ -76,12 +96,16 @@
     "projectileSpeed": 20,
     "knock": 0,
     "hands": 2,
-    "depthWeights": [8, 4, 2]
+    "depthWeights": [
+      8,
+      4,
+      2
+    ]
   },
   {
     "id": "orcbow",
     "kind": "weapon",
-    "family": "bow",
+    "family": "ranged",
     "name": "오크 활",
     "tile": "item/orcbow1",
     "damage": 7,
@@ -90,12 +114,16 @@
     "projectileSpeed": 20,
     "knock": 0,
     "hands": 2,
-    "depthWeights": [2, 7, 4]
+    "depthWeights": [
+      2,
+      7,
+      4
+    ]
   },
   {
     "id": "longbow",
     "kind": "weapon",
-    "family": "bow",
+    "family": "ranged",
     "name": "긴 활",
     "tile": "item/longbow1",
     "damage": 9,
@@ -104,7 +132,559 @@
     "projectileSpeed": 20,
     "knock": 0,
     "hands": 2,
-    "depthWeights": [1, 2, 8]
+    "depthWeights": [
+      1,
+      2,
+      8
+    ]
+  },
+  {
+    "id": "staff_fire_0",
+    "kind": "staff",
+    "name": "입문 화염 지팡이",
+    "tile": "item/stone",
+    "school": "fire",
+    "tier": 0,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [
+      8,
+      2,
+      0
+    ],
+    "effects": []
+  },
+  {
+    "id": "rod_fire_0",
+    "kind": "rod",
+    "name": "입문 화염 마법봉",
+    "tile": "item/stone",
+    "school": "fire",
+    "tier": 0,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [
+      8,
+      2,
+      0
+    ],
+    "effects": []
+  },
+  {
+    "id": "spellbook_fire_0",
+    "kind": "spellbook",
+    "name": "입문 화염 마법서",
+    "tile": "item/stone",
+    "school": "fire",
+    "tier": 0,
+    "depthWeights": [
+      8,
+      2,
+      0
+    ],
+    "effects": []
+  },
+  {
+    "id": "staff_fire_1",
+    "kind": "staff",
+    "name": "숙련 화염 지팡이",
+    "tile": "item/stone",
+    "school": "fire",
+    "tier": 1,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [
+      2,
+      6,
+      2
+    ],
+    "effects": []
+  },
+  {
+    "id": "rod_fire_1",
+    "kind": "rod",
+    "name": "숙련 화염 마법봉",
+    "tile": "item/stone",
+    "school": "fire",
+    "tier": 1,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [
+      2,
+      6,
+      2
+    ],
+    "effects": []
+  },
+  {
+    "id": "spellbook_fire_1",
+    "kind": "spellbook",
+    "name": "숙련 화염 마법서",
+    "tile": "item/stone",
+    "school": "fire",
+    "tier": 1,
+    "depthWeights": [
+      2,
+      6,
+      2
+    ],
+    "effects": []
+  },
+  {
+    "id": "staff_fire_2",
+    "kind": "staff",
+    "name": "대가 화염 지팡이",
+    "tile": "item/stone",
+    "school": "fire",
+    "tier": 2,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [
+      0,
+      2,
+      8
+    ],
+    "effects": []
+  },
+  {
+    "id": "rod_fire_2",
+    "kind": "rod",
+    "name": "대가 화염 마법봉",
+    "tile": "item/stone",
+    "school": "fire",
+    "tier": 2,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [
+      0,
+      2,
+      8
+    ],
+    "effects": []
+  },
+  {
+    "id": "spellbook_fire_2",
+    "kind": "spellbook",
+    "name": "대가 화염 마법서",
+    "tile": "item/stone",
+    "school": "fire",
+    "tier": 2,
+    "depthWeights": [
+      0,
+      2,
+      8
+    ],
+    "effects": []
+  },
+  {
+    "id": "staff_ice_1",
+    "kind": "staff",
+    "name": "숙련 빙결 지팡이",
+    "tile": "item/stone",
+    "school": "ice",
+    "tier": 1,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [
+      2,
+      6,
+      2
+    ],
+    "effects": []
+  },
+  {
+    "id": "rod_ice_1",
+    "kind": "rod",
+    "name": "숙련 빙결 마법봉",
+    "tile": "item/stone",
+    "school": "ice",
+    "tier": 1,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [
+      2,
+      6,
+      2
+    ],
+    "effects": []
+  },
+  {
+    "id": "spellbook_ice_1",
+    "kind": "spellbook",
+    "name": "숙련 빙결 마법서",
+    "tile": "item/stone",
+    "school": "ice",
+    "tier": 1,
+    "depthWeights": [
+      2,
+      6,
+      2
+    ],
+    "effects": []
+  },
+  {
+    "id": "staff_ice_2",
+    "kind": "staff",
+    "name": "대가 빙결 지팡이",
+    "tile": "item/stone",
+    "school": "ice",
+    "tier": 2,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [
+      0,
+      2,
+      8
+    ],
+    "effects": []
+  },
+  {
+    "id": "rod_ice_2",
+    "kind": "rod",
+    "name": "대가 빙결 마법봉",
+    "tile": "item/stone",
+    "school": "ice",
+    "tier": 2,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [
+      0,
+      2,
+      8
+    ],
+    "effects": []
+  },
+  {
+    "id": "spellbook_ice_2",
+    "kind": "spellbook",
+    "name": "대가 빙결 마법서",
+    "tile": "item/stone",
+    "school": "ice",
+    "tier": 2,
+    "depthWeights": [
+      0,
+      2,
+      8
+    ],
+    "effects": []
+  },
+  {
+    "id": "staff_air_0",
+    "kind": "staff",
+    "name": "입문 대기 지팡이",
+    "tile": "item/stone",
+    "school": "air",
+    "tier": 0,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [
+      8,
+      2,
+      0
+    ],
+    "effects": []
+  },
+  {
+    "id": "rod_air_0",
+    "kind": "rod",
+    "name": "입문 대기 마법봉",
+    "tile": "item/stone",
+    "school": "air",
+    "tier": 0,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [
+      8,
+      2,
+      0
+    ],
+    "effects": []
+  },
+  {
+    "id": "spellbook_air_0",
+    "kind": "spellbook",
+    "name": "입문 대기 마법서",
+    "tile": "item/stone",
+    "school": "air",
+    "tier": 0,
+    "depthWeights": [
+      8,
+      2,
+      0
+    ],
+    "effects": []
+  },
+  {
+    "id": "staff_air_1",
+    "kind": "staff",
+    "name": "숙련 대기 지팡이",
+    "tile": "item/stone",
+    "school": "air",
+    "tier": 1,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [
+      2,
+      6,
+      2
+    ],
+    "effects": []
+  },
+  {
+    "id": "rod_air_1",
+    "kind": "rod",
+    "name": "숙련 대기 마법봉",
+    "tile": "item/stone",
+    "school": "air",
+    "tier": 1,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [
+      2,
+      6,
+      2
+    ],
+    "effects": []
+  },
+  {
+    "id": "spellbook_air_1",
+    "kind": "spellbook",
+    "name": "숙련 대기 마법서",
+    "tile": "item/stone",
+    "school": "air",
+    "tier": 1,
+    "depthWeights": [
+      2,
+      6,
+      2
+    ],
+    "effects": []
+  },
+  {
+    "id": "staff_air_2",
+    "kind": "staff",
+    "name": "대가 대기 지팡이",
+    "tile": "item/stone",
+    "school": "air",
+    "tier": 2,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [
+      0,
+      2,
+      8
+    ],
+    "effects": []
+  },
+  {
+    "id": "rod_air_2",
+    "kind": "rod",
+    "name": "대가 대기 마법봉",
+    "tile": "item/stone",
+    "school": "air",
+    "tier": 2,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [
+      0,
+      2,
+      8
+    ],
+    "effects": []
+  },
+  {
+    "id": "spellbook_air_2",
+    "kind": "spellbook",
+    "name": "대가 대기 마법서",
+    "tile": "item/stone",
+    "school": "air",
+    "tier": 2,
+    "depthWeights": [
+      0,
+      2,
+      8
+    ],
+    "effects": []
+  },
+  {
+    "id": "staff_earth_1",
+    "kind": "staff",
+    "name": "숙련 대지 지팡이",
+    "tile": "item/stone",
+    "school": "earth",
+    "tier": 1,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [
+      2,
+      6,
+      2
+    ],
+    "effects": []
+  },
+  {
+    "id": "rod_earth_1",
+    "kind": "rod",
+    "name": "숙련 대지 마법봉",
+    "tile": "item/stone",
+    "school": "earth",
+    "tier": 1,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [
+      2,
+      6,
+      2
+    ],
+    "effects": []
+  },
+  {
+    "id": "spellbook_earth_1",
+    "kind": "spellbook",
+    "name": "숙련 대지 마법서",
+    "tile": "item/stone",
+    "school": "earth",
+    "tier": 1,
+    "depthWeights": [
+      2,
+      6,
+      2
+    ],
+    "effects": []
+  },
+  {
+    "id": "staff_earth_2",
+    "kind": "staff",
+    "name": "대가 대지 지팡이",
+    "tile": "item/stone",
+    "school": "earth",
+    "tier": 2,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [
+      0,
+      2,
+      8
+    ],
+    "effects": []
+  },
+  {
+    "id": "rod_earth_2",
+    "kind": "rod",
+    "name": "대가 대지 마법봉",
+    "tile": "item/stone",
+    "school": "earth",
+    "tier": 2,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [
+      0,
+      2,
+      8
+    ],
+    "effects": []
+  },
+  {
+    "id": "spellbook_earth_2",
+    "kind": "spellbook",
+    "name": "대가 대지 마법서",
+    "tile": "item/stone",
+    "school": "earth",
+    "tier": 2,
+    "depthWeights": [
+      0,
+      2,
+      8
+    ],
+    "effects": []
+  },
+  {
+    "id": "spellbook_hexes_0",
+    "kind": "spellbook",
+    "name": "입문 주술 마법서",
+    "tile": "item/stone",
+    "school": "hexes",
+    "tier": 0,
+    "depthWeights": [
+      8,
+      2,
+      0
+    ],
+    "effects": []
+  },
+  {
+    "id": "spellbook_hexes_1",
+    "kind": "spellbook",
+    "name": "숙련 주술 마법서",
+    "tile": "item/stone",
+    "school": "hexes",
+    "tier": 1,
+    "depthWeights": [
+      2,
+      6,
+      2
+    ],
+    "effects": []
+  },
+  {
+    "id": "spellbook_hexes_2",
+    "kind": "spellbook",
+    "name": "대가 주술 마법서",
+    "tile": "item/stone",
+    "school": "hexes",
+    "tier": 2,
+    "depthWeights": [
+      0,
+      2,
+      8
+    ],
+    "effects": []
+  },
+  {
+    "id": "staff_necromancy_2",
+    "kind": "staff",
+    "name": "대가 강령 지팡이",
+    "tile": "item/stone",
+    "school": "necromancy",
+    "tier": 2,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [
+      0,
+      2,
+      8
+    ],
+    "effects": []
+  },
+  {
+    "id": "rod_necromancy_2",
+    "kind": "rod",
+    "name": "대가 강령 마법봉",
+    "tile": "item/stone",
+    "school": "necromancy",
+    "tier": 2,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [
+      0,
+      2,
+      8
+    ],
+    "effects": []
+  },
+  {
+    "id": "spellbook_necromancy_2",
+    "kind": "spellbook",
+    "name": "대가 강령 마법서",
+    "tile": "item/stone",
+    "school": "necromancy",
+    "tier": 2,
+    "depthWeights": [
+      0,
+      2,
+      8
+    ],
+    "effects": []
   },
   {
     "id": "boomerang",
@@ -250,7 +830,11 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [5, 5, 5],
+    "depthWeights": [
+      5,
+      5,
+      5
+    ],
     "effects": [
       {
         "id": "heal",
@@ -267,7 +851,11 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [2, 2, 2],
+    "depthWeights": [
+      2,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "blink",
@@ -283,7 +871,11 @@
     "enabled": true,
     "useMode": "store",
     "stackable": false,
-    "depthWeights": [2, 2, 2],
+    "depthWeights": [
+      2,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "lightning",
@@ -300,7 +892,11 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [2, 3, 4],
+    "depthWeights": [
+      2,
+      3,
+      4
+    ],
     "effects": [
       {
         "id": "restore_mana",
@@ -317,7 +913,11 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [2, 2, 2],
+    "depthWeights": [
+      2,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "might",
@@ -334,7 +934,11 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [1, 2, 2],
+    "depthWeights": [
+      1,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "haste",
@@ -351,7 +955,11 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [3, 3, 3],
+    "depthWeights": [
+      3,
+      3,
+      3
+    ],
     "effects": [
       {
         "id": "cure",
@@ -368,7 +976,11 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [1, 1, 1],
+    "depthWeights": [
+      1,
+      1,
+      1
+    ],
     "effects": [
       {
         "id": "poison",
@@ -385,7 +997,11 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [1, 2, 2],
+    "depthWeights": [
+      1,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "enchant_weapon",
@@ -402,7 +1018,11 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [3, 3, 3],
+    "depthWeights": [
+      3,
+      3,
+      3
+    ],
     "effects": [
       {
         "id": "identify",
@@ -419,7 +1039,11 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [2, 2, 2],
+    "depthWeights": [
+      2,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "teleport",
@@ -436,7 +1060,11 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [1, 2, 2],
+    "depthWeights": [
+      1,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "fear",
@@ -451,7 +1079,11 @@
     "enabled": true,
     "useMode": "equip",
     "stackable": false,
-    "depthWeights": [2, 2, 2],
+    "depthWeights": [
+      2,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "armour",
@@ -467,7 +1099,11 @@
     "enabled": true,
     "useMode": "equip",
     "stackable": false,
-    "depthWeights": [2, 2, 2],
+    "depthWeights": [
+      2,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "armour",
@@ -483,7 +1119,11 @@
     "enabled": true,
     "useMode": "equip",
     "stackable": false,
-    "depthWeights": [2, 2, 2],
+    "depthWeights": [
+      2,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "shield",
@@ -501,7 +1141,11 @@
     "useMode": "equip",
     "stackable": false,
     "maxStack": 1,
-    "depthWeights": [0, 2, 3],
+    "depthWeights": [
+      0,
+      2,
+      3
+    ],
     "effects": [
       {
         "id": "armour",
@@ -518,7 +1162,11 @@
     "useMode": "equip",
     "stackable": false,
     "maxStack": 1,
-    "depthWeights": [2, 2, 2],
+    "depthWeights": [
+      2,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "armour",
@@ -535,7 +1183,11 @@
     "useMode": "equip",
     "stackable": false,
     "maxStack": 1,
-    "depthWeights": [2, 2, 2],
+    "depthWeights": [
+      2,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "armour",
@@ -552,7 +1204,11 @@
     "useMode": "equip",
     "stackable": false,
     "maxStack": 1,
-    "depthWeights": [2, 2, 2],
+    "depthWeights": [
+      2,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "armour",
@@ -569,7 +1225,11 @@
     "useMode": "equip",
     "stackable": false,
     "maxStack": 1,
-    "depthWeights": [2, 2, 2],
+    "depthWeights": [
+      2,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "armour",
@@ -586,7 +1246,11 @@
     "useMode": "equip",
     "stackable": false,
     "maxStack": 1,
-    "depthWeights": [0, 2, 3],
+    "depthWeights": [
+      0,
+      2,
+      3
+    ],
     "effects": [
       {
         "id": "shield",
@@ -603,7 +1267,11 @@
     "useMode": "equip",
     "stackable": false,
     "maxStack": 1,
-    "depthWeights": [1, 2, 2],
+    "depthWeights": [
+      1,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "fire_resist",
@@ -620,7 +1288,11 @@
     "useMode": "equip",
     "stackable": false,
     "maxStack": 1,
-    "depthWeights": [1, 2, 2],
+    "depthWeights": [
+      1,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "cold_resist",
@@ -637,7 +1309,11 @@
     "useMode": "equip",
     "stackable": false,
     "maxStack": 1,
-    "depthWeights": [1, 2, 2],
+    "depthWeights": [
+      1,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "armour",
@@ -654,7 +1330,11 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [1, 2, 2],
+    "depthWeights": [
+      1,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "enchant_armour",
@@ -671,7 +1351,11 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [2, 2, 2],
+    "depthWeights": [
+      2,
+      2,
+      2
+    ],
     "effects": [
       {
         "id": "remove_curse",
@@ -688,7 +1372,11 @@
     "useMode": "store",
     "stackable": true,
     "maxStack": 9,
-    "depthWeights": [1, 1, 2],
+    "depthWeights": [
+      1,
+      1,
+      2
+    ],
     "effects": [
       {
         "id": "confusion",
@@ -699,8 +1387,22 @@
   {
     "id": "names",
     "kind": "names",
-    "prefixes": ["카르", "둠", "벨", "라크", "모르", "세른"],
-    "suffixes": ["둠", "라", "바르", "카", "린", "고르"]
+    "prefixes": [
+      "카르",
+      "둠",
+      "벨",
+      "라크",
+      "모르",
+      "세른"
+    ],
+    "suffixes": [
+      "둠",
+      "라",
+      "바르",
+      "카",
+      "린",
+      "고르"
+    ]
   },
   {
     "id": "equipment",

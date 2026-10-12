@@ -2,16 +2,19 @@ import skillsRaw from './json/skills.json';
 
 export const SKILL_EFFECTS = new Set([
   'axe.damage',
+  'mace.damage',
+  'polearm.damage',
+  'unarmed.damage',
   'axe.wide',
   'axe.spin',
   'axe.stun',
   'axe.reset',
-  'bow.damage',
-  'bow.haste',
-  'bow.range',
-  'bow.pierce',
-  'bow.stun',
-  'bow.double',
+  'ranged.damage',
+  'ranged.haste',
+  'ranged.range',
+  'ranged.pierce',
+  'ranged.stun',
+  'ranged.double',
   'fighting.hp',
   'fighting.regen',
   'fighting.healKill',
@@ -39,11 +42,11 @@ export const SKILL_EFFECTS = new Set([
   'throwing.slow',
   'throwing.slowTime',
   'throwing.return',
-  'long_blade.damage',
-  'long_blade.haste',
-  'long_blade.parry',
-  'long_blade.reach',
-  'long_blade.reset',
+  'blade.damage',
+  'blade.haste',
+  'blade.parry',
+  'blade.reach',
+  'blade.reset',
 ]);
 
 export interface SkillEffect {
@@ -60,6 +63,11 @@ export interface SkillData {
   readonly aptitude: string;
   readonly effects: readonly SkillEffect[];
 }
+export const BASIC_SKILLS = ['fighting', 'armour', 'dodging', 'shield', 'stealth', 'spellcasting', 'throwing'] as const;
+export const WEAPON_SKILLS = ['blade', 'axe', 'mace', 'polearm', 'unarmed', 'ranged'] as const;
+export const SCHOOL_SKILLS = ['fire', 'ice', 'air', 'earth', 'summoning', 'hexes', 'necromancy'] as const;
+export const SCHOOL_IDS = new Set<string>(SCHOOL_SKILLS);
+
 export const SKILLS: readonly SkillData[] = skillsRaw.map((row) => {
   const effects: SkillEffect[] = row.effects.map((effect) => {
     const name: string = effect.effect;
