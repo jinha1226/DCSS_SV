@@ -1,5 +1,5 @@
 /** Seeded dungeon topology. IDs are stable storage keys, never difficulty ratings. */
-export type Branch = 'Dungeon' | 'Lair' | 'Orc' | 'Snake' | 'Spider' | 'Swamp' | 'Shoals' | 'Vaults' | 'Zot';
+export type Branch = 'Dungeon' | 'Lair' | 'Orc' | 'Temple' | 'Snake' | 'Spider' | 'Swamp' | 'Shoals' | 'Vaults' | 'Zot';
 export interface DungeonNode {
   readonly id: number;
   readonly branch: Branch;
@@ -16,6 +16,7 @@ export function makeDungeonGraph(seed: number): DungeonGraph {
   const nodes = new Map<number, DungeonNode>();
   for (let floor = 1; floor <= 9; floor++)
     nodes.set(floor, { id: floor, branch: 'Dungeon', floor, difficulty: floor, ...(floor > 1 ? { parent: floor - 1 } : {}) });
+  nodes.set(901, { id: 901, branch: 'Temple', floor: 1, difficulty: 3, parent: 3 });
   const first: Branch = (seed & 1) === 0 ? 'Snake' : 'Spider';
   const second: Branch = (seed & 2) === 0 ? 'Swamp' : 'Shoals';
   const branches: readonly [Branch, number, number, number, number][] = [
