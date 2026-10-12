@@ -63,6 +63,9 @@ export function bagEntries(w: World): BagEntry[] {
       });
     }
   }
+  for (const branch of [...w.runes].sort())
+    items.push({ id: 'rune-' + branch, name: branch + '의 룬', group: 'other', count: 1, equipped: false });
+  if (w.orbCollected) items.push({ id: 'orb-zot', name: '조트의 보주', group: 'other', count: 1, equipped: false });
   if (w.openSkills.has('throwing')) {
     items.push({ id: 'ammo', name: '부메랑', group: 'other', count: w.ammo, equipped: false });
   }
@@ -142,6 +145,8 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
       [...w.cursedGear].join(','),
       [...w.identifiedItems].join(','),
       w.ammo,
+      [...w.runes].sort().join(','),
+      w.orbCollected,
       w.hero.hp,
       w.hero.maxHp,
       w.inventory.map((item) => item.uid + ':' + (item.kind === 'consumable' ? item.count : 1)).join(','),

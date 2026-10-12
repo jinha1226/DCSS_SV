@@ -6,6 +6,7 @@ import type { TileName } from '../data/tiles';
 import { Cell, cellAt } from '../sim/grid';
 import { cellNoise } from '../sim/rng';
 import { spellCandidates } from '../sim/spells';
+import { objectiveFor } from '../sim/objectives';
 import type { Monster, World } from '../sim/world';
 import { drawTile, type Atlas } from './atlas';
 import type { Fx } from './fx';
@@ -216,6 +217,19 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
       ctx.arc(sx, sy + px * 0.31, Math.max(2, px * 0.07), 0, Math.PI * 2);
       ctx.fill();
     }
+  }
+
+  const objective = objectiveFor(w);
+  if (objective && w.visible[Math.floor(objective.y) * w.grid.w + Math.floor(objective.x)]) {
+    const x = ox + objective.x * px;
+    const y = oy + objective.y * px;
+    ctx.fillStyle = objective.kind === 'orb' ? '#d8a9ff' : '#e9c96e';
+    ctx.beginPath();
+    ctx.arc(x, y, px * 0.26, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#fff4d8';
+    ctx.lineWidth = Math.max(1, px * 0.055);
+    ctx.stroke();
   }
 
   // Monsters out of sight are not drawn, even on remembered ground.

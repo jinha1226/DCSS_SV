@@ -199,7 +199,9 @@ export type SimEvent =
   | { readonly type: 'block'; readonly x: number; readonly y: number }
   | { readonly type: 'throw'; readonly x: number; readonly y: number }
   | { readonly type: 'wake'; readonly x: number; readonly y: number; readonly name?: string }
-  | { readonly type: 'floor'; readonly depth: number };
+  | { readonly type: 'floor'; readonly depth: number }
+  | { readonly type: 'rune'; readonly branch: Branch }
+  | { readonly type: 'orb' };
 export interface Stairs {
   readonly x: number;
   readonly y: number;
@@ -232,6 +234,7 @@ export interface World {
   readonly dungeonGraph: DungeonGraph;
   /** Distinct runes collected; populated by stage 5. */
   readonly runes: Set<Branch>;
+  orbCollected: boolean;
   /** Each visited floor retains its own advancing seeded random stream. */
   readonly floorRng: Map<number, Rng>;
   /** Child node -> paired arrival and return stair coordinates. */
