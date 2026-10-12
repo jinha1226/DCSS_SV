@@ -10,11 +10,11 @@ import type { Floor } from './floor';
 import { makeFlow, updateFlow } from './flow';
 import { computeFov } from './fov';
 import { makeFloor } from './gen';
-import { Cell, cellAt } from './grid';
+import { Cell, cellAt, setCell } from './grid';
 import { tickHop, tryHop } from './hop';
 import { thinkMonster } from './monster';
 import { fillFloor, lingering } from './packs';
-import { makeRng, type Rng } from './rng';
+import { cellNoise, makeRng, type Rng } from './rng';
 import { initializeItemKnowledge } from './identification';
 import { heroSpeed, openStartingSkills } from './skills';
 import { castAt, stepSpells } from './spells';
@@ -51,6 +51,20 @@ function look(w: World): void {
   updateFlow(w.flow, w.grid, x, y);
 }
 function enter(w: World, floor: Floor, monsters: boolean): void {
+  const branch = w.dungeonGraph.nodes.get(w.depth)?.branch;
+  if (branch === 'Swamp' || branch === 'Shoals') {
+    // Shallow water is passable; keep corridors, stairs and entry tiles dry.
+    for (const room of floor.rooms) {
+      for (let y = room.y + 1; y < room.y + room.h - 1; y++) {
+        for (let x = room.x + 1; x < room.x + room.w - 1; x++) {
+          const threshold = branch === 'Shoals' ? 0.38 : 0.27;
+          if (cellAt(floor.grid, x, y) === Cell.Floor && cellNoise(x + w.depth, y + w.seed) < threshold) {
+            setCell(floor.grid, x, y, Cell.Water);
+          }
+        }
+      }
+    }
+  }
   const size = floor.grid.w * floor.grid.h;
   w.grid = floor.grid;
   w.rooms = floor.rooms;
@@ -106,6 +120,7 @@ export function makeWorld(options: WorldOptions = {}): World {
       butt: 0,
       hurt: 0,
       poison: 0,
+      constricted: 0,
       throwing: 0,
       spellCooldown: 0,
       level: 1,
@@ -302,8 +317,11 @@ function walkHero(w: World, input: Input, dt: number): void {
     my /= length;
   }
   h.moving = length > 0;
+  if (h.constricted > 0) h.constricted = Math.max(0, h.constricted - dt * (h.moving ? 2 : 1));
   if (!h.moving) return;
-  const speed = heroSpeed(w),
+  const terrain = cellAt(w.grid, Math.floor(h.x), Math.floor(h.y));
+  const slow = (terrain === Cell.Water ? 0.7 : 1) * (h.constricted > 0 ? 0.45 : 1);
+  const speed = heroSpeed(w) * slow,
     to = moveCircle(w.grid, h, w.heroDef.radius, mx * speed * dt, my * speed * dt);
   h.x = to.x;
   h.y = to.y;
@@ -335,8 +353,10 @@ function walkMonsters(w: World, dt: number): void {
         want.vy -= (into * sy) / squeeze;
       }
     }
-    const dx = (want.vx + m.kx) * dt + sx,
-      dy = (want.vy + m.ky) * dt + sy;
+    const terrain = cellAt(w.grid, Math.floor(m.x), Math.floor(m.y));
+    const terrainScale = terrain === Cell.Water && !m.stats.waterNative ? 0.7 : 1;
+    const dx = (want.vx * terrainScale + m.kx) * dt + sx,
+      dy = (want.vy * terrainScale + m.ky) * dt + sy;
     m.kx *= fade;
     m.ky *= fade;
     if (dx === 0 && dy === 0) return;
