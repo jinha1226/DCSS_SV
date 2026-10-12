@@ -53,6 +53,7 @@ export function statusValues(w: World): { vitals: StatusValue[]; resists: Status
       { label: '방패확률', value: Math.round(shield * 100) + '%' },
       { label: '처치', value: String(w.kills) },
       { label: '룬', value: w.runes.size + '/2' },
+      { label: '금화', value: String(w.gold) },
       { label: '조트의 보주', value: w.orbCollected ? '획득' : '미획득' },
     ],
     resists,
@@ -141,6 +142,7 @@ export function makeStatusSheet(root: HTMLElement): StatusSheet {
         w.heroDef.species,
         [...w.runes].sort().join(','),
         w.orbCollected,
+        w.gold,
       ].join('|');
       if (key === lastKey) return;
       lastKey = key;
