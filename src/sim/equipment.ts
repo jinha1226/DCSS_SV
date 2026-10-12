@@ -169,7 +169,8 @@ export function populateFloorItems(w: World): void {
   for (let i = 0; i < count; i++) {
     const magic = w.weapon.kind === 'staff' || w.weapon.kind === 'rod';
     const surprise = i === count - 1 && w.rng() < DUNGEON.magicDropChance ? generateRandomMagicWeapon(w) : undefined;
-    const weapon = surprise ??
+    const weapon =
+      surprise ??
       (magic && i < same
         ? generateMagicWeapon(w, w.weapon.kind!, w.weapon.school!)
         : generateWeapon(w, magic ? 'axe' : i < same ? w.weapon.family : other));

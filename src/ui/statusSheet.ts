@@ -131,7 +131,10 @@ export function makeStatusSheet(root: HTMLElement): StatusSheet {
     const groups: readonly { name: string; ids: readonly string[] }[] = [
       { name: '기본', ids: BASIC_SKILLS },
       { name: '무기', ids: WEAPON_SKILLS },
-      { name: '학파', ids: SKILLS.filter((skill) => ![...BASIC_SKILLS, ...WEAPON_SKILLS].some((id) => id === skill.id)).map((skill) => skill.id) },
+      {
+        name: '학파',
+        ids: SKILLS.filter((skill) => ![...BASIC_SKILLS, ...WEAPON_SKILLS].some((id) => id === skill.id)).map((skill) => skill.id),
+      },
     ];
     for (const group of groups) {
       const trained = SKILLS.filter(
@@ -141,10 +144,13 @@ export function makeStatusSheet(root: HTMLElement): StatusSheet {
       const title = document.createElement('h3');
       title.textContent = group.name;
       const rows = document.createElement('div');
-      renderRows(rows, trained.map((skill) => ({
-        label: skill.name,
-        value: (w.hero.skills[skill.id] ?? 0) + '단계',
-      })));
+      renderRows(
+        rows,
+        trained.map((skill) => ({
+          label: skill.name,
+          value: (w.hero.skills[skill.id] ?? 0) + '단계',
+        })),
+      );
       skills.append(title, rows);
     }
   };
