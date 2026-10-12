@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buyOffer, populateBranchLoot, shopAccessible, shopLocation } from '../../src/sim/branchLoot';
 import { collectGround } from '../../src/sim/equipment';
+import { Cell, cellAt } from '../../src/sim/grid';
 import { makeWorld, stepWorld } from '../../src/sim/world';
 
 const STILL = { mx: 0, my: 0 };
@@ -29,6 +30,25 @@ describe('stage 6: optional Orc shop and Vaults rewards', () => {
     const before = [...a.shopStock];
     populateBranchLoot(a);
     expect(a.shopStock).toEqual(before);
+  });
+
+  it('places the shop on a walkable tile distinct from all stairs, with local interaction only', () => {
+    for (const seed of [1, 17, 42, 100, 999]) {
+      const w = makeWorld({ seed, depth: 203, monsters: false });
+      const shop = shopLocation(w);
+      expect(shop).toBeDefined();
+      expect(cellAt(w.grid, Math.floor(shop!.x), Math.floor(shop!.y))).toBe(Cell.Floor);
+      expect(w.stairs.some((stair) => stair.x === Math.floor(shop!.x) && stair.y === Math.floor(shop!.y))).toBe(false);
+      w.hero.x = shop!.x;
+      w.hero.y = shop!.y;
+      expect(shopAccessible(w)).toBe(true);
+      w.hero.x = 0.5;
+      w.hero.y = 0.5;
+      expect(shopAccessible(w)).toBe(false);
+    }
+    const other = makeWorld({ seed: 17, depth: 202, monsters: false });
+    expect(shopLocation(other)).toBeUndefined();
+    expect(shopAccessible(other)).toBe(false);
   });
 
   it('requires proximity, funds, and single purchase, without currency duplication', () => {
