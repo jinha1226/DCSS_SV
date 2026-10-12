@@ -6,6 +6,7 @@ import { guardZoom } from '../input/guards';
 import { keyPush, watchKeys } from '../input/keys';
 import { makeStick } from '../input/stick';
 import { spellAtPoint, spellTarget } from '../sim/spells';
+import { shopAccessible } from '../sim/branchLoot';
 import { STEP, makeWorld, stepWorld, type Input, type World } from '../sim/world';
 import { makeCharacterSelect, type CharacterChoice } from '../ui/characterSelect';
 import { makeEquipmentPicker } from '../ui/equipmentPicker';
@@ -100,6 +101,17 @@ async function start(): Promise<void> {
     chooseCharacter,
   );
   const inventory = makeInventorySheets(root);
+  const shopButton = document.createElement('button');
+  shopButton.type = 'button';
+  shopButton.className = 'shop-interact';
+  shopButton.textContent = '◈ 상점 열기';
+  shopButton.hidden = true;
+  shopButton.addEventListener('click', () => {
+    if (!world || !shopAccessible(world)) return;
+    hud.closeMenu();
+    inventory.openSheet('shop');
+  });
+  root.append(shopButton);
   const statusSheet = makeStatusSheet(root);
   const skillBar = makeSkillBar(hud.skillSlot, atlas, () => {
     skillBar.close();
@@ -124,7 +136,6 @@ async function start(): Promise<void> {
   menuAction('@ 상태', () => statusSheet.openSheet());
   menuAction('⚔ 장비', () => inventory.openSheet('equipment'));
   menuAction('▣ 가방', () => inventory.openSheet('bag'));
-  menuAction('◈ 오크 상점', () => inventory.openSheet('shop'));
   menuAction('✦ 스킬', () => skillBar.openDetails());
   menuAction('▤ 게임 로그', () => gameLog.openHistory());
 
@@ -227,6 +238,7 @@ async function start(): Promise<void> {
         world.over ? 1 : between,
       );
       hud.show(world);
+      shopButton.hidden = !shopAccessible(world) || inventory.open || statusSheet.open || skillBar.expanded || gameLog.expanded;
       gameLog.show(world);
       skillBar.show(world);
       inventory.show(world);
