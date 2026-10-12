@@ -11,7 +11,8 @@ function levelUp(seed: number, species = 'minotaur', job = 'berserker') {
 
 describe('level-up item reward integration', () => {
   it('uses deterministic tier-dependent normal or randart weapon cards', () => {
-    const a = levelUp(145), b = levelUp(145);
+    const a = levelUp(145),
+      b = levelUp(145);
     expect(a.rewardChoices).toEqual(b.rewardChoices);
     expect(a.rewardChoices?.map((card) => card.kind)).toEqual(['weapon', 'gear', 'consumable']);
     const rolls = Array.from({ length: 40 }, (_, seed) => levelUp(seed + 300).rewardChoices![0]!.weapon!);

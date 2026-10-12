@@ -49,7 +49,8 @@ export interface BagEntry {
 }
 export function bagEntries(w: World): BagEntry[] {
   const items: BagEntry[] = [{ id: w.weapon.uid, name: w.weapon.name, group: 'equipment', count: 1, equipped: true }];
-  if (w.gear.offhand) items.push({ id: 'offhand-equipped', name: gearName(w, w.gear.offhand), group: 'equipment', count: 1, equipped: true });
+  if (w.gear.offhand)
+    items.push({ id: 'offhand-equipped', name: gearName(w, w.gear.offhand), group: 'equipment', count: 1, equipped: true });
   for (const item of w.inventory) {
     if (item.kind === 'weapon') {
       items.push({ id: item.uid, name: item.weapon.name, group: 'equipment', count: 1, equipped: false });

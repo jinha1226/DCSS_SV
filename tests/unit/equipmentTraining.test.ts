@@ -100,7 +100,8 @@ describe('equipment-driven training and offhand', () => {
   });
 
   it('matching seed and choice produces matching cards and training', () => {
-    const a = bare(), b = bare();
+    const a = bare(),
+      b = bare();
     gainExperience(a, 12);
     gainExperience(b, 12);
     expect(a.rewardChoices).toEqual(b.rewardChoices);

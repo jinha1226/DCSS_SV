@@ -143,7 +143,9 @@ export function makeSkillBar(root: HTMLElement, atlas: Atlas, onEquipment?: () =
     for (const skill of skills) {
       const group = BASIC_SKILLS.includes(skill.id as (typeof BASIC_SKILLS)[number])
         ? '기본'
-        : WEAPON_SKILLS.includes(skill.id as (typeof WEAPON_SKILLS)[number]) ? '무기' : '학파';
+        : WEAPON_SKILLS.includes(skill.id as (typeof WEAPON_SKILLS)[number])
+          ? '무기'
+          : '학파';
       if (group !== previousGroup) {
         const title = document.createElement('h3');
         title.textContent = group;

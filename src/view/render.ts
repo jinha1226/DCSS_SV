@@ -200,7 +200,12 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
       ctx.stroke();
       continue;
     }
-    const tile = item.kind === 'ammo' ? 'item/boomerang1' : item.kind === 'gear' && item.itemId ? itemDefinition(item.itemId).tile as TileName : item.axe?.tile;
+    const tile =
+      item.kind === 'ammo'
+        ? 'item/boomerang1'
+        : item.kind === 'gear' && item.itemId
+          ? (itemDefinition(item.itemId).tile as TileName)
+          : item.axe?.tile;
     if (!tile) continue;
     drawFigure(ctx, atlas.image, tile, sx, sy, px * 0.72, false);
     if (item.axe?.special) {

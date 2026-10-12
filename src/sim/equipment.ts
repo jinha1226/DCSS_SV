@@ -156,9 +156,10 @@ export function populateFloorItems(w: World): void {
     other: WeaponFamily = w.weapon.family === 'axe' ? 'ranged' : 'axe';
   for (let i = 0; i < count; i++) {
     const magic = w.weapon.kind === 'staff' || w.weapon.kind === 'rod';
-    const weapon = magic && i < same
-      ? generateMagicWeapon(w, w.weapon.kind!, w.weapon.school!)
-      : generateWeapon(w, magic ? 'axe' : i < same ? w.weapon.family : other);
+    const weapon =
+      magic && i < same
+        ? generateMagicWeapon(w, w.weapon.kind!, w.weapon.school!)
+        : generateWeapon(w, magic ? 'axe' : i < same ? w.weapon.family : other);
     putWeapon(w, weapon, roomCell(w));
   }
   if (w.itemsEnabled) {

@@ -35,9 +35,10 @@ function equippedSpells(w: World): SpellData[] {
     const item = itemDefinition(w.gear.offhand);
     if (item.kind === 'spellbook') sources.push({ school: item.school!, tier: item.tier! });
   }
-  return SPELLS.filter((spell) =>
-    ACTIVE_SPELL_SHAPES.includes(spell.shape) &&
-    sources.some((source) => source.school === spell.school && spell.level <= DUNGEON.magicTierMaxLevel[source.tier]!),
+  return SPELLS.filter(
+    (spell) =>
+      ACTIVE_SPELL_SHAPES.includes(spell.shape) &&
+      sources.some((source) => source.school === spell.school && spell.level <= DUNGEON.magicTierMaxLevel[source.tier]!),
   );
 }
 
@@ -308,7 +309,7 @@ function applyUtilitySpell(w: World, spell: SpellData, caster: SpellCaster, acto
 }
 
 function execute(w: World, spell: SpellData, target: Monster): void {
-  const multiplier = w.weapon.kind && basicSpell(w)?.id === spell.id ? w.weapon.power ?? 1 : 1;
+  const multiplier = w.weapon.kind && basicSpell(w)?.id === spell.id ? (w.weapon.power ?? 1) : 1;
   executeSpell(w, spell, 'hero', w.hero, target, spellDamage(w, spell) * multiplier, spellRange(w, spell));
   const dx = target.x - w.hero.x;
   if (Math.abs(dx) > 0.15) w.hero.facing = dx < 0 ? -1 : 1;
