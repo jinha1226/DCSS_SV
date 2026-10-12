@@ -242,7 +242,10 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
     ctx.fillStyle = '#342718';
     ctx.font = 'bold ' + Math.max(10, Math.floor(px * 0.36)) + 'px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('
+    ctx.fillText('G', sx, sy + px * 0.13);
+  }
+
+  const objective = objectiveFor(w);
   if (objective && w.visible[Math.floor(objective.y) * w.grid.w + Math.floor(objective.x)]) {
     const x = ox + objective.x * px;
     const y = oy + objective.y * px;
