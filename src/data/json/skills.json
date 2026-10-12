@@ -2,34 +2,34 @@
   {
     "id": "axe",
     "name": "도끼",
-    "each": "피해 +1",
+    "each": "공격 피해 및 무기 숙련도 상승",
     "aptitude": "axe",
     "effects": [
       {
         "effect": "axe.damage",
-        "perLevel": 1
+        "perLevel": 0.45
       },
       {
         "effect": "axe.wide",
-        "level": 2,
+        "level": 6,
         "value": 0.3,
         "text": "베는 범위가 넓어진다"
       },
       {
         "effect": "axe.spin",
-        "level": 4,
+        "level": 12,
         "value": 1.5,
         "text": "세 번째 휘두름은 크게 돈다"
       },
       {
         "effect": "axe.stun",
-        "level": 6,
+        "level": 18,
         "value": 0.25,
         "text": "맞은 적이 잠깐 멈칫한다"
       },
       {
         "effect": "axe.reset",
-        "level": 8,
+        "level": 24,
         "value": 1,
         "text": "쓰러뜨리면 바로 또 휘두른다"
       }
@@ -38,38 +38,38 @@
   {
     "id": "bow",
     "name": "활",
-    "each": "더 세게, 더 빨리 쏜다",
+    "each": "화살 피해와 사격 속도 상승",
     "aptitude": "bow",
     "effects": [
       {
         "effect": "bow.damage",
-        "perLevel": 1
+        "perLevel": 0.45
       },
       {
         "effect": "bow.haste",
-        "perLevel": -0.04
+        "perLevel": -0.012
       },
       {
         "effect": "bow.range",
-        "level": 2,
+        "level": 6,
         "value": 1,
         "text": "더 멀리 닿는다"
       },
       {
         "effect": "bow.pierce",
-        "level": 4,
+        "level": 12,
         "value": 1,
         "text": "화살이 첫 적을 뚫는다"
       },
       {
         "effect": "bow.stun",
-        "level": 6,
+        "level": 18,
         "value": 0.25,
         "text": "맞은 적이 멈칫한다"
       },
       {
         "effect": "bow.double",
-        "level": 8,
+        "level": 24,
         "value": 2,
         "text": "두 발을 한 번에 쏜다"
       }
@@ -78,34 +78,34 @@
   {
     "id": "fighting",
     "name": "전투",
-    "each": "최대 체력 +8",
+    "each": "최대 체력 +3/숙련도",
     "aptitude": "fighting",
     "effects": [
       {
         "effect": "fighting.hp",
-        "perLevel": 8
+        "perLevel": 3
       },
       {
         "effect": "fighting.regen",
-        "level": 2,
+        "level": 6,
         "value": 2,
         "text": "체력이 두 배 빨리 찬다"
       },
       {
         "effect": "fighting.healKill",
-        "level": 4,
+        "level": 12,
         "value": 1,
         "text": "쓰러뜨릴 때마다 체력 +1"
       },
       {
         "effect": "fighting.desperate",
-        "level": 6,
+        "level": 18,
         "value": 1.3,
         "text": "체력이 낮으면 더 세게 친다"
       },
       {
         "effect": "fighting.lastStand",
-        "level": 8,
+        "level": 24,
         "value": 1,
         "text": "죽을 피해를 층마다 한 번 버틴다"
       }
@@ -114,34 +114,34 @@
   {
     "id": "armour",
     "name": "갑옷",
-    "each": "받는 피해 -1",
+    "each": "물리 피해 감소 증가",
     "aptitude": "armour",
     "effects": [
       {
         "effect": "armour.reduce",
-        "perLevel": 1
+        "perLevel": 0.2
       },
       {
         "effect": "armour.stone",
-        "level": 2,
+        "level": 6,
         "value": 0.5,
         "text": "돌 피해가 절반"
       },
       {
         "effect": "armour.deflect",
-        "level": 4,
+        "level": 12,
         "value": 3,
         "text": "약한 타격은 튕겨 낸다"
       },
       {
         "effect": "armour.unmoved",
-        "level": 6,
+        "level": 18,
         "value": 1,
         "text": "떼 속에서도 안 느려진다"
       },
       {
         "effect": "armour.thorns",
-        "level": 8,
+        "level": 24,
         "value": 2,
         "text": "때린 적이 되받아 다친다"
       }
@@ -150,34 +150,34 @@
   {
     "id": "shield",
     "name": "방패",
-    "each": "막을 확률 +4%",
+    "each": "방패 막기 확률 상승",
     "aptitude": "shield",
     "effects": [
       {
         "effect": "shield.chance",
-        "perLevel": 0.04
+        "perLevel": 0.012
       },
       {
         "effect": "shield.push",
-        "level": 2,
+        "level": 6,
         "value": 5,
         "text": "막으면 그 적을 밀쳐 낸다"
       },
       {
         "effect": "shield.missile",
-        "level": 4,
+        "level": 12,
         "value": 2,
         "text": "날아오는 건 두 배로 잘 막는다"
       },
       {
         "effect": "shield.stun",
-        "level": 6,
+        "level": 18,
         "value": 0.6,
         "text": "막힌 적이 잠깐 멍해진다"
       },
       {
         "effect": "shield.reset",
-        "level": 8,
+        "level": 24,
         "value": 1,
         "text": "막은 직후 기본 공격이 바로 나간다"
       }
@@ -186,34 +186,34 @@
   {
     "id": "dodging",
     "name": "회피",
-    "each": "피할 확률 +3%",
+    "each": "회피 확률 상승",
     "aptitude": "dodging",
     "effects": [
       {
         "effect": "dodging.chance",
-        "perLevel": 0.03
+        "perLevel": 0.009
       },
       {
         "effect": "dodging.speed",
-        "level": 2,
+        "level": 6,
         "value": 0.06,
         "text": "걸음이 조금 빨라진다"
       },
       {
         "effect": "dodging.delay",
-        "level": 4,
+        "level": 12,
         "value": 0.8,
         "text": "피하면 그 적이 헛쳐서 다음 공격이 늦어진다"
       },
       {
         "effect": "dodging.squeeze",
-        "level": 6,
+        "level": 18,
         "value": 0.5,
         "text": "떼 사이를 덜 막히고 지난다"
       },
       {
         "effect": "dodging.grace",
-        "level": 8,
+        "level": 24,
         "value": 0.8,
         "text": "한 번 피하면 잠깐 동안 전부 피한다"
       }
@@ -222,43 +222,43 @@
   {
     "id": "throwing",
     "name": "투척",
-    "each": "피해 +1, 재사용 조금 짧게",
+    "each": "투척 피해·재사용 시간 개선",
     "aptitude": "throwing",
     "effects": [
       {
         "effect": "throwing.power",
-        "perLevel": 1
+        "perLevel": 0.4
       },
       {
         "effect": "throwing.cooldown",
-        "perLevel": -0.07
+        "perLevel": -0.018
       },
       {
         "effect": "throwing.pierce",
-        "level": 2,
+        "level": 6,
         "value": 1,
         "text": "맞은 적을 뚫고 하나 더"
       },
       {
         "effect": "throwing.double",
-        "level": 4,
+        "level": 12,
         "value": 2,
         "text": "한 번에 둘을 던진다"
       },
       {
         "effect": "throwing.slow",
-        "level": 6,
+        "level": 18,
         "value": 0.4,
         "text": "맞은 적이 느려진다"
       },
       {
         "effect": "throwing.slowTime",
-        "level": 6,
+        "level": 18,
         "value": 2
       },
       {
         "effect": "throwing.return",
-        "level": 8,
+        "level": 24,
         "value": 1,
         "text": "돌아오면서 한 번 더 때린다"
       }
@@ -281,32 +281,32 @@
   {
     "id": "long_blade",
     "name": "장검",
-    "each": "피해 +1, 공격 속도 향상",
+    "each": "검 피해·공격 속도 상승",
     "aptitude": "long_blade",
     "effects": [
       {
         "effect": "long_blade.damage",
-        "perLevel": 1
+        "perLevel": 0.45
       },
       {
         "effect": "long_blade.haste",
-        "perLevel": -0.025
+        "perLevel": -0.01
       },
       {
         "effect": "long_blade.parry",
-        "level": 2,
+        "level": 6,
         "text": "적의 공격을 가끔 받아넘긴다",
-        "perLevel": 0.025
+        "perLevel": 0.008
       },
       {
         "effect": "long_blade.reach",
-        "level": 4,
+        "level": 12,
         "value": 0.25,
         "text": "검의 공격 범위가 넓어진다"
       },
       {
         "effect": "long_blade.reset",
-        "level": 8,
+        "level": 24,
         "value": 1,
         "text": "처치 후 바로 다시 벤다"
       }
@@ -316,6 +316,13 @@
     "id": "translocation",
     "name": "공간술",
     "each": "새 이동 주문, 재사용 효율 향상",
+    "aptitude": "magic",
+    "effects": []
+  },
+  {
+    "id": "spellcasting",
+    "name": "주문시전술",
+    "each": "2숙련도마다 최대 마나 +1",
     "aptitude": "magic",
     "effects": []
   }
