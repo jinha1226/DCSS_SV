@@ -17,6 +17,8 @@ export interface Switches {
   quality: 'high' | 'low';
   /** 'tiles' stands DCSS tiles in the 3D world (the default); 'models' uses the rigged 3D figures. */
   figures: 'tiles' | 'models';
+  /** 'tiles' builds Dungeon floors from DCSS tiles (the default); 'kaykit' keeps the 3D kit everywhere. */
+  ground: 'tiles' | 'kaykit';
 }
 
 export const COLS = { min: 15, max: 15, normal: 15 } as const;
@@ -42,6 +44,7 @@ export function readSwitches(search: string): Switches {
     renderer: query.get('r') === '2d' ? '2d' : '3d',
     quality: query.get('fx') === 'low' ? 'low' : 'high',
     figures: query.get('models') === '3d' ? 'models' : 'tiles',
+    ground: query.get('ground') === 'kaykit' ? 'kaykit' : 'tiles',
     sprite: /^[a-z0-9_-]{1,32}$/.test(query.get('sprite') ?? '') ? (query.get('sprite') as string) : '',
   };
 }
@@ -57,6 +60,7 @@ export function writeSwitches(switches: Switches): string {
   if (switches.renderer === '2d') query.set('r', '2d');
   if (switches.quality === 'low') query.set('fx', 'low');
   if (switches.figures === 'models') query.set('models', '3d');
+  if (switches.ground === 'kaykit') query.set('ground', 'kaykit');
   const text = query.toString() + (switches.debug ? (query.size ? '&debug' : 'debug') : '');
   return text ? '?' + text : '';
 }

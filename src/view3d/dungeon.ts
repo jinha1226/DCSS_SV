@@ -7,7 +7,7 @@ import { MODEL_SCALE, type ModelLibrary } from './models';
 /** Wall height in cells: low enough that the camera sees over a wall to whoever stands behind it. */
 export const WALL_HEIGHT = 1.05;
 /** How bright remembered (out of sight) ground is drawn. */
-const REMEMBERED = 0.3;
+export const REMEMBERED = 0.3;
 const SIDES = [
   { dx: 0, dy: 1, angle: 0 },
   { dx: 0, dy: -1, angle: Math.PI },
@@ -54,6 +54,15 @@ const THEMES: Record<string, Theme> = {
   },
 };
 
+/** A floor's scenery as the world view uses it, whichever way it is drawn. */
+export interface GroundView {
+  readonly group: THREE.Group;
+  /** Torch positions (world units) for the light pool to pick from. */
+  readonly torches: THREE.Vector3[];
+  ensure(w: World): Promise<boolean>;
+  updateSight(w: World, time: number): void;
+}
+
 /** Where an instanced piece sits and which cell's sight it follows. */
 interface Placed {
   readonly mesh: THREE.InstancedMesh;
@@ -62,7 +71,7 @@ interface Placed {
 }
 
 /** The floor of one level as instanced KayKit pieces, lit or darkened by what the hero can see. */
-export class DungeonView {
+export class DungeonView implements GroundView {
   readonly group = new THREE.Group();
   /** Torch positions (world units) for the light pool to pick from. */
   readonly torches: THREE.Vector3[] = [];
@@ -190,7 +199,7 @@ interface Spot {
   readonly cell: number;
 }
 
-function open(grid: Grid, x: number, y: number): boolean {
+export function open(grid: Grid, x: number, y: number): boolean {
   return cellAt(grid, x, y) !== Cell.Wall;
 }
 
@@ -266,7 +275,7 @@ function clutter(grid: Grid, x: number, y: number, cell: number, add: (name: str
   });
 }
 
-function wallCaps(grid: Grid): number[] {
+export function wallCaps(grid: Grid): number[] {
   const caps: number[] = [];
   for (let y = 0; y < grid.h; y++) {
     for (let x = 0; x < grid.w; x++) {
@@ -280,7 +289,7 @@ function wallCaps(grid: Grid): number[] {
 }
 
 /** One mesh of quads over the water cells, with a shimmering shader and a per-cell sight value. */
-function waterSurface(grid: Grid, theme: Theme): THREE.Mesh | undefined {
+export function waterSurface(grid: Grid, theme: { readonly water: THREE.ColorRepresentation }): THREE.Mesh | undefined {
   const cells: number[] = [];
   for (let i = 0; i < grid.cells.length; i++) if (grid.cells[i] === Cell.Water) cells.push(i);
   if (!cells.length) return undefined;
@@ -328,7 +337,7 @@ function waterSurface(grid: Grid, theme: Theme): THREE.Mesh | undefined {
   return mesh;
 }
 
-function updateWaterSight(mesh: THREE.Mesh, w: World): void {
+export function updateWaterSight(mesh: THREE.Mesh, w: World): void {
   const cells = mesh.userData.cells as number[];
   const attr = mesh.geometry.getAttribute('sight') as THREE.BufferAttribute;
   let changed = false;

@@ -7,13 +7,15 @@ import type { SpellData } from '../data/spells';
 import { DUNGEON } from '../data/packs';
 import { objectiveFor } from '../sim/objectives';
 import { STEP, type Monster, type SimEvent, type World } from '../sim/world';
-import { heroFor } from '../data/hero';
 import type { Atlas } from '../view/atlas';
-import { makeWalk } from '../view/walk';
+import { dollLayers } from '../view/doll';
 import type { Fx } from '../view/fx';
 import { HeroActor, type Figure, type HeroFigure } from './actors';
 import { lookFor, makeMonsterActor, type Look } from './bestiary';
-import { DungeonView } from './dungeon';
+import { DungeonView, type GroundView } from './dungeon';
+import { glowTexture } from './glyphs';
+import { TileGround } from './tileGround';
+import type { Look as FloorLook } from '../view/look';
 import { Effects } from './effects';
 import { LootView } from './loot';
 import { ModelLibrary } from './models';
@@ -62,7 +64,9 @@ export class World3D {
   private readonly composer?: EffectComposer;
   private readonly bloom?: UnrealBloomPass;
   private readonly models = new ModelLibrary();
-  private readonly dungeon = new DungeonView(this.models);
+  private readonly kaykit = new DungeonView(this.models);
+  private readonly tileGround?: TileGround;
+  private dungeon: GroundView = this.kaykit;
   private readonly particles = new Particles();
   private readonly effects: Effects;
   private readonly lootView: LootView;
@@ -71,11 +75,13 @@ export class World3D {
   private heroKey = '';
   private readonly creatures = new Map<Monster, Creature>();
   private readonly corpses: { actor: Figure; age: number }[] = [];
+  private readonly hemi = new THREE.HemisphereLight(0x9aa6cc, 0x3a2a1c, 0.7);
   private readonly sun = new THREE.DirectionalLight(0xe6ecff, 1.15);
   private readonly heroLight = new THREE.PointLight(0xffc27a, 5, 8, 1.3);
   private readonly torchLights: THREE.PointLight[] = [];
   private readonly look = new THREE.Vector3();
   private shake = 0;
+  private torchScale = 1;
   private time = 0;
   private lastLevel = 0;
   private lastMana = 0;
@@ -88,7 +94,10 @@ export class World3D {
     private readonly quality: 'high' | 'low',
     /** 'tiles' stands DCSS tiles on the 3D floor; 'models' uses the rigged KayKit and Quaternius figures. */
     private readonly figures: 'tiles' | 'models' = 'tiles',
+    /** The DCSS look whose floor and wall tiles build the Dungeon branch; without it every floor is KayKit. */
+    look?: FloorLook,
   ) {
+    if (look) this.tileGround = new TileGround(atlas, look, glowTexture());
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: quality === 'high', powerPreference: 'high-performance' });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -98,7 +107,7 @@ export class World3D {
     this.scene.background = new THREE.Color(0x07060a);
     this.scene.fog = new THREE.Fog(0x07060a, 14, 30);
 
-    this.scene.add(new THREE.HemisphereLight(0x9aa6cc, 0x3a2a1c, 0.7));
+    this.scene.add(this.hemi);
     this.sun.position.set(-4, 10, 3);
     this.sun.castShadow = true;
     this.sun.shadow.mapSize.set(1024, 1024);
@@ -118,7 +127,13 @@ export class World3D {
     this.effects = new Effects(this.particles);
     this.lootView = new LootView(this.models, atlas.image, figures === 'tiles');
     this.overlay = new Overlay(this.camera);
-    this.scene.add(this.dungeon.group, this.effects.group, this.lootView.group, this.particles.points);
+    this.scene.add(
+      this.kaykit.group,
+      ...(this.tileGround ? [this.tileGround.group] : []),
+      this.effects.group,
+      this.lootView.group,
+      this.particles.points,
+    );
 
     if (quality === 'high') {
       this.composer = new EffectComposer(this.renderer);
@@ -136,8 +151,7 @@ export class World3D {
     this.hero?.dispose();
     this.heroKey = key;
     if (this.figures === 'tiles') {
-      const def = heroFor(species, job);
-      this.hero = new HeroTile(this.atlas, makeWalk(this.atlas, def.tile, def.walk));
+      this.hero = new HeroTile(this.atlas);
     } else {
       this.hero = await HeroActor.create(this.models, job);
     }
@@ -239,6 +253,21 @@ export class World3D {
   /** Draws one frame. `between` blends the last two steps of the rules; `dt` is real seconds since the last frame. */
   render(w: World, view: View3D, fx: Fx, between: number, dt: number, overlayCtx: CanvasRenderingContext2D): void {
     this.time += dt;
+    // The Dungeon branch is drawn in DCSS tiles (being tried on these floors first); other branches in KayKit.
+    const branch = w.dungeonGraph.nodes.get(w.depth)?.branch;
+    const ground = this.tileGround && branch === 'Dungeon' ? this.tileGround : this.kaykit;
+    if (ground !== this.dungeon) {
+      this.dungeon = ground;
+      // Flat DCSS tiles want even, bright light like the 2D view; the KayKit kit reads better moodier.
+      const tiles = ground === this.tileGround;
+      this.hemi.intensity = tiles ? 1.25 : 0.7;
+      this.sun.intensity = tiles ? 0.9 : 1.15;
+      // Film tone mapping dulls flat pixel art; tiles are shown at their own colours.
+      this.renderer.toneMapping = tiles ? THREE.NoToneMapping : THREE.ACESFilmicToneMapping;
+      this.torchScale = tiles ? 0.45 : 1;
+      this.kaykit.group.visible = ground === this.kaykit;
+      if (this.tileGround) this.tileGround.group.visible = ground === this.tileGround;
+    }
     if (!this.building) {
       this.building = true;
       void this.dungeon.ensure(w).finally(() => {
@@ -280,7 +309,13 @@ export class World3D {
     const hero = this.hero;
     if (!hero) return;
     const h = w.hero;
-    void hero.dress({ weapon: w.weapon, offhand: w.gear.offhand, helmet: Boolean(w.gear.helmet), cloak: Boolean(w.gear.cloak) });
+    void hero.dress({
+      weapon: w.weapon,
+      offhand: w.gear.offhand,
+      helmet: Boolean(w.gear.helmet),
+      cloak: Boolean(w.gear.cloak),
+      layers: dollLayers(w),
+    });
     let x = h.px + (h.x - h.px) * between;
     let y = h.py + (h.y - h.py) * between;
     let lift = 0;
@@ -419,7 +454,7 @@ export class World3D {
         return;
       }
       light.position.copy(t.p);
-      light.intensity = 3 * (1 + Math.sin(this.time * 11 + i * 2.1) * 0.08);
+      light.intensity = 3 * this.torchScale * (1 + Math.sin(this.time * 11 + i * 2.1) * 0.08);
     });
   }
 }

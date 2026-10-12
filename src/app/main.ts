@@ -3,7 +3,6 @@ import '../styles/layout.css';
 import '../styles/theme.css';
 import '../styles/ledger.css';
 import { CHARACTERS } from '../data/characters';
-import { heroFor } from '../data/hero';
 import { selfSpell, spellData } from '../data/spells';
 import { guardZoom } from '../input/guards';
 import { keyPush, watchKeys } from '../input/keys';
@@ -30,7 +29,8 @@ import { Fx } from '../view/fx';
 import { LOOK } from '../view/look';
 import { drawMiniMap } from '../view/minimap';
 import { cellPixels, drawWorld } from '../view/render';
-import { makeWalk, type WalkSheet } from '../view/walk';
+import { composeDoll, DOLL_CUT, dollLayers } from '../view/doll';
+import { makeDollWalk, type WalkSheet } from '../view/walk';
 import { loadHeroSprites, makeHeroPose, stepPose, takePoseEvents, type HeroSprites } from '../view/heroSprite';
 import { World3D } from '../view3d/world3d';
 import type { Monster } from '../sim/world';
@@ -58,7 +58,9 @@ async function start(): Promise<void> {
   if (!ctx) return;
 
   const atlas = await loadAtlas();
-  const world3d = canvas3d ? new World3D(canvas3d, atlas, switches.quality, switches.figures) : undefined;
+  const world3d = canvas3d
+    ? new World3D(canvas3d, atlas, switches.quality, switches.figures, switches.ground === 'tiles' ? LOOK[switches.look] : undefined)
+    : undefined;
   let aimFocus: Monster | undefined;
   let lastFrame = performance.now();
   // ?sprite=haven swaps the DCSS hero tile for the layered 8-facing sprites; a missing set keeps the tile.
@@ -82,14 +84,16 @@ async function start(): Promise<void> {
   let selected: CharacterChoice | undefined;
   let world: World | undefined;
   let heroWalk: WalkSheet | undefined;
+  /** The doll layers the flat view's walk was last cut from; redressed when gear changes. */
+  let heroDoll = '';
   let dpr = 1;
   let viewCols = switches.cols;
   let queuedSpell: Input['spell'];
 
   const begin = (character: CharacterChoice): void => {
     selected = character;
-    const hero = heroFor(character.species, character.job);
-    heroWalk = makeWalk(atlas, hero.tile, hero.walk);
+    heroWalk = undefined;
+    heroDoll = '';
     Object.assign(heroPose, makeHeroPose());
     if (world3d) void world3d.prepare(character.species, character.job);
     world = makeWorld({
@@ -290,7 +294,12 @@ async function start(): Promise<void> {
       const now = performance.now();
       const dt = Math.min(0.1, (now - lastFrame) / 1000);
       lastFrame = now;
-      if (!world || !heroWalk) return;
+      if (!world) return;
+      const layers = dollLayers(world);
+      if (layers.join('|') !== heroDoll || !heroWalk) {
+        heroDoll = layers.join('|');
+        heroWalk = makeDollWalk(composeDoll(atlas.image, layers), DOLL_CUT);
+      }
       const targeting = spellButtons.targetingId ? spellData(spellButtons.targetingId) : undefined;
       if (world3d) {
         world3d.resize(canvas.width, canvas.height, dpr);

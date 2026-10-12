@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { TILE_SIZE, tileRect, type TileName } from '../data/tiles';
 import { washed, type Atlas, type Sheet } from '../view/atlas';
-import { WALK_FRAMES, WALK_RATE, type WalkSheet } from '../view/walk';
+import { composeDoll, DOLL_CUT } from '../view/doll';
+import { makeDollWalk, WALK_FRAMES, WALK_RATE } from '../view/walk';
 import type { Figure, HeroFigure, HeroLook } from './actors';
 
 /** How tall a tile figure stands, in cells: a little over one, like a DCSS tile seen from the side. */
@@ -73,6 +74,9 @@ export class TileFigure implements Figure {
   protected dirX = 0;
   protected dirY = 1;
   protected moving = false;
+  /** Frames side by side in each texture (1 for a monster tile, the walk's 4 for the hero). */
+  protected frameCount = 1;
+  protected frame = 0;
   private flash = 0;
   private lunge = -1;
   private lungeLength = 0.4;
@@ -80,8 +84,8 @@ export class TileFigure implements Figure {
   private time = Math.random() * 10;
 
   constructor(
-    protected readonly normal: THREE.Texture,
-    protected readonly struck: THREE.Texture,
+    protected normal: THREE.Texture,
+    protected struck: THREE.Texture,
     size: number,
   ) {
     this.size = size;
@@ -159,7 +163,7 @@ export class TileFigure implements Figure {
     this.sprite.position.z = (this.dirY / d) * push;
 
     let height = this.size;
-    let width = this.size;
+    const width = this.size;
     if (this.dying >= 0) {
       this.dying += dt;
       const t = Math.min(1, this.dying / 0.32);
@@ -172,8 +176,26 @@ export class TileFigure implements Figure {
       // Breathing.
       height *= 1 + Math.sin(this.time * 2.4) * 0.015;
     }
-    width = this.facing > 0 ? -width : width;
     this.sprite.scale.set(width, height, 1);
+    this.flipTextures();
+  }
+
+  /** The textures this figure shows, all laid out the same way. */
+  protected textures(): THREE.Texture[] {
+    return [this.normal, this.struck];
+  }
+
+  /**
+   * Turns the figure by its texture coordinates: a sprite ignores negative scale, so facing right
+   * (DCSS draws its figures facing left) reads the current frame back to front instead.
+   */
+  private flipTextures(): void {
+    const span = 1 / this.frameCount;
+    const flipped = this.facing > 0;
+    for (const t of this.textures()) {
+      t.repeat.x = flipped ? -span : span;
+      t.offset.x = (this.frame + (flipped ? 1 : 0)) * span;
+    }
   }
 
   dispose(): void {
@@ -192,48 +214,41 @@ export function tileFigureHeight(kind: string): number {
   return BIG[kind] ?? TILE_HEIGHT;
 }
 
-/** The hero as its DCSS tile: the four-frame walk, a red wash when hurt, and the wielded weapon's tile in hand. */
+/** The hero as a DCSS player doll: the four-frame walk, a red wash when hurt, redressed whenever gear changes. */
 export class HeroTile extends TileFigure implements HeroFigure {
-  private readonly hurtTexture: THREE.CanvasTexture;
-  private readonly weapon: THREE.Sprite;
-  private readonly weaponMaterial: THREE.SpriteMaterial;
-  private weaponTile = '';
+  private hurtTexture: THREE.CanvasTexture;
+  private layersKey = '';
   private hurtLeft = 0;
-  private swing = -1;
-  private swingLength = 0.3;
-  private hopLeft = 0;
   private cheerLeft = 0;
 
-  constructor(
-    private readonly atlas: Atlas,
-    walk: WalkSheet,
-  ) {
-    const normal = frames(walk.image, 0, 0, TILE_SIZE * WALK_FRAMES, TILE_SIZE);
-    const struck = frames(washed(walk.image, 'rgba(255, 246, 220, 0.55)'), 0, 0, TILE_SIZE * WALK_FRAMES, TILE_SIZE);
-    for (const t of [normal, struck]) t.repeat.set(1 / WALK_FRAMES, 1);
-    super(normal, struck, TILE_HEIGHT);
-    this.hurtTexture = frames(walk.hurt, 0, 0, TILE_SIZE * WALK_FRAMES, TILE_SIZE);
-    this.hurtTexture.repeat.set(1 / WALK_FRAMES, 1);
-    this.weaponMaterial = new THREE.SpriteMaterial({ transparent: true, alphaTest: 0.35 });
-    this.weapon = new THREE.Sprite(this.weaponMaterial);
-    this.weapon.center.set(0.5, 0.15);
-    this.weapon.renderOrder = 3;
-    this.root.add(this.weapon);
+  constructor(private readonly atlas: Atlas) {
+    const blank = frames(document.createElement('canvas'), 0, 0, TILE_SIZE * WALK_FRAMES, TILE_SIZE);
+    super(blank, blank.clone(), TILE_HEIGHT);
+    this.hurtTexture = blank.clone();
+    this.frameCount = WALK_FRAMES;
   }
 
+  /** Recomposes the doll from its layers (species, outfit, worn gear, wielded weapon). */
   async dress(look: HeroLook): Promise<void> {
-    const tile = look.weapon.tile;
-    if (tile === this.weaponTile) return;
-    this.weaponTile = tile;
-    this.weaponMaterial.map?.dispose();
-    this.weaponMaterial.map = tileTexture(this.atlas.image, tile);
-    this.weaponMaterial.needsUpdate = true;
+    const layers = look.layers ?? [];
+    const key = layers.join('|');
+    if (key === this.layersKey || !layers.length) return;
+    this.layersKey = key;
+    const walk = makeDollWalk(composeDoll(this.atlas.image, layers), DOLL_CUT);
+    const replace = (old: THREE.Texture, source: Sheet): THREE.CanvasTexture => {
+      old.dispose();
+      return frames(source, 0, 0, TILE_SIZE * WALK_FRAMES, TILE_SIZE);
+    };
+    const normal = replace(this.normal, walk.image);
+    const struck = replace(this.struck, washed(walk.image, 'rgba(255, 246, 220, 0.55)'));
+    this.hurtTexture = replace(this.hurtTexture, walk.hurt);
+    this.normal = normal;
+    this.struck = struck;
+    this.material.map = normal;
   }
 
-  override attack(seconds = 0.35): void {
-    super.attack(seconds);
-    this.swing = 0;
-    this.swingLength = Math.max(0.18, seconds * 0.8);
+  protected override textures(): THREE.Texture[] {
+    return [this.normal, this.struck, this.hurtTexture];
   }
 
   override hit(): void {
@@ -242,15 +257,15 @@ export class HeroTile extends TileFigure implements HeroFigure {
   }
 
   cast(seconds: number): void {
-    super.attack(seconds);
+    this.attack(seconds);
   }
 
   throwAt(seconds: number): void {
     this.attack(seconds);
   }
 
-  hop(seconds: number): void {
-    this.hopLeft = seconds;
+  hop(): void {
+    // The jump arc comes from the rules' own hop path; nothing extra to draw.
   }
 
   cheer(): void {
@@ -262,41 +277,18 @@ export class HeroTile extends TileFigure implements HeroFigure {
   }
 
   override update(dt: number): void {
+    this.frame = this.moving ? Math.floor(performance.now() / (1000 / WALK_RATE)) % WALK_FRAMES : 0;
     super.update(dt);
     this.hurtLeft = Math.max(0, this.hurtLeft - dt);
     if (this.hurtLeft > 0 && this.material.map === this.normal) this.material.map = this.hurtTexture;
-    const frame = this.moving ? Math.floor(performance.now() / (1000 / WALK_RATE)) % WALK_FRAMES : 0;
-    for (const t of [this.normal, this.struck, this.hurtTexture]) t.offset.x = frame / WALK_FRAMES;
     if (this.cheerLeft > 0) {
       this.cheerLeft = Math.max(0, this.cheerLeft - dt);
       this.sprite.position.y += Math.abs(Math.sin(this.cheerLeft * Math.PI * 3)) * 0.25;
     }
-    this.hopLeft = Math.max(0, this.hopLeft - dt);
-
-    // The weapon rides at the leading hand and sweeps through its arc on a blow.
-    const side = this.facing;
-    let angle = side * 0.6;
-    if (this.swing >= 0) {
-      this.swing += dt;
-      const t = Math.min(1, this.swing / this.swingLength);
-      angle = side * (1.4 - t * 2.8);
-      if (this.swing >= this.swingLength) this.swing = -1;
-    }
-    this.weapon.position.set(
-      this.sprite.position.x + side * this.size * 0.2,
-      this.sprite.position.y + this.size * 0.28,
-      this.sprite.position.z + 0.02,
-    );
-    this.weaponMaterial.rotation = -angle;
-    const w = this.size * 0.62;
-    this.weapon.scale.set(side > 0 ? -w : w, w, 1);
-    this.weaponMaterial.opacity = this.material.opacity;
   }
 
   override dispose(): void {
     super.dispose();
     this.hurtTexture.dispose();
-    this.weaponMaterial.map?.dispose();
-    this.weaponMaterial.dispose();
   }
 }

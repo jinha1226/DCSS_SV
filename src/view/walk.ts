@@ -29,17 +29,25 @@ const BOB = 1;
  * tucks behind the hips and nothing tears.
  */
 export function makeWalk(atlas: Atlas, tile: TileName, cut: WalkCut): WalkSheet {
+  return walkFrom(atlas.image, tileRect(tile), cut) ?? { image: atlas.image, hurt: atlas.hurt };
+}
+
+/** The same walk made from a single composed tile (a player doll) sitting at the image's corner. */
+export function makeDollWalk(doll: Sheet, cut: WalkCut): WalkSheet {
+  return walkFrom(doll, { x: 0, y: 0 }, cut) ?? { image: doll, hurt: washed(doll, 'rgba(210, 40, 30, 0.5)') };
+}
+
+function walkFrom(image: Sheet, src: { x: number; y: number }, cut: WalkCut): WalkSheet | undefined {
   const S = TILE_SIZE;
   const sheet = document.createElement('canvas');
   sheet.width = S * WALK_FRAMES;
   sheet.height = S;
   const ctx = sheet.getContext('2d');
-  const src = tileRect(tile);
-  if (!ctx) return { image: atlas.image, hurt: atlas.hurt };
+  if (!ctx) return undefined;
 
   /** Copies the block (x, y, w, h) of the tile into frame `f`, moved up by `up` pixels. */
   const part = (f: number, x: number, y: number, w: number, h: number, up: number): void => {
-    ctx.drawImage(atlas.image, src.x + x, src.y + y, w, h, f * S + x, y - up, w, h);
+    ctx.drawImage(image, src.x + x, src.y + y, w, h, f * S + x, y - up, w, h);
   };
 
   for (let f = 0; f < WALK_FRAMES; f++) {

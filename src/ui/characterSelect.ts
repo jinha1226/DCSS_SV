@@ -2,7 +2,8 @@ import jobsRaw from '../data/json/jobs.json';
 import speciesRaw from '../data/json/species.json';
 import { weaponBase } from '../data/items';
 import { skillData } from '../data/skills';
-import { drawTile, type Atlas } from '../view/atlas';
+import { type Atlas } from '../view/atlas';
+import { composeDoll, layersFor } from '../view/doll';
 
 export interface CharacterChoice {
   readonly species: string;
@@ -57,14 +58,15 @@ export function makeCharacterSelect(root: HTMLElement, atlas: Atlas, choose: (ch
 
   let selectedSpecies: (typeof speciesRaw)[number] | undefined;
 
-  const drawPortrait = (tile: string): HTMLCanvasElement => {
+  /** A DCSS player doll at three times size: the species, dressed for the job when one is given. */
+  const drawPortrait = (layers: Parameters<typeof composeDoll>[1]): HTMLCanvasElement => {
     const portrait = document.createElement('canvas');
     portrait.width = 96;
     portrait.height = 96;
     const ctx = portrait.getContext('2d');
     if (ctx) {
       ctx.imageSmoothingEnabled = false;
-      drawTile(ctx, atlas.image, tile as Parameters<typeof drawTile>[2], 0, 0, 96);
+      ctx.drawImage(composeDoll(atlas.image, layers), 0, 0, 96, 96);
     }
     return portrait;
   };
@@ -80,7 +82,7 @@ export function makeCharacterSelect(root: HTMLElement, atlas: Atlas, choose: (ch
       button.type = 'button';
       button.className = 'character-card job-card';
 
-      const portrait = drawPortrait(weapon.tile);
+      const portrait = drawPortrait(layersFor(selectedSpecies.id, job.id, {}, weapon));
       const name = document.createElement('strong');
       name.textContent = job.name;
 
@@ -116,7 +118,7 @@ export function makeCharacterSelect(root: HTMLElement, atlas: Atlas, choose: (ch
       button.type = 'button';
       button.className = 'character-card species-card';
 
-      const portrait = drawPortrait(species.tile);
+      const portrait = drawPortrait(layersFor(species.id, undefined));
       const name = document.createElement('strong');
       name.textContent = species.name;
 
