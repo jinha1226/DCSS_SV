@@ -1,5 +1,7 @@
 # 첫 시험판 구현 계획
 
+> **지난 기록.** 3층·5분 시험판과 스킬 카드를 전제로 한 계획이다. 지금 로드맵은 [IMPLEMENTATION_2RUNE.md](IMPLEMENTATION_2RUNE.md), 성장은 [SKILL_TRAINING.md](SKILL_TRAINING.md)가 기준이다. 기술 선택과 코드 구조 설명은 아직 유효하다. 문서 목록은 [README.md](README.md).
+
 미노타우로스 광전사 하나로, 층 셋을 오 분 안에 도는 한 판을 일곱 단계로 나눠 만든다.
 단계 하나가 끝날 때마다 폰에서 열어 볼 수 있는 링크가 나오고, 한 줄 느낌을 듣고 다음 단계로 간다.
 

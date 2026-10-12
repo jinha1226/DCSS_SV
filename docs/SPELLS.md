@@ -2,6 +2,8 @@
 
 주문은 `src/data/json/spells.json`에 정의한다. 원작 DCSS의 학파 구분을 참고하되 효과와 수치는 직접 설계한다.
 
+> **현재 규칙은 맨 아래 "장비 기반 단일 학파" 절이다.** 바로 아래의 `schools`·`requirements`·복합 학파 설명과 `conjuration` 예시는 이전 구조이며 지금은 쓰지 않는다. 주문마다 `school` 하나만 가진다.
+
 - `schools: string[]`: 학파 한 개 이상. 복합 학파는 모두 충족해야 해금된다.
 - `level: 1..7`: 기본 해금 단계. `requirements`가 없으면 모든 학파에서 이 단계가 필요하다.
 - `requirements?: Record<string, number>`: 복합 학파별 요구 단계. 지정할 때는 `schools`의 모든 학파를 적는다.

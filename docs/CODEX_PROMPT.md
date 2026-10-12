@@ -1,5 +1,7 @@
 # 작업 지시: DCSS_SV 3단계 마무리와 그 뒤
 
+> **지난 기록.** 3단계(`stage3-wip`) 시절의 인수인계 문서다. 여기의 상태와 할 일은 끝났다. 2절의 규칙 중 유효한 것은 [DEVELOPMENT_GUARDRAILS.md](DEVELOPMENT_GUARDRAILS.md) §6으로 옮겼다. 문서 목록은 [README.md](README.md).
+
 너는 이 저장소(`jinha1226/DCSS_SV`)의 개발을 이어받는다. 앞사람이 0~2단계를 끝내 main에 올렸고, 3단계를 만들던 중에 넘긴다. 이 문서를 끝까지 읽고 시작해라. 모르는 것은 추측하지 말고 코드와 `docs/PLAN.md`를 먼저 읽어라.
 
 ## 1. 무엇을 만드는가

@@ -18,14 +18,16 @@
 | `tile` | 기존 타일 아틀라스의 타일 ID. 활성 아이템은 필수 |
 | `useMode` | `equip` / `store` / `choose` / `on_step` / `learn` / `automatic` |
 | `stackable`, `maxStack` | 중첩 가능 여부와 최대 묶음 수 |
-| `depthWeights` | 1~3층의 드롭 가중치. 기본값 `[0, 0, 0]` |
+| `depthWeights` | 드롭 등급 0~2(`lootTier`, 현재 던전 노드의 difficulty로 정함)별 가중치. 기본값 `[0, 0, 0]` |
 | `effects` | `{ id, power?, duration?, radius? }` 배열. 효과 ID로 실제 동작을 연결할 예정 |
 
 `parseItemDefinition`, `itemDefinition`, `ITEM_DEFINITIONS`로 공통 데이터를 읽는다.
 효과가 있는 미구현 아이템은 반드시 **`enabled: false`**, 드롭 가중치 0으로 두어야 한다.
 실행기와 타일을 구현하기 전에는 활성화할 수 없도록 검사한다.
 
-## 11단계를 위한 초안
+## 11단계를 위한 초안 (당시 기록)
+
+> 이후 물약·두루마리·완드 일부가 드롭, 가방, 사용 효과, 감정까지 연결됐다(`src/sim/consumables.ts`, `itemEffects.ts`, `identification.ts`). 아래는 처음 넣을 때의 기록이고, 활성 여부는 `items.json`의 `enabled`를 본다.
 
 `potion_healing`, `scroll_blink`를 비롯해 완드·반지·갑옷·방패 샘플 여섯 개를
 `items.json`에 **비활성 설계 데이터**로 넣었다. 아직 드롭, 획득, 인벤토리, 사용 효과, 식별 기능은 없다.

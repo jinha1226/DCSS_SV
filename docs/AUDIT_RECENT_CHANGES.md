@@ -1,5 +1,7 @@
 # AUDIT_RECENT_CHANGES.md — inspection of stages 2 and 3
 
+> **지난 기록.** 2·3단계 점검 기록이다. 지적 사항은 PR #2와 이후 단계에서 해결됐다([IMPLEMENTATION_2RUNE.md](IMPLEMENTATION_2RUNE.md)). 문서 목록은 [README.md](README.md).
+
 Date: 2026-10-12. Static source inspection only; no local install, tests, build or browser run. Status is **UNVERIFIED**.
 
 ## Stage 2: floor persistence / ascending stairs — commit 7d0caba
