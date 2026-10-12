@@ -75,9 +75,10 @@ export function fillFloor(w: World): void {
 export function lingering(w: World, dt: number): void {
   w.nextBand -= dt;
   if (w.nextBand > 0) return;
-  w.nextBand = w.floorTime >= DUNGEON.floorLimit
-    ? DUNGEON.overdueBandEvery
-    : Math.max(DUNGEON.bandLeast, DUNGEON.bandEvery - w.floorTime * DUNGEON.bandSooner);
+  w.nextBand =
+    w.floorTime >= DUNGEON.floorLimit
+      ? DUNGEON.overdueBandEvery
+      : Math.max(DUNGEON.bandLeast, DUNGEON.bandEvery - w.floorTime * DUNGEON.bandSooner);
   if (w.monsters.length >= DUNGEON.most) return;
 
   // By the stairs farthest by foot that the hero cannot see; never the ones underfoot.
