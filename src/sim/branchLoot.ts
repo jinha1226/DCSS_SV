@@ -76,7 +76,7 @@ export function shopLocation(w: World): { x: number; y: number } | undefined {
     [-1, 1],
     [1, -1],
     [-1, -1],
-  ]) {
+  ] as const) {
     const x = origin.x + dx;
     const y = origin.y + dy;
     if (cellAt(w.grid, x, y) === Cell.Floor && !w.stairs.some((stair) => stair.x === x && stair.y === y)) {
