@@ -103,7 +103,14 @@ async function start(): Promise<void> {
   const inventory = makeInventorySheets(root);
   const shopButton = document.createElement('button');
   shopButton.type = 'button';
-  shopButton.className = 'shop-interact';
+  shopButton.className = 'inventory-action';
+  shopButton.style.position = 'fixed';
+  shopButton.style.zIndex = '14';
+  shopButton.style.left = '50%';
+  shopButton.style.bottom = 'calc(148px + env(safe-area-inset-bottom, 0px))';
+  shopButton.style.transform = 'translateX(-50%)';
+  shopButton.style.minHeight = '44px';
+  shopButton.style.padding = '9px 18px';
   shopButton.textContent = '◈ 상점 열기';
   shopButton.hidden = true;
   shopButton.addEventListener('click', () => {
