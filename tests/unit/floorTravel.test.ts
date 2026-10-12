@@ -64,13 +64,22 @@ describe('stage 2: paired stairs and re-entry', () => {
   it('can repeat a round trip 100 times without changing depth or destination', () => {
     const w = makeWorld({ seed: 33, monsters: false, items: false });
     const source = w.stairs.filter((s) => s.down)[1]!;
+    const parentItem = { uid: 'parent-token', kind: 'ammo' as const, x: 1.5, y: 1.5, count: 1, ignored: false };
+    const childItem = { uid: 'child-token', kind: 'ammo' as const, x: 1.5, y: 1.5, count: 1, ignored: false };
+    w.groundItems.push(parentItem);
+    let previousTime = 0;
     for (let i = 0; i < 100; i++) {
       take(w, true, 1);
       expect(w.depth).toBe(2);
+      if (i === 0) w.groundItems.push(childItem);
+      expect(w.groundItems).toEqual([childItem]);
       take(w, false);
       expect(w.depth).toBe(1);
       expect(w.hero.x).toBe(source.x + 0.5);
       expect(w.hero.y).toBe(source.y + 0.5);
+      expect(w.groundItems).toEqual([parentItem]);
+      expect(w.floorTime).toBeGreaterThan(previousTime);
+      previousTime = w.floorTime;
     }
     expect(w.floorStates.size).toBe(2);
     expect(w.stairConnections.size).toBe(1);
