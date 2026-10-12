@@ -6,6 +6,7 @@ import { FAR, makeFlow, updateFlow } from '../../src/sim/flow';
 import { GEN, makeFloor } from '../../src/sim/gen';
 import { Cell, cellAt, walkable } from '../../src/sim/grid';
 import { spawnMonster } from '../../src/sim/monster';
+import { chooseReward } from '../../src/sim/rewards';
 import { chooseSkill } from '../../src/sim/skills';
 import { STEP, floorSeed, makeWorld, stepWorld, type World } from '../../src/sim/world';
 import { STILL, arena, count, run } from './arena';
@@ -173,6 +174,7 @@ describe('lingering', () => {
     w.hero.maxHp = w.hero.hp = 1e9;
     const grow = (seconds: number): void => {
       for (let i = 0; i < Math.round(seconds / STEP); i++) {
+        if (w.rewardChoices) chooseReward(w, w.rewardChoices[0]!.id);
         if (w.choosing) chooseSkill(w, w.choosing[0]!.id);
         stepWorld(w, STILL);
       }
