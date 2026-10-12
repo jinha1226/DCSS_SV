@@ -1,4 +1,6 @@
 import { brandData } from '../data/items';
+import { itemDefinition } from '../data/itemCatalog';
+import { buyOffer, shopAccessible } from '../sim/branchLoot';
 import { itemDisplayName } from '../sim/identification';
 import { equipGear, unequipGear, dropGear, gearName, gearBonus, type GearSlot } from '../sim/gear';
 import { CONSUMABLES, dropConsumable, useConsumable, type ConsumableId } from '../sim/consumables';
@@ -6,7 +8,7 @@ import { dropStoredWeapon, equipStoredWeapon, weaponOption, weaponScore } from '
 import type { World } from '../sim/world';
 
 export type BagTab = 'all' | 'equipment' | 'consumable' | 'other';
-export type SheetName = 'equipment' | 'bag';
+export type SheetName = 'equipment' | 'bag' | 'shop';
 
 export interface EquipmentSlot {
   readonly id: string;
@@ -151,14 +153,33 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
       w.hero.maxHp,
       w.inventory.map((item) => item.uid + ':' + (item.kind === 'consumable' ? item.count : 1)).join(','),
       feedback,
+      w.gold,
+      w.shopStock.map((offer) => offer.uid).join(','),
     ].join('|');
     if (key === lastKey) return;
     lastKey = key;
-    title.textContent = sheet === 'equipment' ? '장비' : '가방';
+    title.textContent = sheet === 'equipment' ? '장비' : sheet === 'shop' ? '오크 상점 · 금화 ' + w.gold : '가방';
     tabs.replaceChildren();
     content.replaceChildren();
 
-    if (sheet === 'equipment') {
+    if (sheet === 'shop') {
+      if (!shopAccessible(w)) {
+        content.append(row('상점', 'Orc 3층 입구에서 이용 가능'));
+      } else {
+        for (const offer of w.shopStock) {
+          const name = offer.weapon?.name ?? (offer.itemId ? itemDefinition(offer.itemId).name : '상품');
+          const line = row(name, offer.price + ' 금화');
+          line.append(action('구매', () => {
+            feedback = buyOffer(w, offer.uid) ? '구매 완료' : '금화가 부족하거나 구매할 수 없어.';
+            lastKey = '';
+            draw(w);
+          }));
+          content.append(line);
+        }
+        if (!w.shopStock.length) content.append(row('상점', '품절'));
+      }
+      if (feedback) content.append(row('알림', feedback));
+    } else if (sheet === 'equipment') {
       for (const slot of equipmentSlots(w)) {
         const line = row(slot.name, slot.value, !slot.available);
         if (slot.id === 'weapon') {
