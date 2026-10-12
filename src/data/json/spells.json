@@ -13,7 +13,12 @@
     "damage": 6,
     "range": 6,
     "speed": 15,
-    "monsterMana": 3
+    "monsterMana": 3,
+    "onHit": {
+      "effect": "burn",
+      "power": 2,
+      "duration": 2
+    }
   },
   {
     "id": "searing_line",
@@ -155,7 +160,12 @@
     "colour": "#a6e5ff",
     "damage": 5,
     "range": 6,
-    "speed": 15
+    "speed": 15,
+    "onHit": {
+      "effect": "slow",
+      "power": 0.3,
+      "duration": 1.5
+    }
   },
   {
     "id": "cold_fan",
@@ -177,7 +187,7 @@
     "name": "얼음 갑옷",
     "school": "ice",
     "level": 3,
-    "enabled": false,
+    "enabled": true,
     "mana": 6,
     "cooldown": 12,
     "shape": "buff",
@@ -201,7 +211,12 @@
     "damage": 11,
     "pierce": 1,
     "range": 8,
-    "speed": 18
+    "speed": 18,
+    "onHit": {
+      "effect": "slow",
+      "power": 0.3,
+      "duration": 1.5
+    }
   },
   {
     "id": "rime_floor",
@@ -218,7 +233,12 @@
     "duration": 4,
     "radius": 1.8,
     "range": 7,
-    "tick": 0.5
+    "tick": 0.5,
+    "onHit": {
+      "effect": "slow",
+      "power": 0.5,
+      "duration": 1
+    }
   },
   {
     "id": "ice_wall",
@@ -255,7 +275,7 @@
     "name": "순간 동결",
     "school": "ice",
     "level": 8,
-    "enabled": false,
+    "enabled": true,
     "mana": 16,
     "cooldown": 10,
     "shape": "debuff",
@@ -350,7 +370,7 @@
     "name": "질풍",
     "school": "air",
     "level": 5,
-    "enabled": false,
+    "enabled": true,
     "mana": 7,
     "cooldown": 12,
     "shape": "buff",
@@ -451,14 +471,18 @@
     "colour": "#c9b8ff",
     "damage": 9,
     "radius": 1.2,
-    "range": 7
+    "range": 7,
+    "onHit": {
+      "effect": "stun",
+      "duration": 0.6
+    }
   },
   {
     "id": "stone_skin",
     "name": "돌 피부",
     "school": "earth",
     "level": 3,
-    "enabled": false,
+    "enabled": true,
     "mana": 6,
     "cooldown": 12,
     "shape": "buff",
@@ -480,7 +504,11 @@
     "damage": 13,
     "pierce": 2,
     "range": 7,
-    "speed": 9
+    "speed": 9,
+    "onHit": {
+      "effect": "knockback",
+      "power": 7
+    }
   },
   {
     "id": "gravity_bloom",
@@ -494,7 +522,11 @@
     "colour": "#b9a5ef",
     "damage": 13,
     "radius": 1.7,
-    "range": 8
+    "range": 8,
+    "onHit": {
+      "effect": "pull",
+      "power": 7
+    }
   },
   {
     "id": "collapse_field",
@@ -551,7 +583,11 @@
     "shape": "beam",
     "colour": "#c9a77a",
     "damage": 30,
-    "range": 8
+    "range": 8,
+    "onHit": {
+      "effect": "knockback",
+      "power": 9
+    }
   },
   {
     "id": "spirit_dart",
@@ -691,7 +727,12 @@
     "colour": "#a3b9ff",
     "damage": 4,
     "range": 6,
-    "speed": 15
+    "speed": 15,
+    "onHit": {
+      "effect": "slow",
+      "power": 0.25,
+      "duration": 1.5
+    }
   },
   {
     "id": "blink_step",
@@ -711,17 +752,21 @@
     "name": "둔화장",
     "school": "hexes",
     "level": 3,
-    "enabled": false,
+    "enabled": true,
     "mana": 6,
     "cooldown": 5,
     "shape": "cloud",
-    "effect": "slow",
     "colour": "#a3b9ff",
     "damage": 0,
     "duration": 4,
     "radius": 1.8,
     "range": 7,
-    "tick": 0.5
+    "tick": 0.5,
+    "onHit": {
+      "effect": "slow",
+      "power": 0.5,
+      "duration": 1
+    }
   },
   {
     "id": "weakness_bolt",
@@ -735,7 +780,12 @@
     "colour": "#a3b9ff",
     "damage": 9,
     "range": 7,
-    "speed": 15
+    "speed": 15,
+    "onHit": {
+      "effect": "vulnerable",
+      "power": 0.3,
+      "duration": 4
+    }
   },
   {
     "id": "phase_guard",
@@ -755,7 +805,7 @@
     "name": "혼란",
     "school": "hexes",
     "level": 6,
-    "enabled": false,
+    "enabled": true,
     "mana": 11,
     "cooldown": 8,
     "shape": "debuff",
@@ -819,7 +869,12 @@
     "colour": "#b7e07a",
     "damage": 5,
     "range": 6,
-    "speed": 15
+    "speed": 15,
+    "onHit": {
+      "effect": "poison",
+      "power": 2,
+      "duration": 3
+    }
   },
   {
     "id": "life_drain",
@@ -833,7 +888,11 @@
     "element": "negative",
     "colour": "#c9a3e0",
     "damage": 7,
-    "range": 6
+    "range": 6,
+    "onHit": {
+      "effect": "drain",
+      "power": 0.5
+    }
   },
   {
     "id": "poison_mist",
@@ -873,7 +932,7 @@
     "name": "부패",
     "school": "necromancy",
     "level": 5,
-    "enabled": false,
+    "enabled": true,
     "mana": 9,
     "cooldown": 6,
     "shape": "debuff",
@@ -882,7 +941,9 @@
     "colour": "#b7e07a",
     "damage": 3,
     "duration": 6,
-    "range": 7
+    "range": 7,
+    "power": 3,
+    "radius": 0
   },
   {
     "id": "raise_dead",

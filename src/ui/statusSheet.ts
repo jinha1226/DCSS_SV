@@ -41,7 +41,7 @@ export function statusValues(w: World): { vitals: StatusValue[]; resists: Status
     ['반지 1', '미착용'],
     ['반지 2', '미착용'],
   ] as const;
-  const armour = effectValue(w, 'armour.reduce') + weaponOption(w.weapon, 'armour');
+  const armour = effectValue(w, 'armour.reduce') + weaponOption(w.weapon, 'armour') + (w.hero.armourBuff > 0 ? w.hero.armourBuffPower : 0);
   const evasion = effectValue(w, 'dodging.chance') + weaponOption(w.weapon, 'evasion');
   const shield = effectValue(w, 'shield.chance');
   return {

@@ -239,8 +239,7 @@
     "tile": "item/stone",
     "school": "ice",
     "tier": 0,
-    "enabled": false,
-    "depthWeights": [0, 0, 0],
+    "depthWeights": [8, 2, 0],
     "effects": []
   },
   {

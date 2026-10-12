@@ -217,7 +217,8 @@ export function heroSpeed(w: World): number {
   return (
     w.speed *
     (1 + effectValue(w, 'dodging.speed') + (w.weapon.options.find((option) => option.id === 'speed')?.value ?? 0)) *
-    (w.hero.haste > 0 ? 1.3 : 1)
+    (w.hero.haste > 0 ? 1.3 : 1) *
+    (1 + (w.hero.speedBuff > 0 ? w.hero.speedBuffPower : 0))
   );
 }
 

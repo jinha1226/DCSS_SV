@@ -22,6 +22,19 @@ export type SpellShape =
   | 'debuff'
   | 'teleport';
 
+/** Rider effects a damaging spell leaves on the monsters it hits. */
+export type HitEffect = 'slow' | 'stun' | 'confuse' | 'vulnerable' | 'rot' | 'poison' | 'burn' | 'knockback' | 'pull' | 'drain';
+
+export interface SpellHit {
+  readonly effect: HitEffect;
+  /** slow: speed loss 0..1; vulnerable: extra damage taken; rot: armour removed; poison/burn: damage per second;
+   * knockback/pull: push speed; drain: share of damage healed. */
+  readonly power?: number;
+  readonly duration?: number;
+  /** rot: damage per second while it lasts. */
+  readonly damage?: number;
+}
+
 export interface SpellData {
   readonly id: string;
   readonly name: string;
@@ -55,6 +68,7 @@ export interface SpellData {
   readonly colour: string;
   readonly effect?: string;
   readonly distance?: number;
+  readonly onHit?: SpellHit;
 }
 
 export const SPELLS: readonly SpellData[] = spellsRaw as readonly SpellData[];
@@ -81,10 +95,28 @@ export const SPELL_SHAPES: readonly SpellShape[] = [
 ];
 
 /** Shapes with working behaviour. A spell may only be enabled when its shape is here. */
-export const ACTIVE_SPELL_SHAPES: readonly SpellShape[] = ['projectile', 'beam', 'burst', 'cloud', 'utility'];
+export const ACTIVE_SPELL_SHAPES: readonly SpellShape[] = ['projectile', 'beam', 'burst', 'cloud', 'utility', 'buff', 'debuff'];
 
 /** Named effects with working behaviour. An enabled spell's effect must be one of these. */
-export const ACTIVE_SPELL_EFFECTS: readonly string[] = ['blink', 'guard'];
+export const ACTIVE_SPELL_EFFECTS: readonly string[] = ['blink', 'guard', 'armour', 'speed', 'freeze', 'confuse', 'rot'];
+
+export const HIT_EFFECTS: readonly HitEffect[] = [
+  'slow',
+  'stun',
+  'confuse',
+  'vulnerable',
+  'rot',
+  'poison',
+  'burn',
+  'knockback',
+  'pull',
+  'drain',
+];
+
+/** Spells cast on the hero (no target to pick). */
+export function selfSpell(spell: SpellData): boolean {
+  return spell.shape === 'utility' || spell.shape === 'buff';
+}
 
 export const MAX_SPELL_LEVEL = 9;
 const AUTO_LEVELS: readonly number[] = [1, 4, 7];
@@ -99,11 +131,11 @@ function validateEnabled(spell: SpellData, label: string): void {
   if (spell.effect !== undefined && !ACTIVE_SPELL_EFFECTS.includes(spell.effect)) {
     throw new Error(label + ': 구현되지 않은 effect는 켤 수 없음 ' + spell.effect);
   }
-  if (spell.shape === 'utility') {
-    if (!spell.effect) throw new Error(label + ': 보조 주문에는 effect가 필요함');
-    return;
+  if (selfSpell(spell) || spell.shape === 'debuff') {
+    if (!spell.effect) throw new Error(label + ': ' + spell.shape + ' 주문에는 effect가 필요함');
+    if (selfSpell(spell)) return;
   }
-  if (!validNumber(spell.damage)) throw new Error(label + ': 공격 주문에는 damage가 필요함');
+  if (spell.shape !== 'debuff' && !validNumber(spell.damage)) throw new Error(label + ': 공격 주문에는 damage가 필요함');
   if (!validNumber(spell.range)) throw new Error(label + ': 공격 주문에는 range가 필요함');
 }
 
@@ -124,6 +156,11 @@ function validateSpell(spell: SpellData, label: string): void {
   if (spell.element !== undefined && !ELEMENTS.includes(spell.element)) throw new Error(label + ': 모르는 element');
   if (spell.requirement !== undefined && (!Number.isInteger(spell.requirement) || spell.requirement < 0)) {
     throw new Error(label + ': 잘못된 requirement');
+  }
+  if (spell.onHit !== undefined) {
+    if (!HIT_EFFECTS.includes(spell.onHit.effect)) throw new Error(label + ': 모르는 onHit ' + spell.onHit.effect);
+    if (spell.onHit.power !== undefined && !validNumber(spell.onHit.power)) throw new Error(label + ': onHit.power');
+    if (spell.onHit.duration !== undefined && !validNumber(spell.onHit.duration)) throw new Error(label + ': onHit.duration');
   }
   if (spell.enabled) validateEnabled(spell, label);
 }

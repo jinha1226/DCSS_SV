@@ -24,7 +24,9 @@ export function hurtMonster(
   by: MonsterHitKind = 'spell',
 ): MonsterHitResult {
   if (monster.hp <= 0 || monster.guard > 0) return { damage: 0, killed: false };
-  const damage = damageAfterDefense(amount, type, monster.stats.armour ?? 0, monster.stats.resists);
+  const scale = monster.vulnerable > 0 ? 1 + monster.vulnerableScale : 1;
+  const armour = Math.max(0, (monster.stats.armour ?? 0) - (monster.rot > 0 ? monster.rotArmour : 0));
+  const damage = damageAfterDefense(amount * scale, type, armour, monster.stats.resists);
   monster.hp -= damage;
   monster.flash = 0.12;
   wake(w, monster);

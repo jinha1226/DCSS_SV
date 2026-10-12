@@ -136,9 +136,9 @@ describe('four spell buttons', () => {
   it('fills four slots with the highest unlocked spells, then the nearest locked ones', () => {
     const w = master();
     w.hero.skills.earth = 27;
-    expect(spellSlots(w).map((spell) => spell?.id)).toEqual(['landslide', 'collapse_field', 'gravity_bloom', 'pulse_burst']);
+    expect(spellSlots(w).map((spell) => spell?.id)).toEqual(['landslide', 'collapse_field', 'gravity_bloom', 'stone_skin']);
     w.hero.skills.earth = 0;
-    expect(spellSlots(w).map((spell) => spell?.id)).toEqual(['pulse_burst', 'gravity_bloom', 'collapse_field', 'landslide']);
+    expect(spellSlots(w).map((spell) => spell?.id)).toEqual(['pulse_burst', 'stone_skin', 'gravity_bloom', 'collapse_field']);
   });
 
   it('keeps a pinned spell in its slot, moves it when pinned elsewhere, and refills when unequipped', () => {
@@ -155,11 +155,20 @@ describe('four spell buttons', () => {
     w.hero.spellSlots = [];
     expect(setSpellSlot(w, 3, 'landslide')).toBe(true);
     w.weapon = plainWeapon('staff_earth_0');
-    expect(spellSlots(w).map((spell) => spell?.id)).toEqual(['pulse_burst', undefined, undefined, undefined]);
+    expect(spellSlots(w).map((spell) => spell?.id)).toEqual(['stone_skin', 'pulse_burst', undefined, undefined]);
   });
 
-  // Needs a school with more than four enabled button spells; none has that until phase B.
-  it.todo('refuses to cast a spell that is not in a slot');
+  it('refuses to cast a spell that is not in a slot', () => {
+    const w = master();
+    w.hero.skills.earth = 27;
+    w.hero.maxMana = 100;
+    w.hero.mana = 100;
+    expect(spellSlots(w).map((spell) => spell?.id)).not.toContain('pulse_burst');
+    expect(castPaidSpell(w, 'pulse_burst')).toBe(false);
+    expect(setSpellSlot(w, 3, 'pulse_burst')).toBe(true);
+    expect(spellSlots(w).map((spell) => spell?.id)).not.toContain('stone_skin');
+    expect(castPaidSpell(w, 'stone_skin')).toBe(false);
+  });
 });
 
 describe('per-spell cooldowns', () => {

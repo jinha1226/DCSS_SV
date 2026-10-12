@@ -60,6 +60,11 @@ export interface Hero {
   lastStandUsed: boolean;
   might: number;
   haste: number;
+  /** Spell buffs: seconds left and strength (armour points, speed share). */
+  armourBuff: number;
+  armourBuffPower: number;
+  speedBuff: number;
+  speedBuffPower: number;
   axeSwings: number;
   hopCooldown: number;
   hopTime: number;
@@ -108,6 +113,16 @@ export interface Monster {
   slowScale: number;
   burning: number;
   burnDamage: number;
+  /** Spell afflictions: seconds left and strength. */
+  vulnerable: number;
+  vulnerableScale: number;
+  rot: number;
+  rotArmour: number;
+  rotDamage: number;
+  poison: number;
+  poisonDamage: number;
+  /** Time until poison and rot deal their next damage. */
+  afflictionTick: number;
   facing: -1 | 1;
 }
 export interface Shot {
@@ -146,6 +161,8 @@ export interface SpellShot {
   readonly caster?: 'hero' | 'monster';
   readonly sourceMonster?: Monster;
   hitHero?: boolean;
+  /** Spell whose rider effects this shot carries. */
+  readonly spellId?: string;
 }
 export interface SpellCloud {
   x: number;
@@ -159,6 +176,7 @@ export interface SpellCloud {
   element?: ResistName;
   readonly caster?: 'hero' | 'monster';
   readonly sourceMonster?: Monster;
+  readonly spellId?: string;
 }
 export interface SpellVisual {
   readonly shape: SpellShape;

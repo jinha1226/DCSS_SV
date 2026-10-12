@@ -50,7 +50,8 @@ describe('spell slot panel', () => {
     expect(element.children[0]!.textContent).toBe('마법 버튼');
     const row = rowFor(element, '충격파');
     expect(row.children).toHaveLength(5);
-    expect(row.children[4]!.classList.contains('on')).toBe(true);
+    // Five earth buttons compete for four slots; the level 2 spell is the one left out.
+    expect(row.children.slice(1).some((button) => button.classList.contains('on'))).toBe(false);
 
     row.children[1]!.click();
     expect(w.hero.spellSlots[0]).toBe('pulse_burst');
