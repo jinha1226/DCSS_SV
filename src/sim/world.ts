@@ -160,6 +160,7 @@ export function makeWorld(options: WorldOptions = {}): World {
     guaranteedSkills: [],
     depth,
     dungeonGraph,
+    runes: new Set(),
     floorStates: new Map<number, FloorState>(),
     floorRng,
     stairConnections: new Map(),
@@ -236,6 +237,10 @@ function traverse(w: World, down: boolean): void {
   const destinations = downDestinations(w.dungeonGraph, previous);
   const target = down ? (destinations[slot] ?? destinations[0]) : current.parent;
   if (target === undefined) return;
+  if (w.dungeonGraph.nodes.get(target)?.branch === 'Zot' && w.runes.size < 2) {
+    w.descending = 0;
+    return;
+  }
   const sourceX = Math.floor(w.hero.x) + 0.5;
   const sourceY = Math.floor(w.hero.y) + 0.5;
   rememberFloor(w, sourceX, sourceY);
