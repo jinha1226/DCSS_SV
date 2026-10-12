@@ -34,10 +34,12 @@ describe('stage 2: persistent floor state', () => {
     const explored = w.grid.cells.indexOf(Cell.Floor);
     w.seen[explored] = 1;
     w.floorTime = 17;
+    w.nextBand = 13;
     w.hero.lastStandUsed = true;
 
     take(w, true);
     expect(w.depth).toBe(2);
+    const storedBand = w.floorStates.get(1)!.nextBand;
     expect(w.hero.lastStandUsed).toBe(false);
     const secondGrid = w.grid;
     const secondItem = { uid: 'other-floor', kind: 'ammo' as const, x: 1.5, y: 1.5, count: 1, ignored: false };
@@ -52,6 +54,7 @@ describe('stage 2: persistent floor state', () => {
     expect(w.groundItems).not.toContain(secondItem);
     expect(w.seen[explored]).toBe(1);
     expect(w.floorTime).toBeGreaterThanOrEqual(17);
+    expect(w.nextBand).toBeCloseTo(storedBand);
     expect(w.hero.lastStandUsed).toBe(true);
 
     take(w, true);
