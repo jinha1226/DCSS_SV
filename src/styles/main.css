@@ -1521,3 +1521,23 @@ canvas {
 .status-extra .status-line > span:first-child {
   min-width: 90px;
 }
+
+/* Contextual merchant interaction; hidden outside the shop's immediate vicinity. */
+.shop-interact {
+  position: fixed;
+  z-index: 14;
+  left: 50%;
+  bottom: calc(148px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  min-height: 44px;
+  padding: 9px 18px;
+  border: 1px solid #e6c77c;
+  border-radius: 8px;
+  background: #342818;
+  color: #ffe6a6;
+  font: 600 14px system-ui, sans-serif;
+  touch-action: manipulation;
+}
+.shop-interact[hidden] {
+  display: none;
+}
