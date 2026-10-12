@@ -1,6 +1,7 @@
 import { skillData } from '../data/skills';
 import { xpToNext } from '../sim/skills';
 import { downDestinations, nodeLabel } from '../sim/dungeonGraph';
+import { shopAccessible } from '../sim/branchLoot';
 import { Cell, cellAt } from '../sim/grid';
 import type { World } from '../sim/world';
 
@@ -145,6 +146,7 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
             if (target.branch === 'Zot' && w.runes.size < 2) place.textContent += ' (룬 2개 필요)';
           }
         }
+        if (shopAccessible(w)) place.textContent += ' · 상점 이용 가능';
         elapsed.textContent = clock(w.time) + ' · 룬 ' + w.runes.size + '/2 · 금화 ' + w.gold + ' · 처치 ' + w.kills;
       }
       if (w.over !== shown) {
