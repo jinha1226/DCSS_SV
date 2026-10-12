@@ -17,7 +17,7 @@ import { makeRng } from './rng';
 import { initializeItemKnowledge } from './identification';
 import { heroSpeed, openStartingSkills } from './skills';
 import { castAt, stepSpells } from './spells';
-import type { Input, Stairs, World } from './types';
+import type { FloorState, Input, Stairs, World } from './types';
 export type { GroundItem, Hero, Input, Monster, PickupStats, Shot, SimEvent, SkillChoice, Stairs, World } from './types';
 export const STEP = 1 / 60;
 export interface WorldOptions {
@@ -146,6 +146,8 @@ export function makeWorld(options: WorldOptions = {}): World {
     openSkills: new Set<string>(),
     guaranteedSkills: [],
     depth,
+    floorStates: new Map<number, FloorState>(),
+    monstersEnabled: options.monsters !== false,
     time: 0,
     floorTime: 0,
     speed: options.speed ?? heroDef.speed,
@@ -163,6 +165,63 @@ export function makeWorld(options: WorldOptions = {}): World {
   enter(world, floor, options.monsters !== false);
   return world;
 }
+/** Snapshot mutable floor state before traversing stairs. The hero, inventory and run RNG remain global. */
+function rememberFloor(w: World, returnX: number, returnY: number): void {
+  w.floorStates.set(w.depth, {
+    grid: w.grid,
+    rooms: w.rooms,
+    seen: w.seen,
+    monsters: [...w.monsters],
+    groundItems: [...w.groundItems],
+    floorTime: w.floorTime,
+    nextBand: w.nextBand,
+    returnX,
+    returnY,
+  });
+}
+
+function restoreFloor(w: World, state: FloorState, x: number, y: number): void {
+  w.grid = state.grid;
+  w.rooms = state.rooms;
+  w.stairs = stairsOf({ grid: state.grid, rooms: state.rooms, start: { x, y } });
+  w.flow = makeFlow(state.grid);
+  w.visible = new Uint8Array(state.grid.w * state.grid.h);
+  w.seen = state.seen;
+  w.monsters.splice(0, w.monsters.length, ...state.monsters);
+  w.groundItems.splice(0, w.groundItems.length, ...state.groundItems);
+  w.shots.length = 0;
+  w.spellShots.length = 0;
+  w.spellClouds.length = 0;
+  w.spellVisuals.length = 0;
+  w.pendingPickup = null;
+  w.floorTime = state.floorTime;
+  w.nextBand = state.nextBand;
+  w.descending = 0;
+  w.hero.x = w.hero.px = x;
+  w.hero.y = w.hero.py = y;
+  look(w);
+}
+
+function traverse(w: World, down: boolean): void {
+  const oldDepth = w.depth;
+  const target = oldDepth + (down ? 1 : -1);
+  if (target < 1 || target > DUNGEON.floors) return;
+  const cellX = Math.floor(w.hero.x);
+  const cellY = Math.floor(w.hero.y);
+  // Return to the same stair cell when coming back from an adjacent floor.
+  rememberFloor(w, cellX + 0.5, cellY + 0.5);
+  w.depth = target;
+  const existing = w.floorStates.get(target);
+  if (existing) {
+    restoreFloor(w, existing, existing.returnX, existing.returnY);
+  } else {
+    enter(w, makeFloor(floorSeed(w.seed, target)), w.monstersEnabled);
+    // Remember the first entrance, so that a future revisit preserves its layout.
+    rememberFloor(w, w.hero.x, w.hero.y);
+  }
+  w.events.push({ type: 'floor', depth: w.depth });
+}
+
 function walkHero(w: World, input: Input, dt: number): void {
   const h = w.hero;
   if (h.hopTime > 0) {
@@ -233,17 +292,17 @@ function walkMonsters(w: World, dt: number): void {
   }
 }
 function stairsUnderfoot(w: World, dt: number): void {
-  const on = cellAt(w.grid, Math.floor(w.hero.x), Math.floor(w.hero.y)) === Cell.StairsDown;
-  w.descending = on ? w.descending + dt : 0;
+  const cell = cellAt(w.grid, Math.floor(w.hero.x), Math.floor(w.hero.y));
+  const down = cell === Cell.StairsDown;
+  const up = cell === Cell.StairsUp;
+  w.descending = down || (up && w.depth > 1) ? w.descending + dt : 0;
   if (w.descending < DUNGEON.descend) return;
-  if (w.depth >= DUNGEON.floors) {
+  if (down && w.depth >= DUNGEON.floors) {
     w.over = true;
     w.won = true;
     return;
   }
-  w.depth++;
-  enter(w, makeFloor(floorSeed(w.seed, w.depth)), true);
-  w.events.push({ type: 'floor', depth: w.depth });
+  traverse(w, down);
 }
 export function stepWorld(w: World, input: Input, dt: number = STEP): void {
   w.events.length = 0;

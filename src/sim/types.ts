@@ -203,7 +203,22 @@ export interface Stairs {
   readonly y: number;
   readonly down: boolean;
 }
+export interface FloorState {
+  readonly grid: Grid;
+  readonly rooms: readonly Room[];
+  readonly seen: Uint8Array;
+  readonly monsters: Monster[];
+  readonly groundItems: GroundItem[];
+  readonly floorTime: number;
+  readonly nextBand: number;
+  readonly returnX: number;
+  readonly returnY: number;
+}
 export interface World {
+  /** Persistent floors indexed by dungeon depth. */
+  readonly floorStates: Map<number, FloorState>;
+  /** Whether floor population was enabled when this run started. */
+  readonly monstersEnabled: boolean;
   grid: Grid;
   rooms: readonly Room[];
   stairs: readonly Stairs[];
