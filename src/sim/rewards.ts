@@ -59,7 +59,9 @@ function consumableCard(w: World): ItemChoice {
 /** One seeded, fixed set per character level; rerendering does not reroll. */
 export function dealItemRewards(w: World): void {
   if (w.pendingChoices <= 0 || w.rewardChoices || w.choosing) return;
-  const weapon = generateRewardWeapon(w, w.weapon.family);
+  const weapon = w.weapon.kind
+    ? generateMagicWeapon(w, w.weapon.kind, w.weapon.school!)
+    : generateWeapon(w, w.weapon.family);
   w.rewardChoices = [
     { id: 'weapon:' + weapon.uid, kind: 'weapon', name: weapon.name, line: '무기 · 가방에 보관', weapon },
     gearCard(w),
