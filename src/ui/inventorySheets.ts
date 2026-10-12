@@ -164,7 +164,7 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
 
     if (sheet === 'shop') {
       if (!shopAccessible(w)) {
-        content.append(row('상점', 'Orc 3층 입구에서 이용 가능'));
+        content.append(row('상점', 'Orc 3층 상점 근처에서 이용 가능'));
       } else {
         for (const offer of w.shopStock) {
           const name = offer.weapon?.name ?? (offer.itemId ? itemDefinition(offer.itemId).name : '상품');
