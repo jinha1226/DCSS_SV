@@ -53,10 +53,10 @@ describe('the tile sheet', () => {
 });
 
 describe('what is drawn', () => {
-  it('has a tile for each of the eight monsters', () => {
-    expect(MONSTERS).toHaveLength(8);
+  it('has a tile for each of the monster roster', () => {
+    expect(MONSTERS).toHaveLength(21);
     for (const m of MONSTERS) expect(hasTile(m.tile), m.id).toBe(true);
-    expect(new Set(MONSTERS.map((m) => m.id)).size).toBe(8);
+    expect(new Set(MONSTERS.map((m) => m.id)).size).toBe(21);
   });
 
   it('has floor and wall tiles for every look', () => {

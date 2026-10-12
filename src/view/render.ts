@@ -52,6 +52,10 @@ function drawFloor(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World, look: 
       const sy = oy + y * px;
       const base = pick(cell === Cell.Wall ? look.wall : look.floor, x, y);
       if (base) drawTile(ctx, atlas.image, base, sx, sy, px);
+      if (cell === Cell.Water) {
+        ctx.fillStyle = w.dungeonGraph.nodes.get(w.depth)?.branch === 'Swamp' ? 'rgba(56, 91, 63, 0.62)' : 'rgba(41, 105, 151, 0.65)';
+        ctx.fillRect(sx, sy, px, px);
+      }
       if (cell === Cell.StairsDown) drawTile(ctx, atlas.image, 'feat/stone_stairs_down', sx, sy, px);
       if (cell === Cell.StairsUp) drawTile(ctx, atlas.image, 'feat/stone_stairs_up', sx, sy, px);
       if (!w.visible[i]) ctx.fillRect(sx, sy, px, px);

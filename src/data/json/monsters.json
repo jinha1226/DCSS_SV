@@ -78,8 +78,16 @@
     "windup": 0.45,
     "rest": 1.7,
     "notice": 7,
-    "throws": { "range": 7, "keep": 3.5, "speed": 9, "item": "stone" },
-    "ai": { "preferredRange": 3.5, "rangedBias": 15 },
+    "throws": {
+      "range": 7,
+      "keep": 3.5,
+      "speed": 9,
+      "item": "stone"
+    },
+    "ai": {
+      "preferredRange": 3.5,
+      "rangedBias": 15
+    },
     "resists": {}
   },
   {
@@ -130,5 +138,284 @@
     "rest": 1.4,
     "notice": 5,
     "resists": {}
+  },
+  {
+    "id": "lair_wolf",
+    "name": "늑대",
+    "tile": "mon/jackal",
+    "role": "브랜치 전용",
+    "xp": 7,
+    "hp": 22,
+    "radius": 0.43,
+    "speed": 6.1,
+    "damage": 6,
+    "reach": 0.7,
+    "windup": 0.6,
+    "rest": 1.2,
+    "notice": 9,
+    "resists": {},
+    "flits": 0.3
+  },
+  {
+    "id": "lair_yak",
+    "name": "야크",
+    "tile": "mon/ogre",
+    "role": "브랜치 전용",
+    "xp": 17,
+    "hp": 52,
+    "radius": 0.43,
+    "speed": 3.8,
+    "damage": 11,
+    "reach": 0.7,
+    "windup": 0.6,
+    "rest": 1.2,
+    "notice": 9,
+    "resists": {},
+    "armour": 2
+  },
+  {
+    "id": "hydra",
+    "name": "히드라",
+    "tile": "mon/ogre",
+    "role": "브랜치 전용",
+    "xp": 28,
+    "hp": 85,
+    "radius": 0.43,
+    "speed": 3.6,
+    "damage": 16,
+    "reach": 0.7,
+    "windup": 0.6,
+    "rest": 1.2,
+    "notice": 9,
+    "resists": {
+      "poison": 1
+    },
+    "waterNative": true
+  },
+  {
+    "id": "naga",
+    "name": "나가",
+    "tile": "mon/gnoll",
+    "role": "브랜치 전용",
+    "xp": 18,
+    "hp": 55,
+    "radius": 0.43,
+    "speed": 3,
+    "damage": 12,
+    "reach": 0.7,
+    "windup": 0.6,
+    "rest": 1.2,
+    "notice": 9,
+    "resists": {
+      "poison": 2
+    },
+    "constrict": 2.6,
+    "poison": 3
+  },
+  {
+    "id": "naga_mage",
+    "name": "나가 마법사",
+    "tile": "mon/kobold",
+    "role": "브랜치 전용",
+    "xp": 13,
+    "hp": 40,
+    "radius": 0.43,
+    "speed": 3.2,
+    "damage": 7,
+    "reach": 0.7,
+    "windup": 0.6,
+    "rest": 1.2,
+    "notice": 9,
+    "resists": {
+      "poison": 2
+    },
+    "poison": 3,
+    "mana": 20,
+    "manaRegen": 1.5,
+    "ai": {
+      "spells": ["arc_needle", "ember_dart"],
+      "spellBias": 18,
+      "preferredRange": 4
+    }
+  },
+  {
+    "id": "salamander",
+    "name": "살라맨더",
+    "tile": "mon/gnoll",
+    "role": "브랜치 전용",
+    "xp": 21,
+    "hp": 62,
+    "radius": 0.43,
+    "speed": 4.2,
+    "damage": 12,
+    "reach": 0.7,
+    "windup": 0.6,
+    "rest": 1.2,
+    "notice": 9,
+    "resists": {
+      "fire": 3,
+      "cold": -1
+    },
+    "elemental": {
+      "type": "fire",
+      "damage": 7
+    }
+  },
+  {
+    "id": "wolf_spider",
+    "name": "늑대거미",
+    "tile": "mon/adder",
+    "role": "브랜치 전용",
+    "xp": 13,
+    "hp": 38,
+    "radius": 0.43,
+    "speed": 6.3,
+    "damage": 8,
+    "reach": 0.7,
+    "windup": 0.6,
+    "rest": 1.2,
+    "notice": 9,
+    "resists": {
+      "poison": 2
+    },
+    "poison": 6,
+    "flits": 0.65
+  },
+  {
+    "id": "orb_spider",
+    "name": "구체거미",
+    "tile": "mon/kobold",
+    "role": "브랜치 전용",
+    "xp": 10,
+    "hp": 31,
+    "radius": 0.43,
+    "speed": 5,
+    "damage": 5,
+    "reach": 0.7,
+    "windup": 0.6,
+    "rest": 1.2,
+    "notice": 9,
+    "resists": {
+      "poison": 2
+    },
+    "mana": 20,
+    "manaRegen": 1.5,
+    "ai": {
+      "spells": ["pulse_burst"],
+      "spellBias": 25,
+      "preferredRange": 5
+    }
+  },
+  {
+    "id": "swamp_drake",
+    "name": "늪 비룡",
+    "tile": "mon/jackal",
+    "role": "브랜치 전용",
+    "xp": 15,
+    "hp": 45,
+    "radius": 0.43,
+    "speed": 5,
+    "damage": 9,
+    "reach": 0.7,
+    "windup": 0.6,
+    "rest": 1.2,
+    "notice": 9,
+    "resists": {
+      "poison": 2
+    },
+    "waterNative": true,
+    "poison": 5
+  },
+  {
+    "id": "bog_body",
+    "name": "늪 시체",
+    "tile": "mon/gnoll",
+    "role": "브랜치 전용",
+    "xp": 19,
+    "hp": 58,
+    "radius": 0.43,
+    "speed": 3,
+    "damage": 12,
+    "reach": 0.7,
+    "windup": 0.6,
+    "rest": 1.2,
+    "notice": 9,
+    "resists": {
+      "cold": 3,
+      "fire": -1
+    },
+    "waterNative": true,
+    "elemental": {
+      "type": "cold",
+      "damage": 5
+    }
+  },
+  {
+    "id": "merfolk",
+    "name": "머포크",
+    "tile": "mon/gnoll",
+    "role": "브랜치 전용",
+    "xp": 17,
+    "hp": 50,
+    "radius": 0.43,
+    "speed": 5,
+    "damage": 11,
+    "reach": 1.5,
+    "windup": 0.6,
+    "rest": 1.2,
+    "notice": 9,
+    "resists": {},
+    "waterNative": true
+  },
+  {
+    "id": "merfolk_javelineer",
+    "name": "머포크 투창병",
+    "tile": "mon/kobold",
+    "role": "브랜치 전용",
+    "xp": 14,
+    "hp": 43,
+    "radius": 0.43,
+    "speed": 4.6,
+    "damage": 10,
+    "reach": 0.7,
+    "windup": 0.6,
+    "rest": 1.2,
+    "notice": 9,
+    "resists": {},
+    "waterNative": true,
+    "throws": {
+      "range": 8,
+      "keep": 5,
+      "speed": 12,
+      "item": "stone"
+    },
+    "ai": {
+      "preferredRange": 5,
+      "rangedBias": 20
+    }
+  },
+  {
+    "id": "merfolk_aquamancer",
+    "name": "머포크 수술사",
+    "tile": "mon/goblin",
+    "role": "브랜치 전용",
+    "xp": 16,
+    "hp": 47,
+    "radius": 0.43,
+    "speed": 4.6,
+    "damage": 7,
+    "reach": 0.7,
+    "windup": 0.6,
+    "rest": 1.2,
+    "notice": 9,
+    "resists": {},
+    "waterNative": true,
+    "mana": 24,
+    "manaRegen": 2,
+    "ai": {
+      "spells": ["focus_ray", "pulse_burst"],
+      "spellBias": 20,
+      "preferredRange": 5
+    }
   }
 ]

@@ -1,24 +1,106 @@
 [
-  { "id": "rats", "members": [{ "kind": "rat", "min": 4, "max": 6 }], "floors": [1, 2], "weight": 3 },
-  { "id": "goblins", "members": [{ "kind": "goblin", "min": 2, "max": 3 }], "floors": [1, 2], "weight": 3 },
-  { "id": "bats", "members": [{ "kind": "bat", "min": 2, "max": 3 }], "floors": [1, 3], "weight": 2 },
-  { "id": "jackals", "members": [{ "kind": "jackal", "min": 3, "max": 4 }], "floors": [1, 3], "weight": 2 },
   {
-    "id": "kobolds",
+    "id": "rats",
     "members": [
-      { "kind": "kobold", "min": 1, "max": 2 },
-      { "kind": "goblin", "min": 1, "max": 1 }
+      {
+        "kind": "rat",
+        "min": 4,
+        "max": 6
+      }
+    ],
+    "floors": [1, 2],
+    "weight": 3
+  },
+  {
+    "id": "goblins",
+    "members": [
+      {
+        "kind": "goblin",
+        "min": 2,
+        "max": 3
+      }
+    ],
+    "floors": [1, 2],
+    "weight": 3
+  },
+  {
+    "id": "bats",
+    "members": [
+      {
+        "kind": "bat",
+        "min": 2,
+        "max": 3
+      }
     ],
     "floors": [1, 3],
     "weight": 2
   },
-  { "id": "adders", "members": [{ "kind": "adder", "min": 2, "max": 3 }], "floors": [2, 3], "weight": 2 },
-  { "id": "gnolls", "members": [{ "kind": "gnoll", "min": 3, "max": 4 }], "floors": [2, 3], "weight": 3 },
+  {
+    "id": "jackals",
+    "members": [
+      {
+        "kind": "jackal",
+        "min": 3,
+        "max": 4
+      }
+    ],
+    "floors": [1, 3],
+    "weight": 2
+  },
+  {
+    "id": "kobolds",
+    "members": [
+      {
+        "kind": "kobold",
+        "min": 1,
+        "max": 2
+      },
+      {
+        "kind": "goblin",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "floors": [1, 3],
+    "weight": 2
+  },
+  {
+    "id": "adders",
+    "members": [
+      {
+        "kind": "adder",
+        "min": 2,
+        "max": 3
+      }
+    ],
+    "floors": [2, 3],
+    "weight": 2
+  },
+  {
+    "id": "gnolls",
+    "members": [
+      {
+        "kind": "gnoll",
+        "min": 3,
+        "max": 4
+      }
+    ],
+    "floors": [2, 3],
+    "weight": 3
+  },
   {
     "id": "raiders",
     "members": [
-      { "kind": "goblin", "min": 3, "max": 4 },
-      { "kind": "kobold", "min": 2, "max": 2 }
+      {
+        "kind": "goblin",
+        "min": 3,
+        "max": 4
+      },
+      {
+        "kind": "kobold",
+        "min": 2,
+        "max": 2
+      }
     ],
     "floors": [2, 3],
     "weight": 2
@@ -26,10 +108,317 @@
   {
     "id": "ogre",
     "members": [
-      { "kind": "ogre", "min": 1, "max": 1 },
-      { "kind": "goblin", "min": 2, "max": 2 }
+      {
+        "kind": "ogre",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "kind": "goblin",
+        "min": 2,
+        "max": 2
+      }
     ],
     "floors": [3, 3],
     "weight": 3
+  },
+  {
+    "id": "lair_wolves",
+    "branch": "Lair",
+    "members": [
+      {
+        "kind": "lair_wolf",
+        "min": 2,
+        "max": 4
+      }
+    ],
+    "floors": [1, 3],
+    "weight": 4
+  },
+  {
+    "id": "lair_yaks",
+    "branch": "Lair",
+    "members": [
+      {
+        "kind": "lair_yak",
+        "min": 1,
+        "max": 2
+      },
+      {
+        "kind": "lair_wolf",
+        "min": 1,
+        "max": 2
+      }
+    ],
+    "floors": [1, 3],
+    "weight": 3
+  },
+  {
+    "id": "lair_hydra",
+    "branch": "Lair",
+    "members": [
+      {
+        "kind": "hydra",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "floors": [2, 3],
+    "weight": 2
+  },
+  {
+    "id": "snake_nagas",
+    "branch": "Snake",
+    "members": [
+      {
+        "kind": "naga",
+        "min": 2,
+        "max": 3
+      }
+    ],
+    "floors": [1, 3],
+    "weight": 5
+  },
+  {
+    "id": "snake_casters",
+    "branch": "Snake",
+    "members": [
+      {
+        "kind": "naga_mage",
+        "min": 1,
+        "max": 2
+      },
+      {
+        "kind": "naga",
+        "min": 1,
+        "max": 2
+      }
+    ],
+    "floors": [2, 3],
+    "weight": 3
+  },
+  {
+    "id": "snake_salamanders",
+    "branch": "Snake",
+    "members": [
+      {
+        "kind": "salamander",
+        "min": 1,
+        "max": 2
+      },
+      {
+        "kind": "naga",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "floors": [2, 3],
+    "weight": 2
+  },
+  {
+    "id": "spider_hunters",
+    "branch": "Spider",
+    "members": [
+      {
+        "kind": "wolf_spider",
+        "min": 2,
+        "max": 4
+      }
+    ],
+    "floors": [1, 3],
+    "weight": 5
+  },
+  {
+    "id": "spider_orbs",
+    "branch": "Spider",
+    "members": [
+      {
+        "kind": "orb_spider",
+        "min": 1,
+        "max": 2
+      },
+      {
+        "kind": "wolf_spider",
+        "min": 1,
+        "max": 2
+      }
+    ],
+    "floors": [2, 3],
+    "weight": 3
+  },
+  {
+    "id": "swamp_drakes",
+    "branch": "Swamp",
+    "members": [
+      {
+        "kind": "swamp_drake",
+        "min": 2,
+        "max": 3
+      }
+    ],
+    "floors": [1, 3],
+    "weight": 4
+  },
+  {
+    "id": "swamp_hydras",
+    "branch": "Swamp",
+    "members": [
+      {
+        "kind": "hydra",
+        "min": 1,
+        "max": 2
+      },
+      {
+        "kind": "bog_body",
+        "min": 1,
+        "max": 2
+      }
+    ],
+    "floors": [2, 3],
+    "weight": 3
+  },
+  {
+    "id": "swamp_bog",
+    "branch": "Swamp",
+    "members": [
+      {
+        "kind": "bog_body",
+        "min": 2,
+        "max": 3
+      }
+    ],
+    "floors": [1, 3],
+    "weight": 3
+  },
+  {
+    "id": "shoals_merfolk",
+    "branch": "Shoals",
+    "members": [
+      {
+        "kind": "merfolk",
+        "min": 2,
+        "max": 3
+      }
+    ],
+    "floors": [1, 3],
+    "weight": 5
+  },
+  {
+    "id": "shoals_javelins",
+    "branch": "Shoals",
+    "members": [
+      {
+        "kind": "merfolk_javelineer",
+        "min": 1,
+        "max": 2
+      },
+      {
+        "kind": "merfolk",
+        "min": 1,
+        "max": 2
+      }
+    ],
+    "floors": [2, 3],
+    "weight": 3
+  },
+  {
+    "id": "shoals_mages",
+    "branch": "Shoals",
+    "members": [
+      {
+        "kind": "merfolk_aquamancer",
+        "min": 1,
+        "max": 2
+      },
+      {
+        "kind": "merfolk",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "floors": [2, 3],
+    "weight": 2
+  },
+  {
+    "id": "snake_guard",
+    "branch": "Snake",
+    "members": [
+      {
+        "kind": "naga_mage",
+        "min": 2,
+        "max": 2
+      },
+      {
+        "kind": "salamander",
+        "min": 1,
+        "max": 2
+      },
+      {
+        "kind": "naga",
+        "min": 1,
+        "max": 2
+      }
+    ],
+    "floors": [3, 3],
+    "weight": 4
+  },
+  {
+    "id": "spider_guard",
+    "branch": "Spider",
+    "members": [
+      {
+        "kind": "orb_spider",
+        "min": 2,
+        "max": 2
+      },
+      {
+        "kind": "wolf_spider",
+        "min": 2,
+        "max": 3
+      }
+    ],
+    "floors": [3, 3],
+    "weight": 4
+  },
+  {
+    "id": "swamp_guard",
+    "branch": "Swamp",
+    "members": [
+      {
+        "kind": "hydra",
+        "min": 2,
+        "max": 2
+      },
+      {
+        "kind": "swamp_drake",
+        "min": 1,
+        "max": 2
+      }
+    ],
+    "floors": [3, 3],
+    "weight": 4
+  },
+  {
+    "id": "shoals_guard",
+    "branch": "Shoals",
+    "members": [
+      {
+        "kind": "merfolk_aquamancer",
+        "min": 2,
+        "max": 2
+      },
+      {
+        "kind": "merfolk_javelineer",
+        "min": 1,
+        "max": 2
+      },
+      {
+        "kind": "merfolk",
+        "min": 1,
+        "max": 2
+      }
+    ],
+    "floors": [3, 3],
+    "weight": 4
   }
 ]

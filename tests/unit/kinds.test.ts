@@ -11,9 +11,9 @@ import { STILL, arena, count, quietArena, run } from './arena';
 const stats = (id: string) => monsterKind(id).stats;
 const far = (m: { x: number; y: number }, w: { hero: { x: number; y: number } }): number => Math.hypot(m.x - w.hero.x, m.y - w.hero.y);
 
-describe('the eight monsters', () => {
+describe('the monster roster', () => {
   it('all fit a corridor one cell wide, and are wide enough that two do not share a cell', () => {
-    expect(MONSTERS).toHaveLength(8);
+    expect(MONSTERS).toHaveLength(21);
     for (const m of MONSTERS) {
       expect(m.stats.radius, m.id).toBeLessThan(0.5);
       expect(m.stats.radius, m.id).toBeGreaterThanOrEqual(0.38);

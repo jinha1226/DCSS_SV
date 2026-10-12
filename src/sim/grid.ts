@@ -1,5 +1,5 @@
 /** What a cell of a floor is made of. */
-export const Cell = { Wall: 0, Floor: 1, StairsDown: 2, StairsUp: 3 } as const;
+export const Cell = { Wall: 0, Floor: 1, StairsDown: 2, StairsUp: 3, Water: 4 } as const;
 export type Cell = (typeof Cell)[keyof typeof Cell];
 
 /** A floor: `w` by `h` cells, one cell is 1.0 in world units. */

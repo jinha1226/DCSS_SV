@@ -35,6 +35,8 @@ export interface MonsterStats {
   };
   readonly flits?: number;
   readonly poison?: number;
+  readonly constrict?: number;
+  readonly waterNative?: boolean;
   readonly resists: Readonly<Partial<Record<ResistName, number>>>;
   readonly armour?: number;
   readonly elemental?: { readonly type: ResistName; readonly damage: number };
@@ -133,6 +135,8 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
     ...('throws' in row ? { throws: row.throws } : {}),
     ...('flits' in row ? { flits: row.flits } : {}),
     ...('poison' in row ? { poison: row.poison } : {}),
+    ...('constrict' in row ? { constrict: row.constrict } : {}),
+    ...('waterNative' in row ? { waterNative: row.waterNative } : {}),
   };
   return { id: row.id, name: row.name, tile: row.tile as TileName, role: row.role, stats };
 });
