@@ -108,6 +108,7 @@ function pulse(w: World, effect: SpellOngoing, spell: SpellData): void {
       }
     }
   } else if (effect.kind === 'field') {
+    pushVisual(w, spell, { shape: 'field', x1: effect.x, y1: effect.y, x2: effect.x, y2: effect.y, radius: w.heroDef.sight });
     for (const m of seenEnemies(w))
       hitSpellTarget(w, 'hero', m, effect.damage, spell.element, undefined, { spellId: spell.id, from: effect });
   } else if (effect.kind === 'storm') {
