@@ -18,9 +18,8 @@ export function aptitude(w: World, id: string): Aptitude {
   return w.heroDef.aptitudes[skill.aptitude] ?? 'normal';
 }
 
-export function skillCap(_w: World, _id: string): number {
-  return MAX_SKILL;
-}
+/** All species share the same cap; aptitude changes training speed, not the limit. */
+export const skillCap: (world: World, id: string) => number = () => MAX_SKILL;
 
 function owner(effect: string): { skill: string; rule: SkillEffect } | undefined {
   for (const skill of SKILLS) {
