@@ -24,7 +24,7 @@ export function drawMiniMap(ctx: CanvasRenderingContext2D, w: World): void {
     const ix = Math.floor(item.x);
     const iy = Math.floor(item.y);
     if (!w.seen[iy * w.grid.w + ix]) continue;
-    ctx.fillStyle = item.newPath ? '#66d7c2' : '#d9b866';
+    ctx.fillStyle = '#d9b866';
     ctx.fillRect(left + ix * scale, top + iy * scale, scale, scale);
   }
   const shop = shopLocation(w);

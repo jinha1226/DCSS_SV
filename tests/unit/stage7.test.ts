@@ -109,6 +109,6 @@ describe('stage 7 sight and traits', () => {
 describe('path unlock items removed', () => {
   it('no longer places unlock items on a newly created floor', () => {
     const w = makeWorld({ floor: openFloor(), monsters: false, items: true });
-    expect(w.groundItems.some((item) => item.kind === 'path')).toBe(false);
+    expect(w.groundItems.map((item) => item.kind).includes('path')).toBe(false);
   });
 });

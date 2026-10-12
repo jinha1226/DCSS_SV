@@ -16,12 +16,12 @@ export function scoreMonsterAction(context: MonsterContext, candidate: ActionCan
   const danger = 1 - hpRatio;
   const weapon = m.weapon;
   if (candidate.action === 'melee') {
-    const damage = weapon && weapon.family !== 'bow' ? weapon.damage : m.stats.damage;
+    const damage = weapon && weapon.family !== 'ranged' ? weapon.damage : m.stats.damage;
     const urgency = clamp01(1 - d / Math.max(0.1, reach));
     return 55 + Math.min(24, damage * 1.3) + urgency * 5 + (ai?.aggression ?? 0);
   }
   if (candidate.action === 'ranged') {
-    const damage = weapon?.family === 'bow' ? weapon.damage : m.stats.damage;
+    const damage = weapon?.family === 'ranged' ? weapon.damage : m.stats.damage;
     const comfortable = preferredRange > 0 ? clamp01(d / preferredRange) : 1;
     return 55 + Math.min(24, damage * 1.4) + comfortable * 6 + (ai?.rangedBias ?? 0);
   }

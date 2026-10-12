@@ -59,7 +59,7 @@ export function executeMonsterAction(context: MonsterContext, choice: ActionCand
 export function finishMonsterAttack(context: MonsterContext): void {
   const { world: w, monster: m, distance: d, reach, rangedRange, visible, dx, dy } = context;
   if (m.attackMode === 'melee' && d <= reach + GRACE) {
-    const damage = m.weapon && m.weapon.family !== 'bow' ? m.weapon.damage : m.stats.damage;
+    const damage = m.weapon && m.weapon.family !== 'ranged' ? m.weapon.damage : m.stats.damage;
     const landed = hurtHero(w, damage, 'melee', m, m.stats.elemental);
     if (landed && m.stats.poison) {
       const resist = Math.max(0, w.heroDef.resists.poison ?? 0);
@@ -67,7 +67,7 @@ export function finishMonsterAttack(context: MonsterContext): void {
     }
     if (landed && m.stats.constrict) w.hero.constricted = Math.max(w.hero.constricted, m.stats.constrict);
   } else if (m.attackMode === 'ranged' && visible && d > reach && d <= rangedRange && d > 1e-6) {
-    const bow = m.weapon?.family === 'bow' ? m.weapon : undefined;
+    const bow = m.weapon?.family === 'ranged' ? m.weapon : undefined;
     const speed = bow?.projectileSpeed ?? m.stats.throws?.speed ?? 10;
     w.shots.push({
       x: m.x,
