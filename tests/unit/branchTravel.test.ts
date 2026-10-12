@@ -35,6 +35,18 @@ describe('stage 3: branch traversal integration', () => {
     const monster = spawnMonster(w, 'rat', w.hero.x + 1, w.hero.y, false);
     expect(monster.maxHp).toBeLessThan(monster.stats.hp * 10);
   });
+  it('blocks Zot until both seeded rune branches are collected', () => {
+    const w = makeWorld({ seed: 2, depth: 703, monsters: false, items: false });
+    take(w, true);
+    expect(w.depth).toBe(703);
+    w.runes.add(w.dungeonGraph.runeBranches[0]);
+    take(w, true);
+    expect(w.depth).toBe(703);
+    w.runes.add(w.dungeonGraph.runeBranches[1]);
+    take(w, true);
+    expect(w.depth).toBe(801);
+    expect(w.won).toBe(false);
+  });
   it('does not award victory merely for reaching the end of a branch', () => {
     const w = makeWorld({ seed: 2, depth: 803, monsters: false, items: false });
     expect(downDestinations(w.dungeonGraph, w.depth)).toEqual([]);
