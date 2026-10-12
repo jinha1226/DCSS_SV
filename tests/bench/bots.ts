@@ -3,6 +3,7 @@ import { throwTarget } from '../../src/sim/combat';
 import { acceptPickup, declinePickup, weaponScore } from '../../src/sim/equipment';
 import { Cell, cellAt, walkable } from '../../src/sim/grid';
 import { chooseSkill, effectValue, skillLevel } from '../../src/sim/skills';
+import { chooseReward } from '../../src/sim/rewards';
 import { makeWorld, stepWorld, type Input, type SkillChoice, type World } from '../../src/sim/world';
 
 export type Bot = (w: World) => Input;
@@ -213,6 +214,10 @@ export function play(bot: Bot, seed: number, limit: number, chooser: Chooser = a
       const found = w.pendingPickup.axe;
       if (found && weaponScore(found) > weaponScore(w.weapon)) acceptPickup(w);
       else declinePickup(w);
+      continue;
+    }
+    if (w.rewardChoices) {
+      chooseReward(w, w.rewardChoices[0]!.id);
       continue;
     }
     if (w.choosing) {

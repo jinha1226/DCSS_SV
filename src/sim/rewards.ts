@@ -1,0 +1,82 @@
+import { ITEM_DEFINITIONS } from '../data/itemCatalog';
+import { generateWeapon } from './equipment';
+import { addConsumable } from './consumables';
+import type { ItemChoice, World } from './types';
+
+/** All cards grant existing inventory items, not new abilities or artefacts. */
+const SUPPLIES = [
+  'potion_healing',
+  'potion_might',
+  'potion_haste',
+  'scroll_blink',
+  'scroll_enchant_weapon',
+  'scroll_enchant_armour',
+  'potion_curing',
+] as const;
+
+function choose<T>(w: World, options: readonly T[]): T {
+  return options[Math.floor(w.rng() * options.length)]!;
+}
+
+function gearCard(w: World): ItemChoice {
+  const options = ITEM_DEFINITIONS.filter(
+    (item) =>
+      item.enabled &&
+      ['armour', 'shield', 'jewellery'].includes(item.kind) &&
+      !(item.kind === 'shield' && w.weapon.hands === 2) &&
+      !Object.values(w.gear).includes(item.id) &&
+      !w.inventory.some((owned) => owned.kind === 'gear' && owned.id === item.id),
+  );
+  const fallback = ITEM_DEFINITIONS.filter((item) => item.enabled && ['armour', 'jewellery'].includes(item.kind));
+  const picked = choose(w, options.length ? options : fallback);
+  return {
+    id: 'gear:' + picked.id,
+    kind: 'gear',
+    name: picked.name,
+    line: '방어구·장신구 · 가방에 보관',
+    itemId: picked.id,
+  };
+}
+
+function consumableCard(w: World): ItemChoice {
+  const eligible = SUPPLIES.filter((id) => {
+    if (id === 'scroll_enchant_weapon') return !w.weapon.special && (w.weapon.enchantment ?? 0) < 9;
+    if (id === 'scroll_enchant_armour') return Boolean(w.gear.armour || w.gear.shield);
+    return true;
+  });
+  const itemId = choose(w, eligible);
+  const item = ITEM_DEFINITIONS.find((entry) => entry.id === itemId)!;
+  return { id: 'consumable:' + itemId, kind: 'consumable', name: item.name, line: '소모품 ×1 · 가방에 보관', itemId };
+}
+
+/** One seeded, fixed set per character level; rerendering does not reroll. */
+export function dealItemRewards(w: World): void {
+  if (w.pendingChoices <= 0 || w.rewardChoices || w.choosing) return;
+  const weapon = generateWeapon(w, w.weapon.family);
+  w.rewardChoices = [
+    { id: 'weapon:' + weapon.uid, kind: 'weapon', name: weapon.name, line: '무기 · 가방에 보관', weapon },
+    gearCard(w),
+    consumableCard(w),
+  ];
+}
+
+/** A choice is granted once; future levels use a fresh set of cards. */
+export function chooseReward(w: World, id: string): boolean {
+  if (w.over || !w.rewardChoices) return false;
+  const chosen = w.rewardChoices.find((card) => card.id === id);
+  if (!chosen) return false;
+  if (chosen.kind === 'weapon' && chosen.weapon) {
+    w.inventory.push({ uid: chosen.weapon.uid, kind: 'weapon', weapon: chosen.weapon });
+  } else if (chosen.kind === 'gear' && chosen.itemId) {
+    w.inventory.push({ uid: 'reward-' + w.nextItem++, kind: 'gear', id: chosen.itemId });
+  } else if (chosen.kind === 'consumable' && chosen.itemId) {
+    addConsumable(w, chosen.itemId);
+    w.identifiedItems.add(chosen.itemId);
+  } else {
+    return false;
+  }
+  w.rewardChoices = null;
+  w.pendingChoices = Math.max(0, w.pendingChoices - 1);
+  dealItemRewards(w);
+  return true;
+}

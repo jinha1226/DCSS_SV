@@ -21,7 +21,7 @@ import { initializeItemKnowledge } from './identification';
 import { heroSpeed, openStartingSkills } from './skills';
 import { castAt, stepSpells } from './spells';
 import type { FloorState, Input, Stairs, World } from './types';
-export type { GroundItem, Hero, Input, Monster, PickupStats, Shot, SimEvent, SkillChoice, Stairs, World } from './types';
+export type { GroundItem, Hero, Input, ItemChoice, Monster, PickupStats, Shot, SimEvent, SkillChoice, Stairs, World } from './types';
 export const STEP = 1 / 60;
 export interface WorldOptions {
   readonly seed?: number;
@@ -132,6 +132,7 @@ export function makeWorld(options: WorldOptions = {}): World {
       level: 1,
       xp: 0,
       skills: {},
+      skillXp: {},
       invulnerable: 0,
       lastStandUsed: false,
       might: 0,
@@ -199,6 +200,7 @@ export function makeWorld(options: WorldOptions = {}): World {
     stairsArmed: true,
     pendingChoices: 0,
     choosing: null,
+    rewardChoices: null,
     over: false,
     won: false,
   };
@@ -411,7 +413,7 @@ function stairsUnderfoot(w: World, dt: number): void {
 }
 export function stepWorld(w: World, input: Input, dt: number = STEP): void {
   w.events.length = 0;
-  if (w.over || w.choosing || w.pendingPickup) return;
+  if (w.over || w.choosing || w.rewardChoices || w.pendingPickup) return;
   const h = w.hero,
     cx = Math.floor(h.x),
     cy = Math.floor(h.y);
@@ -432,12 +434,12 @@ export function stepWorld(w: World, input: Input, dt: number = STEP): void {
     if (w.pendingPickup) return;
   }
   if (input.spell) castAt(w, input.spell.id, input.spell.x, input.spell.y);
-  if (w.choosing) return;
+  if (w.choosing || w.rewardChoices) return;
   walkMonsters(w, dt);
   if (w.over) return;
   heroStrikes(w, dt, input.throw === true);
   stepSpells(w, dt);
-  if (w.over || w.choosing) return;
+  if (w.over || w.choosing || w.rewardChoices) return;
   if (w.itemsEnabled) collectGround(w);
   collectObjective(w);
   if (w.over) return;

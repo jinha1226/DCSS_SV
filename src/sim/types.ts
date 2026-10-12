@@ -8,6 +8,15 @@ import type { Flow } from './flow';
 import type { Grid } from './grid';
 import type { Rng } from './rng';
 
+export interface ItemChoice {
+  readonly id: string;
+  readonly kind: 'weapon' | 'gear' | 'consumable';
+  readonly name: string;
+  readonly line: string;
+  readonly weapon?: WeaponItem;
+  readonly itemId?: string;
+}
+
 export interface SkillChoice {
   readonly id: string;
   readonly name: string;
@@ -38,6 +47,8 @@ export interface Hero {
   level: number;
   xp: number;
   skills: Record<string, number>;
+  /** Progress towards each next skill level; persists across equipment changes and floors. */
+  skillXp: Record<string, number>;
   invulnerable: number;
   lastStandUsed: boolean;
   might: number;
@@ -294,6 +305,8 @@ export interface World {
   stairsArmed: boolean;
   pendingChoices: number;
   choosing: readonly SkillChoice[] | null;
+  /** Level-up item cards; legacy skill-choice field remains for existing tools. */
+  rewardChoices: readonly ItemChoice[] | null;
   over: boolean;
   won: boolean;
 }

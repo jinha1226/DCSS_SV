@@ -1,177 +1,150 @@
 import { describe, expect, it } from 'vitest';
+import { plainAxe, plainBow } from '../../src/data/items';
 import { hurtHero } from '../../src/sim/effects';
+import { recordKill } from '../../src/sim/kills';
 import { spawnMonster } from '../../src/sim/monster';
-import { chooseSkill, effectValue, gainExperience, makeSkillChoice, skillLevel, xpToNext } from '../../src/sim/skills';
-import { Cell } from '../../src/sim/grid';
-import { stepWorld } from '../../src/sim/world';
-import { STILL, arena, run } from './arena';
+import { chooseReward } from '../../src/sim/rewards';
+import { gainExperience, openSkill, skillCap, skillLevel, skillXpToNext, trainSkills, xpToNext } from '../../src/sim/skills';
+import { STEP, makeWorld, stepWorld } from '../../src/sim/world';
+import { STILL, arena } from './arena';
 
-function grant(w: ReturnType<typeof arena>, id: string, times = 1): void {
-  for (let i = 0; i < times; i++) {
-    const card = makeSkillChoice(w, id);
-    w.choosing = [card];
-    w.pendingChoices = 1;
-    chooseSkill(w, id);
-  }
-}
+describe('automatic skill training', () => {
+  it('trains four shared skills independently, including unused Spellcasting', () => {
+    const w = arena();
+    const beforeHp = w.hero.maxHp;
+    const beforeMana = w.hero.maxMana;
+    trainSkills(w, 220);
+    for (const id of ['fighting', 'armour', 'dodging', 'spellcasting']) {
+      expect(skillLevel(w, id)).toBeGreaterThan(0);
+    }
+    expect(skillLevel(w, 'axe')).toBeGreaterThan(1);
+    expect(w.hero.maxHp).toBeGreaterThan(beforeHp);
+    expect(w.hero.maxMana).toBeGreaterThan(beforeMana);
+    expect(skillLevel(w, 'shield')).toBe(0);
+  });
 
-describe('growth', () => {
-  it('uses the XP curve and pauses on a choice', () => {
+  it('trains only the currently equipped weapon family and retains previous progress', () => {
+    const w = arena();
+    trainSkills(w, 16);
+    const oldAxe = skillLevel(w, 'axe');
+    const oldXp = w.hero.skillXp.axe;
+    w.weapon = plainBow('shortbow', 'test-bow');
+    trainSkills(w, 150);
+    expect(skillLevel(w, 'bow')).toBeGreaterThan(0);
+    expect(skillLevel(w, 'axe')).toBe(oldAxe);
+    expect(w.hero.skillXp.axe).toBe(oldXp);
+    w.weapon = plainAxe('hand_axe', 'test-axe');
+    trainSkills(w, 150);
+    expect(skillLevel(w, 'axe')).toBeGreaterThan(oldAxe);
+  });
+
+  it('does not train the decorative starting weapon of a magic attacker', () => {
+    const w = makeWorld({ species: 'deep_elf', job: 'conjurer', items: false, monsters: false });
+    const before = skillLevel(w, 'axe');
+    trainSkills(w, 150);
+    expect(skillLevel(w, 'axe')).toBe(before);
+    expect(skillLevel(w, 'conjuration')).toBeGreaterThan(1);
+    expect(skillLevel(w, 'spellcasting')).toBeGreaterThan(0);
+  });
+
+  it('requires a real shield and one-handed weapon for Shields training', () => {
+    const w = arena();
+    trainSkills(w, 120);
+    expect(skillLevel(w, 'shield')).toBe(0);
+    w.gear.shield = 'buckler';
+    trainSkills(w, 120);
+    const trained = skillLevel(w, 'shield');
+    expect(trained).toBeGreaterThan(0);
+    w.weapon = plainAxe('battle_axe', 'two-handed');
+    trainSkills(w, 120);
+    expect(skillLevel(w, 'shield')).toBe(trained);
+    w.weapon = plainAxe('hand_axe', 'one-handed');
+    trainSkills(w, 120);
+    expect(skillLevel(w, 'shield')).toBeGreaterThan(trained);
+  });
+
+  it('grows unlocked magic schools even without casting them', () => {
+    const w = arena();
+    trainSkills(w, 200);
+    expect(skillLevel(w, 'fire')).toBe(0);
+    openSkill(w, 'fire');
+    trainSkills(w, 200);
+    expect(skillLevel(w, 'fire')).toBeGreaterThan(0);
+  });
+
+  it('keeps the same cap for all aptitudes but a fast aptitude advances sooner', () => {
+    const fast = makeWorld({ species: 'minotaur', job: 'berserker', items: false, monsters: false });
+    const slow = makeWorld({ species: 'deep_elf', job: 'conjurer', items: false, monsters: false });
+    trainSkills(fast, 200);
+    trainSkills(slow, 200);
+    expect(skillCap(fast, 'fighting')).toBe(27);
+    expect(skillCap(slow, 'fighting')).toBe(27);
+    expect(skillLevel(fast, 'fighting')).toBeGreaterThan(skillLevel(slow, 'fighting'));
+    trainSkills(fast, 100_000);
+    trainSkills(slow, 100_000);
+    expect(skillLevel(fast, 'fighting')).toBe(27);
+    expect(skillLevel(slow, 'fighting')).toBe(27);
+  });
+
+  it('does not grant any progress for waiting or being struck without earned XP', () => {
+    const w = arena();
+    const snapshot = { ...w.hero.skills };
+    stepWorld(w, STILL, STEP);
+    hurtHero(w, 2);
+    expect(w.hero.skills).toEqual(snapshot);
+    expect(w.hero.skillXp).toEqual({});
+  });
+
+  it('trains with normal kills but refuses XP from deadline pursuers', () => {
+    const w = arena();
+    const pursuer = spawnMonster(w, 'rat', 10.8, 10, true);
+    pursuer.rewardless = true;
+    pursuer.hp = 0;
+    const xp = w.hero.xp;
+    recordKill(w, pursuer);
+    expect(w.hero.xp).toBe(xp);
+    expect(w.hero.skillXp).toEqual({});
+    const normal = spawnMonster(w, 'rat', 11.8, 10, true);
+    normal.hp = 0;
+    recordKill(w, normal);
+    expect(w.hero.xp).toBeGreaterThan(xp);
+    expect(w.hero.skillXp.fighting).toBeGreaterThan(0);
+  });
+
+  it('retains partial skill XP across floors and respects threshold boundaries', () => {
+    const w = arena();
+    const threshold = skillXpToNext(1);
+    trainSkills(w, threshold / 1.5 - 0.1);
+    expect(skillLevel(w, 'fighting')).toBe(1);
+    trainSkills(w, 0.11);
+    expect(skillLevel(w, 'fighting')).toBe(2);
+    expect(w.hero.skillXp.fighting).toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe('level rewards', () => {
+  it('replaces skill cards with three different item categories and pauses simulation time', () => {
     const w = arena();
     gainExperience(w, xpToNext(1));
     expect(w.hero.level).toBe(2);
-    expect(w.choosing).toHaveLength(3);
+    expect(w.choosing).toBeNull();
+    expect(w.rewardChoices?.map((card) => card.kind)).toEqual(['weapon', 'gear', 'consumable']);
     const time = w.time;
     stepWorld(w, STILL);
     expect(w.time).toBe(time);
   });
 
-  it('queues two choices when two levels arrive together', () => {
+  it('queues simultaneous level rewards and consumes each exactly once', () => {
     const w = arena();
     gainExperience(w, xpToNext(1) + xpToNext(2));
-    expect(w.hero.level).toBe(3);
     expect(w.pendingChoices).toBe(2);
-    chooseSkill(w, w.choosing![0]!.id);
+    const first = w.rewardChoices![0]!;
+    expect(chooseReward(w, first.id)).toBe(true);
     expect(w.pendingChoices).toBe(1);
-    expect(w.choosing).not.toBeNull();
-  });
-
-  it('deals different cards and excludes maxed skills', () => {
-    const w = arena();
-    w.hero.skills.axe = 8;
-    gainExperience(w, xpToNext(1));
-    expect(new Set(w.choosing!.map((c) => c.id)).size).toBe(w.choosing!.length);
-    expect(w.choosing!.some((c) => c.id === 'axe')).toBe(false);
-  });
-
-  it('starts Minotaur axe and fighting at level two on their first card', () => {
-    const w = arena();
-    expect(skillLevel(w, 'axe')).toBe(1);
-    expect(skillLevel(w, 'fighting')).toBe(1);
-    const before = w.hero.maxHp;
-    grant(w, 'fighting');
-    expect(skillLevel(w, 'fighting')).toBeGreaterThan(1);
-    expect(w.hero.maxHp).toBeGreaterThan(before);
-  });
-
-  it('keeps level and skills when taking the stairs', () => {
-    const w = arena();
-    grant(w, 'axe');
-    w.hero.level = 4;
-    const down = w.stairs.find((s) => s.down);
-    if (!down) {
-      expect(cellAtForArena()).toBe(Cell.Floor);
-      return;
-    }
-    w.hero.x = down.x + 0.5;
-    w.hero.y = down.y + 0.5;
-    run(w, 1);
-    expect(skillLevel(w, 'axe')).toBe(2);
-    expect(w.hero.level).toBe(4);
-  });
-});
-
-function cellAtForArena(): Cell {
-  return Cell.Floor;
-}
-
-describe('skill values', () => {
-  it('exposes every axe milestone', () => {
-    const w = arena();
-    grant(w, 'axe', 7);
-    expect(effectValue(w, 'axe.damage')).toBe(8);
-    expect(effectValue(w, 'axe.wide')).toBe(0.3);
-    expect(effectValue(w, 'axe.spin')).toBe(1.5);
-    expect(effectValue(w, 'axe.stun')).toBe(0.25);
-    expect(effectValue(w, 'axe.reset')).toBe(1);
-  });
-  it('exposes every fighting milestone', () => {
-    const w = arena();
-    grant(w, 'fighting', 7);
-    expect(effectValue(w, 'fighting.hp')).toBe(64);
-    expect(effectValue(w, 'fighting.regen')).toBe(2);
-    expect(effectValue(w, 'fighting.healKill')).toBe(1);
-    expect(effectValue(w, 'fighting.desperate')).toBe(1.3);
-    expect(effectValue(w, 'fighting.lastStand')).toBe(1);
-  });
-  it('exposes every armour milestone', () => {
-    const w = arena();
-    grant(w, 'armour', 8);
-    expect(effectValue(w, 'armour.reduce')).toBe(8);
-    expect(effectValue(w, 'armour.stone')).toBe(0.5);
-    expect(effectValue(w, 'armour.deflect')).toBe(3);
-    expect(effectValue(w, 'armour.unmoved')).toBe(1);
-    expect(effectValue(w, 'armour.thorns')).toBe(2);
-  });
-  it('exposes every shield milestone', () => {
-    const w = arena();
-    grant(w, 'shield', 8);
-    expect(effectValue(w, 'shield.chance')).toBeCloseTo(0.32);
-    expect(effectValue(w, 'shield.push')).toBe(5);
-    expect(effectValue(w, 'shield.missile')).toBe(2);
-    expect(effectValue(w, 'shield.stun')).toBe(0.6);
-    expect(effectValue(w, 'shield.reset')).toBe(1);
-  });
-  it('exposes every dodging milestone', () => {
-    const w = arena();
-    grant(w, 'dodging', 8);
-    expect(effectValue(w, 'dodging.chance')).toBeCloseTo(0.24);
-    expect(effectValue(w, 'dodging.speed')).toBe(0.06);
-    expect(effectValue(w, 'dodging.delay')).toBe(0.8);
-    expect(effectValue(w, 'dodging.squeeze')).toBe(0.5);
-    expect(effectValue(w, 'dodging.grace')).toBe(0.8);
-  });
-  it('exposes every throwing milestone', () => {
-    const w = arena();
-    grant(w, 'throwing', 8);
-    expect(effectValue(w, 'throwing.power')).toBe(8);
-    expect(effectValue(w, 'throwing.cooldown')).toBeCloseTo(-0.56);
-    expect(effectValue(w, 'throwing.pierce')).toBe(1);
-    expect(effectValue(w, 'throwing.double')).toBe(2);
-    expect(effectValue(w, 'throwing.slow')).toBe(0.4);
-    expect(effectValue(w, 'throwing.return')).toBe(1);
-  });
-});
-
-describe('defence order', () => {
-  it('dodges before a shield or armour can apply', () => {
-    const w = arena();
-    w.hero.skills.dodging = 8;
-    w.hero.skills.shield = 8;
-    w.hero.skills.armour = 8;
-    Object.defineProperty(w, 'rng', { value: () => 0 });
-    const hp = w.hero.hp;
-    expect(hurtHero(w, 20)).toBe(false);
-    expect(w.hero.hp).toBe(hp);
-    expect(w.events.at(-1)?.type).toBe('dodge');
-  });
-
-  it('blocks before armour when dodge is absent', () => {
-    const w = arena();
-    w.hero.skills.shield = 8;
-    w.hero.skills.armour = 8;
-    w.hero.skills.dodging = 0;
-    Object.defineProperty(w, 'rng', { value: () => 0 });
-    const hp = w.hero.hp;
-    expect(hurtHero(w, 20)).toBe(false);
-    expect(w.hero.hp).toBe(hp);
-    expect(w.events.at(-1)?.type).toBe('block');
-  });
-
-  it('armour reduces a landed hit after dodge and block fail', () => {
-    const w = arena();
-    w.hero.skills.armour = 2;
-    const hp = w.hero.hp;
-    expect(hurtHero(w, 10)).toBe(true);
-    expect(w.hero.hp).toBe(hp - 8);
-  });
-
-  it('kills award monster experience', () => {
-    const w = arena();
-    const rat = spawnMonster(w, 'rat', 10.8, 10, true);
-    rat.hp = 1;
-    w.hero.butt = 1e9;
-    run(w, 0.1);
-    expect(w.hero.xp).toBeGreaterThanOrEqual(1);
+    expect(w.rewardChoices).not.toBeNull();
+    expect(chooseReward(w, w.rewardChoices![0]!.id)).toBe(true);
+    expect(w.pendingChoices).toBe(0);
+    expect(w.rewardChoices).toBeNull();
+    expect(chooseReward(w, first.id)).toBe(false);
   });
 });

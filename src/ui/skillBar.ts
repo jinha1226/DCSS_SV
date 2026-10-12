@@ -1,4 +1,5 @@
 import { SKILLS } from '../data/skills';
+import { MAX_SKILL, skillXpToNext } from '../sim/skills';
 import { drawTile, type Atlas } from '../view/atlas';
 import type { TileName } from '../data/tiles';
 import type { World } from '../sim/world';
@@ -23,6 +24,7 @@ const ICONS: Readonly<Record<string, string>> = {
   armour: '▣',
   shield: '⬡',
   dodging: '➤',
+  spellcasting: '✶',
 };
 
 export interface SkillDisplay {
@@ -31,6 +33,7 @@ export interface SkillDisplay {
   readonly icon: string;
   readonly level: number;
   readonly description: string;
+  readonly progress: number;
 }
 
 /** Learned skills are shown first; opened but untrained skills live in the details only. */
@@ -45,6 +48,7 @@ export function listedSkills(w: World, includeUntrained = false): SkillDisplay[]
       icon: ICONS[skill.id] ?? '✦',
       level: w.hero.skills[skill.id] ?? 0,
       description: skill.each,
+      progress: w.hero.skillXp[skill.id] ?? 0,
     }))
     .sort((a, b) => (b.level > 0 ? 1 : 0) - (a.level > 0 ? 1 : 0));
 }
@@ -126,7 +130,7 @@ export function makeSkillBar(root: HTMLElement, atlas: Atlas, onEquipment?: () =
 
   const showDetails = (w: World): void => {
     const skills = listedSkills(w, true);
-    const key = skills.map((skill) => skill.id + ':' + skill.level).join('|');
+    const key = skills.map((skill) => skill.id + ':' + skill.level + ':' + Math.floor(skill.progress)).join('|');
     if (key === lastDetailKey) return;
     lastDetailKey = key;
     rows.replaceChildren();
@@ -141,7 +145,10 @@ export function makeSkillBar(root: HTMLElement, atlas: Atlas, onEquipment?: () =
       const name = document.createElement('strong');
       name.textContent = skill.name;
       const description = document.createElement('small');
-      description.textContent = skill.description;
+      description.textContent =
+        skill.description +
+        ' · ' +
+        (skill.level >= MAX_SKILL ? '최대 숙련' : '훈련 ' + Math.floor(skill.progress) + '/' + skillXpToNext(skill.level));
       info.append(name, description);
       const level = document.createElement('b');
       level.className = 'skillbar-row-level';

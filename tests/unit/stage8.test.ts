@@ -123,8 +123,8 @@ describe('bow skill', () => {
   it('adds damage and speed every level and range at two', () => {
     const w = hunter();
     w.hero.skills.bow = 2;
-    expect(effectValue(w, 'bow.damage')).toBe(2);
-    expect(effectValue(w, 'bow.haste')).toBeCloseTo(-0.08);
+    expect(effectValue(w, 'bow.damage')).toBeCloseTo(0.9);
+    expect(effectValue(w, 'bow.haste')).toBeCloseTo(-0.024);
     expect(effectValue(w, 'bow.range')).toBe(1);
   });
 

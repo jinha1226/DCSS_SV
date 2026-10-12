@@ -41,7 +41,7 @@ describe('stage 7 character data', () => {
   it('starts the berserker with axe, fighting and dodging one', () => {
     const w = makeWorld({ floor: openFloor(), monsters: false, items: false });
     expect(w.hero.skills).toMatchObject({ axe: 1, fighting: 1, dodging: 1 });
-    expect(w.openSkills).toEqual(new Set(['fighting', 'armour', 'shield', 'dodging', 'axe', 'throwing']));
+    expect(w.openSkills).toEqual(new Set(['fighting', 'armour', 'dodging', 'spellcasting', 'shield', 'axe', 'throwing']));
   });
 });
 
@@ -59,7 +59,7 @@ describe('stage 7 skill cards', () => {
     expect(w.choosing!.every((card) => w.openSkills.has(card.id))).toBe(true);
   });
 
-  it('good aptitude can show +2 and bad aptitude stops at six', () => {
+  it('legacy card helper supports +2 while every aptitude now caps at 27', () => {
     const good = makeWorld({ floor: openFloor(), monsters: false, items: false });
     good.openSkills.clear();
     good.openSkills.add('axe');
@@ -76,8 +76,8 @@ describe('stage 7 skill cards', () => {
 
     const badDef = definition({ ...heroFor().aptitudes, armour: 'bad' });
     const bad = makeWorld({ definition: badDef, floor: openFloor(), monsters: false, items: false });
-    bad.hero.skills.armour = 6;
-    expect(skillCap(bad, 'armour')).toBe(6);
+    bad.hero.skills.armour = 27;
+    expect(skillCap(bad, 'armour')).toBe(27);
     bad.openSkills.clear();
     bad.openSkills.add('armour');
     bad.pendingChoices = 1;
@@ -138,8 +138,9 @@ describe('stage 7 sight and traits', () => {
 
     const block = makeWorld({ floor: openFloor(), monsters: false, items: false });
     block.hero.skills.shield = 8;
+    block.gear.shield = 'buckler';
     const blocker = spawnMonster(block, 'ogre', block.hero.x + 1, block.hero.y, true);
-    Object.defineProperty(block, 'rng', { value: () => 0.3 });
+    Object.defineProperty(block, 'rng', { value: () => 0.15 });
     const blockHp = blocker.hp;
     hurtHero(block, 10, 'melee', blocker);
     expect(blocker.hp).toBeLessThan(blockHp);

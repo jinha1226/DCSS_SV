@@ -23,7 +23,7 @@ describe('physical and elemental damage', () => {
   it('splits received physical and fire damage into separate events', () => {
     const w = arena();
     Object.defineProperty(w, 'heroDef', { value: { ...w.heroDef, resists: { fire: 1 } } });
-    w.hero.skills.armour = 3;
+    w.hero.skills.armour = 15;
     w.hero.hp = w.hero.maxHp;
     hurtHero(w, 10, 'melee', undefined, { type: 'fire', damage: 6 });
     expect(w.events).toContainEqual({ type: 'hurt', x: w.hero.x, y: w.hero.y, amount: 7 });

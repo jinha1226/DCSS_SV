@@ -111,7 +111,7 @@ describe('the axe', () => {
     expect(count(w.events, 'swing')).toBe(1);
     expect(count(w.events, 'hit')).toBe(4);
     expect(out.hp).toBe(GOBLIN.hp);
-    const axeDamage = w.weapon.damage + effectValue(w, 'axe.damage');
+    const axeDamage = Math.round(w.weapon.damage + effectValue(w, 'axe.damage'));
     for (const m of w.monsters) if (m !== out) expect(m.hp).toBe(GOBLIN.hp - axeDamage);
   });
 

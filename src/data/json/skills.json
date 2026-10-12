@@ -2,12 +2,12 @@
   {
     "id": "axe",
     "name": "도끼",
-    "each": "피해 +1",
+    "each": "공격 피해 및 무기 숙련도 상승",
     "aptitude": "axe",
     "effects": [
       {
         "effect": "axe.damage",
-        "perLevel": 1
+        "perLevel": 0.45
       },
       {
         "effect": "axe.wide",
@@ -38,16 +38,16 @@
   {
     "id": "bow",
     "name": "활",
-    "each": "더 세게, 더 빨리 쏜다",
+    "each": "화살 피해와 사격 속도 상승",
     "aptitude": "bow",
     "effects": [
       {
         "effect": "bow.damage",
-        "perLevel": 1
+        "perLevel": 0.45
       },
       {
         "effect": "bow.haste",
-        "perLevel": -0.04
+        "perLevel": -0.012
       },
       {
         "effect": "bow.range",
@@ -78,12 +78,12 @@
   {
     "id": "fighting",
     "name": "전투",
-    "each": "최대 체력 +8",
+    "each": "최대 체력 +3/숙련도",
     "aptitude": "fighting",
     "effects": [
       {
         "effect": "fighting.hp",
-        "perLevel": 8
+        "perLevel": 3
       },
       {
         "effect": "fighting.regen",
@@ -114,12 +114,12 @@
   {
     "id": "armour",
     "name": "갑옷",
-    "each": "받는 피해 -1",
+    "each": "물리 피해 감소 증가",
     "aptitude": "armour",
     "effects": [
       {
         "effect": "armour.reduce",
-        "perLevel": 1
+        "perLevel": 0.2
       },
       {
         "effect": "armour.stone",
@@ -150,12 +150,12 @@
   {
     "id": "shield",
     "name": "방패",
-    "each": "막을 확률 +4%",
+    "each": "방패 막기 확률 상승",
     "aptitude": "shield",
     "effects": [
       {
         "effect": "shield.chance",
-        "perLevel": 0.04
+        "perLevel": 0.012
       },
       {
         "effect": "shield.push",
@@ -186,12 +186,12 @@
   {
     "id": "dodging",
     "name": "회피",
-    "each": "피할 확률 +3%",
+    "each": "회피 확률 상승",
     "aptitude": "dodging",
     "effects": [
       {
         "effect": "dodging.chance",
-        "perLevel": 0.03
+        "perLevel": 0.009
       },
       {
         "effect": "dodging.speed",
@@ -222,16 +222,16 @@
   {
     "id": "throwing",
     "name": "투척",
-    "each": "피해 +1, 재사용 조금 짧게",
+    "each": "투척 피해·재사용 시간 개선",
     "aptitude": "throwing",
     "effects": [
       {
         "effect": "throwing.power",
-        "perLevel": 1
+        "perLevel": 0.4
       },
       {
         "effect": "throwing.cooldown",
-        "perLevel": -0.07
+        "perLevel": -0.018
       },
       {
         "effect": "throwing.pierce",
@@ -281,22 +281,22 @@
   {
     "id": "long_blade",
     "name": "장검",
-    "each": "피해 +1, 공격 속도 향상",
+    "each": "검 피해·공격 속도 상승",
     "aptitude": "long_blade",
     "effects": [
       {
         "effect": "long_blade.damage",
-        "perLevel": 1
+        "perLevel": 0.45
       },
       {
         "effect": "long_blade.haste",
-        "perLevel": -0.025
+        "perLevel": -0.01
       },
       {
         "effect": "long_blade.parry",
         "level": 2,
         "text": "적의 공격을 가끔 받아넘긴다",
-        "perLevel": 0.025
+        "perLevel": 0.008
       },
       {
         "effect": "long_blade.reach",
@@ -316,6 +316,13 @@
     "id": "translocation",
     "name": "공간술",
     "each": "새 이동 주문, 재사용 효율 향상",
+    "aptitude": "magic",
+    "effects": []
+  },
+  {
+    "id": "spellcasting",
+    "name": "주문시전술",
+    "each": "2숙련도마다 최대 마나 +1",
     "aptitude": "magic",
     "effects": []
   }

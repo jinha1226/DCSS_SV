@@ -21,7 +21,7 @@ export function addConsumable(w: World, id: ConsumableId, count = 1): void {
 /** Uses one item only when its effect can actually be applied. */
 /** Drop one unit from a stack at the hero's feet. */
 export function dropConsumable(w: World, id: ConsumableId): boolean {
-  if (w.over || w.pendingPickup || w.choosing) return false;
+  if (w.over || w.pendingPickup || w.choosing || w.rewardChoices) return false;
   const index = w.inventory.findIndex((entry) => entry.kind === 'consumable' && entry.id === id);
   const entry = w.inventory[index];
   if (!entry || entry.kind !== 'consumable' || entry.count <= 0) return false;
@@ -40,7 +40,7 @@ export function dropConsumable(w: World, id: ConsumableId): boolean {
 }
 
 export function useConsumable(w: World, id: ConsumableId, targetId?: string): boolean {
-  if (w.over || w.choosing || w.pendingPickup) return false;
+  if (w.over || w.choosing || w.rewardChoices || w.pendingPickup) return false;
   const index = w.inventory.findIndex((item) => item.kind === 'consumable' && item.id === id);
   const item = w.inventory[index];
   if (!item || item.kind !== 'consumable' || item.count <= 0) return false;
