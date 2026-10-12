@@ -13,7 +13,7 @@ import { Cell, cellAt } from './grid';
 import { tickHop, tryHop } from './hop';
 import { thinkMonster } from './monster';
 import { fillFloor, lingering } from './packs';
-import { makeRng } from './rng';
+import { makeRng, type Rng } from './rng';
 import { initializeItemKnowledge } from './identification';
 import { heroSpeed, openStartingSkills } from './skills';
 import { castAt, stepSpells } from './spells';
@@ -80,6 +80,7 @@ export function makeWorld(options: WorldOptions = {}): World {
     floor = options.floor ?? makeFloor(floorSeed(seed, depth)),
     heroDef = options.definition ?? heroFor(options.species, options.job);
   const weapon = plainWeapon(heroDef.startingWeapon, 'start');
+  const floorRng = new Map<number, Rng>([[depth, makeRng(seed ^ 0x5bd1e995)]]);
   const world: World = {
     grid: floor.grid,
     rooms: floor.rooms,
@@ -126,7 +127,16 @@ export function makeWorld(options: WorldOptions = {}): World {
     spellShots: [],
     spellClouds: [],
     spellVisuals: [],
-    rng: makeRng(seed ^ 0x5bd1e995),
+    // The facade remains stable while its source switches with the active floor.
+    rng: () => {
+      // Tests and developer tools may change depth directly without using stairs.
+      let source = floorRng.get(world.depth);
+      if (!source) {
+        source = makeRng(floorSeed(seed, world.depth) ^ 0x5bd1e995);
+        floorRng.set(world.depth, source);
+      }
+      return source();
+    },
     events: [],
     seed,
     weapon,
@@ -147,6 +157,8 @@ export function makeWorld(options: WorldOptions = {}): World {
     guaranteedSkills: [],
     depth,
     floorStates: new Map<number, FloorState>(),
+    floorRng,
+    stairConnections: new Map(),
     monstersEnabled: options.monsters !== false,
     time: 0,
     floorTime: 0,
@@ -155,6 +167,7 @@ export function makeWorld(options: WorldOptions = {}): World {
     nextPack: 1,
     nextBand: Infinity,
     descending: 0,
+    stairsArmed: true,
     pendingChoices: 0,
     choosing: null,
     over: false,
@@ -175,6 +188,7 @@ function rememberFloor(w: World, returnX: number, returnY: number): void {
     groundItems: [...w.groundItems],
     floorTime: w.floorTime,
     nextBand: w.nextBand,
+    lastStandUsed: w.hero.lastStandUsed,
     returnX,
     returnY,
   });
@@ -196,29 +210,68 @@ function restoreFloor(w: World, state: FloorState, x: number, y: number): void {
   w.pendingPickup = null;
   w.floorTime = state.floorTime;
   w.nextBand = state.nextBand;
+  w.hero.lastStandUsed = state.lastStandUsed;
   w.descending = 0;
   w.hero.x = w.hero.px = x;
   w.hero.y = w.hero.py = y;
   look(w);
 }
 
+function standAt(w: World, x: number, y: number): void {
+  w.hero.x = w.hero.px = x;
+  w.hero.y = w.hero.py = y;
+  look(w);
+}
+
 function traverse(w: World, down: boolean): void {
-  const oldDepth = w.depth;
-  const target = oldDepth + (down ? 1 : -1);
+  const previous = w.depth;
+  const target = previous + (down ? 1 : -1);
   if (target < 1 || target > DUNGEON.floors) return;
-  const cellX = Math.floor(w.hero.x);
-  const cellY = Math.floor(w.hero.y);
-  // Return to the same stair cell when coming back from an adjacent floor.
-  rememberFloor(w, cellX + 0.5, cellY + 0.5);
+  const sourceX = Math.floor(w.hero.x) + 0.5;
+  const sourceY = Math.floor(w.hero.y) + 0.5;
+  rememberFloor(w, sourceX, sourceY);
   w.depth = target;
+
+  // Existing floors resume their own RNG stream; unvisited ones start from a fixed seed.
+  if (!w.floorRng.has(target)) w.floorRng.set(target, makeRng(floorSeed(w.seed, target) ^ 0x5bd1e995));
   const existing = w.floorStates.get(target);
   if (existing) {
     restoreFloor(w, existing, existing.returnX, existing.returnY);
   } else {
     enter(w, makeFloor(floorSeed(w.seed, target)), w.monstersEnabled);
-    // Remember the first entrance, so that a future revisit preserves its layout.
     rememberFloor(w, w.hero.x, w.hero.y);
   }
+
+  if (down) {
+    // All three down stairs currently lead to the same child floor. Its single up stair
+    // returns to the exact parent stair most recently used to enter that floor.
+    const up = w.stairs.find((stair) => !stair.down);
+    if (up) {
+      const childX = up.x + 0.5;
+      const childY = up.y + 0.5;
+      w.stairConnections.set(target, { parentDepth: previous, parentX: sourceX, parentY: sourceY, childX, childY });
+      standAt(w, childX, childY);
+    }
+  } else {
+    const link = w.stairConnections.get(previous);
+    const fallback = w.stairs.find((stair) => stair.down);
+    const parentX = link?.parentDepth === target ? link.parentX : (fallback?.x ?? Math.floor(w.hero.x)) + 0.5;
+    const parentY = link?.parentDepth === target ? link.parentY : (fallback?.y ?? Math.floor(w.hero.y)) + 0.5;
+    standAt(w, parentX, parentY);
+    // Starting a run directly on a deeper floor has no incoming link. Establish one.
+    if (!link)
+      w.stairConnections.set(previous, {
+        parentDepth: target,
+        parentX,
+        parentY,
+        childX: sourceX,
+        childY: sourceY,
+      });
+  }
+
+  // Time alone cannot reactivate arrival stairs; the player must move off them first.
+  w.stairsArmed = false;
+  w.descending = 0;
   w.events.push({ type: 'floor', depth: w.depth });
 }
 
@@ -295,7 +348,17 @@ function stairsUnderfoot(w: World, dt: number): void {
   const cell = cellAt(w.grid, Math.floor(w.hero.x), Math.floor(w.hero.y));
   const down = cell === Cell.StairsDown;
   const up = cell === Cell.StairsUp;
-  w.descending = down || (up && w.depth > 1) ? w.descending + dt : 0;
+  const usable = down || (up && w.depth > 1);
+  if (!usable) {
+    w.stairsArmed = true;
+    w.descending = 0;
+    return;
+  }
+  if (!w.stairsArmed) {
+    w.descending = 0;
+    return;
+  }
+  w.descending += dt;
   if (w.descending < DUNGEON.descend) return;
   if (down && w.depth >= DUNGEON.floors) {
     w.over = true;

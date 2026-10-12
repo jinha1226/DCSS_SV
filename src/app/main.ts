@@ -26,6 +26,7 @@ import { drawMiniMap } from '../view/minimap';
 import { cellPixels, drawWorld } from '../view/render';
 import { makeWalk, type WalkSheet } from '../view/walk';
 import { runLoop } from './loop';
+import { stairHoldActive } from './stairInput';
 import { readSwitches } from './switches';
 
 async function start(): Promise<void> {
@@ -191,7 +192,7 @@ async function start(): Promise<void> {
         ...(queuedSpell ? { spell: queuedSpell } : {}),
       };
       queuedSpell = undefined;
-      const active = Math.hypot(input.mx, input.my) > 0.01 || input.throw || input.hop || Boolean(input.spell);
+      const active = Math.hypot(input.mx, input.my) > 0.01 || input.throw || input.hop || Boolean(input.spell) || stairHoldActive(world);
       if (
         !statusSheet.open &&
         !inventory.open &&

@@ -211,12 +211,26 @@ export interface FloorState {
   readonly groundItems: GroundItem[];
   readonly floorTime: number;
   readonly nextBand: number;
+  /** One-use-per-floor Last Stand state is restored on revisits. */
+  readonly lastStandUsed: boolean;
   readonly returnX: number;
   readonly returnY: number;
+}
+/** The one upward stair on a child floor returns to its most recent entry stair. */
+export interface StairConnection {
+  readonly parentDepth: number;
+  readonly parentX: number;
+  readonly parentY: number;
+  readonly childX: number;
+  readonly childY: number;
 }
 export interface World {
   /** Persistent floors indexed by dungeon depth. */
   readonly floorStates: Map<number, FloorState>;
+  /** Each visited floor retains its own advancing seeded random stream. */
+  readonly floorRng: Map<number, Rng>;
+  /** Child depth -> paired arrival and return stair coordinates. */
+  readonly stairConnections: Map<number, StairConnection>;
   /** Whether floor population was enabled when this run started. */
   readonly monstersEnabled: boolean;
   grid: Grid;
@@ -259,6 +273,8 @@ export interface World {
   nextPack: number;
   nextBand: number;
   descending: number;
+  /** A transition disarms the arrival stair until the hero leaves it. */
+  stairsArmed: boolean;
   pendingChoices: number;
   choosing: readonly SkillChoice[] | null;
   over: boolean;

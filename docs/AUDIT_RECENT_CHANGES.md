@@ -25,3 +25,15 @@ Date: 2026-10-12. Static source inspection only; no local install, tests, build 
 - Zot requires two distinct runes, and final descent must not trigger automatic victory.
 
 **Next safe sequence:** fix and test stage 2, implement graph as isolated pure module with graph tests, migrate World identity and stairs with UI compatibility, then add branch-specific content and rune gate. No stage 3 completion claim until integrated tests/build pass.
+
+## Stage 2 follow-up: verified code fix (2026-10-12)
+
+The original findings above describe the state **before** pull request #2 and are preserved as the historical audit.
+
+- Arrival stairs are disarmed until the player leaves their tile; the SUPERHOT UI permits deliberate stair-hold progression.
+- Traversal records the most recently used parent stair for the single up stair on the child floor.
+- Per-floor random streams and Last Stand use state now survive re-entry.
+- Added 100x round-trip, monster/item/seen/timer, RNG and paused-time regression tests.
+- GitHub Actions Verify passed on commit `da75f2f9d4ff75540147692746d3fb4ff5b687f5`: 27 files / 209 tests, ESLint, Prettier, TypeScript, and production build.
+- Existing three down stairs still share one child floor; distinct branch links belong to stage 3.
+- No interactive mobile/browser smoke test has been performed.
