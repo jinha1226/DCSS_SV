@@ -123,3 +123,8 @@
 - GitHub Actions에서 `npm ci`와 `npm run format` 완료. 최종 변경 소스에 Prettier가 적용됨 (formatter run 38215710140).
 - Verify run 38216077725: ESLint, Prettier, TypeScript 통과, Vitest 246개 중 245개 통과. 장비 슬롯 카운트 기대값 9→10 수정 후 재검증 필요.
 - 모바일 실기, 정적 화면 배치와 터치 스모크 테스트는 수행하지 못함.
+
+### 08 최종 GitHub Actions 자동 검증
+
+- 포맷 반영 커밋 `7d62cf5`: `npm ci`, `npm run format`, `npm run check`(ESLint/Prettier, TypeScript, 35 files / 247 tests), `npx vite build` 모두 통과. Actions run `38216763003`.
+- 브랜치/PR: `feat/equipment-training-20-skills` / #9. 코드 검증 상태는 VERIFIED, 실제 폰에서 UI·터치 플레이는 UNVERIFIED.
