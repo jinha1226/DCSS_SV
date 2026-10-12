@@ -123,6 +123,8 @@ export interface Monster {
   poisonDamage: number;
   /** Time until poison and rot deal their next damage. */
   afflictionTick: number;
+  /** A spell mark that goes off when this monster dies. */
+  mark?: { readonly spellId: string; left: number; readonly damage: number };
   facing: -1 | 1;
 }
 export interface Shot {
@@ -163,6 +165,11 @@ export interface SpellShot {
   hitHero?: boolean;
   /** Spell whose rider effects this shot carries. */
   readonly spellId?: string;
+  /** Homing shots steer towards this monster while it lives. */
+  homingTarget?: Monster;
+  /** Countdown to the next zap (ball lightning) and the next trail flame (lava lance). */
+  zapTimer?: number;
+  trailTimer?: number;
 }
 export interface SpellCloud {
   x: number;
@@ -187,6 +194,28 @@ export interface SpellVisual {
   readonly radius: number;
   readonly colour: string;
   left: number;
+  /** Lets the view draw the spell's element (flame, frost, lightning...). */
+  readonly spellId?: string;
+  /** Chain jumps, in order. */
+  readonly points?: readonly { readonly x: number; readonly y: number }[];
+  /** Cone: facing angle and half-width in radians. */
+  readonly angle?: number;
+  readonly spread?: number;
+  /** Seconds the visual lasts in total, for drawing its progress. */
+  readonly total?: number;
+}
+/** Spells that keep working after the cast: auras, storms, delayed blasts and whole-sight fields. */
+export interface SpellOngoing {
+  readonly kind: 'aura' | 'storm' | 'delayed' | 'field';
+  readonly spellId: string;
+  x: number;
+  y: number;
+  readonly radius: number;
+  readonly damage: number;
+  readonly total: number;
+  left: number;
+  readonly tick: number;
+  nextTick: number;
 }
 export interface GroundItem {
   readonly uid: string;
@@ -295,6 +324,9 @@ export interface World {
   readonly spellShots: SpellShot[];
   readonly spellClouds: SpellCloud[];
   readonly spellVisuals: SpellVisual[];
+  readonly spellOngoing: SpellOngoing[];
+  /** Marked monsters that died this step, waiting for their mark to go off. */
+  readonly markQueue: { readonly spellId: string; readonly x: number; readonly y: number; readonly damage: number }[];
   readonly rng: Rng;
   readonly events: SimEvent[];
   readonly seed: number;

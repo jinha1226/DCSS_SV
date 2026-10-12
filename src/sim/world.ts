@@ -79,6 +79,8 @@ function enter(w: World, floor: Floor, monsters: boolean): void {
   w.spellShots.length = 0;
   w.spellClouds.length = 0;
   w.spellVisuals.length = 0;
+  w.spellOngoing.length = 0;
+  w.markQueue.length = 0;
   w.groundItems.length = 0;
   w.pendingPickup = null;
   w.floorTime = 0;
@@ -159,6 +161,8 @@ export function makeWorld(options: WorldOptions = {}): World {
     spellShots: [],
     spellClouds: [],
     spellVisuals: [],
+    spellOngoing: [],
+    markQueue: [],
     // The facade remains stable while its source switches with the active floor.
     rng: () => {
       // Tests and developer tools may change depth directly without using stairs.

@@ -38,7 +38,7 @@ describe('magic data: seven schools of nine spells', () => {
   it('only enables spells whose behaviour exists, and every school has a first auto attack', () => {
     for (const spell of SPELLS.filter((entry) => entry.enabled)) expect(ACTIVE_SPELL_SHAPES).toContain(spell.shape);
     for (const school of SCHOOL_SKILLS) expect(schoolSpells(school)[0]!.enabled).toBe(true);
-    expect(spellData('chain_lightning').enabled).toBe(false);
+    expect(spellData('ice_wall').enabled).toBe(false);
     expect(spellData('rat_swarm').enabled).toBe(false);
   });
 
@@ -136,7 +136,7 @@ describe('four spell buttons', () => {
   it('fills four slots with the highest unlocked spells, then the nearest locked ones', () => {
     const w = master();
     w.hero.skills.earth = 27;
-    expect(spellSlots(w).map((spell) => spell?.id)).toEqual(['landslide', 'collapse_field', 'gravity_bloom', 'stone_skin']);
+    expect(spellSlots(w).map((spell) => spell?.id)).toEqual(['landslide', 'earthquake', 'collapse_field', 'gravity_bloom']);
     w.hero.skills.earth = 0;
     expect(spellSlots(w).map((spell) => spell?.id)).toEqual(['pulse_burst', 'stone_skin', 'gravity_bloom', 'collapse_field']);
   });

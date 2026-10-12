@@ -69,6 +69,16 @@ export interface SpellData {
   readonly effect?: string;
   readonly distance?: number;
   readonly onHit?: SpellHit;
+  /** Projectile turn rate towards its target, radians per second. */
+  readonly homing?: number;
+  /** Projectile bursts on impact with this radius. */
+  readonly impactRadius?: number;
+  /** Projectile zaps the nearest monster within this distance as it flies. */
+  readonly zapRadius?: number;
+  /** Projectile leaves short flames behind it. */
+  readonly trail?: boolean;
+  /** Cone width in degrees. */
+  readonly angle?: number;
 }
 
 export const SPELLS: readonly SpellData[] = spellsRaw as readonly SpellData[];
@@ -95,10 +105,35 @@ export const SPELL_SHAPES: readonly SpellShape[] = [
 ];
 
 /** Shapes with working behaviour. A spell may only be enabled when its shape is here. */
-export const ACTIVE_SPELL_SHAPES: readonly SpellShape[] = ['projectile', 'beam', 'burst', 'cloud', 'utility', 'buff', 'debuff'];
+export const ACTIVE_SPELL_SHAPES: readonly SpellShape[] = [
+  'projectile',
+  'beam',
+  'burst',
+  'cloud',
+  'utility',
+  'buff',
+  'debuff',
+  'cone',
+  'chain',
+  'aura',
+  'storm',
+  'delayed',
+  'field',
+  'mark',
+];
 
 /** Named effects with working behaviour. An enabled spell's effect must be one of these. */
-export const ACTIVE_SPELL_EFFECTS: readonly string[] = ['blink', 'guard', 'armour', 'speed', 'freeze', 'confuse', 'rot'];
+export const ACTIVE_SPELL_EFFECTS: readonly string[] = [
+  'blink',
+  'guard',
+  'armour',
+  'speed',
+  'freeze',
+  'confuse',
+  'rot',
+  'explode',
+  'harvest',
+];
 
 export const HIT_EFFECTS: readonly HitEffect[] = [
   'slow',
@@ -135,8 +170,10 @@ function validateEnabled(spell: SpellData, label: string): void {
     if (!spell.effect) throw new Error(label + ': ' + spell.shape + ' 주문에는 effect가 필요함');
     if (selfSpell(spell)) return;
   }
-  if (spell.shape !== 'debuff' && !validNumber(spell.damage)) throw new Error(label + ': 공격 주문에는 damage가 필요함');
-  if (!validNumber(spell.range)) throw new Error(label + ': 공격 주문에는 range가 필요함');
+  const harmless = spell.shape === 'debuff' || (spell.shape === 'mark' && spell.effect === 'harvest');
+  if (!harmless && !validNumber(spell.damage)) throw new Error(label + ': 공격 주문에는 damage가 필요함');
+  const aroundHero = spell.shape === 'aura' || spell.shape === 'field';
+  if (!aroundHero && !validNumber(spell.range)) throw new Error(label + ': 공격 주문에는 range가 필요함');
 }
 
 function validateSpell(spell: SpellData, label: string): void {
@@ -157,6 +194,11 @@ function validateSpell(spell: SpellData, label: string): void {
   if (spell.requirement !== undefined && (!Number.isInteger(spell.requirement) || spell.requirement < 0)) {
     throw new Error(label + ': 잘못된 requirement');
   }
+  for (const key of ['homing', 'impactRadius', 'zapRadius', 'angle'] as const) {
+    if (spell[key] !== undefined && !validNumber(spell[key])) throw new Error(label + ': ' + key + '가 잘못됨');
+  }
+  if (spell.shape === 'mark' && spell.effect !== 'explode' && spell.effect !== 'harvest')
+    throw new Error(label + ': 표식은 explode 또는 harvest');
   if (spell.onHit !== undefined) {
     if (!HIT_EFFECTS.includes(spell.onHit.effect)) throw new Error(label + ': 모르는 onHit ' + spell.onHit.effect);
     if (spell.onHit.power !== undefined && !validNumber(spell.onHit.power)) throw new Error(label + ': onHit.power');

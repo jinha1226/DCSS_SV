@@ -98,6 +98,7 @@ describe('cast riders through real spell shapes', () => {
   it('a slowing cloud slows monsters inside it without showing zero-damage hits', () => {
     const w = mage(arena(), 'hexes');
     const m = target(w, 13, 10);
+    w.hero.autoCooldown = 99; // keep the staff's own attack out of this check
     w.events.length = 0;
     expect(castPaidSpell(w, 'slowing_field', m)).toBe(true);
     stepSpells(w, 0.05);

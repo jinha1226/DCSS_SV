@@ -64,14 +64,15 @@
     "colour": "#e9955e",
     "damage": 11,
     "range": 7,
-    "speed": 14
+    "speed": 14,
+    "impactRadius": 1.1
   },
   {
     "id": "flame_ring",
     "name": "불꽃 고리",
     "school": "fire",
     "level": 5,
-    "enabled": false,
+    "enabled": true,
     "mana": 10,
     "cooldown": 6,
     "shape": "aura",
@@ -87,7 +88,7 @@
     "name": "연소 낙인",
     "school": "fire",
     "level": 6,
-    "enabled": false,
+    "enabled": true,
     "mana": 11,
     "cooldown": 5,
     "shape": "mark",
@@ -96,7 +97,8 @@
     "damage": 14,
     "duration": 6,
     "radius": 1.4,
-    "range": 7
+    "range": 7,
+    "effect": "explode"
   },
   {
     "id": "lava_lance",
@@ -112,14 +114,15 @@
     "damage": 17,
     "pierce": 1,
     "range": 8,
-    "speed": 16
+    "speed": 16,
+    "trail": true
   },
   {
     "id": "firestorm",
     "name": "화염 폭풍",
     "school": "fire",
     "level": 8,
-    "enabled": false,
+    "enabled": true,
     "mana": 18,
     "cooldown": 10,
     "shape": "storm",
@@ -136,7 +139,7 @@
     "name": "태양 낙하",
     "school": "fire",
     "level": 9,
-    "enabled": false,
+    "enabled": true,
     "mana": 24,
     "cooldown": 14,
     "shape": "delayed",
@@ -172,7 +175,7 @@
     "name": "냉기 부채",
     "school": "ice",
     "level": 2,
-    "enabled": false,
+    "enabled": true,
     "mana": 5,
     "cooldown": 1.6,
     "shape": "cone",
@@ -180,7 +183,13 @@
     "colour": "#a6e5ff",
     "damage": 7,
     "radius": 0.8,
-    "range": 3.5
+    "range": 3.5,
+    "angle": 70,
+    "onHit": {
+      "effect": "slow",
+      "power": 0.4,
+      "duration": 1.5
+    }
   },
   {
     "id": "ice_armour",
@@ -291,16 +300,20 @@
     "name": "빙하기",
     "school": "ice",
     "level": 9,
-    "enabled": false,
+    "enabled": true,
     "mana": 24,
     "cooldown": 18,
     "shape": "field",
     "element": "cold",
-    "effect": "slow",
     "colour": "#a6e5ff",
     "damage": 4,
     "duration": 5,
-    "tick": 0.5
+    "tick": 0.5,
+    "onHit": {
+      "effect": "slow",
+      "power": 0.5,
+      "duration": 1
+    }
   },
   {
     "id": "arc_needle",
@@ -337,17 +350,20 @@
     "name": "돌풍",
     "school": "air",
     "level": 3,
-    "enabled": false,
+    "enabled": true,
     "mana": 5,
     "cooldown": 3,
     "shape": "cone",
     "element": "electric",
-    "effect": "knockback",
     "colour": "#b8d6ff",
     "damage": 3,
-    "power": 2.5,
     "radius": 0.9,
-    "range": 3.5
+    "range": 3.5,
+    "angle": 80,
+    "onHit": {
+      "effect": "knockback",
+      "power": 8
+    }
   },
   {
     "id": "chain_lightning",
@@ -355,7 +371,7 @@
     "school": "air",
     "level": 4,
     "auto": true,
-    "enabled": false,
+    "enabled": true,
     "mana": 0,
     "shape": "chain",
     "element": "electric",
@@ -385,7 +401,7 @@
     "name": "정전기장",
     "school": "air",
     "level": 6,
-    "enabled": false,
+    "enabled": true,
     "mana": 11,
     "cooldown": 8,
     "shape": "aura",
@@ -410,7 +426,8 @@
     "damage": 15,
     "pierce": 3,
     "range": 8,
-    "speed": 7
+    "speed": 7,
+    "zapRadius": 1.8
   },
   {
     "id": "thundercloud",
@@ -434,7 +451,7 @@
     "name": "천둥 강림",
     "school": "air",
     "level": 9,
-    "enabled": false,
+    "enabled": true,
     "mana": 24,
     "cooldown": 14,
     "shape": "chain",
@@ -563,14 +580,18 @@
     "name": "지진",
     "school": "earth",
     "level": 8,
-    "enabled": false,
+    "enabled": true,
     "mana": 18,
     "cooldown": 12,
     "shape": "field",
-    "effect": "stun",
     "colour": "#c9a77a",
     "damage": 14,
-    "duration": 1
+    "duration": 0,
+    "tick": 1,
+    "onHit": {
+      "effect": "stun",
+      "duration": 1
+    }
   },
   {
     "id": "landslide",
@@ -643,7 +664,8 @@
     "colour": "#f0d28a",
     "damage": 10,
     "range": 7,
-    "speed": 12
+    "speed": 12,
+    "homing": 6
   },
   {
     "id": "wolf_pack",
@@ -681,11 +703,13 @@
     "auto": true,
     "enabled": true,
     "mana": 0,
-    "shape": "burst",
+    "shape": "projectile",
     "colour": "#f0d28a",
     "damage": 15,
-    "radius": 1.2,
-    "range": 8
+    "range": 8,
+    "speed": 11,
+    "homing": 5,
+    "impactRadius": 1.2
   },
   {
     "id": "iron_golem",
@@ -821,14 +845,19 @@
     "school": "hexes",
     "level": 7,
     "auto": true,
-    "enabled": false,
+    "enabled": true,
     "mana": 0,
     "shape": "chain",
     "chainRadius": 3,
     "colour": "#a3b9ff",
     "damage": 13,
     "range": 7,
-    "targets": 4
+    "targets": 4,
+    "onHit": {
+      "effect": "vulnerable",
+      "power": 0.2,
+      "duration": 3
+    }
   },
   {
     "id": "banish",
@@ -980,14 +1009,16 @@
     "name": "죽음의 낙인",
     "school": "necromancy",
     "level": 8,
-    "enabled": false,
+    "enabled": true,
     "mana": 16,
     "cooldown": 8,
     "shape": "mark",
     "element": "negative",
     "colour": "#b7e07a",
     "duration": 8,
-    "range": 7
+    "range": 7,
+    "effect": "harvest",
+    "power": 6
   },
   {
     "id": "march_of_dead",
