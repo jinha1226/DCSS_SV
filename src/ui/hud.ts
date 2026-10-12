@@ -114,6 +114,8 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
         w.hero.level,
         w.hero.xp,
         need,
+        [...w.runes].sort().join(','),
+        w.orbCollected,
       ].join('|');
       if (line !== last) {
         last = line;
@@ -139,13 +141,13 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
           const target = w.dungeonGraph.nodes.get(targets[index] ?? targets[0] ?? -1);
           if (target) place.textContent += ' → ' + nodeLabel(target);
         }
-        elapsed.textContent = clock(w.time) + ' · 처치 ' + w.kills;
+        elapsed.textContent = clock(w.time) + ' · 룬 ' + w.runes.size + '/2 · 처치 ' + w.kills;
       }
       if (w.over !== shown) {
         if (w.over) closeMenu();
         shown = w.over;
         if (w.over) shownAt = performance.now();
-        title.textContent = w.won ? '던전을 빠져나왔다' : '쓰러졌다';
+        title.textContent = w.won ? '조트의 보주를 획득했다' : '쓰러졌다';
         result.textContent =
           (w.dungeonGraph.nodes.get(w.depth)?.branch ?? 'Dungeon') +
           ' ' +
