@@ -52,6 +52,8 @@ export function statusValues(w: World): { vitals: StatusValue[]; resists: Status
       { label: '회피확률', value: Math.round(evasion * 100) + '%' },
       { label: '방패확률', value: Math.round(shield * 100) + '%' },
       { label: '처치', value: String(w.kills) },
+      { label: '룬', value: w.runes.size + '/2' },
+      { label: '조트의 보주', value: w.orbCollected ? '획득' : '미획득' },
     ],
     resists,
     equipment: slots.map(([label, value]) => ({ label, value, tone: value === '미착용' ? ('muted' as const) : undefined })),
@@ -128,7 +130,7 @@ export function makeStatusSheet(root: HTMLElement): StatusSheet {
       world = w;
       if (w.over && opened) this.close();
       if (!opened) return;
-      const key = [w.hero.hp, w.hero.mana, w.hero.level, w.hero.xp, w.kills, w.ammo, w.weapon.uid, w.heroDef.species].join('|');
+      const key = [w.hero.hp, w.hero.mana, w.hero.level, w.hero.xp, w.kills, w.ammo, w.weapon.uid, w.heroDef.species, [...w.runes].sort().join(','), w.orbCollected].join('|');
       if (key === lastKey) return;
       lastKey = key;
       title.textContent = w.heroDef.name + ' · 지하 ' + w.depth + '층';
