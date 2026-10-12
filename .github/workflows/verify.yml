@@ -16,6 +16,5 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - run: npx prettier src/sim/world.ts | diff -u src/sim/world.ts - || true
       - run: npm run check
       - run: npm run build
