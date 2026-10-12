@@ -7,6 +7,7 @@ import { Cell, cellAt } from '../sim/grid';
 import { cellNoise } from '../sim/rng';
 import { spellCandidates } from '../sim/spells';
 import { objectiveFor } from '../sim/objectives';
+import { shopLocation } from '../sim/branchLoot';
 import type { Monster, World } from '../sim/world';
 import { drawTile, type Atlas } from './atlas';
 import type { Fx } from './fx';
@@ -227,6 +228,162 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
       ctx.arc(sx, sy + px * 0.31, Math.max(2, px * 0.07), 0, Math.PI * 2);
       ctx.fill();
     }
+  }
+
+  const shop = shopLocation(w);
+  if (shop && w.seen[Math.floor(shop.y) * w.grid.w + Math.floor(shop.x)]) {
+    const sx = ox + shop.x * px;
+    const sy = oy + shop.y * px;
+    ctx.fillStyle = '#b8944d';
+    ctx.fillRect(sx - px * 0.3, sy - px * 0.24, px * 0.6, px * 0.48);
+    ctx.strokeStyle = '#f3d68c';
+    ctx.lineWidth = Math.max(1, px * 0.06);
+    ctx.strokeRect(sx - px * 0.3, sy - px * 0.24, px * 0.6, px * 0.48);
+    ctx.fillStyle = '#342718';
+    ctx.font = 'bold ' + Math.max(10, Math.floor(px * 0.36)) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('
+  if (objective && w.visible[Math.floor(objective.y) * w.grid.w + Math.floor(objective.x)]) {
+    const x = ox + objective.x * px;
+    const y = oy + objective.y * px;
+    ctx.fillStyle = objective.kind === 'orb' ? '#d8a9ff' : '#e9c96e';
+    ctx.beginPath();
+    ctx.arc(x, y, px * 0.26, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#fff4d8';
+    ctx.lineWidth = Math.max(1, px * 0.055);
+    ctx.stroke();
+  }
+
+  // Monsters out of sight are not drawn, even on remembered ground.
+  for (const m of w.monsters) {
+    if (!w.visible[Math.floor(m.y) * w.grid.w + Math.floor(m.x)]) continue;
+    const sx = ox + m.x * px;
+    const sy = oy + m.y * px;
+    if (sx < -px || sy < -px || sx > width + px || sy > height + px) continue;
+    drawMonster(ctx, atlas, w, m, px, ox, oy, between);
+  }
+
+  for (const cloud of w.spellClouds) {
+    ctx.fillStyle = cloud.colour + '28';
+    ctx.beginPath();
+    ctx.arc(ox + cloud.x * px, oy + cloud.y * px, cloud.radius * px, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  for (const visual of w.spellVisuals) {
+    ctx.strokeStyle = visual.colour;
+    ctx.lineWidth = Math.max(2, px * 0.08);
+    ctx.globalAlpha = Math.min(1, visual.left / 0.12);
+    if (visual.shape === 'beam') {
+      ctx.beginPath();
+      ctx.moveTo(ox + visual.x1 * px, oy + visual.y1 * px);
+      ctx.lineTo(ox + visual.x2 * px, oy + visual.y2 * px);
+      ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.arc(ox + visual.x2 * px, oy + visual.y2 * px, visual.radius * px, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+  for (const shot of w.spellShots) {
+    const sx = ox + (shot.px + (shot.x - shot.px) * between) * px;
+    const sy = oy + (shot.py + (shot.y - shot.py) * between) * px;
+    ctx.fillStyle = shot.colour;
+    ctx.beginPath();
+    ctx.arc(sx, sy, Math.max(2, px * 0.11), 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  drawThreatArrows(ctx, w, px, width, height, view.dpr);
+
+  for (const shot of w.shots) {
+    const sx = ox + (shot.px + (shot.x - shot.px) * between) * px;
+    const sy = oy + (shot.py + (shot.y - shot.py) * between) * px;
+    if (shot.arrow) {
+      const angle = Math.atan2(shot.vy, shot.vx);
+      ctx.save();
+      ctx.translate(sx, sy);
+      ctx.rotate(angle);
+      ctx.strokeStyle = '#e8ddbd';
+      ctx.lineWidth = Math.max(1, px * 0.045);
+      ctx.beginPath();
+      ctx.moveTo(-px * 0.22, 0);
+      ctx.lineTo(px * 0.22, 0);
+      ctx.stroke();
+      ctx.restore();
+      continue;
+    }
+    const tile = shot.mine ? 'item/boomerang1' : 'item/stone';
+    ctx.save();
+    ctx.translate(sx, sy);
+    if (shot.mine) ctx.rotate(w.time * 15);
+    drawTile(ctx, atlas.image, tile, -px * 0.26, -px * 0.26, px * 0.52);
+    ctx.restore();
+  }
+  if (view.targetingSpell) {
+    for (const target of spellCandidates(w, view.targetingSpell)) {
+      const tx = ox + target.x * px;
+      const ty = oy + target.y * px;
+      ctx.strokeStyle = view.targetingSpell.colour;
+      ctx.lineWidth = Math.max(2, px * 0.075);
+      ctx.beginPath();
+      ctx.arc(tx, ty, px * 0.48, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  } else {
+    const target = bowTarget(w) ?? throwTarget(w);
+    if (target) {
+      const tx = ox + target.x * px;
+      const ty = oy + target.y * px;
+      ctx.strokeStyle = '#e2ce83';
+      ctx.lineWidth = Math.max(1, px * 0.065);
+      ctx.beginPath();
+      ctx.ellipse(tx, ty + px * 0.26, px * 0.42, px * 0.2, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+  const down = w.stairs.find((stair) => stair.down && Math.floor(w.hero.x) === stair.x && Math.floor(w.hero.y) === stair.y);
+  if (down && w.descending > 0) {
+    ctx.strokeStyle = '#e6c56f';
+    ctx.lineWidth = Math.max(2, px * 0.08);
+    ctx.beginPath();
+    ctx.arc(
+      ox + (down.x + 0.5) * px,
+      oy + (down.y + 0.5) * px,
+      px * 0.48,
+      -Math.PI / 2,
+      -Math.PI / 2 + Math.PI * 2 * Math.min(1, w.descending / DUNGEON.descend),
+    );
+    ctx.stroke();
+  }
+  let heroX = hx;
+  let heroY = hy;
+  let lift = 0;
+  if (w.hero.hopTime > 0 && w.hero.hopDuration > 0) {
+    const t = 1 - w.hero.hopTime / w.hero.hopDuration;
+    heroX = w.hero.hopFromX + (w.hero.hopToX - w.hero.hopFromX) * t;
+    heroY = w.hero.hopFromY + (w.hero.hopToY - w.hero.hopFromY) * t;
+    lift = Math.sin(t * Math.PI) * px * 0.55;
+  }
+  const cx = ox + heroX * px;
+  const groundCy = oy + heroY * px;
+  const cy = groundCy - lift;
+  if (w.hero.hopTime > 0) {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.38)';
+    ctx.beginPath();
+    ctx.ellipse(cx, groundCy + px * 0.25, px * 0.28, px * 0.11, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  fx.drawStrokes(ctx, cx, groundCy, px);
+  // DCSS figures are drawn facing left.
+  const sheet = w.hero.hurt > 0 ? view.heroWalk.hurt : view.heroWalk.image;
+  drawWalker(ctx, sheet, walkFrame(w.hero.moving && !w.over && w.hero.hopTime <= 0, w.time), cx, cy, px, w.hero.facing === 1);
+  fx.drawNumbers(ctx, ox, oy, px, view.dpr);
+  const icon = Math.max(24 * view.dpr, px * 0.65);
+  drawTile(ctx, atlas.image, w.weapon.tile, width - icon - 10 * view.dpr, height - icon - 126 * view.dpr, icon);
+}
+, sx, sy + px * 0.13);
   }
 
   const objective = objectiveFor(w);
