@@ -32,6 +32,7 @@ export interface Hero {
   butt: number;
   hurt: number;
   poison: number;
+  constricted: number;
   throwing: number;
   spellCooldown: number;
   level: number;
