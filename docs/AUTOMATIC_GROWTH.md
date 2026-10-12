@@ -2,7 +2,7 @@
 
 2026-10-12. 기준: `main` c2cb2e959cbf7be4a48fbb1f82fdafca95fe6194. 관련: `docs/DEVELOPMENT_GUARDRAILS.md`.
 
-> 스킬 목록, 공격 스킬 훈련 방식, 레벨업 아이템 티어는 `docs/SKILL_TRAINING.md`가 이어받았다. 겹치는 부분은 그 문서가 우선한다.
+> 스킬 목록, 장비 자리(주손·보조손), 공격 스킬 훈련 방식, 레벨업 아이템 티어는 `docs/SKILL_TRAINING.md`가 이어받았다. 겹치는 부분은 그 문서가 우선한다.
 
 ## 기획 목표와 불변 조건
 
