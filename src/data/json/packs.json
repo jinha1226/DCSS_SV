@@ -420,5 +420,102 @@
     ],
     "floors": [3, 3],
     "weight": 4
+  },
+  {
+    "id": "zot_vanguard",
+    "branch": "Zot",
+    "members": [
+      {
+        "kind": "hydra",
+        "min": 1,
+        "max": 2
+      },
+      {
+        "kind": "salamander",
+        "min": 1,
+        "max": 2
+      },
+      {
+        "kind": "naga_mage",
+        "min": 1,
+        "max": 2
+      }
+    ],
+    "floors": [1, 3],
+    "weight": 5
+  },
+  {
+    "id": "zot_venom",
+    "branch": "Zot",
+    "members": [
+      {
+        "kind": "wolf_spider",
+        "min": 2,
+        "max": 3
+      },
+      {
+        "kind": "swamp_drake",
+        "min": 1,
+        "max": 2
+      },
+      {
+        "kind": "orb_spider",
+        "min": 1,
+        "max": 2
+      }
+    ],
+    "floors": [1, 3],
+    "weight": 3
+  },
+  {
+    "id": "zot_wardens",
+    "branch": "Zot",
+    "members": [
+      {
+        "kind": "merfolk_aquamancer",
+        "min": 1,
+        "max": 2
+      },
+      {
+        "kind": "merfolk_javelineer",
+        "min": 1,
+        "max": 2
+      },
+      {
+        "kind": "hydra",
+        "min": 1,
+        "max": 2
+      }
+    ],
+    "floors": [2, 3],
+    "weight": 4
+  },
+  {
+    "id": "zot_guard",
+    "branch": "Zot",
+    "members": [
+      {
+        "kind": "hydra",
+        "min": 2,
+        "max": 2
+      },
+      {
+        "kind": "naga_mage",
+        "min": 2,
+        "max": 2
+      },
+      {
+        "kind": "merfolk_aquamancer",
+        "min": 2,
+        "max": 2
+      },
+      {
+        "kind": "salamander",
+        "min": 1,
+        "max": 2
+      }
+    ],
+    "floors": [3, 3],
+    "weight": 5
   }
 ]
