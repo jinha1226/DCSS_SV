@@ -27,8 +27,8 @@ function cache(w: World, kind: 'gold' | 'gear' | 'axe', room: number, itemId?: s
   } else if (kind === 'gear' && itemId) {
     w.groundItems.push({ uid, kind, ...cell, itemId, ignored: false });
   } else if (kind === 'axe') {
-    const weapon = generateWeapon(w, w.weapon.family);
-    weapon.enchantment = Math.max(weapon.enchantment ?? 0, 1 + Math.floor(w.rng() * 3));
+    const base = generateWeapon(w, w.weapon.family);
+    const weapon = { ...base, enchantment: Math.max(base.enchantment ?? 0, 1 + Math.floor(w.rng() * 3)) };
     w.groundItems.push({ uid, kind, ...cell, axe: weapon, ignored: false });
   }
 }
@@ -42,8 +42,8 @@ export function populateBranchLoot(w: World): void {
     for (let i = 0; i < 2; i++) cache(w, 'gold', Math.min(w.rooms.length - 1, i + 1));
     if (node.floor === 3 && !w.shopStock.length) {
       for (let i = 0; i < 2; i++) {
-        const weapon = generateWeapon(w, i === 0 ? w.weapon.family : w.weapon.family === 'axe' ? 'bow' : 'axe');
-        weapon.enchantment = Math.max(weapon.enchantment ?? 0, 2);
+        const base = generateWeapon(w, i === 0 ? w.weapon.family : w.weapon.family === 'axe' ? 'bow' : 'axe');
+        const weapon = { ...base, enchantment: Math.max(base.enchantment ?? 0, 2) };
         w.shopStock.push({ uid: 'shop-' + i, price: 65 + i * 30, weapon });
       }
       const gear = ITEM_DEFINITIONS.filter((item) => item.enabled && ['armour', 'shield', 'jewellery'].includes(item.kind));
