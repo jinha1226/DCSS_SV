@@ -1,5 +1,7 @@
 import { skillData } from '../data/skills';
 import { xpToNext } from '../sim/skills';
+import { downDestinations, nodeLabel } from '../sim/dungeonGraph';
+import { Cell, cellAt } from '../sim/grid';
 import type { World } from '../sim/world';
 
 export interface Hud {
@@ -129,6 +131,14 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
           location?.branch === 'Dungeon'
             ? '지하 ' + location.floor + '층'
             : (location?.branch ?? 'Dungeon') + ' ' + (location?.floor ?? w.depth) + '층';
+        const cell = cellAt(w.grid, Math.floor(w.hero.x), Math.floor(w.hero.y));
+        if (cell === Cell.StairsDown) {
+          const stairs = w.stairs.filter((stair) => stair.down);
+          const index = stairs.findIndex((stair) => stair.x === Math.floor(w.hero.x) && stair.y === Math.floor(w.hero.y));
+          const targets = downDestinations(w.dungeonGraph, w.depth);
+          const target = w.dungeonGraph.nodes.get(targets[index] ?? targets[0] ?? -1);
+          if (target) place.textContent += ' → ' + nodeLabel(target);
+        }
         elapsed.textContent = clock(w.time) + ' · 처치 ' + w.kills;
       }
       if (w.over !== shown) {
