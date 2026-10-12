@@ -54,7 +54,7 @@ export function openSkill(w: World, id: string, guaranteed = true): void {
 }
 
 export function openStartingSkills(w: World): void {
-  for (const id of COMMON) openSkill(w, id, false);
+  for (const id of [...COMMON, 'shield']) openSkill(w, id, false);
   for (const [id, level] of Object.entries(w.heroDef.startingSkills)) {
     openSkill(w, id, false);
     w.hero.skills[id] = level;
