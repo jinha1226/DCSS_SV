@@ -84,6 +84,16 @@ export class Fx {
     while (this.strokes.length && this.strokes[0]!.age >= STROKE) this.strokes.shift();
   }
 
+  /** Each rising number with how far through its rise it is, 0 to 1 (for views that place it themselves). */
+  forEachNumber(
+    visit: (
+      n: { readonly x: number; readonly y: number; readonly text: string; readonly colour: string; readonly big: boolean },
+      t: number,
+    ) => void,
+  ): void {
+    for (const r of this.rising) visit(r, r.age / RISE);
+  }
+
   clear(): void {
     this.rising.length = 0;
     this.strokes.length = 0;

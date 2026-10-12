@@ -15,6 +15,8 @@ body,
   background: #000;
   color: #f2ead8;
   font-family:
+    'Pretendard Variable',
+    Pretendard,
     system-ui,
     -apple-system,
     'Apple SD Gothic Neo',
@@ -1557,4 +1559,10 @@ canvas {
   margin: 12px 0 6px;
   color: #ded0b3;
   font-size: 13px;
+}
+
+/* The three.js world sits under the 2D canvas, which keeps the numbers and takes the pointer. */
+canvas.world3d {
+  image-rendering: auto;
+  pointer-events: none;
 }

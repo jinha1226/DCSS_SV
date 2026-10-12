@@ -4,6 +4,7 @@ export interface StickState {
   y: number;
   held: boolean;
   enabled: boolean;
+  cancel(): void;
 }
 
 /** How far the thumb travels from the stick's middle to full speed, in CSS pixels. */
@@ -26,7 +27,7 @@ export function stickPush(dx: number, dy: number): { x: number; y: number } {
  * trails after the thumb, so turning round takes a short pull rather than a long one.
  */
 export function makeStick(surface: HTMLElement, root: HTMLElement): StickState {
-  const state: StickState = { x: 0, y: 0, held: false, enabled: true };
+  const state: StickState = { x: 0, y: 0, held: false, enabled: true, cancel: () => release() };
   const base = document.createElement('div');
   base.className = 'stick';
   const nub = document.createElement('div');
@@ -55,8 +56,8 @@ export function makeStick(surface: HTMLElement, root: HTMLElement): StickState {
     nub.style.transform = `translate(${dx}px, ${dy}px)`;
   };
 
-  const release = (e: PointerEvent): void => {
-    if (e.pointerId !== pointer) return;
+  const release = (e?: PointerEvent): void => {
+    if (e && e.pointerId !== pointer) return;
     pointer = -1;
     state.x = 0;
     state.y = 0;

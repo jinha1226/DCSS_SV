@@ -1,0 +1,60 @@
+{
+ "size": 64,
+ "feet": [
+  32.0,
+  45.75
+ ],
+ "unitsPerFrame": 2.5,
+ "directions": [
+  "S",
+  "SE",
+  "E",
+  "NE",
+  "N",
+  "NW",
+  "W",
+  "SW"
+ ],
+ "swingFrames": 9,
+ "swingTimes": [
+  0.0,
+  0.08,
+  0.17,
+  0.25,
+  0.3,
+  0.37,
+  0.5,
+  0.62,
+  0.78,
+  0.92
+ ],
+ "armours": [
+  "none",
+  "leather",
+  "chain"
+ ],
+ "weapons": [
+  "long_sword",
+  "great_sword",
+  "hand_axe",
+  "war_axe",
+  "battle_axe",
+  "shortbow",
+  "kk_staff"
+ ],
+ "shields": [
+  "buckler",
+  "kite_shield"
+ ],
+ "swingMs": {
+  "long_sword": 520,
+  "kk_sword": 520,
+  "great_sword": 650,
+  "hand_axe": 560,
+  "war_axe": 600,
+  "battle_axe": 700,
+  "kk_axe2h": 700,
+  "kk_staff": 560,
+  "shortbow": 600
+ }
+}

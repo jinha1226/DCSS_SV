@@ -24,6 +24,20 @@ const APTITUDE_NAMES: Readonly<Record<string, string>> = {
   bow: '활',
   throwing: '투척',
   magic: '마법',
+  stealth: '은신',
+  spellcasting: '주문시전',
+  blade: '검',
+  mace: '둔기',
+  polearm: '장병기',
+  unarmed: '맨손',
+  ranged: '원거리',
+  fire: '화염',
+  ice: '냉기',
+  air: '대기',
+  earth: '대지',
+  summoning: '소환',
+  hexes: '주술',
+  necromancy: '강령',
 };
 
 const APTITUDE_VALUES = {
@@ -106,13 +120,27 @@ export function makeCharacterSelect(root: HTMLElement, atlas: Atlas, choose: (ch
       const name = document.createElement('strong');
       name.textContent = species.name;
 
+      // Strengths and weaknesses as chips; ordinary aptitudes are left out so the cards compare at a glance.
       const aptitudes = document.createElement('span');
       aptitudes.className = 'aptitude-grid';
-      for (const [id, value] of Object.entries(species.aptitudes)) {
-        const row = document.createElement('span');
-        row.className = 'aptitude aptitude-' + value;
-        row.textContent = (APTITUDE_NAMES[id] ?? id) + ' ' + APTITUDE_VALUES[value as keyof typeof APTITUDE_VALUES];
-        aptitudes.append(row);
+      for (const tone of ['good', 'bad'] as const) {
+        const ids = Object.entries(species.aptitudes)
+          .filter(([, value]) => value === tone)
+          .map(([id]) => id);
+        if (!ids.length) continue;
+        const group = document.createElement('span');
+        group.className = 'aptitude-group aptitude-' + tone;
+        const label = document.createElement('em');
+        label.textContent = tone === 'good' ? '강점' : '약점';
+        group.append(label);
+        for (const id of ids) {
+          const chip = document.createElement('span');
+          chip.className = 'aptitude aptitude-' + tone;
+          chip.textContent = APTITUDE_NAMES[id] ?? id;
+          chip.title = (APTITUDE_NAMES[id] ?? id) + ' ' + APTITUDE_VALUES[tone];
+          group.append(chip);
+        }
+        aptitudes.append(group);
       }
 
       button.append(portrait, name, aptitudes);

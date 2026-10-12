@@ -30,7 +30,12 @@ function readTile(file, name) {
   return new Uint8Array(UPNG.toRGBA8(png)[0]);
 }
 
-const files = walk(src).sort();
+const nameOf = (file) =>
+  relative(src, file)
+    .replace(/\\/g, '/')
+    .replace(/\.png$/, '');
+// Sorted by tile name, not file path: "scroll" must come before "scroll-blue" as the test expects.
+const files = walk(src).sort((a, b) => (nameOf(a) < nameOf(b) ? -1 : nameOf(a) > nameOf(b) ? 1 : 0));
 const rows = Math.ceil(files.length / COLS);
 const width = COLS * SIZE;
 const sheet = new Uint8Array(width * rows * SIZE * 4);

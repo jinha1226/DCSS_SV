@@ -1,12 +1,14 @@
 import '../styles/main.css';
 import '../styles/layout.css';
+import '../styles/theme.css';
 import { CHARACTERS } from '../data/characters';
 import { heroFor } from '../data/hero';
 import { spellData } from '../data/spells';
 import { guardZoom } from '../input/guards';
 import { keyPush, watchKeys } from '../input/keys';
 import { makeStick } from '../input/stick';
-import { spellAtPoint, spellTarget } from '../sim/spells';
+import { makeGameZoom } from '../input/zoom';
+import { spellAtPoint, spellCandidates, spellTarget } from '../sim/spells';
 import { shopAccessible } from '../sim/branchLoot';
 import { STEP, makeWorld, stepWorld, type Input, type World } from '../sim/world';
 import { makeCharacterSelect, type CharacterChoice } from '../ui/characterSelect';
@@ -28,6 +30,9 @@ import { LOOK } from '../view/look';
 import { drawMiniMap } from '../view/minimap';
 import { cellPixels, drawWorld } from '../view/render';
 import { makeWalk, type WalkSheet } from '../view/walk';
+import { loadHeroSprites, makeHeroPose, stepPose, takePoseEvents, type HeroSprites } from '../view/heroSprite';
+import { World3D } from '../view3d/world3d';
+import type { Monster } from '../sim/world';
 import { runLoop } from './loop';
 import { stairHoldActive } from './stairInput';
 import { readSwitches } from './switches';
@@ -37,21 +42,39 @@ async function start(): Promise<void> {
   if (!root) return;
   guardZoom(root);
 
+  const switches = readSwitches(location.search);
+  // In 3D the world is drawn on a WebGL canvas underneath; the 2D canvas on top carries numbers and input.
+  const canvas3d = switches.renderer === '3d' ? document.createElement('canvas') : undefined;
+  if (canvas3d) {
+    canvas3d.className = 'game-canvas world3d';
+    root.append(canvas3d);
+  }
   const canvas = document.createElement('canvas');
   canvas.className = 'game-canvas';
   root.append(canvas);
   const layout = makeLayoutButton(root);
-  const ctx = canvas.getContext('2d', { alpha: false });
+  const ctx = canvas.getContext('2d', { alpha: Boolean(canvas3d) });
   if (!ctx) return;
 
-  const switches = readSwitches(location.search);
   const atlas = await loadAtlas();
+  const world3d = canvas3d ? new World3D(canvas3d, atlas.image, switches.quality) : undefined;
+  let aimFocus: Monster | undefined;
+  let lastFrame = performance.now();
+  // ?sprite=haven swaps the DCSS hero tile for the layered 8-facing sprites; a missing set keeps the tile.
+  const heroSprites: HeroSprites | undefined = switches.sprite
+    ? await loadHeroSprites(switches.sprite).catch((error: unknown) => {
+        console.warn(error instanceof Error ? error.message : error);
+        return undefined;
+      })
+    : undefined;
+  const heroPose = makeHeroPose();
   const stick = makeStick(canvas, root);
+  const zoom = makeGameZoom(canvas, () => stick.cancel());
   const keys = watchKeys();
   const fx = new Fx();
   const hop = makeHopButton(root);
   const throwing = makeThrowButton(root);
-  const picker = makeSkillPicker(root);
+  const picker = makeSkillPicker(root, atlas);
   const gear = makeEquipmentPicker(root);
   const spellButtons = makeSpellButtons(root);
 
@@ -66,6 +89,8 @@ async function start(): Promise<void> {
     selected = character;
     const hero = heroFor(character.species, character.job);
     heroWalk = makeWalk(atlas, hero.tile, hero.walk);
+    Object.assign(heroPose, makeHeroPose());
+    if (world3d) void world3d.prepare(character.job);
     world = makeWorld({
       species: character.species,
       job: character.job,
@@ -96,7 +121,7 @@ async function start(): Promise<void> {
 
   const selector = makeCharacterSelect(root, atlas, begin);
   const debug: { world?: World } | undefined = switches.debug ? {} : undefined;
-  if (debug) Object.assign(window, { __sv: Object.assign(debug, { switches, stick, keys }) });
+  if (debug) Object.assign(window, { __sv: Object.assign(debug, { switches, stick, keys, world3d }) });
 
   const hud = makeHud(
     root,
@@ -149,6 +174,7 @@ async function start(): Promise<void> {
   menuAction('▣ 가방', () => inventory.openSheet('bag'));
   menuAction('✦ 스킬', () => skillBar.openDetails());
   menuAction('▤ 게임 로그', () => gameLog.openHistory());
+  menuAction('▭ 화면 구성 전환', () => layout.toggle());
 
   const requested = CHARACTERS.find((character) => character.id === switches.who || character.name === switches.who);
   if (requested) begin(requested);
@@ -156,7 +182,8 @@ async function start(): Promise<void> {
 
   const fit = (): void => {
     dpr = Math.min(window.devicePixelRatio || 1, 3);
-    viewCols = layout.landscape ? Math.max(switches.cols, Math.round(canvas.clientWidth / 32)) : switches.cols;
+    const initialCols = layout.landscape ? Math.max(switches.cols, canvas.clientWidth / 32) : switches.cols;
+    viewCols = initialCols / zoom.scale;
     const width = Math.round(canvas.clientWidth * dpr);
     const height = Math.round(canvas.clientHeight * dpr);
     if (canvas.width !== width || canvas.height !== height) {
@@ -171,19 +198,32 @@ async function start(): Promise<void> {
     }
   };
 
+  /** The floor point under a pointer event, through the 3D camera or the flat 2D view. */
+  const floorPoint = (event: PointerEvent): { x: number; y: number } | undefined => {
+    if (!world) return undefined;
+    const rect = canvas.getBoundingClientRect();
+    const sx = (event.clientX - rect.left) * (canvas.width / rect.width);
+    const sy = (event.clientY - rect.top) * (canvas.height / rect.height);
+    if (world3d) return world3d.pick(sx, sy);
+    const px = cellPixels(canvas.width, viewCols);
+    return { x: world.hero.x + (sx - canvas.width / 2) / px, y: world.hero.y + (sy - canvas.height / 2) / px };
+  };
+
+  canvas.addEventListener('pointermove', (event) => {
+    if (!world || !spellButtons.targetingId) return;
+    const point = floorPoint(event);
+    aimFocus = point ? spellAtPoint(world, spellData(spellButtons.targetingId), point.x, point.y) : undefined;
+  });
+
   canvas.addEventListener(
     'pointerdown',
     (event) => {
       if (!world || !spellButtons.targetingId) return;
       const spell = spellData(spellButtons.targetingId);
       if (spell.shape === 'utility') return;
-      const rect = canvas.getBoundingClientRect();
-      const sx = (event.clientX - rect.left) * (canvas.width / rect.width);
-      const sy = (event.clientY - rect.top) * (canvas.height / rect.height);
-      const px = cellPixels(canvas.width, viewCols);
-      const x = world.hero.x + (sx - canvas.width / 2) / px;
-      const y = world.hero.y + (sy - canvas.height / 2) / px;
-      const target = spellAtPoint(world, spell, x, y);
+      const point = floorPoint(event);
+      if (!point) return;
+      const target = spellAtPoint(world, spell, point.x, point.y);
       if (!target) return;
       queuedSpell = { id: spell.id, x: target.x, y: target.y };
       spellButtons.cancelTarget();
@@ -234,27 +274,55 @@ async function start(): Promise<void> {
         stepWorld(world, input);
         if (world.events.some((event) => event.type === 'floor')) fx.clear();
         fx.take(world.events);
+        world3d?.take(world, world.events);
+        if (heroSprites) {
+          takePoseEvents(heroPose, world, world.events);
+          stepPose(heroPose, heroSprites, world, STEP);
+        }
         gameLog.take(world);
         fx.step(STEP);
       }
     },
     (between) => {
       fit();
+      const now = performance.now();
+      const dt = Math.min(0.1, (now - lastFrame) / 1000);
+      lastFrame = now;
       if (!world || !heroWalk) return;
-      drawWorld(
-        ctx,
-        atlas,
-        world,
-        {
-          cols: viewCols,
-          look: LOOK[switches.look],
-          dpr,
-          heroWalk,
-          targetingSpell: spellButtons.targetingId ? spellData(spellButtons.targetingId) : undefined,
-        },
-        fx,
-        world.over ? 1 : between,
-      );
+      const targeting = spellButtons.targetingId ? spellData(spellButtons.targetingId) : undefined;
+      if (world3d) {
+        world3d.resize(canvas.width, canvas.height, dpr);
+        world3d.render(
+          world,
+          {
+            cols: viewCols,
+            dpr,
+            targetingSpell: targeting,
+            targets: targeting ? spellCandidates(world, targeting) : undefined,
+            focus: targeting ? aimFocus : undefined,
+            stairProgress: world.descending,
+          },
+          fx,
+          world.over ? 1 : between,
+          dt,
+          ctx,
+        );
+      } else
+        drawWorld(
+          ctx,
+          atlas,
+          world,
+          {
+            cols: viewCols,
+            look: LOOK[switches.look],
+            dpr,
+            heroWalk,
+            ...(heroSprites ? { heroSprite: { sprites: heroSprites, pose: heroPose } } : {}),
+            targetingSpell: spellButtons.targetingId ? spellData(spellButtons.targetingId) : undefined,
+          },
+          fx,
+          world.over ? 1 : between,
+        );
       hud.show(world);
       shopButton.hidden = !shopAccessible(world) || inventory.open || statusSheet.open || skillBar.expanded || gameLog.expanded;
       gameLog.show(world);

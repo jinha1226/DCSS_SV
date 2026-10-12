@@ -5,7 +5,18 @@ import { STICK_REACH, stickPush } from '../../src/input/stick';
 import { cellPixels } from '../../src/view/render';
 
 describe('the address switches', () => {
-  const usual = { cols: 15, speed: 6.5, look: 'dcss', seed: 0, debug: false, floor: 1, who: '' };
+  const usual = {
+    cols: 15,
+    speed: 6.5,
+    look: 'dcss',
+    seed: 0,
+    debug: false,
+    floor: 1,
+    who: '',
+    sprite: '',
+    renderer: '3d',
+    quality: 'high',
+  };
 
   it('fall back to the usual values', () => {
     expect(readSwitches('')).toEqual(usual);
@@ -25,6 +36,9 @@ describe('the address switches', () => {
       debug: true,
       floor: 1,
       who: '',
+      sprite: '',
+      renderer: '3d',
+      quality: 'high',
     });
   });
 
@@ -38,6 +52,12 @@ describe('the address switches', () => {
     expect(readSwitches('?floor=4').floor).toBe(1);
     expect(writeSwitches(readSwitches('?floor=3'))).toBe('?floor=3');
     expect(writeSwitches(readSwitches('?zoom=17&speed=6.5'))).toBe('');
+    expect(readSwitches('?sprite=haven').sprite).toBe('haven');
+    expect(writeSwitches(readSwitches('?sprite=haven'))).toBe('?sprite=haven');
+    expect(readSwitches('?sprite=../x').sprite).toBe('');
+    expect(readSwitches('?r=2d').renderer).toBe('2d');
+    expect(writeSwitches(readSwitches('?r=2d&fx=low'))).toBe('?r=2d&fx=low');
+    expect(readSwitches('?fx=ultra').quality).toBe('high');
     for (const text of ['?zoom=13&speed=3.5&look=bright&seed=42&debug', '?debug', '?look=bright']) {
       expect(readSwitches(writeSwitches(readSwitches(text)))).toEqual(readSwitches(text));
     }

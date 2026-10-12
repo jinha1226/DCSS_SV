@@ -1,5 +1,11 @@
 export interface LayoutButton {
   readonly landscape: boolean;
+  toggle(): void;
+}
+
+/** With no saved choice, a wide screen (a PC) starts in the landscape layout and a phone in portrait. */
+function wideScreen(): boolean {
+  return window.innerWidth >= 1000 && window.innerWidth > window.innerHeight;
 }
 
 /** Changes the UI layout without restarting the run or rotating the device. */
@@ -8,9 +14,10 @@ export function makeLayoutButton(root: HTMLElement): LayoutButton {
   button.type = 'button';
   button.className = 'layout-button';
   root.append(button);
-  let landscape = false;
+  let landscape = wideScreen();
   try {
-    landscape = localStorage.getItem('dcss-sv-layout') === 'landscape';
+    const saved = localStorage.getItem('dcss-sv-layout');
+    if (saved) landscape = saved === 'landscape';
   } catch {
     // Browser storage is optional.
   }
@@ -21,7 +28,7 @@ export function makeLayoutButton(root: HTMLElement): LayoutButton {
     button.setAttribute('aria-pressed', String(landscape));
     button.title = landscape ? '세로화면 구성으로 전환' : '게임 왼쪽 · 상태와 미니맵 오른쪽';
   };
-  button.addEventListener('click', () => {
+  const toggle = (): void => {
     landscape = !landscape;
     draw();
     try {
@@ -29,11 +36,13 @@ export function makeLayoutButton(root: HTMLElement): LayoutButton {
     } catch {
       // The current session still keeps its selection.
     }
-  });
+  };
+  button.addEventListener('click', toggle);
   draw();
   return {
     get landscape() {
       return landscape;
     },
+    toggle,
   };
 }

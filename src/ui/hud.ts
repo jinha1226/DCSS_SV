@@ -21,6 +21,14 @@ function el(tag: string, className: string, parent: HTMLElement): HTMLElement {
   return node;
 }
 
+/** Adds a class for a moment, restarting its animation if it is already running. */
+function flash(node: HTMLElement, name: string, ms: number): void {
+  node.classList.remove(name);
+  void node.offsetWidth;
+  node.classList.add(name);
+  window.setTimeout(() => node.classList.remove(name), ms);
+}
+
 const clock = (seconds: number): string => Math.floor(seconds / 60) + ':' + String(Math.floor(seconds % 60)).padStart(2, '0');
 
 function skillText(w: World): string {
@@ -104,6 +112,10 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
   });
 
   let last = '';
+
+  let seenLevel = 0;
+
+  let seenHp = Infinity;
   let lastSummary = '';
   let shown = false;
   return {
@@ -147,6 +159,11 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
       ].join('|');
       if (line !== last) {
         last = line;
+        // Brief flourishes: the XP bar flares on a level, the health bar jolts when struck.
+        if (seenLevel && w.hero.level > seenLevel) flash(xp, 'level-up', 1400);
+        if (w.hero.hp < seenHp) flash(bar, 'struck', 380);
+        seenLevel = w.hero.level;
+        seenHp = w.hero.hp;
         fill.style.width = (Math.max(0, w.hero.hp) / w.hero.maxHp) * 100 + '%';
         bar.classList.toggle('poison', w.hero.poison > 0);
         bar.classList.toggle('low', w.hero.hp <= w.hero.maxHp * 0.3);

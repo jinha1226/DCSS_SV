@@ -13,6 +13,7 @@ import type { Monster, World } from '../sim/world';
 import { drawTile, type Atlas } from './atlas';
 import type { Fx } from './fx';
 import type { Look } from './look';
+import { drawHeroSprite, type HeroPose, type HeroSprites } from './heroSprite';
 import { drawWalker, walkFrame, type WalkSheet } from './walk';
 
 export interface View {
@@ -24,6 +25,8 @@ export interface View {
   /** The hero's walk, made from its standing tile. */
   readonly heroWalk: WalkSheet;
   readonly targetingSpell?: SpellData;
+  /** The layered 8-facing hero (?sprite=haven); the DCSS tile walk is used when absent. */
+  readonly heroSprite?: { readonly sprites: HeroSprites; readonly pose: HeroPose };
 }
 
 /** How dark a cell is drawn once it is out of sight but remembered. */
@@ -370,8 +373,12 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
   }
   fx.drawStrokes(ctx, cx, groundCy, px);
   // DCSS figures are drawn facing left.
-  const sheet = w.hero.hurt > 0 ? view.heroWalk.hurt : view.heroWalk.image;
-  drawWalker(ctx, sheet, walkFrame(w.hero.moving && !w.over && w.hero.hopTime <= 0, w.time), cx, cy, px, w.hero.facing === 1);
+  if (view.heroSprite) {
+    drawHeroSprite(ctx, view.heroSprite.sprites, view.heroSprite.pose, w, cx, cy, px);
+  } else {
+    const sheet = w.hero.hurt > 0 ? view.heroWalk.hurt : view.heroWalk.image;
+    drawWalker(ctx, sheet, walkFrame(w.hero.moving && !w.over && w.hero.hopTime <= 0, w.time), cx, cy, px, w.hero.facing === 1);
+  }
   fx.drawNumbers(ctx, ox, oy, px, view.dpr);
   const icon = Math.max(24 * view.dpr, px * 0.65);
   drawTile(ctx, atlas.image, w.weapon.tile, width - icon - 10 * view.dpr, height - icon - 126 * view.dpr, icon);

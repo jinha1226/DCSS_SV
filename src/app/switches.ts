@@ -9,6 +9,12 @@ export interface Switches {
   debug: boolean;
   floor: number;
   who: string;
+  /** A layered sprite set from public/sprites/ to draw the hero with, e.g. 'haven'; empty for the DCSS tile. */
+  sprite: string;
+  /** '3d' draws the world with three.js (the default); '2d' keeps the DCSS tile view. */
+  renderer: '3d' | '2d';
+  /** 'low' turns off bloom, shadows and antialiasing for weak phones. */
+  quality: 'high' | 'low';
 }
 
 export const COLS = { min: 15, max: 15, normal: 15 } as const;
@@ -31,6 +37,9 @@ export function readSwitches(search: string): Switches {
     debug: query.has('debug'),
     floor: Math.round(within(query.get('floor'), 1, 3, 1)),
     who: query.get('who') ?? '',
+    renderer: query.get('r') === '2d' ? '2d' : '3d',
+    quality: query.get('fx') === 'low' ? 'low' : 'high',
+    sprite: /^[a-z0-9_-]{1,32}$/.test(query.get('sprite') ?? '') ? (query.get('sprite') as string) : '',
   };
 }
 
@@ -41,6 +50,9 @@ export function writeSwitches(switches: Switches): string {
   if (switches.seed) query.set('seed', String(switches.seed));
   if (switches.floor !== 1) query.set('floor', String(switches.floor));
   if (switches.who) query.set('who', switches.who);
+  if (switches.sprite) query.set('sprite', switches.sprite);
+  if (switches.renderer === '2d') query.set('r', '2d');
+  if (switches.quality === 'low') query.set('fx', 'low');
   const text = query.toString() + (switches.debug ? (query.size ? '&debug' : 'debug') : '');
   return text ? '?' + text : '';
 }
