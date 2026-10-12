@@ -1,4 +1,5 @@
 import { Cell, cellAt } from '../sim/grid';
+import { objectiveFor } from '../sim/objectives';
 import type { World } from '../sim/world';
 
 /** Draw into the dedicated HUD minimap canvas instead of the dungeon canvas. */
@@ -24,6 +25,11 @@ export function drawMiniMap(ctx: CanvasRenderingContext2D, w: World): void {
     if (!w.seen[iy * w.grid.w + ix]) continue;
     ctx.fillStyle = item.newPath ? '#66d7c2' : '#d9b866';
     ctx.fillRect(left + ix * scale, top + iy * scale, scale, scale);
+  }
+  const objective = objectiveFor(w);
+  if (objective && w.seen[Math.floor(objective.y) * w.grid.w + Math.floor(objective.x)]) {
+    ctx.fillStyle = objective.kind === 'orb' ? '#d8a9ff' : '#e9c96e';
+    ctx.fillRect(left + Math.floor(objective.x) * scale, top + Math.floor(objective.y) * scale, Math.max(scale, 2), Math.max(scale, 2));
   }
   ctx.fillStyle = '#ffedb6';
   ctx.fillRect(left + Math.floor(w.hero.x) * scale - 1, top + Math.floor(w.hero.y) * scale - 1, scale + 2, scale + 2);
