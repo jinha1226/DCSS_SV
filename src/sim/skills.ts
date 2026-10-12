@@ -18,7 +18,7 @@ export function aptitude(w: World, id: string): Aptitude {
   return w.heroDef.aptitudes[skill.aptitude] ?? 'normal';
 }
 
-export function skillCap(w: World, id: string): number {
+export function skillCap(_w: World, _id: string): number {
   return MAX_SKILL;
 }
 
@@ -191,7 +191,7 @@ export function chooseSkill(w: World, id: string): void {
   const gained = choice.to - before;
   w.hero.skills[id] = choice.to;
   if (id === 'fighting' && gained > 0) {
-    const hp = 8 * gained;
+    const hp = 3 * gained;
     w.hero.maxHp += hp;
     w.hero.hp += hp;
   }
