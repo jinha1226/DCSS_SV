@@ -3,17 +3,18 @@ import { downDestinations, makeDungeonGraph } from '../../src/sim/dungeonGraph';
 import { DUNGEON } from '../../src/data/packs';
 
 describe('stage 3: seeded dungeon topology', () => {
-  it('keeps Dungeon 1..9 and generates 24 mandatory nodes plus optional Orc', () => {
+  it('keeps Dungeon 1..9 and generates 24 mandatory nodes plus optional Orc and Temple', () => {
     expect(DUNGEON.floors).toBe(9);
     for (const seed of [1, 2, 3, 4, 200, 901]) {
       const graph = makeDungeonGraph(seed);
-      expect(graph.nodes.size).toBe(27);
+      expect(graph.nodes.size).toBe(28);
       for (let floor = 1; floor <= 9; floor++) {
         expect(graph.nodes.get(floor)?.branch).toBe('Dungeon');
         expect(graph.nodes.get(floor)?.floor).toBe(floor);
       }
       expect(graph.nodes.get(101)?.parent).toBe(4);
       expect(graph.nodes.get(201)?.parent).toBe(6);
+      expect(graph.nodes.get(901)?.parent).toBe(3);
       expect(graph.nodes.get(301)?.parent).toBe(101);
       expect(graph.nodes.get(401)?.parent).toBe(102);
       expect(graph.nodes.get(701)?.parent).toBe(9);
