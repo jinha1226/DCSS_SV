@@ -14,7 +14,7 @@ export function drawMiniMap(ctx: CanvasRenderingContext2D, w: World): void {
     for (let col = 0; col < w.grid.w; col++) {
       if (!w.seen[row * w.grid.w + col]) continue;
       const cell = cellAt(w.grid, col, row);
-      ctx.fillStyle = cell === Cell.Wall ? '#55504a' : cell === Cell.StairsDown ? '#e2bd6d' : '#9d998d';
+      ctx.fillStyle = cell === Cell.Wall ? '#55504a' : cell === Cell.StairsDown ? '#e2bd6d' : cell === Cell.Water ? '#397e9b' : '#9d998d';
       ctx.fillRect(left + col * scale, top + row * scale, scale + 0.2, scale + 0.2);
     }
   }
