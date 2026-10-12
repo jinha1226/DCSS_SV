@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { itemDefinition } from '../data/itemCatalog';
 import { TILE_SIZE, tileRect, type TileName } from '../data/tiles';
+import { itemTile } from '../sim/identification';
 import type { World } from '../sim/world';
 import type { Sheet } from '../view/atlas';
 import { heldFor } from './actors';
@@ -50,7 +51,7 @@ export class LootView {
     return m;
   }
 
-  private async lootMesh(item: World['groundItems'][number]): Promise<THREE.Object3D> {
+  private async lootMesh(w: World, item: World['groundItems'][number]): Promise<THREE.Object3D> {
     const g = new THREE.Group();
     const halo = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), lightMaterial(this.glow, 0xffe6a8, 0.4));
     halo.rotation.x = -Math.PI / 2;
@@ -83,7 +84,7 @@ export class LootView {
         : item.axe
           ? item.axe.tile
           : item.itemId
-            ? (itemDefinition(item.itemId).tile as TileName)
+            ? ((itemTile(w, item.itemId) ?? itemDefinition(item.itemId).tile) as TileName)
             : undefined;
     if (tile) {
       const sprite = new THREE.Sprite(this.tileMaterial(tile));
@@ -106,7 +107,7 @@ export class LootView {
         const holder = new THREE.Group();
         this.loot.set(item.uid, holder);
         this.group.add(holder);
-        void this.lootMesh(item).then((m) => holder.add(m));
+        void this.lootMesh(w, item).then((m) => holder.add(m));
         mesh = holder;
       }
       mesh.visible = Boolean(w.seen[cell]);

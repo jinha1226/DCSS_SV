@@ -1,6 +1,7 @@
 import { itemDefinition } from '../data/itemCatalog';
 import { skillData } from '../data/skills';
 import { TILE_SIZE, tileRect, type TileName } from '../data/tiles';
+import { itemTile } from '../sim/identification';
 import { chooseReward, skipReward } from '../sim/rewards';
 import type { ItemChoice, World } from '../sim/types';
 import type { Atlas } from '../view/atlas';
@@ -15,9 +16,9 @@ const READY_MS = 900;
 /** How long the chosen card shines before the rules take the choice. */
 const PICK_MS = 520;
 
-function tileOf(card: ItemChoice): TileName | undefined {
+function tileOf(w: World, card: ItemChoice): TileName | undefined {
   if (card.weapon) return card.weapon.tile;
-  if (card.itemId) return itemDefinition(card.itemId).tile as TileName;
+  if (card.itemId) return (itemTile(w, card.itemId) ?? itemDefinition(card.itemId).tile) as TileName;
   return undefined;
 }
 
@@ -113,7 +114,7 @@ export function makeSkillPicker(root: HTMLElement, atlas: Atlas): SkillPicker {
       kind.textContent = KIND_LABEL[card.kind];
       const art = document.createElement('div');
       art.className = 'card-art';
-      art.append(icon(atlas, tileOf(card)));
+      art.append(icon(atlas, tileOf(w, card)));
       const name = document.createElement('strong');
       name.textContent = card.name;
       const line = document.createElement('small');

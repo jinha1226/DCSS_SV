@@ -2,6 +2,22 @@ import { ITEM_DEFINITIONS } from '../data/itemCatalog';
 import type { World } from './types';
 
 const COLOURS = ['붉은', '푸른', '초록', '보라', '황금', '흐린', '검은', '은빛', '분홍', '주황', '투명', '갈색'];
+/** The flask each potion colour is drawn with (DCSS potion tiles), so the picture never gives the potion away. */
+const FLASKS: Readonly<Record<string, string>> = {
+  붉은: 'item/potion/ruby',
+  푸른: 'item/potion/brilliant_blue',
+  초록: 'item/potion/emerald',
+  보라: 'item/potion/purple_red',
+  황금: 'item/potion/golden',
+  흐린: 'item/potion/cloudy',
+  검은: 'item/potion/black',
+  은빛: 'item/potion/silver',
+  분홍: 'item/potion/pink',
+  주황: 'item/potion/orange',
+  투명: 'item/potion/white',
+  갈색: 'item/potion/brown',
+};
+const SCROLL = 'item/scroll/scroll';
 const MARKS = ['IX', 'KIR', 'SEN', 'VOR', 'QUM', 'ASH', 'TEK', 'YEL', 'DRA', 'MOR', 'ZAN', 'UL'];
 
 /** Per-run shuffled appearances; all stacks with the same true ID look alike. */
@@ -32,4 +48,19 @@ export function itemDisplayName(w: World, id: string): string {
     return w.itemAppearances[id] ?? (item.kind === 'potion' ? '미감정 물약' : '미감정 두루마리');
   }
   return item.name;
+}
+
+/**
+ * The tile an item is shown with. As in DCSS, a potion keeps its flask colour and every scroll looks
+ * alike whether or not it has been identified, so icons never reveal what names hide.
+ */
+export function itemTile(w: World, id: string): string | undefined {
+  const item = ITEM_DEFINITIONS.find((row) => row.id === id);
+  if (!item) return undefined;
+  if (item.kind === 'scroll') return SCROLL;
+  if (item.kind === 'potion') {
+    const colour = (w.itemAppearances[id] ?? '').split(' ')[0] ?? '';
+    return FLASKS[colour] ?? 'item/potion/cloudy';
+  }
+  return item.tile;
 }

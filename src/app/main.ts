@@ -1,6 +1,7 @@
 import '../styles/main.css';
 import '../styles/layout.css';
 import '../styles/theme.css';
+import '../styles/ledger.css';
 import { CHARACTERS } from '../data/characters';
 import { heroFor } from '../data/hero';
 import { selfSpell, spellData } from '../data/spells';
@@ -20,7 +21,7 @@ import { makeInventorySheets } from '../ui/inventorySheets';
 import { makeHopButton } from '../ui/hopButton';
 import { makeSkillBar } from '../ui/skillBar';
 import { makeSkillPicker } from '../ui/skillPicker';
-import { makeStatusSheet } from '../ui/statusSheet';
+import { makeLedger } from '../ui/ledger';
 import { makeSpellButtons } from '../ui/spellButtons';
 import { makeThrowButton } from '../ui/throwButton';
 import { makeTimeModeButton } from '../ui/timeModeButton';
@@ -102,7 +103,7 @@ async function start(): Promise<void> {
     gameLog.reset(world);
     skillBar.close();
     inventory.close();
-    statusSheet.close();
+    ledger.close();
     spellButtons.cancelTarget();
     selector.hide();
     if (debug) debug.world = world;
@@ -113,7 +114,7 @@ async function start(): Promise<void> {
     gameLog.hide();
     skillBar.close();
     inventory.close();
-    statusSheet.close();
+    ledger.close();
     selected = undefined;
     spellButtons.cancelTarget();
     selector.show();
@@ -148,10 +149,11 @@ async function start(): Promise<void> {
     inventory.openSheet('shop');
   });
   root.append(shopButton);
-  const statusSheet = makeStatusSheet(root);
+  // Status, skills and bag on one DCSS-style sheet; % / m / i open it from the keyboard.
+  const ledger = makeLedger(root, atlas, () => Boolean(world) && !world?.over && !world?.rewardChoices && !inventory.open);
   const skillBar = makeSkillBar(hud.skillSlot, atlas, () => {
     skillBar.close();
-    inventory.openSheet('equipment');
+    ledger.openTab('status');
   });
   const timeMode = makeTimeModeButton(hud.menuSlot);
   const gameLog = makeGameLog(root);
@@ -163,16 +165,16 @@ async function start(): Promise<void> {
     button.addEventListener('click', () => {
       hud.closeMenu();
       inventory.close();
-      statusSheet.close();
+      ledger.close();
       skillBar.close();
       action();
     });
     hud.menuSlot.append(button);
   };
-  menuAction('@ 상태', () => statusSheet.openSheet());
-  menuAction('⚔ 장비', () => inventory.openSheet('equipment'));
-  menuAction('▣ 가방', () => inventory.openSheet('bag'));
-  menuAction('✦ 스킬', () => skillBar.openDetails());
+  menuAction('@ 상태', () => ledger.openTab('status'));
+  menuAction('⚔ 장비', () => ledger.openTab('status'));
+  menuAction('▣ 가방', () => ledger.openTab('items'));
+  menuAction('✦ 스킬', () => ledger.openTab('skills'));
   menuAction('▤ 게임 로그', () => gameLog.openHistory());
   menuAction('▭ 화면 구성 전환', () => layout.toggle());
 
@@ -264,7 +266,7 @@ async function start(): Promise<void> {
       queuedSpell = undefined;
       const active = Math.hypot(input.mx, input.my) > 0.01 || input.throw || input.hop || Boolean(input.spell) || stairHoldActive(world);
       if (
-        !statusSheet.open &&
+        !ledger.open &&
         !inventory.open &&
         !skillBar.expanded &&
         !gameLog.expanded &&
@@ -324,11 +326,11 @@ async function start(): Promise<void> {
           world.over ? 1 : between,
         );
       hud.show(world);
-      shopButton.hidden = !shopAccessible(world) || inventory.open || statusSheet.open || skillBar.expanded || gameLog.expanded;
+      shopButton.hidden = !shopAccessible(world) || inventory.open || ledger.open || skillBar.expanded || gameLog.expanded;
       gameLog.show(world);
       skillBar.show(world);
       inventory.show(world);
-      statusSheet.show(world);
+      ledger.show(world);
       picker.show(world);
       gear.show(world);
       spellButtons.show(world);

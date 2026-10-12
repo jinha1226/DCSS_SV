@@ -1,0 +1,462 @@
+/*
+ * The ledger in DCSS console dress: black ground, one monospaced face, and meaning carried by the
+ * terminal palette (white for what matters, green good, yellow caution, red bad, cyan unknown,
+ * brown/yellow headings). Tiles sit beside item names the way WebTiles shows them.
+ */
+.ledger {
+  --c-bg: #000;
+  --c-frame: #3a3a3a;
+  --c-plain: #c0c0c0;
+  --c-hi: #ffffff;
+  --c-muted: #6c6c6c;
+  --c-good: #55ff55;
+  --c-warn: #ffff55;
+  --c-bad: #ff5555;
+  --c-gold: #ffff55;
+  --c-cyan: #55ffff;
+  --c-magic: #ff55ff;
+  --c-head: #c4a000;
+  --c-select: #1c3a6a;
+  --mono: 'Nanum Gothic Coding', 'D2Coding', ui-monospace, Consolas, monospace;
+  position: fixed;
+  inset: max(10px, env(safe-area-inset-top, 0px)) 10px max(10px, env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  display: none;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  max-width: 1280px;
+  margin: 0 auto;
+  border: 1px solid var(--c-frame);
+  background: var(--c-bg);
+  color: var(--c-plain);
+  font: 14px/1.45 var(--mono);
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.55);
+}
+
+.ledger.on {
+  display: grid;
+  animation: lg-in 0.16s ease-out;
+}
+
+@keyframes lg-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+
+.ledger-shade {
+  position: fixed;
+  inset: 0;
+  z-index: 39;
+  display: none;
+  border: 0;
+  background: transparent;
+}
+
+.ledger-shade.on {
+  display: block;
+}
+
+.ledger button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.ledger kbd {
+  font: inherit;
+  color: var(--c-warn);
+}
+
+.ledger h3 {
+  margin: 12px 0 4px;
+  color: var(--c-head);
+  font: inherit;
+  font-weight: 700;
+}
+
+.ledger h3::after {
+  content: '';
+  display: block;
+  margin-top: 2px;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.tone-plain {
+  color: var(--c-plain);
+}
+.tone-hi {
+  color: var(--c-hi);
+}
+.tone-good {
+  color: var(--c-good);
+}
+.tone-warn {
+  color: var(--c-warn);
+}
+.tone-bad {
+  color: var(--c-bad);
+}
+.tone-muted {
+  color: var(--c-muted);
+}
+.tone-gold {
+  color: var(--c-gold);
+}
+.tone-cyan {
+  color: var(--c-cyan);
+}
+.tone-magic {
+  color: var(--c-magic);
+}
+
+/* ---------- header and tabs ---------- */
+
+.lg-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--c-frame);
+}
+
+.lg-title {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  align-items: baseline;
+}
+
+.lg-title strong {
+  color: var(--c-hi);
+  font-weight: 700;
+}
+
+.lg-title span,
+.lg-clock {
+  color: var(--c-muted);
+}
+
+.lg-close {
+  color: var(--c-muted) !important;
+}
+
+.lg-close:hover {
+  color: var(--c-hi) !important;
+}
+
+.lg-tabs {
+  display: none;
+  border-bottom: 1px solid var(--c-frame);
+}
+
+.lg-tab {
+  flex: 1;
+  padding: 9px 4px !important;
+  text-align: center !important;
+  color: var(--c-muted) !important;
+  border-bottom: 2px solid transparent !important;
+}
+
+.lg-tab.on {
+  color: var(--c-hi) !important;
+  border-bottom-color: var(--c-warn) !important;
+}
+
+/* ---------- body: three columns on a wide screen ---------- */
+
+.lg-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) minmax(0, 1fr);
+  min-height: 0;
+}
+
+.lg-col {
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 2px 12px 14px;
+  border-right: 1px solid #1e1e1e;
+  scrollbar-color: #333 #000;
+}
+
+.lg-col:last-child {
+  border-right: 0;
+}
+
+.lg-hero {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 0 4px;
+}
+
+.lg-hero small {
+  display: block;
+}
+
+.lg-portrait {
+  position: static !important;
+  width: 48px !important;
+  height: 48px !important;
+  image-rendering: pixelated;
+}
+
+.lg-overview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 14px;
+  padding: 6px 0;
+  border-block: 1px solid #1e1e1e;
+}
+
+.lg-pair {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.lg-label {
+  color: var(--c-plain);
+}
+
+.lg-pair b {
+  font-weight: 700;
+  min-width: 0;
+  white-space: normal;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.lg-resists,
+.lg-extra,
+.lg-effects {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 18px;
+}
+
+.lg-effects {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px dashed #222;
+  font-size: 12.5px;
+}
+
+.lg-pips {
+  letter-spacing: 0.25em;
+}
+
+/* Item, slot and skill lines: one row each, lettered. */
+.lg-list {
+  display: grid;
+}
+
+.lg-item {
+  display: grid;
+  grid-template-columns: 2.2ch 22px auto 1fr auto;
+  align-items: center;
+  gap: 0 8px;
+  padding: 1px 4px !important;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.lg-item:not(:has(.lg-slot)) {
+  grid-template-columns: 2.2ch 22px 1fr auto;
+}
+
+.lg-item:hover {
+  background: #111;
+}
+
+.lg-item.selected {
+  background: var(--c-select);
+}
+
+.lg-item.unavailable {
+  opacity: 0.45;
+}
+
+.lg-letter {
+  color: var(--c-plain);
+}
+
+.lg-slot {
+  min-width: 5ch;
+  color: var(--c-muted);
+}
+
+.lg-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lg-note {
+  color: var(--c-muted);
+}
+
+.lg-icon {
+  position: static !important;
+  width: 22px !important;
+  height: 22px !important;
+  image-rendering: pixelated;
+}
+
+.lg-skill {
+  display: grid;
+  grid-template-columns: 3.4ch 1fr 4ch 5ch;
+  gap: 0 8px;
+  padding: 1px 4px;
+  white-space: nowrap;
+}
+
+.lg-skill-head {
+  color: var(--c-muted);
+}
+
+.lg-skill b,
+.lg-skill span:last-child {
+  text-align: right;
+}
+
+.lg-hint {
+  margin: 8px 0 0;
+  color: var(--c-muted);
+  font-size: 12.5px;
+}
+
+.lg-gold {
+  margin: 12px 0 0;
+}
+
+/* The spell slot panel joins in console colours. */
+.lg-skills .status-spells h3 {
+  color: var(--c-head);
+}
+
+.lg-skills .spell-slot-row button {
+  border-color: #333;
+  background: #0a0a0a;
+  color: var(--c-muted);
+  border-radius: 2px;
+}
+
+.lg-skills .spell-slot-row button.on {
+  border-color: var(--c-warn);
+  color: var(--c-hi);
+}
+
+/* ---------- description strip ---------- */
+
+.lg-detail {
+  min-height: 84px;
+  padding: 8px 12px 10px;
+  border-top: 1px solid var(--c-frame);
+}
+
+.lg-desc {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  align-items: start;
+}
+
+.lg-desc p {
+  margin: 0;
+}
+
+.lg-desc-icon {
+  position: static !important;
+  width: 40px !important;
+  height: 40px !important;
+  image-rendering: pixelated;
+}
+
+.lg-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  max-width: 420px;
+}
+
+.lg-action {
+  padding: 4px 10px !important;
+  border: 1px solid #3a3a3a !important;
+  border-radius: 2px;
+  background: #0b0b0b !important;
+}
+
+.lg-action:hover {
+  border-color: var(--c-warn) !important;
+  color: var(--c-hi) !important;
+}
+
+.lg-message {
+  margin: 6px 0 0;
+  color: var(--c-warn);
+}
+
+/* ---------- phones and narrow windows: one column at a time behind tabs ---------- */
+
+@media (max-width: 899px) {
+  .ledger {
+    inset: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+    border-inline: 0;
+    font-size: 14px;
+  }
+
+  .lg-tabs {
+    display: flex;
+  }
+
+  .lg-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lg-col {
+    display: none;
+    border-right: 0;
+  }
+
+  .ledger[data-tab='status'] .lg-status,
+  .ledger[data-tab='skills'] .lg-skills,
+  .ledger[data-tab='items'] .lg-items {
+    display: block;
+  }
+
+  .lg-overview {
+    gap: 0 10px;
+  }
+
+  .lg-effects {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lg-desc {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+
+  .lg-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    max-width: none;
+  }
+
+  .lg-item,
+  .lg-skill {
+    padding-block: 5px !important;
+  }
+}

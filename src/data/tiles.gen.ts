@@ -1,7 +1,7 @@
 // Written by tools/packTiles.mjs. Do not edit by hand.
 export const TILE_SIZE = 32;
 export const ATLAS_COLS = 16;
-export const SHEET_VERSION = 'cca07d734f';
+export const SHEET_VERSION = '61cced4693';
 export const TILE_NAMES = [
   'feat/stone_stairs_down',
   'feat/stone_stairs_up',
@@ -51,12 +51,20 @@ export const TILE_NAMES = [
   'item/longbow1',
   'item/longbow2',
   'item/orcbow1',
+  'item/potion/black',
   'item/potion/brilliant_blue',
+  'item/potion/brown',
+  'item/potion/cloudy',
   'item/potion/cyan',
   'item/potion/emerald',
+  'item/potion/golden',
   'item/potion/murky',
   'item/potion/orange',
+  'item/potion/pink',
+  'item/potion/purple_red',
   'item/potion/ruby',
+  'item/potion/silver',
+  'item/potion/white',
   'item/ring/diamond',
   'item/ring/ruby',
   'item/ring/silver',
