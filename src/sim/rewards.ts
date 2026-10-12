@@ -1,6 +1,6 @@
 import { ITEM_DEFINITIONS } from '../data/itemCatalog';
 import { DUNGEON } from '../data/packs';
-import { generateWeapon } from './equipment';
+import { generateRewardWeapon } from './equipment';
 import { addConsumable } from './consumables';
 import type { ItemChoice, World } from './types';
 
@@ -53,7 +53,7 @@ function consumableCard(w: World): ItemChoice {
 /** One seeded, fixed set per character level; rerendering does not reroll. */
 export function dealItemRewards(w: World): void {
   if (w.pendingChoices <= 0 || w.rewardChoices || w.choosing) return;
-  const weapon = generateWeapon(w, w.weapon.family);
+  const weapon = generateRewardWeapon(w, w.weapon.family);
   w.rewardChoices = [
     { id: 'weapon:' + weapon.uid, kind: 'weapon', name: weapon.name, line: '무기 · 가방에 보관', weapon },
     gearCard(w),

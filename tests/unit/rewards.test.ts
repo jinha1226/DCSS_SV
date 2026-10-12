@@ -16,6 +16,8 @@ describe('level-up item reward integration', () => {
     expect(a.rewardChoices).toEqual(b.rewardChoices);
     expect(a.rewardChoices?.map((card) => card.kind)).toEqual(['weapon', 'gear', 'consumable']);
     expect(a.rewardChoices![0]?.weapon?.special).toBe(false);
+    expect(a.rewardChoices![0]?.weapon?.brand).toBeUndefined();
+    expect(a.rewardChoices![0]?.weapon?.options).toEqual([]);
   });
 
   it('stores a rewarded weapon without replacing the equipped weapon or starting a ground pickup', () => {

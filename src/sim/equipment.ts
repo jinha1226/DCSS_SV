@@ -81,6 +81,17 @@ export function generateWeapon(w: World, family: WeaponFamily): WeaponItem {
     special: isRandart,
   };
 }
+/** Level-up rewards never roll artefact properties, brands, or special modifiers. */
+export function generateRewardWeapon(w: World, family: WeaponFamily): WeaponItem {
+  const base = weighted(w, family);
+  return {
+    uid: uid(w, family), baseId: base.id, family: base.family, name: base.name,
+    tile: base.tile, damage: base.damage, every: base.every, range: base.range,
+    knock: base.knock, hands: base.hands,
+    ...(base.projectileSpeed ? { projectileSpeed: base.projectileSpeed } : {}),
+    options: [], special: false,
+  };
+}
 export const generateAxe = (w: World): WeaponItem => generateWeapon(w, 'axe');
 export const generateBow = (w: World): WeaponItem => generateWeapon(w, 'bow');
 
