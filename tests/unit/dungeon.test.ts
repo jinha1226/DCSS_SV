@@ -170,7 +170,7 @@ describe('waking', () => {
 
 describe('lingering', () => {
   it('leaves a floor quiet at first, then sends bands up the stairs, sooner and sooner', () => {
-    const w = makeWorld({ seed: 9 });
+    const w = makeWorld({ seed: 9, items: false });
     w.hero.maxHp = w.hero.hp = 1e9;
     const grow = (seconds: number): void => {
       for (let i = 0; i < Math.round(seconds / STEP); i++) {
