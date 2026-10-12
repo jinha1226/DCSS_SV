@@ -1,4 +1,5 @@
-import { SKILLS } from '../data/skills';
+import { SKILLS, BASIC_SKILLS, WEAPON_SKILLS } from '../data/skills';
+import { itemDefinition } from '../data/itemCatalog';
 import { MAX_SKILL, skillXpToNext } from '../sim/skills';
 import { drawTile, type Atlas } from '../view/atlas';
 import type { TileName } from '../data/tiles';
@@ -7,20 +8,20 @@ import type { World } from '../sim/world';
 const ICONS: Readonly<Record<string, string>> = {
   fighting: '✦',
   axe: '⚒',
-  long_blade: '⚔',
-  bow: '➶',
+  blade: '⚔',
+  mace: '◆',
+  polearm: '♠',
+  unarmed: '✊',
+  stealth: '◌',
+  ranged: '➶',
   throwing: '↗',
-  conjuration: '✧',
   fire: '♨',
   ice: '❄',
   air: 'ϟ',
   earth: '◆',
-  alchemy: '◈',
   hexes: '☽',
   necromancy: '☠',
   summoning: '◎',
-  translocation: '⇄',
-  forgecraft: '⚙',
   armour: '▣',
   shield: '⬡',
   dodging: '➤',
@@ -40,7 +41,7 @@ export interface SkillDisplay {
 export function listedSkills(w: World, includeUntrained = false): SkillDisplay[] {
   return SKILLS.filter((skill) => {
     const level = w.hero.skills[skill.id] ?? 0;
-    return level > 0 || (includeUntrained && w.openSkills.has(skill.id));
+    return level > 0 || (w.hero.skillXp[skill.id] ?? 0) > 0 || (includeUntrained && (w.hero.skillXp[skill.id] ?? 0) > 0);
   })
     .map((skill) => ({
       id: skill.id,
@@ -62,6 +63,10 @@ export interface EquipmentDisplay {
 
 export function displayedEquipment(w: World): EquipmentDisplay[] {
   const entries: EquipmentDisplay[] = [{ id: w.weapon.uid, name: w.weapon.name, tile: w.weapon.tile }];
+  if (w.gear.offhand) {
+    const item = itemDefinition(w.gear.offhand);
+    if (item.tile) entries.push({ id: item.id, name: item.name, tile: item.tile as TileName });
+  }
   if (w.openSkills.has('throwing')) {
     entries.push({ id: 'boomerang', name: '부메랑', tile: 'item/boomerang1', count: w.ammo });
   }
@@ -134,7 +139,19 @@ export function makeSkillBar(root: HTMLElement, atlas: Atlas, onEquipment?: () =
     if (key === lastDetailKey) return;
     lastDetailKey = key;
     rows.replaceChildren();
+    let previousGroup = '';
     for (const skill of skills) {
+      const group = BASIC_SKILLS.includes(skill.id as (typeof BASIC_SKILLS)[number])
+        ? '기본'
+        : WEAPON_SKILLS.includes(skill.id as (typeof WEAPON_SKILLS)[number])
+          ? '무기'
+          : '학파';
+      if (group !== previousGroup) {
+        const title = document.createElement('h3');
+        title.textContent = group;
+        rows.append(title);
+        previousGroup = group;
+      }
       const row = document.createElement('div');
       row.className = 'skillbar-row';
       const icon = document.createElement('span');

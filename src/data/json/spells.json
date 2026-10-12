@@ -9,7 +9,7 @@
     "range": 6,
     "speed": 16,
     "colour": "#b8d6ff",
-    "schools": ["conjuration"]
+    "school": "air"
   },
   {
     "id": "focus_ray",
@@ -20,7 +20,7 @@
     "damage": 7,
     "range": 7,
     "colour": "#a9c7ff",
-    "schools": ["conjuration"]
+    "school": "air"
   },
   {
     "id": "pulse_burst",
@@ -32,7 +32,7 @@
     "range": 7,
     "radius": 1.2,
     "colour": "#c9b8ff",
-    "schools": ["conjuration"]
+    "school": "fire"
   },
   {
     "id": "split_lance",
@@ -45,7 +45,7 @@
     "speed": 18,
     "pierce": 1,
     "colour": "#a6e5ff",
-    "schools": ["conjuration"]
+    "school": "ice"
   },
   {
     "id": "gravity_bloom",
@@ -57,7 +57,7 @@
     "range": 8,
     "radius": 1.7,
     "colour": "#b9a5ef",
-    "schools": ["conjuration"]
+    "school": "earth"
   },
   {
     "id": "collapse_field",
@@ -71,7 +71,7 @@
     "duration": 3,
     "tick": 0.5,
     "colour": "#9986d8",
-    "schools": ["conjuration"]
+    "school": "earth"
   },
   {
     "id": "void_nova",
@@ -83,7 +83,7 @@
     "range": 8,
     "radius": 2.2,
     "colour": "#d8c5ff",
-    "schools": ["conjuration"]
+    "school": "necromancy"
   },
   {
     "id": "ember_dart",
@@ -95,7 +95,7 @@
     "range": 6,
     "speed": 15,
     "colour": "#e9955e",
-    "schools": ["fire"]
+    "school": "fire"
   },
   {
     "id": "searing_line",
@@ -106,7 +106,7 @@
     "damage": 9,
     "range": 7,
     "colour": "#ef7d4a",
-    "schools": ["fire"]
+    "school": "fire"
   },
   {
     "id": "ash_cloud",
@@ -120,7 +120,7 @@
     "duration": 3,
     "tick": 0.5,
     "colour": "#c86c48",
-    "schools": ["fire"]
+    "school": "fire"
   },
   {
     "id": "blink_step",
@@ -131,7 +131,7 @@
     "effect": "blink",
     "distance": 3,
     "colour": "#83c6d9",
-    "schools": ["translocation"]
+    "school": "hexes"
   },
   {
     "id": "phase_guard",
@@ -142,6 +142,6 @@
     "effect": "guard",
     "duration": 2,
     "colour": "#a3b9ff",
-    "schools": ["translocation"]
+    "school": "hexes"
   }
 ]

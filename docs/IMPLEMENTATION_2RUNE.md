@@ -110,3 +110,29 @@
 - 회귀: 다섯 시드에서 상점이 바닥 칸이고 계단이 아님을 검사. 비상점 층·원거리에서는 접근 불가. 기존 유한 재고/구매/금화 테스트 유지.
 - 자동 검증: GitHub Actions Verify 38200112856에서 `npm ci`, `npm run check` (lint/tsc/Vitest), `npm run build` 통과. 모바일 브라우저 실제 터치 스모크는 미실시.
 - 남은 한계: 상점 표식은 캔버스 도형(임시), 상인 캐릭터와 고유 애니메이션 없음. 위치 안내·버튼 가림·게임 난이도는 실기 확인 필요.
+
+## 08 장비 기반 자동 훈련·보조손·마법 장비 (후속 작업)
+
+- 변경 범위: 스킬 및 종족 적성 20종, 단일 학파, 주손 자동 공격 경로, 보조손/마법서와 UI, 레벨업 장비 카드/랜다트 공유, 훈련 분배.
+- 주요 회귀 위험: 직업별 시작 장비, 몬스터 공격 모드와 영웅 공격 구분, 양손 무기 보조손 복귀, 마법 버튼 표시, 층별 드롭/재방문, 보상 재선택.
+- 자동 확인: GitHub Actions Verify(린트·TS·Vitest·빌드). 수동 확인: 컨저러, 마검사, 카드 건너뛰기, 잠긴 마법 (모바일 실기 미검증).
+- 상태: **자동 검증 VERIFIED / 브라우저 스모크 VERIFIED / 모바일 실기 UNVERIFIED**. 아래 최종 검증 및 main 통합 기록을 따른다.
+
+### 08 자동 검증 진행 기록
+
+- GitHub Actions에서 `npm ci`와 `npm run format` 완료. 최종 변경 소스에 Prettier가 적용됨 (formatter run 38215710140).
+- Verify run 38216077725: ESLint, Prettier, TypeScript 통과, Vitest 246개 중 245개 통과. 장비 슬롯 카운트 기대값 9→10 수정 후 재검증 필요.
+- 모바일 실기, 정적 화면 배치와 터치 스모크 테스트는 수행하지 못함.
+
+### 08 최종 GitHub Actions 자동 검증
+
+- 포맷 반영 커밋 `7d62cf5`: `npm ci`, `npm run format`, `npm run check`(ESLint/Prettier, TypeScript, 35 files / 247 tests), `npx vite build` 모두 통과. Actions run `38216763003`.
+- 브랜치/PR: `feat/equipment-training-20-skills` / #9. 코드 검증 상태는 VERIFIED, 실제 폰에서 UI·터치 플레이는 UNVERIFIED.
+
+### 08 main 통합 및 PC 가로 모드 확인 (2026-10-12)
+
+- 통합 대상: PC 가로 모드 `704d12d`가 포함된 main에 PR #9의 최신 `35a784e`를 충돌 없이 병합. 가로 화면 전환·렌더링·HUD 코드는 유지한다.
+- 기준 검증: `npm ci --offline`, 기존 main의 `npm run check`(33 files / 235 tests), `npm run build` 통과. 통합 후 `npm run format`, `npm run check`(36 files / 248 tests), `npm run build` 통과. 통합 직후 `npx vite build`도 통과했다.
+- 브라우저에서 잠긴 주문의 빈 버튼 및 활성화 오류 발견: `spellButtons.show`도 잠긴 주문을 갱신하도록 수정. 잠금 표시·비활성화·학파 성장 후 해금에 대한 Node 회귀 테스트 추가.
+- Chromium 브라우저 스모크 통과: 1536×800 가로 화면의 게임/우측 상태·미니맵/하단 로그 배치, 게임 유지 전환 및 새로고침 후 모드 저장, 390×844 세로 버튼 배치·금화 건너뛰기, 가로 레벨업 카드 3열·회복 건너뛰기, 컨저러 대기 지팡이, 마검사 장검·주술 마법서·점멸·잠긴 위상막, 800×450 가로 화면. 브라우저 런타임 오류 없음.
+- 실제 폰 터치·플레이 감각과 24층 밸런스는 이번 검증에 포함되지 않는다. PR #9를 포함하는 main 병합 커밋으로 한 번에 push한다.

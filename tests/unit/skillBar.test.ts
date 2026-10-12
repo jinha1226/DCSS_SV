@@ -10,7 +10,9 @@ describe('skill summary bar', () => {
     expect(summary.find((skill) => skill.id === 'axe')?.level).toBe(4);
     expect(summary.some((skill) => skill.level === 0)).toBe(false);
     const details = listedSkills(world, true);
-    expect(details.some((skill) => skill.id === 'armour' && skill.level === 0)).toBe(true);
+    expect(details.some((skill) => skill.id === 'armour' && skill.level === 0)).toBe(false);
+    world.hero.skillXp.armour = 2;
+    expect(listedSkills(world, true).some((skill) => skill.id === 'armour')).toBe(true);
   });
 
   it('updates immediately when skill levels change and supports new schools automatically', () => {

@@ -22,8 +22,8 @@ export function monsterContext(world: World, monster: Monster): MonsterContext {
   const dx = world.hero.x - monster.x;
   const dy = world.hero.y - monster.y;
   const weapon = monster.weapon;
-  const reach = world.heroDef.radius + (weapon && weapon.family !== 'bow' ? weapon.range : monster.stats.reach);
-  const rangedRange = weapon?.family === 'bow' ? weapon.range : (monster.stats.throws?.range ?? 0);
+  const reach = world.heroDef.radius + (weapon && weapon.family !== 'ranged' ? weapon.range : monster.stats.reach);
+  const rangedRange = weapon?.family === 'ranged' ? weapon.range : (monster.stats.throws?.range ?? 0);
   const spells = monster.stats.ai?.spells ?? [];
   const magicRange = Math.max(
     0,

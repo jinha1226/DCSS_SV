@@ -1,11 +1,15 @@
 import rawItems from './json/items.json';
 import { hasTile } from './tiles';
+import { SCHOOL_IDS } from './skills';
 
 export const ITEM_KINDS = [
   'weapon',
   'throw',
   'missile',
   'book',
+  'staff',
+  'rod',
+  'spellbook',
   'potion',
   'scroll',
   'wand',
@@ -36,6 +40,10 @@ export interface ItemDefinition {
   readonly maxStack: number;
   readonly depthWeights: readonly number[];
   readonly effects: readonly ItemEffect[];
+  readonly school?: string;
+  readonly tier?: 0 | 1 | 2;
+  readonly hands?: 1 | 2;
+  readonly power?: number;
 }
 
 type Row = Record<string, unknown>;
@@ -61,6 +69,9 @@ export function parseItemDefinition(row: Row): ItemDefinition {
     throw: 'automatic',
     missile: 'automatic',
     book: 'learn',
+    staff: 'equip',
+    rod: 'equip',
+    spellbook: 'equip',
     potion: 'store',
     scroll: 'store',
     wand: 'store',
@@ -129,6 +140,13 @@ export function parseItemDefinition(row: Row): ItemDefinition {
     throw new Error(label + ': effects 실행기는 아직 연결되지 않음');
   }
 
+  if (['staff', 'rod', 'spellbook'].includes(row.kind)) {
+    if (typeof row.school !== 'string' || !SCHOOL_IDS.has(row.school)) throw new Error(label + ': 유효한 학파가 필요함');
+    if (![0, 1, 2].includes(row.tier as number)) throw new Error(label + ': tier는 0~2');
+    if (row.kind !== 'spellbook' && (typeof row.power !== 'number' || row.power <= 0)) throw new Error(label + ': power가 필요함');
+    if (row.kind === 'staff' && row.hands !== 2) throw new Error(label + ': 지팡이는 양손');
+    if (row.kind === 'rod' && row.hands !== 1) throw new Error(label + ': 마법봉은 한손');
+  }
   return {
     id,
     kind: row.kind,
@@ -140,6 +158,10 @@ export function parseItemDefinition(row: Row): ItemDefinition {
     maxStack,
     depthWeights: depthWeights as number[],
     effects: effects as ItemEffect[],
+    ...(typeof row.school === 'string' ? { school: row.school } : {}),
+    ...(typeof row.tier === 'number' ? { tier: row.tier as 0 | 1 | 2 } : {}),
+    ...(typeof row.hands === 'number' ? { hands: row.hands as 1 | 2 } : {}),
+    ...(typeof row.power === 'number' ? { power: row.power } : {}),
   };
 }
 

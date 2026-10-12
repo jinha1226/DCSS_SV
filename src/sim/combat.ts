@@ -79,10 +79,10 @@ export function throwTarget(w: World): Monster | undefined {
 }
 
 function bowRange(w: World): number {
-  return w.weapon.range + effectValue(w, 'bow.range');
+  return w.weapon.range + effectValue(w, 'ranged.range');
 }
 export function bowTargets(w: World): Monster[] {
-  if (w.weapon.family !== 'bow') return [];
+  if (w.weapon.family !== 'ranged') return [];
   const range = bowRange(w);
   return w.monsters
     .filter(
@@ -146,7 +146,7 @@ function makeArrow(w: World, target: Monster): Shot {
     dx = target.x - h.x,
     dy = target.y - h.y,
     d = Math.hypot(dx, dy) || 1;
-  const pierce = w.weapon.effect === 'pierce_all' ? 999 : Math.round(effectValue(w, 'bow.pierce'));
+  const pierce = w.weapon.effect === 'pierce_all' ? 999 : Math.round(effectValue(w, 'ranged.pierce'));
   return {
     x: h.x,
     y: h.y,
@@ -154,7 +154,7 @@ function makeArrow(w: World, target: Monster): Shot {
     py: h.y,
     vx: (dx / d) * speed,
     vy: (dy / d) * speed,
-    damage: w.weapon.damage + (w.weapon.enchantment ?? 0) + weaponOption(w.weapon, 'damage') + effectValue(w, 'bow.damage'),
+    damage: w.weapon.damage + (w.weapon.enchantment ?? 0) + weaponOption(w.weapon, 'damage') + effectValue(w, 'ranged.damage'),
     left: (range + 0.25) / speed,
     mine: true,
     pierce,
@@ -164,18 +164,18 @@ function makeArrow(w: World, target: Monster): Shot {
     arrow: true,
     brand: w.weapon.brand,
     weaponEffect: w.weapon.effect,
-    stun: effectValue(w, 'bow.stun'),
+    stun: effectValue(w, 'ranged.stun'),
   };
 }
 function bowCooldown(w: World): number {
-  const skill = Math.max(-0.6, effectValue(w, 'bow.haste'));
+  const skill = Math.max(-0.6, effectValue(w, 'ranged.haste'));
   const randart = Math.min(0.5, weaponOption(w.weapon, 'haste'));
   return Math.max(0.18, w.weapon.every * (1 + skill) * (1 - randart) * (w.hero.haste > 0 ? 0.7 : 1));
 }
 function shootNow(w: World): void {
   const targets = bowTargets(w);
   if (!targets.length) return;
-  const count = hasEffect(w, 'bow.double') ? 2 : 1;
+  const count = hasEffect(w, 'ranged.double') ? 2 : 1;
   for (let i = 0; i < count; i++) w.shots.push(makeArrow(w, targets[Math.min(i, targets.length - 1)]!));
   const dx = targets[0]!.x - w.hero.x;
   if (Math.abs(dx) > 0.15) w.hero.facing = dx < 0 ? -1 : 1;
@@ -282,14 +282,14 @@ export function heroStrikes(w: World, dt: number, wantsThrow: boolean): void {
   if (h.hopTime > 0) return;
   if (wantsThrow && h.throwing <= 0) throwNow(w);
 
-  if (w.heroDef.attackMode === 'magic') {
+  if (w.weapon.kind === 'staff' || w.weapon.kind === 'rod') {
     h.swing = Math.max(0, h.swing);
-  } else if (w.weapon.family === 'bow') {
+  } else if (w.weapon.family === 'ranged') {
     if (h.swing <= 0) shootNow(w);
   } else if (h.swing <= 0) {
-    const isBlade = w.weapon.family === 'long_blade';
+    const isBlade = w.weapon.family === 'blade';
     const axeLevel = isBlade ? 0 : skillLevel(w, 'axe'),
-      baseReach = w.weapon.range + (isBlade ? effectValue(w, 'long_blade.reach') : axeLevel >= 2 ? effectValue(w, 'axe.wide') : 0),
+      baseReach = w.weapon.range + (isBlade ? effectValue(w, 'blade.reach') : axeLevel >= 2 ? effectValue(w, 'axe.wide') : 0),
       next = h.axeSwings + 1;
     const spin = axeLevel >= 4 && next % 3 === 0 ? effectValue(w, 'axe.spin') : 1,
       reach = baseReach * spin;
@@ -297,7 +297,7 @@ export function heroStrikes(w: World, dt: number, wantsThrow: boolean): void {
       (w.weapon.damage +
         (w.weapon.enchantment ?? 0) +
         weaponOption(w.weapon, 'damage') +
-        (isBlade ? effectValue(w, 'long_blade.damage') : effectValue(w, 'axe.damage'))) *
+        (isBlade ? effectValue(w, 'blade.damage') : effectValue(w, 'axe.damage'))) *
       spin;
     let any = false,
       kill = false,
@@ -316,9 +316,9 @@ export function heroStrikes(w: World, dt: number, wantsThrow: boolean): void {
       h.axeSwings = next;
       const haste = Math.min(0.5, weaponOption(w.weapon, 'haste'));
       h.swing =
-        kill && hasEffect(w, isBlade ? 'long_blade.reset' : 'axe.reset')
+        kill && hasEffect(w, isBlade ? 'blade.reset' : 'axe.reset')
           ? 0
-          : w.weapon.every * (1 - haste) * (1 + (isBlade ? effectValue(w, 'long_blade.haste') : 0)) * (w.hero.haste > 0 ? 0.7 : 1);
+          : w.weapon.every * (1 - haste) * (1 + (isBlade ? effectValue(w, 'blade.haste') : 0)) * (w.hero.haste > 0 ? 0.7 : 1);
       noise(w, DUNGEON.loud);
     } else h.swing = 0;
   }

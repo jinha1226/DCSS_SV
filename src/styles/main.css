@@ -1521,3 +1521,40 @@ canvas {
 .status-extra .status-line > span:first-child {
   min-width: 90px;
 }
+
+/* Level-up skip actions and locked spell buttons are thumb-safe. */
+.reward-skip {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 12px 0;
+}
+.reward-skip button {
+  min-height: 48px;
+  min-width: 112px;
+  border: 1px solid #b59b65;
+  border-radius: 10px;
+  color: #f2e8d7;
+  background: #353037;
+  touch-action: manipulation;
+}
+.reward-skip button:disabled {
+  opacity: 0.45;
+}
+.spell-buttons button.locked {
+  opacity: 0.38;
+}
+.skillbar-list h3 {
+  margin: 14px 8px 4px;
+  font-size: 13px;
+  color: #dbd0bc;
+}
+
+.status-skills {
+  margin-top: 12px;
+}
+.status-skills h3 {
+  margin: 12px 0 6px;
+  color: #ded0b3;
+  font-size: 13px;
+}

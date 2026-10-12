@@ -165,16 +165,13 @@ export interface SpellVisual {
 }
 export interface GroundItem {
   readonly uid: string;
-  readonly kind: 'axe' | 'ammo' | 'path' | 'book' | 'consumable' | 'gear' | 'gold';
+  readonly kind: 'axe' | 'ammo' | 'consumable' | 'gear' | 'gold';
   x: number;
   y: number;
   axe?: WeaponItem;
   count?: number;
-  skill?: string;
-  school?: string;
   itemId?: string;
   ignored: boolean;
-  newPath?: boolean;
 }
 export type BagItem =
   | { readonly uid: string; readonly kind: 'weapon'; readonly weapon: WeaponItem }
@@ -278,7 +275,7 @@ export interface World {
   readonly seed: number;
   weapon: WeaponItem;
   readonly inventory: BagItem[];
-  readonly gear: Partial<Record<'armour' | 'shield' | 'helmet' | 'gloves' | 'boots' | 'cloak' | 'amulet' | 'ring1' | 'ring2', string>>;
+  readonly gear: Partial<Record<'armour' | 'offhand' | 'helmet' | 'gloves' | 'boots' | 'cloak' | 'amulet' | 'ring1' | 'ring2', string>>;
   readonly gearEnchantment: Record<string, number>;
   readonly cursedGear: Set<string>;
   readonly identifiedItems: Set<string>;

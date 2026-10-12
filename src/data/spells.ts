@@ -1,12 +1,13 @@
 import spellsRaw from './json/spells.json';
+import { SCHOOL_IDS } from './skills';
 
 export type SpellShape = 'projectile' | 'beam' | 'burst' | 'cloud' | 'utility' | 'chain' | 'summon' | 'construct' | 'debuff' | 'teleport';
 
 export interface SpellData {
   readonly id: string;
   readonly name: string;
-  readonly schools: readonly string[];
-  readonly requirements?: Readonly<Record<string, number>>;
+  readonly school: string;
+  readonly requirement?: number;
   readonly level: number;
   readonly mana: number;
   readonly shape: SpellShape;
@@ -50,23 +51,12 @@ for (const spell of SPELLS) {
     throw new Error(label + ': level은 1~7');
   }
   if (!Number.isFinite(spell.mana) || spell.mana < 0) throw new Error(label + ': mana가 잘못됨');
-  if (!Array.isArray(spell.schools) || spell.schools.length === 0) {
-    throw new Error(label + ': schools는 비어 있지 않은 배열이어야 함');
-  }
-  if (new Set(spell.schools).size !== spell.schools.length || spell.schools.some((s) => typeof s !== 'string' || !s)) {
-    throw new Error(label + ': schools에 잘못된 학파가 있음');
+  if (typeof spell.school !== 'string' || !SCHOOL_IDS.has(spell.school)) {
+    throw new Error(label + ': 정확히 하나의 유효한 school이 필요함');
   }
   if (!SPELL_SHAPES.includes(spell.shape)) throw new Error(label + ': 모르는 shape ' + spell.shape);
-  if (spell.requirements) {
-    if (Object.keys(spell.requirements).some((school) => !spell.schools.includes(school))) {
-      throw new Error(label + ': requirements에 없는 학파가 있음');
-    }
-    for (const school of spell.schools) {
-      const needed = spell.requirements[school];
-      if (needed === undefined || !Number.isInteger(needed) || needed < 1 || needed > 8) {
-        throw new Error(label + ': requirements의 레벨은 1~8');
-      }
-    }
+  if (spell.requirement !== undefined && (!Number.isInteger(spell.requirement) || spell.requirement < 0)) {
+    throw new Error(label + ': 잘못된 requirement');
   }
   if (ACTIVE_SPELL_SHAPES.includes(spell.shape) && spell.shape !== 'utility') {
     if (typeof spell.damage !== 'number' || spell.damage < 0 || !Number.isFinite(spell.damage)) {
@@ -86,7 +76,7 @@ export function spellData(id: string): SpellData {
 }
 
 export function schoolSpells(school: string): readonly SpellData[] {
-  return SPELLS.filter((spell) => spell.schools.includes(school)).sort((a, b) => a.level - b.level);
+  return SPELLS.filter((spell) => spell.school === school).sort((a, b) => a.level - b.level);
 }
 
-export const SPELL_SCHOOLS = [...new Set(SPELLS.flatMap((spell) => spell.schools))];
+export const SPELL_SCHOOLS = [...new Set(SPELLS.map((spell) => spell.school))];

@@ -1,4 +1,6 @@
-import { ACTIVE_SPELL_SHAPES, SPELLS, SPELL_SCHOOLS, spellData, type SpellData } from '../data/spells';
+import { ACTIVE_SPELL_SHAPES, SPELLS, spellData, type SpellData } from '../data/spells';
+import { DUNGEON } from '../data/packs';
+import { itemDefinition } from '../data/itemCatalog';
 import { walkable } from './grid';
 import { computeFov } from './fov';
 import { updateFlow } from './flow';
@@ -18,51 +20,51 @@ function schoolLevel(w: World, school: string): number {
   return skillLevel(w, school);
 }
 
-function requiredLevel(spell: SpellData, school: string): number {
-  return spell.requirements?.[school] ?? spell.level;
+export function requiredLevel(spell: SpellData): number {
+  return spell.requirement ?? Math.max(0, DUNGEON.spellRequirementStep * (spell.level - 1));
 }
 
 function spellExcess(w: World, spell: SpellData): number {
-  return Math.max(0, Math.min(...spell.schools.map((school) => schoolLevel(w, school) - requiredLevel(spell, school))));
+  return Math.max(0, schoolLevel(w, spell.school) - requiredLevel(spell));
 }
 
-export function knownSpells(w: World, school?: string): SpellData[] {
+function equippedSpells(w: World): SpellData[] {
+  const sources: { school: string; tier: number }[] = [];
+  if (w.weapon.kind === 'staff') sources.push({ school: w.weapon.school!, tier: w.weapon.tier! });
+  if (w.gear.offhand) {
+    const item = itemDefinition(w.gear.offhand);
+    if (item.kind === 'spellbook') sources.push({ school: item.school!, tier: item.tier! });
+  }
   return SPELLS.filter(
     (spell) =>
       ACTIVE_SPELL_SHAPES.includes(spell.shape) &&
-      (!school || spell.schools.includes(school)) &&
-      spell.schools.every((id) => schoolLevel(w, id) >= requiredLevel(spell, id)),
+      sources.some((source) => source.school === spell.school && spell.level <= DUNGEON.magicTierMaxLevel[source.tier]!),
   );
 }
 
-function primarySchool(w: World): string | undefined {
-  for (const id of Object.keys(w.heroDef.startingSkills)) {
-    if (SPELL_SCHOOLS.includes(id)) return id;
-  }
-  return SPELL_SCHOOLS.find((id) => schoolLevel(w, id) > 0);
+export function knownSpells(w: World, school?: string): SpellData[] {
+  return equippedSpells(w).filter((spell) => (!school || spell.school === school) && schoolLevel(w, spell.school) >= requiredLevel(spell));
+}
+
+export function lockedSpells(w: World): SpellData[] {
+  return equippedSpells(w).filter((spell) => schoolLevel(w, spell.school) < requiredLevel(spell));
 }
 
 export function basicSpell(w: World): SpellData | undefined {
-  if (w.heroDef.attackMode !== 'magic') return undefined;
-  const school = primarySchool(w);
-  if (!school) return undefined;
-  const known = knownSpells(w, school).sort((a, b) => a.level - b.level);
-  if (!known.length) return undefined;
-  return known.length === 1 ? known[0] : known[known.length - 2];
+  if (w.weapon.kind !== 'staff' && w.weapon.kind !== 'rod') return undefined;
+  const school = w.weapon.school!;
+  const available = SPELLS.filter(
+    (spell) =>
+      spell.school === school &&
+      ['projectile', 'beam', 'burst', 'cloud'].includes(spell.shape) &&
+      spell.level <= DUNGEON.magicTierMaxLevel[w.weapon.tier!]! &&
+      schoolLevel(w, school) >= requiredLevel(spell),
+  ).sort((a, b) => a.level - b.level);
+  return available.length > 1 ? available[1] : available[0];
 }
 
 export function paidSpells(w: World): SpellData[] {
-  const out: SpellData[] = [];
-  for (const school of SPELL_SCHOOLS) {
-    if (!w.openSkills.has(school)) continue;
-    const known = knownSpells(w, school).sort((a, b) => a.level - b.level);
-    if (!known.length) continue;
-    const top = known[known.length - 1]!;
-    if (w.heroDef.attackMode === 'magic' && school === primarySchool(w) && known.length === 1) continue;
-    if (top.shape === 'utility') out.push(...known.filter((spell) => spell.shape === 'utility'));
-    else out.push(top);
-  }
-  return [...new Map(out.map((spell) => [spell.id, spell])).values()];
+  return knownSpells(w);
 }
 
 export function spellRange(w: World, spell: SpellData): number {
@@ -89,7 +91,7 @@ export function spellTarget(w: World, spell: SpellData): Monster | undefined {
 
 function spellElement(spell: SpellData): ResistName | undefined {
   const types: readonly ResistName[] = ['fire', 'cold', 'electric', 'poison', 'negative'];
-  return types.find((type) => spell.schools.includes(type)) ?? (spell.schools.includes('air') ? 'electric' : undefined);
+  return types.find((type) => spell.school === type) ?? (spell.school === 'air' ? 'electric' : undefined);
 }
 
 type SpellCaster = 'hero' | 'monster';
@@ -307,7 +309,8 @@ function applyUtilitySpell(w: World, spell: SpellData, caster: SpellCaster, acto
 }
 
 function execute(w: World, spell: SpellData, target: Monster): void {
-  executeSpell(w, spell, 'hero', w.hero, target, spellDamage(w, spell), spellRange(w, spell));
+  const multiplier = w.weapon.kind && basicSpell(w)?.id === spell.id ? (w.weapon.power ?? 1) : 1;
+  executeSpell(w, spell, 'hero', w.hero, target, spellDamage(w, spell) * multiplier, spellRange(w, spell));
   const dx = target.x - w.hero.x;
   if (Math.abs(dx) > 0.15) w.hero.facing = dx < 0 ? -1 : 1;
 }
@@ -336,7 +339,7 @@ export function castMonsterSpell(w: World, monster: Monster, spellId: string): b
 export function castPaidSpell(w: World, spellId: string, target?: Monster): boolean {
   const spell = spellData(spellId);
   if (!ACTIVE_SPELL_SHAPES.includes(spell.shape) || !paidSpells(w).some((entry) => entry.id === spell.id)) return false;
-  if (w.hero.mana < spell.mana) return false;
+  if (w.hero.mana < spell.mana || w.hero.spellCooldown > 0) return false;
   if (spell.shape === 'utility') {
     if (!applyUtilitySpell(w, spell, 'hero', w.hero)) return false;
     w.hero.mana -= spell.mana;
@@ -435,7 +438,7 @@ export function stepSpells(w: World, dt: number): void {
   tickProjectiles(w, dt);
   tickClouds(w, dt);
   tickVisuals(w, dt);
-  if (w.heroDef.attackMode === 'magic' && h.hopTime <= 0) autoBasic(w);
+  if ((w.weapon.kind === 'staff' || w.weapon.kind === 'rod') && h.hopTime <= 0) autoBasic(w);
   pruneDead(w);
 }
 

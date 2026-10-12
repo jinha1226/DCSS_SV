@@ -13,5 +13,12 @@
   "levelXpBase": 6,
   "levelXpStep": 4,
   "floorLimit": 180,
-  "overdueBandEvery": 5
+  "overdueBandEvery": 5,
+  "lootTierDifficulty": [4, 10],
+  "rewardSkipHealFraction": 0.3,
+  "rewardSkipGoldBase": 10,
+  "rewardSkipGoldPerDifficulty": 5,
+  "spellRequirementStep": 3,
+  "magicTierMaxLevel": [3, 6, 9],
+  "magicDropChance": 0.25
 }

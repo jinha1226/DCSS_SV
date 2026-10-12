@@ -18,9 +18,8 @@ export interface EquipmentSlot {
 }
 const SLOTS = [
   { id: 'weapon', name: '무기' },
-  { id: 'offhand', name: '보조무기' },
+  { id: 'offhand', name: '보조손' },
   { id: 'armour', name: '갑옷' },
-  { id: 'shield', name: '방패' },
   { id: 'helmet', name: '투구' },
   { id: 'gloves', name: '장갑' },
   { id: 'boots', name: '장화' },
@@ -38,7 +37,7 @@ export function equipmentSlots(w: World): EquipmentSlot[] {
         : w.gear[slot.id as GearSlot]
           ? gearName(w, w.gear[slot.id as GearSlot]!)
           : '—',
-    available: slot.id === 'weapon' || slot.id !== 'offhand',
+    available: slot.id !== 'offhand' || w.weapon.hands === 1,
   }));
 }
 export interface BagEntry {
@@ -50,6 +49,8 @@ export interface BagEntry {
 }
 export function bagEntries(w: World): BagEntry[] {
   const items: BagEntry[] = [{ id: w.weapon.uid, name: w.weapon.name, group: 'equipment', count: 1, equipped: true }];
+  if (w.gear.offhand)
+    items.push({ id: 'offhand-equipped', name: gearName(w, w.gear.offhand), group: 'equipment', count: 1, equipped: true });
   for (const item of w.inventory) {
     if (item.kind === 'weapon') {
       items.push({ id: item.uid, name: item.weapon.name, group: 'equipment', count: 1, equipped: false });
@@ -193,7 +194,7 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
             }),
           );
         }
-        if (slot.id !== 'weapon' && slot.id !== 'offhand' && w.gear[slot.id as GearSlot]) {
+        if (slot.id !== 'weapon' && w.gear[slot.id as GearSlot]) {
           line.append(
             action('해제', () => {
               feedback = unequipGear(w, slot.id as GearSlot) ? '장비 해제' : '저주받은 장비는 해제할 수 없어.';
@@ -204,6 +205,7 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
         }
         content.append(line);
       }
+      if (w.weapon.hands === 2) content.append(row('보조손', '양손 무기 사용 중이라 장착 불가', true));
       const summary = document.createElement('div');
       summary.className = 'inventory-summary';
       const brand = brandData(w.weapon.brand)?.name ?? '없음';

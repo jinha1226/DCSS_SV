@@ -1,4 +1,5 @@
-import { paidSpells } from '../sim/spells';
+import { paidSpells, lockedSpells, requiredLevel } from '../sim/spells';
+import { skillData } from '../data/skills';
 import type { World } from '../sim/world';
 
 export interface SpellButtons {
@@ -19,8 +20,8 @@ export function makeSpellButtons(root: HTMLElement): SpellButtons {
   let key = '';
 
   const rebuild = (w: World): void => {
-    const spells = paidSpells(w);
-    const nextKey = spells.map((spell) => spell.id).join('|');
+    const spells = [...paidSpells(w), ...lockedSpells(w)];
+    const nextKey = spells.map((spell) => spell.id + ':' + ((w.hero.skills[spell.school] ?? 0) >= requiredLevel(spell))).join('|');
     if (nextKey === key) return;
     key = nextKey;
     wrap.replaceChildren();
@@ -59,15 +60,22 @@ export function makeSpellButtons(root: HTMLElement): SpellButtons {
     },
     show(w) {
       rebuild(w);
-      const spells = paidSpells(w);
+      const spells = [...paidSpells(w), ...lockedSpells(w)];
       wrap.classList.toggle('on', spells.length > 0);
       wrap.classList.toggle('with-hop', w.heroDef.species === 'barachi');
       for (const spell of spells) {
         const button = wrap.querySelector<HTMLButtonElement>('[data-spell="' + spell.id + '"]');
         if (!button) continue;
-        button.disabled = w.hero.mana < spell.mana;
+        const locked = (w.hero.skills[spell.school] ?? 0) < requiredLevel(spell);
+        button.disabled = locked || w.hero.mana < spell.mana || w.hero.spellCooldown > 0;
         button.classList.toggle('targeting', targeting === spell.id);
-        button.innerHTML = '<strong>' + spell.name + '</strong><span>' + spell.mana + ' MP</span>';
+        button.textContent = '';
+        const name = document.createElement('strong');
+        name.textContent = spell.name;
+        const detail = document.createElement('span');
+        detail.textContent = locked ? skillData(spell.school).name + ' ' + requiredLevel(spell) + ' 필요' : spell.mana + ' MP';
+        button.classList.toggle('locked', locked);
+        button.append(name, detail);
       }
     },
   };

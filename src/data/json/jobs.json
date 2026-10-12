@@ -2,7 +2,6 @@
   {
     "id": "berserker",
     "name": "광전사",
-    "attackMode": "weapon",
     "startingWeapon": "hand_axe",
     "startingAmmo": 5,
     "startingSkills": {
@@ -14,11 +13,10 @@
   {
     "id": "hunter",
     "name": "사냥꾼",
-    "attackMode": "weapon",
     "startingWeapon": "shortbow",
     "startingAmmo": 0,
     "startingSkills": {
-      "bow": 2,
+      "ranged": 2,
       "fighting": 1,
       "dodging": 1
     }
@@ -26,11 +24,10 @@
   {
     "id": "conjurer",
     "name": "컨저러",
-    "attackMode": "magic",
-    "startingWeapon": "hand_axe",
+    "startingWeapon": "staff_air_0",
     "startingAmmo": 0,
     "startingSkills": {
-      "conjuration": 1,
+      "air": 1,
       "fighting": 1,
       "dodging": 1
     }
@@ -38,14 +35,14 @@
   {
     "id": "spellblade",
     "name": "마검사",
-    "attackMode": "weapon",
     "startingWeapon": "long_sword",
     "startingAmmo": 0,
     "startingSkills": {
-      "long_blade": 2,
-      "translocation": 1,
+      "blade": 2,
+      "hexes": 1,
       "fighting": 1,
       "dodging": 1
-    }
+    },
+    "startingOffhand": "spellbook_hexes_0"
   }
 ]

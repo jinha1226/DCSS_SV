@@ -24,6 +24,13 @@ export const DUNGEON = {
   most: dungeonRaw.most,
   levelXpBase: dungeonRaw.levelXpBase,
   levelXpStep: dungeonRaw.levelXpStep,
+  lootTierDifficulty: dungeonRaw.lootTierDifficulty,
+  spellRequirementStep: dungeonRaw.spellRequirementStep,
+  magicTierMaxLevel: dungeonRaw.magicTierMaxLevel,
+  magicDropChance: dungeonRaw.magicDropChance,
+  rewardSkipHealFraction: dungeonRaw.rewardSkipHealFraction,
+  rewardSkipGoldBase: dungeonRaw.rewardSkipGoldBase,
+  rewardSkipGoldPerDifficulty: dungeonRaw.rewardSkipGoldPerDifficulty,
 } as const;
 export const PACKS: readonly PackKind[] = packsRaw.map((row) => {
   for (const member of row.members) monsterKind(member.kind);
