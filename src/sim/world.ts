@@ -234,7 +234,7 @@ function traverse(w: World, down: boolean): void {
   const downStairs = w.stairs.filter((stair) => stair.down);
   const slot = downStairs.findIndex((stair) => stair.x === Math.floor(w.hero.x) && stair.y === Math.floor(w.hero.y));
   const destinations = downDestinations(w.dungeonGraph, previous);
-  const target = down ? destinations[slot] ?? destinations[0] : current.parent;
+  const target = down ? (destinations[slot] ?? destinations[0]) : current.parent;
   if (target === undefined) return;
   const sourceX = Math.floor(w.hero.x) + 0.5;
   const sourceY = Math.floor(w.hero.y) + 0.5;
