@@ -10,6 +10,7 @@
 | [IMPLEMENTATION_2RUNE.md](IMPLEMENTATION_2RUNE.md) | 현재 로드맵(24층·2룬, 01~08 단계)과 진행·검증 기록 |
 | [SKILL_TRAINING.md](SKILL_TRAINING.md) | 현재 성장 기획: 스킬 20개, 주손/보조손, 장비 기반 훈련, 레벨업 아이템. §6에 사용자가 정할 것 |
 | [IMPL_EQUIPMENT_TRAINING.md](IMPL_EQUIPMENT_TRAINING.md) | 위 기획의 구현 지시서와 "이번 범위가 아닌 것" |
+| [MAGIC_DESIGN.md](MAGIC_DESIGN.md) | 마법 설계 초안: 7학파 × 9마법, 새 동작 묶음, 정할 것 |
 | [AUTOMATIC_GROWTH.md](AUTOMATIC_GROWTH.md) | 자동 성장 1차 설계. 겹치는 부분은 SKILL_TRAINING.md가 우선 |
 | [UI_BACKLOG.md](UI_BACKLOG.md) | 보류한 UI 정리 목록 |
 
