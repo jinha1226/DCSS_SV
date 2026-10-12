@@ -45,7 +45,7 @@ describe('stage 5: runes and Zot victory', () => {
     clearObjective(w);
     expect(w.runes.size).toBe(2);
     expect(w.runes.has('Spider')).toBe(true);
-    expect(w.runes.has('Shoals')).toBe(true);
+    expect(w.runes.has('Swamp')).toBe(true);
   });
 
   it('does not allow taking a guarded objective until nearby threats are defeated', () => {
