@@ -1,10 +1,11 @@
 # DCSS_SV
 
 DCSS식 던전에서 떼를 상대하는 실시간 2D 게임 (가칭 던전 뱀서).
-종족과 직업을 고르고, 층을 내려가며, 레벨업마다 스킬 카드를 하나 고른다.
+종족과 직업을 고르고, 층을 내려가며 스킬은 적성에 따라 자동으로 훈련되고, 레벨업마다 아이템 세 가지 중 하나를 고른다.
 
 - 해 보기: <https://jinha1226.github.io/DCSS_SV/>
 - 만드는 순서: [docs/PLAN.md](docs/PLAN.md)
+- 자동 숙련도·아이템 선택 설계: [docs/AUTOMATIC_GROWTH.md](docs/AUTOMATIC_GROWTH.md)
 - 타일의 출처와 라이선스: [docs/TILES.md](docs/TILES.md)
 
 ## 개발
