@@ -67,7 +67,16 @@ export function shopLocation(w: World): { x: number; y: number } | undefined {
   const origin = up ?? (room ? { x: room.x + 1, y: room.y + 1 } : undefined);
   if (!origin) return undefined;
   // Never place the shop on a stair: standing on it must not initiate travel.
-  for (const [dx, dy] of [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]) {
+  for (const [dx, dy] of [
+    [1, 0],
+    [0, 1],
+    [-1, 0],
+    [0, -1],
+    [1, 1],
+    [-1, 1],
+    [1, -1],
+    [-1, -1],
+  ]) {
     const x = origin.x + dx;
     const y = origin.y + dy;
     if (cellAt(w.grid, x, y) === Cell.Floor && !w.stairs.some((stair) => stair.x === x && stair.y === y)) {
