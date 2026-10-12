@@ -4,6 +4,7 @@ import { downDestinations, nodeLabel } from '../sim/dungeonGraph';
 import { shopAccessible } from '../sim/branchLoot';
 import { Cell, cellAt } from '../sim/grid';
 import type { World } from '../sim/world';
+import { statusValues } from './statusSheet';
 
 export interface Hud {
   readonly minimap: HTMLCanvasElement;
@@ -74,6 +75,13 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
   const xpFill = el('div', 'xp-fill', xp);
   const levelText = el('span', 'level-text', xp);
   const skillSlot = el('div', 'hud-skill-slot', top);
+  const desktopStatus = el('section', 'hud-desktop-status', top);
+  desktopStatus.setAttribute('aria-label', '캐릭터 요약');
+  const heroName = el('strong', 'hud-hero-name', desktopStatus);
+  const summary = el('div', 'hud-desktop-summary', desktopStatus);
+  const weapon = el('div', 'hud-desktop-weapon', desktopStatus);
+  const controls = el('div', 'hud-controls', top);
+  controls.textContent = '이동 WASD / 방향키 · 투척 Space / J · 도약 Shift / K';
 
   const over = el('div', 'over', root);
   const title = el('h1', '', over);
@@ -96,6 +104,7 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
   });
 
   let last = '';
+  let lastSummary = '';
   let shown = false;
   return {
     minimap,
@@ -103,6 +112,22 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
     skillSlot,
     closeMenu,
     show(w) {
+      const summaryKey = JSON.stringify([w.heroDef.name, w.hero.skills, w.kills, [...w.runes], w.gold, w.weapon, w.ammo]);
+      if (summaryKey !== lastSummary) {
+        lastSummary = summaryKey;
+        const values = statusValues(w);
+        const summaryValues = values.vitals.filter((entry) =>
+          ['물리감소', '회피확률', '방패확률', '처치', '룬', '금화'].includes(entry.label),
+        );
+        heroName.textContent = w.heroDef.name;
+        summary.replaceChildren();
+        for (const entry of summaryValues) {
+          const row = el('div', 'hud-summary-line', summary);
+          el('span', '', row).textContent = entry.label;
+          el('strong', '', row).textContent = entry.value;
+        }
+        weapon.textContent = '무기 ' + (values.equipment[0]?.value ?? w.weapon.name) + ' · 투척물 ' + w.ammo;
+      }
       const hp = Math.ceil(w.hero.hp);
       const need = xpToNext(w.hero.level);
       const line = [

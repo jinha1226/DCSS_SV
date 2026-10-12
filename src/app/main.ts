@@ -1,4 +1,5 @@
 import '../styles/main.css';
+import '../styles/layout.css';
 import { CHARACTERS } from '../data/characters';
 import { heroFor } from '../data/hero';
 import { spellData } from '../data/spells';
@@ -12,6 +13,7 @@ import { makeCharacterSelect, type CharacterChoice } from '../ui/characterSelect
 import { makeEquipmentPicker } from '../ui/equipmentPicker';
 import { makeGameLog } from '../ui/gameLog';
 import { makeHud } from '../ui/hud';
+import { makeLayoutButton } from '../ui/layoutButton';
 import { makeInventorySheets } from '../ui/inventorySheets';
 import { makeHopButton } from '../ui/hopButton';
 import { makeSkillBar } from '../ui/skillBar';
@@ -36,7 +38,9 @@ async function start(): Promise<void> {
   guardZoom(root);
 
   const canvas = document.createElement('canvas');
+  canvas.className = 'game-canvas';
   root.append(canvas);
+  const layout = makeLayoutButton(root);
   const ctx = canvas.getContext('2d', { alpha: false });
   if (!ctx) return;
 
@@ -55,6 +59,7 @@ async function start(): Promise<void> {
   let world: World | undefined;
   let heroWalk: WalkSheet | undefined;
   let dpr = 1;
+  let viewCols = switches.cols;
   let queuedSpell: Input['spell'];
 
   const begin = (character: CharacterChoice): void => {
@@ -103,10 +108,9 @@ async function start(): Promise<void> {
   const inventory = makeInventorySheets(root);
   const shopButton = document.createElement('button');
   shopButton.type = 'button';
-  shopButton.className = 'inventory-action';
+  shopButton.className = 'inventory-action shop-button';
   shopButton.style.position = 'fixed';
   shopButton.style.zIndex = '14';
-  shopButton.style.left = '50%';
   shopButton.style.bottom = 'calc(148px + env(safe-area-inset-bottom, 0px))';
   shopButton.style.transform = 'translateX(-50%)';
   shopButton.style.minHeight = '44px';
@@ -152,11 +156,18 @@ async function start(): Promise<void> {
 
   const fit = (): void => {
     dpr = Math.min(window.devicePixelRatio || 1, 3);
+    viewCols = layout.landscape ? Math.max(switches.cols, Math.round(canvas.clientWidth / 32)) : switches.cols;
     const width = Math.round(canvas.clientWidth * dpr);
     const height = Math.round(canvas.clientHeight * dpr);
     if (canvas.width !== width || canvas.height !== height) {
       canvas.width = width;
       canvas.height = height;
+    }
+    const mapWidth = Math.round(hud.minimap.clientWidth * dpr);
+    const mapHeight = Math.round(hud.minimap.clientHeight * dpr);
+    if (hud.minimap.width !== mapWidth || hud.minimap.height !== mapHeight) {
+      hud.minimap.width = mapWidth;
+      hud.minimap.height = mapHeight;
     }
   };
 
@@ -169,7 +180,7 @@ async function start(): Promise<void> {
       const rect = canvas.getBoundingClientRect();
       const sx = (event.clientX - rect.left) * (canvas.width / rect.width);
       const sy = (event.clientY - rect.top) * (canvas.height / rect.height);
-      const px = cellPixels(canvas.width, switches.cols);
+      const px = cellPixels(canvas.width, viewCols);
       const x = world.hero.x + (sx - canvas.width / 2) / px;
       const y = world.hero.y + (sy - canvas.height / 2) / px;
       const target = spellAtPoint(world, spell, x, y);
@@ -235,7 +246,7 @@ async function start(): Promise<void> {
         atlas,
         world,
         {
-          cols: switches.cols,
+          cols: viewCols,
           look: LOOK[switches.look],
           dpr,
           heroWalk,
