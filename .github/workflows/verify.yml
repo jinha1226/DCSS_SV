@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [fix/stage2-floor-persistence]
+    branches: [main, fix/stage2-floor-persistence]
 permissions:
   contents: read
 jobs:
@@ -16,9 +16,5 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - name: Preview formatting changes
-        run: |
-          npx prettier --write src/sim/world.ts src/sim/packs.ts src/app/main.ts
-          git diff -- src/sim/world.ts src/sim/packs.ts src/app/main.ts
       - run: npm run check
       - run: npm run build
