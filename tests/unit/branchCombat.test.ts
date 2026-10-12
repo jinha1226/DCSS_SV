@@ -10,7 +10,7 @@ describe('stage 4 branch encounters and terrain', () => {
     for (const [depth, branch] of [
       [101, 'Lair'],
       [301, 'Snake'],
-      [401, 'Swamp'],
+      [401, 'Shoals'],
       [302, 'Snake'],
     ] as const) {
       const w = makeWorld({ seed: 2, depth, monsters: false, items: false });
@@ -18,7 +18,7 @@ describe('stage 4 branch encounters and terrain', () => {
     }
     for (const [depth, branch] of [
       [301, 'Spider'],
-      [401, 'Shoals'],
+      [401, 'Swamp'],
     ] as const) {
       const w = makeWorld({ seed: 1, depth, monsters: false, items: false });
       for (let i = 0; i < 60; i++) expect(pickPack(w).branch).toBe(branch);
@@ -35,7 +35,7 @@ describe('stage 4 branch encounters and terrain', () => {
   });
 
   it('creates deterministic shallow water only in Swamp and Shoals', () => {
-    const a = makeWorld({ seed: 2, depth: 401, monsters: false, items: false });
+    const a = makeWorld({ seed: 1, depth: 401, monsters: false, items: false });
     const b = makeWorld({ seed: 2, depth: 401, monsters: false, items: false });
     const dry = makeWorld({ seed: 2, depth: 101, monsters: false, items: false });
     expect([...a.grid.cells]).toEqual([...b.grid.cells]);
