@@ -48,7 +48,8 @@
 - [x] UI와 봇/단위 테스트 정리 (자동 검증 결과는 별도)
 - [x] GitHub Actions Verify: npm ci, npm run check (33 files / 234 tests), npm run build 통과 (run 38195131191)
 - [ ] 모바일 실기 / 수동 브라우저 스모크 미진행. 자동 테스트와 실제 플레이 감각은 별개 검증이 필요
-- [ ] main 반영 여부 및 후속 배포 기록
+- [x] PR #7 main 반영: `e30a7a6908540777d5b2ae3b42d4edc4d2262866` (2026-10-12). 최신 커밋의 CI/배포 상태는 GitHub Actions 확인.
+- [ ] 모바일 브라우저 실기 플레이와 24층 숙련도/보상 밸런스 검증
 
 ### 회귀/한계
 
