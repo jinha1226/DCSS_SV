@@ -13,7 +13,8 @@ const STILL: Stride = { vx: 0, vy: 0 };
 
 export function spawnMonster(w: World, id: string, x: number, y: number, awake: boolean, pack = w.nextPack++): Monster {
   const kind = monsterKind(id);
-  const hp = Math.round(kind.stats.hp * (1 + DUNGEON.tougher * (w.depth - 1)));
+  const difficulty = w.dungeonGraph.nodes.get(w.depth)?.difficulty ?? w.depth;
+  const hp = Math.round(kind.stats.hp * (1 + DUNGEON.tougher * (difficulty - 1)));
   const mana = kind.stats.mana ?? 0;
   const itemUses: Record<string, number> = {};
   for (const itemId of kind.stats.items ?? []) itemUses[itemId] = (itemUses[itemId] ?? 0) + 1;

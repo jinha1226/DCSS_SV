@@ -1,5 +1,6 @@
 import { heroFor } from '../data/hero';
 import { plainWeapon } from '../data/items';
+import { downDestinations, makeDungeonGraph } from './dungeonGraph';
 import { DUNGEON } from '../data/packs';
 import { moveCircle } from './collide';
 import { KNOCK_FADE, heroStrikes } from './combat';
@@ -76,7 +77,9 @@ function enter(w: World, floor: Floor, monsters: boolean): void {
 }
 export function makeWorld(options: WorldOptions = {}): World {
   const seed = options.seed ?? 1,
-    depth = Math.min(DUNGEON.floors, Math.max(1, options.depth ?? 1)),
+    dungeonGraph = makeDungeonGraph(seed),
+    requestedDepth = options.depth ?? 1,
+    depth = dungeonGraph.nodes.has(requestedDepth) ? requestedDepth : Math.min(DUNGEON.floors, Math.max(1, requestedDepth)),
     floor = options.floor ?? makeFloor(floorSeed(seed, depth)),
     heroDef = options.definition ?? heroFor(options.species, options.job);
   const weapon = plainWeapon(heroDef.startingWeapon, 'start');
@@ -156,6 +159,8 @@ export function makeWorld(options: WorldOptions = {}): World {
     openSkills: new Set<string>(),
     guaranteedSkills: [],
     depth,
+    dungeonGraph,
+    runes: new Set(),
     floorStates: new Map<number, FloorState>(),
     floorRng,
     stairConnections: new Map(),
@@ -225,8 +230,17 @@ function standAt(w: World, x: number, y: number): void {
 
 function traverse(w: World, down: boolean): void {
   const previous = w.depth;
-  const target = previous + (down ? 1 : -1);
-  if (target < 1 || target > DUNGEON.floors) return;
+  const current = w.dungeonGraph.nodes.get(previous);
+  if (!current) return;
+  const downStairs = w.stairs.filter((stair) => stair.down);
+  const slot = downStairs.findIndex((stair) => stair.x === Math.floor(w.hero.x) && stair.y === Math.floor(w.hero.y));
+  const destinations = downDestinations(w.dungeonGraph, previous);
+  const target = down ? (destinations[slot] ?? destinations[0]) : current.parent;
+  if (target === undefined) return;
+  if (w.dungeonGraph.nodes.get(target)?.branch === 'Zot' && !w.dungeonGraph.runeBranches.every((branch) => w.runes.has(branch))) {
+    w.descending = 0;
+    return;
+  }
   const sourceX = Math.floor(w.hero.x) + 0.5;
   const sourceY = Math.floor(w.hero.y) + 0.5;
   rememberFloor(w, sourceX, sourceY);
@@ -348,7 +362,11 @@ function stairsUnderfoot(w: World, dt: number): void {
   const cell = cellAt(w.grid, Math.floor(w.hero.x), Math.floor(w.hero.y));
   const down = cell === Cell.StairsDown;
   const up = cell === Cell.StairsUp;
-  const usable = down || (up && w.depth > 1);
+  const destinations = downDestinations(w.dungeonGraph, w.depth);
+  const downIndex = w.stairs
+    .filter((stair) => stair.down)
+    .findIndex((stair) => stair.x === Math.floor(w.hero.x) && stair.y === Math.floor(w.hero.y));
+  const usable = (down && downIndex >= 0 && destinations.length > 0) || (up && w.dungeonGraph.nodes.get(w.depth)?.parent !== undefined);
   if (!usable) {
     w.stairsArmed = true;
     w.descending = 0;
@@ -360,11 +378,6 @@ function stairsUnderfoot(w: World, dt: number): void {
   }
   w.descending += dt;
   if (w.descending < DUNGEON.descend) return;
-  if (down && w.depth >= DUNGEON.floors) {
-    w.over = true;
-    w.won = true;
-    return;
-  }
   traverse(w, down);
 }
 export function stepWorld(w: World, input: Input, dt: number = STEP): void {

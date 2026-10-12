@@ -1,5 +1,7 @@
 import { skillData } from '../data/skills';
 import { xpToNext } from '../sim/skills';
+import { downDestinations, nodeLabel } from '../sim/dungeonGraph';
+import { Cell, cellAt } from '../sim/grid';
 import type { World } from '../sim/world';
 
 export interface Hud {
@@ -124,7 +126,19 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
         manaText.textContent = Math.floor(w.hero.mana) + ' / ' + w.hero.maxMana;
         levelText.textContent = 'Lv ' + w.hero.level;
         xpFill.style.width = Math.min(1, w.hero.xp / need) * 100 + '%';
-        place.textContent = '지하 ' + w.depth + '층';
+        const location = w.dungeonGraph.nodes.get(w.depth);
+        place.textContent =
+          location?.branch === 'Dungeon'
+            ? '지하 ' + location.floor + '층'
+            : (location?.branch ?? 'Dungeon') + ' ' + (location?.floor ?? w.depth) + '층';
+        const cell = cellAt(w.grid, Math.floor(w.hero.x), Math.floor(w.hero.y));
+        if (cell === Cell.StairsDown) {
+          const stairs = w.stairs.filter((stair) => stair.down);
+          const index = stairs.findIndex((stair) => stair.x === Math.floor(w.hero.x) && stair.y === Math.floor(w.hero.y));
+          const targets = downDestinations(w.dungeonGraph, w.depth);
+          const target = w.dungeonGraph.nodes.get(targets[index] ?? targets[0] ?? -1);
+          if (target) place.textContent += ' → ' + nodeLabel(target);
+        }
         elapsed.textContent = clock(w.time) + ' · 처치 ' + w.kills;
       }
       if (w.over !== shown) {
@@ -132,7 +146,16 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
         shown = w.over;
         if (w.over) shownAt = performance.now();
         title.textContent = w.won ? '던전을 빠져나왔다' : '쓰러졌다';
-        result.textContent = w.depth + '층 · ' + clock(w.time) + ' · ' + w.kills + ' 처치 · Lv ' + w.hero.level;
+        result.textContent =
+          (w.dungeonGraph.nodes.get(w.depth)?.branch ?? 'Dungeon') +
+          ' ' +
+          (w.dungeonGraph.nodes.get(w.depth)?.floor ?? w.depth) +
+          '층 · ' +
+          clock(w.time) +
+          ' · ' +
+          w.kills +
+          ' 처치 · Lv ' +
+          w.hero.level;
         skills.textContent = (skillText(w) || '고른 스킬 없음') + ' · 무기 ' + w.weapon.name;
         over.classList.toggle('on', w.over);
       }

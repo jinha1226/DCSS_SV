@@ -1,3 +1,4 @@
+import type { Branch, DungeonGraph } from './dungeonGraph';
 import type { HeroDefinition } from '../data/hero';
 import type { ResistName, WeaponItem } from '../data/items';
 import type { SpellShape } from '../data/spells';
@@ -225,11 +226,14 @@ export interface StairConnection {
   readonly childY: number;
 }
 export interface World {
-  /** Persistent floors indexed by dungeon depth. */
+  /** Persistent floors indexed by unique graph node ID. */
   readonly floorStates: Map<number, FloorState>;
+  readonly dungeonGraph: DungeonGraph;
+  /** Distinct runes collected; populated by stage 5. */
+  readonly runes: Set<Branch>;
   /** Each visited floor retains its own advancing seeded random stream. */
   readonly floorRng: Map<number, Rng>;
-  /** Child depth -> paired arrival and return stair coordinates. */
+  /** Child node -> paired arrival and return stair coordinates. */
   readonly stairConnections: Map<number, StairConnection>;
   /** Whether floor population was enabled when this run started. */
   readonly monstersEnabled: boolean;
@@ -265,6 +269,7 @@ export interface World {
   readonly pickupStats: PickupStats;
   readonly openSkills: Set<string>;
   readonly guaranteedSkills: string[];
+  /** Current unique node ID (1..9 remain Dungeon 1..9). */
   depth: number;
   time: number;
   floorTime: number;
