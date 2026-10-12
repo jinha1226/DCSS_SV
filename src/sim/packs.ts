@@ -9,7 +9,7 @@ import type { World } from './types';
 export function pickPack(w: World): PackKind {
   const difficulty = w.dungeonGraph.nodes.get(w.depth)?.difficulty ?? w.depth;
   const found = PACKS.filter((p) => difficulty >= p.floors[0] && difficulty <= p.floors[1]);
-  const candidates = found.length ? found : PACKS.filter((p) => p.floors[1] === DUNGEON.floors);
+  const candidates = found.length ? found : PACKS.filter((p) => p.floors[1] === Math.max(...PACKS.map((pack) => pack.floors[1])));
   let roll = w.rng() * candidates.reduce((sum, p) => sum + p.weight, 0);
   for (const p of candidates) {
     roll -= p.weight;
