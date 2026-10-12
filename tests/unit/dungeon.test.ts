@@ -195,6 +195,20 @@ describe('lingering', () => {
         arrivals.push(w.floorTime);
       }
     }
+    // Diagnostic when the progression simulation pauses unexpectedly.
+    if (arrivals.length < 8)
+      console.log('LINGERING_DEBUG', {
+        time: w.time,
+        floorTime: w.floorTime,
+        pendingChoices: w.pendingChoices,
+        rewardChoices: w.rewardChoices?.length,
+        choosing: w.choosing?.length,
+        pendingPickup: w.pendingPickup?.kind,
+        over: w.over,
+        monsters: w.monsters.length,
+        kills: w.kills,
+        nextBand: w.nextBand,
+      });
     expect(arrivals.length).toBeGreaterThanOrEqual(8);
     const gaps = arrivals.slice(1).map((t, i) => t - arrivals[i]!);
     expect(gaps[gaps.length - 1]!).toBeLessThan(gaps[0]!);
