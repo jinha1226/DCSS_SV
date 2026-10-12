@@ -10,6 +10,7 @@ import type { Floor } from './floor';
 import { makeFlow, updateFlow } from './flow';
 import { computeFov } from './fov';
 import { makeFloor } from './gen';
+import { collectObjective, placeObjectiveGuards } from './objectives';
 import { Cell, cellAt, setCell } from './grid';
 import { tickHop, tryHop } from './hop';
 import { thinkMonster } from './monster';
@@ -87,6 +88,7 @@ function enter(w: World, floor: Floor, monsters: boolean): void {
   w.hero.y = w.hero.py = floor.start.y;
   look(w);
   if (monsters) fillFloor(w);
+  placeObjectiveGuards(w);
   if (w.itemsEnabled) populateFloorItems(w);
 }
 export function makeWorld(options: WorldOptions = {}): World {
@@ -176,6 +178,7 @@ export function makeWorld(options: WorldOptions = {}): World {
     depth,
     dungeonGraph,
     runes: new Set(),
+    orbCollected: false,
     floorStates: new Map<number, FloorState>(),
     floorRng,
     stairConnections: new Map(),
@@ -416,6 +419,8 @@ export function stepWorld(w: World, input: Input, dt: number = STEP): void {
   if (input.hop) tryHop(w, input);
   walkHero(w, input, dt);
   if (Math.floor(h.x) !== cx || Math.floor(h.y) !== cy) look(w);
+  collectObjective(w);
+  if (w.over) return;
   if (w.itemsEnabled) {
     collectGround(w);
     if (w.pendingPickup) return;
@@ -428,6 +433,8 @@ export function stepWorld(w: World, input: Input, dt: number = STEP): void {
   stepSpells(w, dt);
   if (w.over || w.choosing) return;
   if (w.itemsEnabled) collectGround(w);
+  collectObjective(w);
+  if (w.over) return;
   lingering(w, dt);
   stairsUnderfoot(w, dt);
 }
