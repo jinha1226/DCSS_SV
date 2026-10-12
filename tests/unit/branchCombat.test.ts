@@ -34,6 +34,15 @@ describe('stage 4 branch encounters and terrain', () => {
     expect(MONSTERS.find((monster) => monster.id === 'hydra')?.stats.waterNative).toBe(true);
   });
 
+  it('reserves elite guardian packs for rune branch floor three', () => {
+    for (const branch of ['Snake', 'Spider', 'Swamp', 'Shoals']) {
+      const guard = PACKS.find((pack) => pack.id === branch.toLowerCase() + '_guard');
+      expect(guard?.branch).toBe(branch);
+      expect(guard?.floors).toEqual([3, 3]);
+      expect(guard?.members.length).toBeGreaterThan(1);
+    }
+  });
+
   it('creates deterministic shallow water only in Swamp and Shoals', () => {
     const a = makeWorld({ seed: 1, depth: 401, monsters: false, items: false });
     const b = makeWorld({ seed: 2, depth: 401, monsters: false, items: false });
