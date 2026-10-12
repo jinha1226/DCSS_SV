@@ -130,7 +130,18 @@ export function makeStatusSheet(root: HTMLElement): StatusSheet {
       world = w;
       if (w.over && opened) this.close();
       if (!opened) return;
-      const key = [w.hero.hp, w.hero.mana, w.hero.level, w.hero.xp, w.kills, w.ammo, w.weapon.uid, w.heroDef.species, [...w.runes].sort().join(','), w.orbCollected].join('|');
+      const key = [
+        w.hero.hp,
+        w.hero.mana,
+        w.hero.level,
+        w.hero.xp,
+        w.kills,
+        w.ammo,
+        w.weapon.uid,
+        w.heroDef.species,
+        [...w.runes].sort().join(','),
+        w.orbCollected,
+      ].join('|');
       if (key === lastKey) return;
       lastKey = key;
       title.textContent = w.heroDef.name + ' · 지하 ' + w.depth + '층';
