@@ -84,7 +84,7 @@ describe('skipping item rewards', () => {
     expect(skipReward(w, 'gold')).toBe(false);
   });
   it('heals HP and MP without exceeding their maxima', () => {
-    const w = levelUp(208, 'deep_elf', 'conjurer');
+    const w = levelUp(208, 'deep_elf', 'air_mage');
     w.hero.hp = w.hero.maxHp - 1;
     w.hero.mana = w.hero.maxMana - 1;
     expect(skipReward(w, 'heal')).toBe(true);

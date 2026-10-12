@@ -1,4 +1,4 @@
-import { spellData } from '../../data/spells';
+import { monsterSpellMana, spellData } from '../../data/spells';
 import type { Monster, World } from '../types';
 
 /** Read-only snapshot used by every action and scorer during one decision. */
@@ -29,7 +29,7 @@ export function monsterContext(world: World, monster: Monster): MonsterContext {
     0,
     ...spells.map((id) => {
       const spell = spellData(id);
-      return spell.damage !== undefined && monster.maxMana >= spell.mana ? (spell.range ?? 0) : 0;
+      return spell.damage !== undefined && monster.maxMana >= monsterSpellMana(spell) ? (spell.range ?? 0) : 0;
     }),
   );
   const effectiveRange = Math.max(rangedRange, magicRange);

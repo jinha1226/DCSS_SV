@@ -209,6 +209,41 @@
     "effects": []
   },
   {
+    "id": "staff_ice_0",
+    "kind": "staff",
+    "name": "입문 빙결 지팡이",
+    "tile": "item/stone",
+    "school": "ice",
+    "tier": 0,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [8, 2, 0],
+    "effects": []
+  },
+  {
+    "id": "rod_ice_0",
+    "kind": "rod",
+    "name": "입문 빙결 마법봉",
+    "tile": "item/stone",
+    "school": "ice",
+    "tier": 0,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [8, 2, 0],
+    "effects": []
+  },
+  {
+    "id": "spellbook_ice_0",
+    "kind": "spellbook",
+    "name": "입문 빙결 마법서",
+    "tile": "item/stone",
+    "school": "ice",
+    "tier": 0,
+    "enabled": false,
+    "depthWeights": [0, 0, 0],
+    "effects": []
+  },
+  {
     "id": "staff_ice_1",
     "kind": "staff",
     "name": "숙련 빙결 지팡이",
@@ -379,6 +414,40 @@
     "effects": []
   },
   {
+    "id": "staff_earth_0",
+    "kind": "staff",
+    "name": "입문 대지 지팡이",
+    "tile": "item/stone",
+    "school": "earth",
+    "tier": 0,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [8, 2, 0],
+    "effects": []
+  },
+  {
+    "id": "rod_earth_0",
+    "kind": "rod",
+    "name": "입문 대지 마법봉",
+    "tile": "item/stone",
+    "school": "earth",
+    "tier": 0,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [8, 2, 0],
+    "effects": []
+  },
+  {
+    "id": "spellbook_earth_0",
+    "kind": "spellbook",
+    "name": "입문 대지 마법서",
+    "tile": "item/stone",
+    "school": "earth",
+    "tier": 0,
+    "depthWeights": [8, 2, 0],
+    "effects": []
+  },
+  {
     "id": "staff_earth_1",
     "kind": "staff",
     "name": "숙련 대지 지팡이",
@@ -447,6 +516,135 @@
     "effects": []
   },
   {
+    "id": "staff_summoning_0",
+    "kind": "staff",
+    "name": "입문 소환 지팡이",
+    "tile": "item/stone",
+    "school": "summoning",
+    "tier": 0,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [8, 2, 0],
+    "effects": []
+  },
+  {
+    "id": "rod_summoning_0",
+    "kind": "rod",
+    "name": "입문 소환 마법봉",
+    "tile": "item/stone",
+    "school": "summoning",
+    "tier": 0,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [8, 2, 0],
+    "effects": []
+  },
+  {
+    "id": "spellbook_summoning_0",
+    "kind": "spellbook",
+    "name": "입문 소환 마법서",
+    "tile": "item/stone",
+    "school": "summoning",
+    "tier": 0,
+    "enabled": false,
+    "depthWeights": [0, 0, 0],
+    "effects": []
+  },
+  {
+    "id": "staff_summoning_1",
+    "kind": "staff",
+    "name": "숙련 소환 지팡이",
+    "tile": "item/stone",
+    "school": "summoning",
+    "tier": 1,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [2, 6, 2],
+    "effects": []
+  },
+  {
+    "id": "rod_summoning_1",
+    "kind": "rod",
+    "name": "숙련 소환 마법봉",
+    "tile": "item/stone",
+    "school": "summoning",
+    "tier": 1,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [2, 6, 2],
+    "effects": []
+  },
+  {
+    "id": "spellbook_summoning_1",
+    "kind": "spellbook",
+    "name": "숙련 소환 마법서",
+    "tile": "item/stone",
+    "school": "summoning",
+    "tier": 1,
+    "enabled": false,
+    "depthWeights": [0, 0, 0],
+    "effects": []
+  },
+  {
+    "id": "staff_summoning_2",
+    "kind": "staff",
+    "name": "대가 소환 지팡이",
+    "tile": "item/stone",
+    "school": "summoning",
+    "tier": 2,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [0, 2, 8],
+    "effects": []
+  },
+  {
+    "id": "rod_summoning_2",
+    "kind": "rod",
+    "name": "대가 소환 마법봉",
+    "tile": "item/stone",
+    "school": "summoning",
+    "tier": 2,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [0, 2, 8],
+    "effects": []
+  },
+  {
+    "id": "spellbook_summoning_2",
+    "kind": "spellbook",
+    "name": "대가 소환 마법서",
+    "tile": "item/stone",
+    "school": "summoning",
+    "tier": 2,
+    "enabled": false,
+    "depthWeights": [0, 0, 0],
+    "effects": []
+  },
+  {
+    "id": "staff_hexes_0",
+    "kind": "staff",
+    "name": "입문 주술 지팡이",
+    "tile": "item/stone",
+    "school": "hexes",
+    "tier": 0,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [8, 2, 0],
+    "effects": []
+  },
+  {
+    "id": "rod_hexes_0",
+    "kind": "rod",
+    "name": "입문 주술 마법봉",
+    "tile": "item/stone",
+    "school": "hexes",
+    "tier": 0,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [8, 2, 0],
+    "effects": []
+  },
+  {
     "id": "spellbook_hexes_0",
     "kind": "spellbook",
     "name": "입문 주술 마법서",
@@ -454,6 +652,30 @@
     "school": "hexes",
     "tier": 0,
     "depthWeights": [8, 2, 0],
+    "effects": []
+  },
+  {
+    "id": "staff_hexes_1",
+    "kind": "staff",
+    "name": "숙련 주술 지팡이",
+    "tile": "item/stone",
+    "school": "hexes",
+    "tier": 1,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [2, 6, 2],
+    "effects": []
+  },
+  {
+    "id": "rod_hexes_1",
+    "kind": "rod",
+    "name": "숙련 주술 마법봉",
+    "tile": "item/stone",
+    "school": "hexes",
+    "tier": 1,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [2, 6, 2],
     "effects": []
   },
   {
@@ -467,6 +689,30 @@
     "effects": []
   },
   {
+    "id": "staff_hexes_2",
+    "kind": "staff",
+    "name": "대가 주술 지팡이",
+    "tile": "item/stone",
+    "school": "hexes",
+    "tier": 2,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [0, 2, 8],
+    "effects": []
+  },
+  {
+    "id": "rod_hexes_2",
+    "kind": "rod",
+    "name": "대가 주술 마법봉",
+    "tile": "item/stone",
+    "school": "hexes",
+    "tier": 2,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [0, 2, 8],
+    "effects": []
+  },
+  {
     "id": "spellbook_hexes_2",
     "kind": "spellbook",
     "name": "대가 주술 마법서",
@@ -474,6 +720,74 @@
     "school": "hexes",
     "tier": 2,
     "depthWeights": [0, 2, 8],
+    "effects": []
+  },
+  {
+    "id": "staff_necromancy_0",
+    "kind": "staff",
+    "name": "입문 강령 지팡이",
+    "tile": "item/stone",
+    "school": "necromancy",
+    "tier": 0,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [8, 2, 0],
+    "effects": []
+  },
+  {
+    "id": "rod_necromancy_0",
+    "kind": "rod",
+    "name": "입문 강령 마법봉",
+    "tile": "item/stone",
+    "school": "necromancy",
+    "tier": 0,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [8, 2, 0],
+    "effects": []
+  },
+  {
+    "id": "spellbook_necromancy_0",
+    "kind": "spellbook",
+    "name": "입문 강령 마법서",
+    "tile": "item/stone",
+    "school": "necromancy",
+    "tier": 0,
+    "depthWeights": [8, 2, 0],
+    "effects": []
+  },
+  {
+    "id": "staff_necromancy_1",
+    "kind": "staff",
+    "name": "숙련 강령 지팡이",
+    "tile": "item/stone",
+    "school": "necromancy",
+    "tier": 1,
+    "hands": 2,
+    "power": 1.25,
+    "depthWeights": [2, 6, 2],
+    "effects": []
+  },
+  {
+    "id": "rod_necromancy_1",
+    "kind": "rod",
+    "name": "숙련 강령 마법봉",
+    "tile": "item/stone",
+    "school": "necromancy",
+    "tier": 1,
+    "hands": 1,
+    "power": 0.65,
+    "depthWeights": [2, 6, 2],
+    "effects": []
+  },
+  {
+    "id": "spellbook_necromancy_1",
+    "kind": "spellbook",
+    "name": "숙련 강령 마법서",
+    "tile": "item/stone",
+    "school": "necromancy",
+    "tier": 1,
+    "depthWeights": [2, 6, 2],
     "effects": []
   },
   {

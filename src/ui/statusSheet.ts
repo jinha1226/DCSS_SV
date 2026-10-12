@@ -4,6 +4,7 @@ import { weaponOption } from '../sim/equipment';
 import { gearName } from '../sim/gear';
 import { effectValue, xpToNext } from '../sim/skills';
 import type { World } from '../sim/world';
+import { makeSpellSlotPanel } from './spellSlotPanel';
 
 const RESISTS: readonly { id: ResistName; label: string }[] = [
   { id: 'fire', label: '화염저항' },
@@ -101,7 +102,8 @@ export function makeStatusSheet(root: HTMLElement): StatusSheet {
   extra.className = 'status-extra';
   const skills = document.createElement('div');
   skills.className = 'status-skills';
-  body.append(overview, columns, extra, skills);
+  const spellPanel = makeSpellSlotPanel();
+  body.append(overview, columns, extra, spellPanel.element, skills);
   panel.append(header, body);
   root.append(panel);
   let world: World | undefined;
@@ -177,6 +179,7 @@ export function makeStatusSheet(root: HTMLElement): StatusSheet {
         [...w.runes].sort().join(','),
         w.orbCollected,
         w.gold,
+        spellPanel.key(w),
       ].join('|');
       if (key === lastKey) return;
       lastKey = key;
@@ -186,6 +189,7 @@ export function makeStatusSheet(root: HTMLElement): StatusSheet {
       renderRows(resists, values.resists);
       renderRows(equipment, values.equipment);
       renderRows(extra, values.extra);
+      spellPanel.render(w);
       renderSkillGroups(w);
     },
     openSheet() {

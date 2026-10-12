@@ -14,17 +14,59 @@
     "tagline": "멀리서 쏘고, 몰리면 뛰어서 빠진다"
   },
   {
-    "id": "deep-elf-conjurer",
-    "species": "deep_elf",
-    "job": "conjurer",
-    "name": "딥엘프 컨저러",
-    "tagline": "마나를 모아 강한 주문을 정확히 꽂는다"
-  },
-  {
     "id": "barachi-spellblade",
     "species": "barachi",
     "job": "spellblade",
     "name": "바라치 마검사",
     "tagline": "장검으로 싸우고 마법으로 위기를 벗어난다"
+  },
+  {
+    "id": "deep-elf-fire-mage",
+    "species": "deep_elf",
+    "job": "fire_mage",
+    "name": "딥엘프 화염술사",
+    "tagline": "불꽃으로 무리를 태우고 터뜨린다"
+  },
+  {
+    "id": "deep-elf-ice-mage",
+    "species": "deep_elf",
+    "job": "ice_mage",
+    "name": "딥엘프 냉기술사",
+    "tagline": "얼리고 늦춰서 떼를 묶는다"
+  },
+  {
+    "id": "deep-elf-air-mage",
+    "species": "deep_elf",
+    "job": "air_mage",
+    "name": "딥엘프 대기술사",
+    "tagline": "번개를 튀기며 빠르게 움직인다"
+  },
+  {
+    "id": "deep-elf-earth-mage",
+    "species": "deep_elf",
+    "job": "earth_mage",
+    "name": "딥엘프 대지술사",
+    "tagline": "무거운 돌로 밀어내고 부순다"
+  },
+  {
+    "id": "deep-elf-summoner",
+    "species": "deep_elf",
+    "job": "summoner",
+    "name": "딥엘프 소환술사",
+    "tagline": "부른 아군 뒤에서 싸운다"
+  },
+  {
+    "id": "deep-elf-hexer",
+    "species": "deep_elf",
+    "job": "hexer",
+    "name": "딥엘프 주술사",
+    "tagline": "약하게 만들고 흩뜨린다"
+  },
+  {
+    "id": "deep-elf-necromancer",
+    "species": "deep_elf",
+    "job": "necromancer",
+    "name": "딥엘프 강령술사",
+    "tagline": "독과 죽음으로 버티며 시체를 일으킨다"
   }
 ]

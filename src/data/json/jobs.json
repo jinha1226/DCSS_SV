@@ -22,17 +22,6 @@
     }
   },
   {
-    "id": "conjurer",
-    "name": "컨저러",
-    "startingWeapon": "staff_air_0",
-    "startingAmmo": 0,
-    "startingSkills": {
-      "air": 1,
-      "fighting": 1,
-      "dodging": 1
-    }
-  },
-  {
     "id": "spellblade",
     "name": "마검사",
     "startingWeapon": "long_sword",
@@ -44,5 +33,82 @@
       "dodging": 1
     },
     "startingOffhand": "spellbook_hexes_0"
+  },
+  {
+    "id": "fire_mage",
+    "name": "화염술사",
+    "startingWeapon": "staff_fire_0",
+    "startingAmmo": 0,
+    "startingSkills": {
+      "fire": 1,
+      "fighting": 1,
+      "dodging": 1
+    }
+  },
+  {
+    "id": "ice_mage",
+    "name": "냉기술사",
+    "startingWeapon": "staff_ice_0",
+    "startingAmmo": 0,
+    "startingSkills": {
+      "ice": 1,
+      "fighting": 1,
+      "dodging": 1
+    }
+  },
+  {
+    "id": "air_mage",
+    "name": "대기술사",
+    "startingWeapon": "staff_air_0",
+    "startingAmmo": 0,
+    "startingSkills": {
+      "air": 1,
+      "fighting": 1,
+      "dodging": 1
+    }
+  },
+  {
+    "id": "earth_mage",
+    "name": "대지술사",
+    "startingWeapon": "staff_earth_0",
+    "startingAmmo": 0,
+    "startingSkills": {
+      "earth": 1,
+      "fighting": 1,
+      "dodging": 1
+    }
+  },
+  {
+    "id": "summoner",
+    "name": "소환술사",
+    "startingWeapon": "staff_summoning_0",
+    "startingAmmo": 0,
+    "startingSkills": {
+      "summoning": 1,
+      "fighting": 1,
+      "dodging": 1
+    }
+  },
+  {
+    "id": "hexer",
+    "name": "주술사",
+    "startingWeapon": "staff_hexes_0",
+    "startingAmmo": 0,
+    "startingSkills": {
+      "hexes": 1,
+      "fighting": 1,
+      "dodging": 1
+    }
+  },
+  {
+    "id": "necromancer",
+    "name": "강령술사",
+    "startingWeapon": "staff_necromancy_0",
+    "startingAmmo": 0,
+    "startingSkills": {
+      "necromancy": 1,
+      "fighting": 1,
+      "dodging": 1
+    }
   }
 ]

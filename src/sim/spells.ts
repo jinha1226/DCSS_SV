@@ -1,6 +1,4 @@
-import { ACTIVE_SPELL_SHAPES, SPELLS, spellData, type SpellData } from '../data/spells';
-import { DUNGEON } from '../data/packs';
-import { itemDefinition } from '../data/itemCatalog';
+import { monsterSpellMana, spellData, type SpellData } from '../data/spells';
 import { walkable } from './grid';
 import { computeFov } from './fov';
 import { updateFlow } from './flow';
@@ -8,7 +6,23 @@ import type { ResistName } from '../data/items';
 import { skillLevel } from './skills';
 import { hurtHero } from './effects';
 import { hurtMonster } from './hits';
+import { basicSpell, paidSpells, requiredLevel, slottedSpell, spellCooldownLeft, tickSpellCooldowns } from './spellAccess';
 import type { Hero, Monster, SpellCloud, SpellShot, World } from './types';
+
+export {
+  basicSpell,
+  knownSpells,
+  lockedSpells,
+  paidSpells,
+  requiredLevel,
+  setSpellSlot,
+  spellReady,
+  spellSlots,
+  SPELL_SLOTS,
+} from './spellAccess';
+
+/** Global pause between two button casts so a double tap does not fire twice. */
+const BUTTON_GAP = 0.25;
 
 const VISUAL_TIME = 0.18;
 
@@ -16,55 +30,8 @@ function visible(w: World, m: Monster): boolean {
   return Boolean(w.visible[Math.floor(m.y) * w.grid.w + Math.floor(m.x)]);
 }
 
-function schoolLevel(w: World, school: string): number {
-  return skillLevel(w, school);
-}
-
-export function requiredLevel(spell: SpellData): number {
-  return spell.requirement ?? Math.max(0, DUNGEON.spellRequirementStep * (spell.level - 1));
-}
-
 function spellExcess(w: World, spell: SpellData): number {
-  return Math.max(0, schoolLevel(w, spell.school) - requiredLevel(spell));
-}
-
-function equippedSpells(w: World): SpellData[] {
-  const sources: { school: string; tier: number }[] = [];
-  if (w.weapon.kind === 'staff') sources.push({ school: w.weapon.school!, tier: w.weapon.tier! });
-  if (w.gear.offhand) {
-    const item = itemDefinition(w.gear.offhand);
-    if (item.kind === 'spellbook') sources.push({ school: item.school!, tier: item.tier! });
-  }
-  return SPELLS.filter(
-    (spell) =>
-      ACTIVE_SPELL_SHAPES.includes(spell.shape) &&
-      sources.some((source) => source.school === spell.school && spell.level <= DUNGEON.magicTierMaxLevel[source.tier]!),
-  );
-}
-
-export function knownSpells(w: World, school?: string): SpellData[] {
-  return equippedSpells(w).filter((spell) => (!school || spell.school === school) && schoolLevel(w, spell.school) >= requiredLevel(spell));
-}
-
-export function lockedSpells(w: World): SpellData[] {
-  return equippedSpells(w).filter((spell) => schoolLevel(w, spell.school) < requiredLevel(spell));
-}
-
-export function basicSpell(w: World): SpellData | undefined {
-  if (w.weapon.kind !== 'staff' && w.weapon.kind !== 'rod') return undefined;
-  const school = w.weapon.school!;
-  const available = SPELLS.filter(
-    (spell) =>
-      spell.school === school &&
-      ['projectile', 'beam', 'burst', 'cloud'].includes(spell.shape) &&
-      spell.level <= DUNGEON.magicTierMaxLevel[w.weapon.tier!]! &&
-      schoolLevel(w, school) >= requiredLevel(spell),
-  ).sort((a, b) => a.level - b.level);
-  return available.length > 1 ? available[1] : available[0];
-}
-
-export function paidSpells(w: World): SpellData[] {
-  return knownSpells(w);
+  return Math.max(0, skillLevel(w, spell.school) - requiredLevel(spell));
 }
 
 export function spellRange(w: World, spell: SpellData): number {
@@ -90,8 +57,7 @@ export function spellTarget(w: World, spell: SpellData): Monster | undefined {
 }
 
 function spellElement(spell: SpellData): ResistName | undefined {
-  const types: readonly ResistName[] = ['fire', 'cold', 'electric', 'poison', 'negative'];
-  return types.find((type) => spell.school === type) ?? (spell.school === 'air' ? 'electric' : undefined);
+  return spell.element;
 }
 
 type SpellCaster = 'hero' | 'monster';
@@ -321,7 +287,7 @@ function execute(w: World, spell: SpellData, target: Monster): void {
  */
 export function castMonsterSpell(w: World, monster: Monster, spellId: string): boolean {
   const spell = spellData(spellId);
-  if (monster.mana < spell.mana || monster.spellCooldown > 0) return false;
+  if (!spell.enabled || monster.mana < monsterSpellMana(spell) || monster.spellCooldown > 0) return false;
   if (spell.shape === 'utility') {
     if (!applyUtilitySpell(w, spell, 'monster', monster)) return false;
   } else {
@@ -331,35 +297,35 @@ export function castMonsterSpell(w: World, monster: Monster, spellId: string): b
     if (d > spell.range || !w.visible[Math.floor(monster.y) * w.grid.w + Math.floor(monster.x)]) return false;
     executeSpell(w, spell, 'monster', monster, w.hero, spell.damage, spell.range);
   }
-  monster.mana -= spell.mana;
+  monster.mana -= monsterSpellMana(spell);
   monster.spellCooldown = Math.max(0.25, 0.45 - spell.level * 0.02);
   return true;
 }
 
 export function castPaidSpell(w: World, spellId: string, target?: Monster): boolean {
   const spell = spellData(spellId);
-  if (!ACTIVE_SPELL_SHAPES.includes(spell.shape) || !paidSpells(w).some((entry) => entry.id === spell.id)) return false;
-  if (w.hero.mana < spell.mana || w.hero.spellCooldown > 0) return false;
+  if (!paidSpells(w).some((entry) => entry.id === spell.id) || !slottedSpell(w, spell.id)) return false;
+  if (w.hero.mana < spell.mana || spellCooldownLeft(w, spell.id) > 0) return false;
   if (spell.shape === 'utility') {
     if (!applyUtilitySpell(w, spell, 'hero', w.hero)) return false;
-    w.hero.mana -= spell.mana;
-    return true;
+  } else {
+    const chosen = target ?? spellTarget(w, spell);
+    if (!chosen || !spellCandidates(w, spell).includes(chosen)) return false;
+    execute(w, spell, chosen);
   }
-  const chosen = target ?? spellTarget(w, spell);
-  if (!chosen || !spellCandidates(w, spell).includes(chosen)) return false;
   w.hero.mana -= spell.mana;
-  w.hero.spellCooldown = Math.max(w.hero.spellCooldown, 0.25);
-  execute(w, spell, chosen);
+  w.hero.spellCooldown = Math.max(w.hero.spellCooldown, BUTTON_GAP);
+  w.hero.spellCooldowns[spell.id] = spell.cooldown ?? 0;
   return true;
 }
 
 function autoBasic(w: World): void {
   const spell = basicSpell(w);
-  if (!spell || w.hero.spellCooldown > 0) return;
+  if (!spell || w.hero.autoCooldown > 0) return;
   const target = spellTarget(w, spell);
   if (!target) return;
   execute(w, spell, target);
-  w.hero.spellCooldown = Math.max(0.35, 0.78 - spell.level * 0.04);
+  w.hero.autoCooldown = Math.max(0.35, 0.78 - spell.level * 0.04);
 }
 
 function tickProjectiles(w: World, dt: number): void {
@@ -434,7 +400,7 @@ function pruneDead(w: World): void {
 export function stepSpells(w: World, dt: number): void {
   const h = w.hero;
   h.mana = Math.min(h.maxMana, h.mana + w.heroDef.manaRegen * dt);
-  if (h.spellCooldown > 0) h.spellCooldown -= dt;
+  tickSpellCooldowns(w, dt);
   tickProjectiles(w, dt);
   tickClouds(w, dt);
   tickVisuals(w, dt);

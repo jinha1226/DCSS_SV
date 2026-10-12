@@ -43,7 +43,14 @@ export interface Hero {
   poison: number;
   constricted: number;
   throwing: number;
+  /** Short shared pause after any button spell. */
   spellCooldown: number;
+  /** Time until the staff or rod fires its automatic spell again. */
+  autoCooldown: number;
+  /** Seconds left per button spell id; entries vanish at zero. */
+  spellCooldowns: Record<string, number>;
+  /** Spell ids the player pinned to the four button slots; empty slots fill themselves. */
+  spellSlots: (string | undefined)[];
   level: number;
   xp: number;
   skills: Record<string, number>;

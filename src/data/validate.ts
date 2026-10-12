@@ -2,13 +2,27 @@ import characters from './json/characters.json';
 import jobs from './json/jobs.json';
 import species from './json/species.json';
 import { characterData } from './characters';
-import { ITEM_DEFINITIONS, validateItemDefinitions } from './itemCatalog';
+import { ITEM_DEFINITIONS, validateItemDefinitions, type ItemDefinition } from './itemCatalog';
 import { heroFor } from './hero';
 import { ARTEFACTS, AXES, RANGED_WEAPONS, BRANDS, EQUIPMENT, RANDART_OPTIONS, WEAPONS } from './items';
 import { MONSTERS } from './monsters';
-import { PACKS } from './packs';
+import { DUNGEON, PACKS } from './packs';
 import { SKILLS, SCHOOL_IDS } from './skills';
 import { SPELLS, SPELL_SCHOOLS } from './spells';
+
+/** An enabled staff or rod needs an enabled automatic spell, an enabled spellbook a button spell, within its tier. */
+function validateMagicItem(item: ItemDefinition): void {
+  if (!['staff', 'rod', 'spellbook'].includes(item.kind)) return;
+  if (!SCHOOL_IDS.has(item.school ?? '')) throw new Error('items.json: 잘못된 마법 장비 학파 ' + item.id);
+  if (!item.enabled) return;
+  const maxLevel = DUNGEON.magicTierMaxLevel[item.tier ?? -1];
+  if (maxLevel === undefined) throw new Error('items.json: 잘못된 마법 장비 등급 ' + item.id);
+  const wantsAuto = item.kind !== 'spellbook';
+  const gives = SPELLS.some(
+    (spell) => spell.enabled && spell.school === item.school && spell.level <= maxLevel && Boolean(spell.auto) === wantsAuto,
+  );
+  if (!gives) throw new Error('items.json: 줄 마법이 없는 마법 장비는 꺼 둔다 ' + item.id);
+}
 
 export function validateData(): void {
   validateItemDefinitions();
@@ -22,11 +36,7 @@ export function validateData(): void {
     const required = SKILLS.map((skill) => skill.aptitude).sort();
     if (JSON.stringify(keys) !== JSON.stringify(required)) throw new Error('species.json: 적성 키 누락 ' + row.id);
   }
-  for (const item of ITEM_DEFINITIONS) {
-    if (['staff', 'rod', 'spellbook'].includes(item.kind) && !SCHOOL_IDS.has(item.school ?? '')) {
-      throw new Error('items.json: 잘못된 마법 장비 학파 ' + item.id);
-    }
-  }
+  for (const item of ITEM_DEFINITIONS) validateMagicItem(item);
   if (!SPELLS.length) throw new Error('spells.json: 비어 있음');
   for (const school of SPELL_SCHOOLS)
     if (!SKILLS.some((skill) => skill.id === school)) throw new Error('spells.json: 없는 학파 스킬 ' + school);

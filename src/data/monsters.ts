@@ -104,7 +104,9 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
   if (ai) {
     if (ai.preferredRange !== undefined && (!Number.isFinite(ai.preferredRange) || ai.preferredRange < 0))
       throw new Error('monsters.json: ' + row.id + '.ai.preferredRange');
-    for (const id of ai.spells ?? []) spellData(id);
+    for (const id of ai.spells ?? []) {
+      if (!spellData(id).enabled) throw new Error('monsters.json: ' + row.id + '.ai.spells: 꺼진 주문 ' + id);
+    }
     for (const weight of [ai.aggression, ai.rangedBias, ai.spellBias]) {
       if (weight !== undefined && !Number.isFinite(weight)) throw new Error('monsters.json: ' + row.id + '.ai: 잘못된 가중치');
     }
