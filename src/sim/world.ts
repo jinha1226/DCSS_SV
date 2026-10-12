@@ -359,8 +359,7 @@ function stairsUnderfoot(w: World, dt: number): void {
   const downIndex = w.stairs
     .filter((stair) => stair.down)
     .findIndex((stair) => stair.x === Math.floor(w.hero.x) && stair.y === Math.floor(w.hero.y));
-  const usable =
-    (down && downIndex < destinations.length) || (up && w.dungeonGraph.nodes.get(w.depth)?.parent !== undefined);
+  const usable = (down && downIndex < destinations.length) || (up && w.dungeonGraph.nodes.get(w.depth)?.parent !== undefined);
   if (!usable) {
     w.stairsArmed = true;
     w.descending = 0;
