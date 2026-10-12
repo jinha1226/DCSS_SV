@@ -257,11 +257,12 @@ describe('the way down', () => {
     expect(w.seen.some((v) => v === 1)).toBe(true);
   });
 
-  it('on the last floor leads out: the run is won', () => {
+  it('does not award victory from a Dungeon 9 stair without completing Zot', () => {
     const w = onStairs(DUNGEON.floors);
     run(w, DUNGEON.descend + 0.05);
-    expect(w.over).toBe(true);
-    expect(w.won).toBe(true);
+    expect(w.depth).toBe(701);
+    expect(w.over).toBe(false);
+    expect(w.won).toBe(false);
     expect(w.hero.hp).toBe(HERO.hp);
   });
 
