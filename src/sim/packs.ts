@@ -9,12 +9,13 @@ import type { World } from './types';
 export function pickPack(w: World): PackKind {
   const difficulty = w.dungeonGraph.nodes.get(w.depth)?.difficulty ?? w.depth;
   const found = PACKS.filter((p) => difficulty >= p.floors[0] && difficulty <= p.floors[1]);
-  let roll = w.rng() * found.reduce((sum, p) => sum + p.weight, 0);
-  for (const p of found) {
+  const candidates = found.length ? found : PACKS.filter((p) => p.floors[1] === DUNGEON.floors);
+  let roll = w.rng() * candidates.reduce((sum, p) => sum + p.weight, 0);
+  for (const p of candidates) {
     roll -= p.weight;
     if (roll <= 0) return p;
   }
-  return found[found.length - 1] ?? PACKS[0]!;
+  return candidates[candidates.length - 1] ?? PACKS[0]!;
 }
 
 /**
@@ -43,7 +44,7 @@ export function placePack(
   let placed = 0;
   kind.members.forEach((member, i) => {
     let count = member.min + Math.floor(w.rng() * (member.max - member.min + 1));
-    if (i === 0) count += (w.dungeonGraph.nodes.get(w.depth)?.difficulty ?? w.depth) - kind.floors[0];
+    if (i === 0) count += Math.min(3, Math.max(0, (w.dungeonGraph.nodes.get(w.depth)?.difficulty ?? w.depth) - kind.floors[0]));
     for (let n = 0; n < count; n++) {
       const cell = cells[placed];
       if (!cell) return;
