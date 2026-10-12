@@ -11,7 +11,8 @@ function levelUp(seed: number, species = 'minotaur', job = 'berserker') {
 
 describe('level-up item reward integration', () => {
   it('has seed-stable, non-artefact offers of one weapon, one gear and one supply', () => {
-    const a = levelUp(145), b = levelUp(145);
+    const a = levelUp(145),
+      b = levelUp(145);
     expect(a.rewardChoices).toEqual(b.rewardChoices);
     expect(a.rewardChoices?.map((card) => card.kind)).toEqual(['weapon', 'gear', 'consumable']);
     expect(a.rewardChoices![0]?.weapon?.special).toBe(false);
