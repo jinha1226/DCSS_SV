@@ -78,9 +78,8 @@ function enter(w: World, floor: Floor, monsters: boolean): void {
 export function makeWorld(options: WorldOptions = {}): World {
   const seed = options.seed ?? 1,
     dungeonGraph = makeDungeonGraph(seed),
-    depth = dungeonGraph.nodes.has(options.depth ?? 1)
-      ? (options.depth ?? 1)
-      : Math.min(DUNGEON.floors, Math.max(1, options.depth ?? 1)),
+    requestedDepth = options.depth ?? 1,
+    depth = dungeonGraph.nodes.has(requestedDepth) ? requestedDepth : Math.min(DUNGEON.floors, Math.max(1, requestedDepth)),
     floor = options.floor ?? makeFloor(floorSeed(seed, depth)),
     heroDef = options.definition ?? heroFor(options.species, options.job);
   const weapon = plainWeapon(heroDef.startingWeapon, 'start');
@@ -235,7 +234,7 @@ function traverse(w: World, down: boolean): void {
   const downStairs = w.stairs.filter((stair) => stair.down);
   const slot = downStairs.findIndex((stair) => stair.x === Math.floor(w.hero.x) && stair.y === Math.floor(w.hero.y));
   const destinations = downDestinations(w.dungeonGraph, previous);
-  const target = down ? (destinations[slot] ?? destinations[0]) : current.parent;
+  const target = down ? destinations[slot] ?? destinations[0] : current.parent;
   if (target === undefined) return;
   const sourceX = Math.floor(w.hero.x) + 0.5;
   const sourceY = Math.floor(w.hero.y) + 0.5;
