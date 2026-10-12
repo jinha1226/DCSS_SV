@@ -165,7 +165,7 @@ export interface SpellVisual {
 }
 export interface GroundItem {
   readonly uid: string;
-  readonly kind: 'axe' | 'ammo' | 'path' | 'book' | 'consumable' | 'gear';
+  readonly kind: 'axe' | 'ammo' | 'path' | 'book' | 'consumable' | 'gear' | 'gold';
   x: number;
   y: number;
   axe?: WeaponItem;
@@ -239,6 +239,12 @@ export interface StairConnection {
   readonly childX: number;
   readonly childY: number;
 }
+export interface ShopOffer {
+  readonly uid: string;
+  readonly price: number;
+  readonly weapon?: WeaponItem;
+  readonly itemId?: string;
+}
 export interface World {
   /** Persistent floors indexed by unique graph node ID. */
   readonly floorStates: Map<number, FloorState>;
@@ -246,6 +252,8 @@ export interface World {
   /** Distinct runes collected; populated by stage 5. */
   readonly runes: Set<Branch>;
   orbCollected: boolean;
+  gold: number;
+  readonly shopStock: ShopOffer[];
   /** Each visited floor retains its own advancing seeded random stream. */
   readonly floorRng: Map<number, Rng>;
   /** Child node -> paired arrival and return stair coordinates. */

@@ -295,7 +295,10 @@ export function collectGround(w: World): void {
   for (let i = w.groundItems.length - 1; i >= 0; i--) {
     const item = w.groundItems[i]!;
     if (Math.hypot(item.x - w.hero.x, item.y - w.hero.y) > PICKUP_RADIUS) continue;
-    if (item.kind === 'path') {
+    if (item.kind === 'gold') {
+      w.gold += item.count ?? 0;
+      w.groundItems.splice(i, 1);
+    } else if (item.kind === 'path') {
       if (item.skill) openSkill(w, item.skill);
       w.groundItems.splice(i, 1);
     } else if (item.kind === 'book') {
