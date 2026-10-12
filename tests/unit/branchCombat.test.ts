@@ -7,11 +7,19 @@ import { makeWorld, stepWorld } from '../../src/sim/world';
 
 describe('stage 4 branch encounters and terrain', () => {
   it('only selects encounters from the current branch', () => {
-    for (const [depth, branch] of [[101, 'Lair'], [301, 'Snake'], [401, 'Swamp'], [302, 'Snake']] as const) {
+    for (const [depth, branch] of [
+      [101, 'Lair'],
+      [301, 'Snake'],
+      [401, 'Swamp'],
+      [302, 'Snake'],
+    ] as const) {
       const w = makeWorld({ seed: 2, depth, monsters: false, items: false });
       for (let i = 0; i < 60; i++) expect(pickPack(w).branch).toBe(branch);
     }
-    for (const [depth, branch] of [[301, 'Spider'], [401, 'Shoals']] as const) {
+    for (const [depth, branch] of [
+      [301, 'Spider'],
+      [401, 'Shoals'],
+    ] as const) {
       const w = makeWorld({ seed: 1, depth, monsters: false, items: false });
       for (let i = 0; i < 60; i++) expect(pickPack(w).branch).toBe(branch);
     }
