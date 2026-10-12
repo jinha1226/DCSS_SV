@@ -169,11 +169,13 @@ export function makeInventorySheets(root: HTMLElement): InventorySheets {
         for (const offer of w.shopStock) {
           const name = offer.weapon?.name ?? (offer.itemId ? itemDefinition(offer.itemId).name : '상품');
           const line = row(name, offer.price + ' 금화');
-          line.append(action('구매', () => {
-            feedback = buyOffer(w, offer.uid) ? '구매 완료' : '금화가 부족하거나 구매할 수 없어.';
-            lastKey = '';
-            draw(w);
-          }));
+          line.append(
+            action('구매', () => {
+              feedback = buyOffer(w, offer.uid) ? '구매 완료' : '금화가 부족하거나 구매할 수 없어.';
+              lastKey = '';
+              draw(w);
+            }),
+          );
           content.append(line);
         }
         if (!w.shopStock.length) content.append(row('상점', '품절'));
