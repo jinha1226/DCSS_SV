@@ -30,7 +30,7 @@ describe('axe equipment', () => {
     w.weapon = plainAxe('battle_axe', 'two');
     expect(effectValue(w, 'shield.chance')).toBe(0);
     gainExperience(w, xpToNext(1));
-    expect(w.rewardChoices?.every((c) => c.kind !== 'skill')).toBe(true);
+    expect(w.rewardChoices?.map((c) => c.kind)).toEqual(['weapon', 'gear', 'consumable']);
     w.weapon = plainAxe('hand_axe', 'one');
     expect(skillLevel(w, 'shield')).toBe(8);
     expect(effectValue(w, 'shield.chance')).toBeGreaterThan(0);
