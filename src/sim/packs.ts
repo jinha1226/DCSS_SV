@@ -8,8 +8,14 @@ import type { World } from './types';
 /** A band found on this floor, picked by weight. */
 export function pickPack(w: World): PackKind {
   const difficulty = w.dungeonGraph.nodes.get(w.depth)?.difficulty ?? w.depth;
-  const found = PACKS.filter((p) => difficulty >= p.floors[0] && difficulty <= p.floors[1]);
-  const candidates = found.length ? found : PACKS.filter((p) => p.floors[1] === Math.max(...PACKS.map((pack) => pack.floors[1])));
+  const node = w.dungeonGraph.nodes.get(w.depth);
+  const branch = node?.branch ?? 'Dungeon';
+  const floor = node?.floor ?? w.depth;
+  const scoped = PACKS.filter((p) => p.branch === branch);
+  const found = scoped.filter((p) => floor >= p.floors[0] && floor <= p.floors[1]);
+  const common = PACKS.filter((p) => !p.branch);
+  const normal = common.filter((p) => difficulty >= p.floors[0] && difficulty <= p.floors[1]);
+  const candidates = found.length ? found : normal.length ? normal : common.filter((p) => p.floors[1] === 3);
   let roll = w.rng() * candidates.reduce((sum, p) => sum + p.weight, 0);
   for (const p of candidates) {
     roll -= p.weight;
@@ -44,7 +50,10 @@ export function placePack(
   let placed = 0;
   kind.members.forEach((member, i) => {
     let count = member.min + Math.floor(w.rng() * (member.max - member.min + 1));
-    if (i === 0) count += Math.min(3, Math.max(0, (w.dungeonGraph.nodes.get(w.depth)?.difficulty ?? w.depth) - kind.floors[0]));
+    if (i === 0) {
+      const floor = kind.branch ? (w.dungeonGraph.nodes.get(w.depth)?.floor ?? 1) : (w.dungeonGraph.nodes.get(w.depth)?.difficulty ?? w.depth);
+      count += Math.min(3, Math.max(0, floor - kind.floors[0]));
+    }
     for (let n = 0; n < count; n++) {
       const cell = cells[placed];
       if (!cell) return;
