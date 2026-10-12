@@ -7,7 +7,8 @@ import type { World } from './types';
 
 /** A band found on this floor, picked by weight. */
 export function pickPack(w: World): PackKind {
-  const found = PACKS.filter((p) => w.depth >= p.floors[0] && w.depth <= p.floors[1]);
+  const difficulty = w.dungeonGraph.nodes.get(w.depth)?.difficulty ?? w.depth;
+  const found = PACKS.filter((p) => difficulty >= p.floors[0] && difficulty <= p.floors[1]);
   let roll = w.rng() * found.reduce((sum, p) => sum + p.weight, 0);
   for (const p of found) {
     roll -= p.weight;
@@ -42,7 +43,7 @@ export function placePack(
   let placed = 0;
   kind.members.forEach((member, i) => {
     let count = member.min + Math.floor(w.rng() * (member.max - member.min + 1));
-    if (i === 0) count += w.depth - kind.floors[0];
+    if (i === 0) count += (w.dungeonGraph.nodes.get(w.depth)?.difficulty ?? w.depth) - kind.floors[0];
     for (let n = 0; n < count; n++) {
       const cell = cells[placed];
       if (!cell) return;
