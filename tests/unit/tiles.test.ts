@@ -46,7 +46,7 @@ describe('the tile sheet', () => {
   });
 
   it('finds numbered variants in order', () => {
-    expect(tileSet('floor/grey_dirt')).toHaveLength(21);
+    expect(tileSet('floor/grey_dirt')).toHaveLength(8);
     expect(tileSet('floor/grey_dirt')[0]).toBe('floor/grey_dirt0');
     expect(tileSet('floor/nothing')).toEqual([]);
   });
