@@ -1,4 +1,5 @@
 import { ITEM_DEFINITIONS } from '../data/itemCatalog';
+import { DUNGEON } from '../data/packs';
 import { generateWeapon } from './equipment';
 import { addConsumable } from './consumables';
 import type { ItemChoice, World } from './types';
@@ -74,6 +75,23 @@ export function chooseReward(w: World, id: string): boolean {
     w.identifiedItems.add(chosen.itemId);
   } else {
     return false;
+  }
+  w.rewardChoices = null;
+  w.pendingChoices = Math.max(0, w.pendingChoices - 1);
+  dealItemRewards(w);
+  return true;
+}
+
+/** Skip the current item offer for a deterministic recovery or gold reward. */
+export function skipReward(w: World, kind: 'heal' | 'gold'): boolean {
+  if (w.over || !w.rewardChoices || (kind !== 'heal' && kind !== 'gold')) return false;
+  if (kind === 'heal') {
+    w.hero.hp = Math.min(w.hero.maxHp, w.hero.hp + Math.ceil(w.hero.maxHp * DUNGEON.rewardSkipHealFraction));
+    w.hero.mana = Math.min(w.hero.maxMana, w.hero.mana + Math.ceil(w.hero.maxMana * DUNGEON.rewardSkipHealFraction));
+  } else {
+    const difficulty = w.dungeonGraph.nodes.get(w.depth)?.difficulty;
+    if (difficulty === undefined) return false;
+    w.gold += DUNGEON.rewardSkipGoldBase + DUNGEON.rewardSkipGoldPerDifficulty * difficulty;
   }
   w.rewardChoices = null;
   w.pendingChoices = Math.max(0, w.pendingChoices - 1);

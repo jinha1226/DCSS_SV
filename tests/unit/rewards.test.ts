@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { chooseReward } from '../../src/sim/rewards';
+import { chooseReward, skipReward } from '../../src/sim/rewards';
 import { gainExperience, xpToNext } from '../../src/sim/skills';
 import { makeWorld, stepWorld } from '../../src/sim/world';
 
@@ -68,5 +68,24 @@ describe('level-up item reward integration', () => {
     expect(w.rewardChoices).toBeNull();
     expect(w.pendingChoices).toBe(0);
     expect(w.inventory.filter((item) => item.kind === 'consumable').length).toBeGreaterThan(0);
+  });
+});
+
+describe('skipping item rewards', () => {
+  it('can collect gold only once per offer', () => {
+    const w = levelUp(207);
+    const difficulty = w.dungeonGraph.nodes.get(w.depth)!.difficulty;
+    const before = w.gold;
+    expect(skipReward(w, 'gold')).toBe(true);
+    expect(w.gold).toBe(before + 10 + 5 * difficulty);
+    expect(skipReward(w, 'gold')).toBe(false);
+  });
+  it('heals HP and MP without exceeding their maxima', () => {
+    const w = levelUp(208, 'deep_elf', 'conjurer');
+    w.hero.hp = w.hero.maxHp - 1;
+    w.hero.mana = w.hero.maxMana - 1;
+    expect(skipReward(w, 'heal')).toBe(true);
+    expect(w.hero.hp).toBe(w.hero.maxHp);
+    expect(w.hero.mana).toBe(w.hero.maxMana);
   });
 });
