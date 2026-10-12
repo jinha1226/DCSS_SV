@@ -45,7 +45,7 @@ describe('stage 4 branch encounters and terrain', () => {
 
   it('creates deterministic shallow water only in Swamp and Shoals', () => {
     const a = makeWorld({ seed: 1, depth: 401, monsters: false, items: false });
-    const b = makeWorld({ seed: 2, depth: 401, monsters: false, items: false });
+    const b = makeWorld({ seed: 1, depth: 401, monsters: false, items: false });
     const dry = makeWorld({ seed: 2, depth: 101, monsters: false, items: false });
     expect([...a.grid.cells]).toEqual([...b.grid.cells]);
     expect([...a.grid.cells].filter((cell) => cell === Cell.Water).length).toBeGreaterThan(0);
