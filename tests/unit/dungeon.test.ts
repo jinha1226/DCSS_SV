@@ -188,6 +188,7 @@ describe('lingering', () => {
     const arrivals: number[] = [];
     let seen = first;
     for (let i = 0; i < Math.round(150 / STEP); i++) {
+      if (w.rewardChoices) chooseReward(w, w.rewardChoices[0]!.id);
       if (w.choosing) chooseSkill(w, w.choosing[0]!.id);
       stepWorld(w, STILL);
       if (w.monsters.length + w.kills > seen) {
@@ -195,20 +196,6 @@ describe('lingering', () => {
         arrivals.push(w.floorTime);
       }
     }
-    // Diagnostic when the progression simulation pauses unexpectedly.
-    if (arrivals.length < 8)
-      console.log('LINGERING_DEBUG', {
-        time: w.time,
-        floorTime: w.floorTime,
-        pendingChoices: w.pendingChoices,
-        rewardChoices: w.rewardChoices?.length,
-        choosing: w.choosing?.length,
-        pendingPickup: w.pendingPickup?.kind,
-        over: w.over,
-        monsters: w.monsters.length,
-        kills: w.kills,
-        nextBand: w.nextBand,
-      });
     expect(arrivals.length).toBeGreaterThanOrEqual(8);
     const gaps = arrivals.slice(1).map((t, i) => t - arrivals[i]!);
     expect(gaps[gaps.length - 1]!).toBeLessThan(gaps[0]!);
