@@ -139,7 +139,10 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
           const index = stairs.findIndex((stair) => stair.x === Math.floor(w.hero.x) && stair.y === Math.floor(w.hero.y));
           const targets = downDestinations(w.dungeonGraph, w.depth);
           const target = w.dungeonGraph.nodes.get(targets[index] ?? targets[0] ?? -1);
-          if (target) place.textContent += ' → ' + nodeLabel(target);
+          if (target) {
+            place.textContent += ' → ' + nodeLabel(target);
+            if (target.branch === 'Zot' && w.runes.size < 2) place.textContent += ' (룬 2개 필요)';
+          }
         }
         elapsed.textContent = clock(w.time) + ' · 룬 ' + w.runes.size + '/2 · 처치 ' + w.kills;
       }
