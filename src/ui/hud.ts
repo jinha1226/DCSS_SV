@@ -125,7 +125,10 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
         levelText.textContent = 'Lv ' + w.hero.level;
         xpFill.style.width = Math.min(1, w.hero.xp / need) * 100 + '%';
         const location = w.dungeonGraph.nodes.get(w.depth);
-        place.textContent = location?.branch === 'Dungeon' ? '지하 ' + location.floor + '층' : (location?.branch ?? 'Dungeon') + ' ' + (location?.floor ?? w.depth) + '층';
+        place.textContent =
+          location?.branch === 'Dungeon'
+            ? '지하 ' + location.floor + '층'
+            : (location?.branch ?? 'Dungeon') + ' ' + (location?.floor ?? w.depth) + '층';
         elapsed.textContent = clock(w.time) + ' · 처치 ' + w.kills;
       }
       if (w.over !== shown) {
@@ -133,7 +136,16 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
         shown = w.over;
         if (w.over) shownAt = performance.now();
         title.textContent = w.won ? '던전을 빠져나왔다' : '쓰러졌다';
-        result.textContent = (w.dungeonGraph.nodes.get(w.depth)?.branch ?? 'Dungeon') + ' ' + (w.dungeonGraph.nodes.get(w.depth)?.floor ?? w.depth) + '층 · ' + clock(w.time) + ' · ' + w.kills + ' 처치 · Lv ' + w.hero.level;
+        result.textContent =
+          (w.dungeonGraph.nodes.get(w.depth)?.branch ?? 'Dungeon') +
+          ' ' +
+          (w.dungeonGraph.nodes.get(w.depth)?.floor ?? w.depth) +
+          '층 · ' +
+          clock(w.time) +
+          ' · ' +
+          w.kills +
+          ' 처치 · Lv ' +
+          w.hero.level;
         skills.textContent = (skillText(w) || '고른 스킬 없음') + ' · 무기 ' + w.weapon.name;
         over.classList.toggle('on', w.over);
       }
