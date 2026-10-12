@@ -16,6 +16,7 @@ import { Cell, cellAt, walkable } from './grid';
 import { addConsumable, type ConsumableId } from './consumables';
 import { ITEM_DEFINITIONS } from '../data/itemCatalog';
 import { openSkill } from './skills';
+import { lootTier } from './lootTier';
 import type { World } from './types';
 
 const RANDART = [0.1, 0.3, 0.5] as const;
@@ -30,7 +31,7 @@ function pool(family: WeaponFamily) {
 }
 function weighted(w: World, family: WeaponFamily) {
   const choices = pool(family),
-    index = Math.max(0, Math.min(2, w.depth - 1));
+    index = lootTier(w);
   const total = choices.reduce((sum, weapon) => sum + (weapon.depthWeights[index] ?? 0), 0);
   let roll = w.rng() * total;
   for (const weapon of choices) {
@@ -51,7 +52,7 @@ function randomName(w: World, base: string): string {
 }
 export function generateWeapon(w: World, family: WeaponFamily): WeaponItem {
   const base = weighted(w, family),
-    index = Math.max(0, Math.min(2, w.depth - 1));
+    index = lootTier(w);
   const isRandart = w.rng() < RANDART[index]!;
   const brand = isRandart || w.rng() < BRAND[index]! ? randomBrand(w) : undefined;
   const options: WeaponOption[] = [];
@@ -155,7 +156,7 @@ export function populateFloorItems(w: World): void {
   }
   if (w.itemsEnabled) {
     const available = ITEM_DEFINITIONS.filter((item) => item.enabled && ['potion', 'scroll', 'wand'].includes(item.kind));
-    const tier = Math.min(2, w.depth - 1);
+    const tier = lootTier(w);
     const totalWeight = available.reduce((sum, item) => sum + (item.depthWeights[tier] ?? 0), 0);
     for (let i = 0; i < 3; i++) {
       const cell = roomCell(w);
@@ -174,7 +175,7 @@ export function populateFloorItems(w: World): void {
     }
   }
   if (w.itemsEnabled) {
-    const tier = Math.min(2, w.depth - 1);
+    const tier = lootTier(w);
     const gear = ITEM_DEFINITIONS.filter((item) => item.enabled && ['armour', 'shield', 'jewellery'].includes(item.kind));
     const total = gear.reduce((sum, item) => sum + (item.depthWeights[tier] ?? 0), 0);
     for (let i = 0; i < 2 && total > 0; i++) {

@@ -13,5 +13,9 @@
   "levelXpBase": 6,
   "levelXpStep": 4,
   "floorLimit": 180,
-  "overdueBandEvery": 5
+  "overdueBandEvery": 5,
+  "lootTierDifficulty": [
+    4,
+    10
+  ]
 }

@@ -24,6 +24,7 @@ export const DUNGEON = {
   most: dungeonRaw.most,
   levelXpBase: dungeonRaw.levelXpBase,
   levelXpStep: dungeonRaw.levelXpStep,
+  lootTierDifficulty: dungeonRaw.lootTierDifficulty,
 } as const;
 export const PACKS: readonly PackKind[] = packsRaw.map((row) => {
   for (const member of row.members) monsterKind(member.kind);
