@@ -1,4 +1,4 @@
-import type { DungeonGraph } from './dungeonGraph';
+import type { Branch, DungeonGraph } from './dungeonGraph';
 import type { HeroDefinition } from '../data/hero';
 import type { ResistName, WeaponItem } from '../data/items';
 import type { SpellShape } from '../data/spells';
@@ -229,6 +229,8 @@ export interface World {
   /** Persistent floors indexed by unique graph node ID. */
   readonly floorStates: Map<number, FloorState>;
   readonly dungeonGraph: DungeonGraph;
+  /** Distinct runes collected; populated by stage 5. */
+  readonly runes: Set<Branch>;
   /** Each visited floor retains its own advancing seeded random stream. */
   readonly floorRng: Map<number, Rng>;
   /** Child node -> paired arrival and return stair coordinates. */
