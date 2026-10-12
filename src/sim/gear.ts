@@ -17,7 +17,7 @@ export function gearSlot(item: ItemDefinition, w: World): GearSlot | undefined {
   return !w.gear.ring1 ? 'ring1' : 'ring2';
 }
 export function equipGear(w: World, uid: string): boolean {
-  if (w.over || w.choosing || w.pendingPickup) return false;
+  if (w.over || w.choosing || w.rewardChoices || w.pendingPickup) return false;
   const index = w.inventory.findIndex((entry) => entry.kind === 'gear' && entry.uid === uid);
   const entry = w.inventory[index];
   if (!entry || entry.kind !== 'gear') return false;
@@ -32,13 +32,13 @@ export function equipGear(w: World, uid: string): boolean {
 }
 export function unequipGear(w: World, slot: GearSlot): boolean {
   const id = w.gear[slot];
-  if (!id || w.cursedGear.has(id) || w.over || w.choosing || w.pendingPickup) return false;
+  if (!id || w.cursedGear.has(id) || w.over || w.choosing || w.rewardChoices || w.pendingPickup) return false;
   delete w.gear[slot];
   w.inventory.push({ uid: 'gear-' + w.nextItem++, kind: 'gear', id });
   return true;
 }
 export function dropGear(w: World, uid: string): boolean {
-  if (w.over || w.choosing || w.pendingPickup) return false;
+  if (w.over || w.choosing || w.rewardChoices || w.pendingPickup) return false;
   const index = w.inventory.findIndex((entry) => entry.kind === 'gear' && entry.uid === uid);
   const entry = w.inventory[index];
   if (!entry || entry.kind !== 'gear') return false;
