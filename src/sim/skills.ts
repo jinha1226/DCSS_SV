@@ -7,7 +7,19 @@ import { dealItemRewards } from './rewards';
 export const MAX_SKILL = 27;
 const COMMON = ['fighting', 'armour', 'dodging', 'spellcasting'] as const;
 const APTITUDE_RATE: Readonly<Record<Aptitude, number>> = { good: 1.5, normal: 1, bad: 0.6 };
-const SCHOOLS = new Set(['conjuration', 'fire', 'translocation', 'ice', 'air', 'earth', 'alchemy', 'hexes', 'necromancy', 'summoning', 'forgecraft']);
+const SCHOOLS = new Set([
+  'conjuration',
+  'fire',
+  'translocation',
+  'ice',
+  'air',
+  'earth',
+  'alchemy',
+  'hexes',
+  'necromancy',
+  'summoning',
+  'forgecraft',
+]);
 
 export function skillLevel(w: World, id: string): number {
   return w.hero.skills[id] ?? 0;
@@ -34,7 +46,9 @@ export function effectValue(w: World, effect: string): number {
   if (!found) return 0;
   if (found.skill === 'shield' && (w.weapon.hands === 2 || !w.gear.shield)) return 0;
   const level = skillLevel(w, found.skill);
-  if (found.rule.perLevel !== undefined) return found.rule.level === undefined || level >= found.rule.level ? found.rule.perLevel * level : 0;
+  if (found.rule.perLevel !== undefined) {
+    return found.rule.level === undefined || level >= found.rule.level ? found.rule.perLevel * level : 0;
+  }
   if (found.rule.level !== undefined && level >= found.rule.level) return found.rule.value ?? 1;
   return 0;
 }
