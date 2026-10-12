@@ -128,7 +128,15 @@ export function makeWorld(options: WorldOptions = {}): World {
     spellClouds: [],
     spellVisuals: [],
     // The facade remains stable while its source switches with the active floor.
-    rng: () => floorRng.get(world.depth)!(),
+    rng: () => {
+      // Tests and developer tools may change depth directly without using stairs.
+      let source = floorRng.get(world.depth);
+      if (!source) {
+        source = makeRng(floorSeed(seed, world.depth) ^ 0x5bd1e995);
+        floorRng.set(world.depth, source);
+      }
+      return source();
+    },
     events: [],
     seed,
     weapon,
@@ -251,9 +259,14 @@ function traverse(w: World, down: boolean): void {
     const parentY = link?.parentDepth === target ? link.parentY : (fallback?.y ?? Math.floor(w.hero.y)) + 0.5;
     standAt(w, parentX, parentY);
     // Starting a run directly on a deeper floor has no incoming link. Establish one.
-    if (!link) w.stairConnections.set(previous, {
-      parentDepth: target, parentX, parentY, childX: sourceX, childY: sourceY,
-    });
+    if (!link)
+      w.stairConnections.set(previous, {
+        parentDepth: target,
+        parentX,
+        parentY,
+        childX: sourceX,
+        childY: sourceY,
+      });
   }
 
   // Time alone cannot reactivate arrival stairs; the player must move off them first.
