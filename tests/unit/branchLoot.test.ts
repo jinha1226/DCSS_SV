@@ -36,6 +36,8 @@ describe('stage 6: optional Orc shop and Vaults rewards', () => {
     const first = w.shopStock[0]!;
     expect(buyOffer(w, first.uid)).toBe(false);
     w.gold = 500;
+    w.hero.x = 0.5;
+    w.hero.y = 0.5;
     expect(buyOffer(w, first.uid)).toBe(false);
     const shop = shopLocation(w)!;
     w.hero.x = shop.x;
