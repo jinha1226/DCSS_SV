@@ -118,6 +118,7 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
         [...w.runes].sort().join(','),
         w.orbCollected,
         w.gold,
+        shopAccessible(w),
       ].join('|');
       if (line !== last) {
         last = line;
