@@ -27,6 +27,7 @@ export function placePack(
   cy: number,
   awake: boolean,
   allowed: (x: number, y: number) => boolean,
+  rewardless = false,
 ): number {
   const cells: { x: number; y: number; d: number }[] = [];
   for (let y = cy - 4; y <= cy + 4; y++) {
@@ -45,7 +46,8 @@ export function placePack(
     for (let n = 0; n < count; n++) {
       const cell = cells[placed];
       if (!cell) return;
-      spawnMonster(w, member.kind, cell.x + 0.5, cell.y + 0.5, awake, pack);
+      const monster = spawnMonster(w, member.kind, cell.x + 0.5, cell.y + 0.5, awake, pack);
+      if (rewardless) monster.rewardless = true;
       placed++;
     }
   });
@@ -85,5 +87,5 @@ export function lingering(w: World, dt: number): void {
   };
   const hidden = w.stairs.filter((s) => !w.visible[s.y * w.grid.w + s.x] && far(s) > 10);
   const from = (hidden.length ? hidden : [...w.stairs]).sort((a, b) => far(b) - far(a))[0];
-  if (from) placePack(w, pickPack(w), from.x, from.y, true, (x, y) => walkable(w.grid, x, y));
+  if (from) placePack(w, pickPack(w), from.x, from.y, true, (x, y) => walkable(w.grid, x, y), w.floorTime >= DUNGEON.floorLimit);
 }

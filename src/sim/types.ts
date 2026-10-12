@@ -54,6 +54,8 @@ export interface Monster {
   readonly stats: MonsterStats;
   readonly pack: number;
   readonly maxHp: number;
+  /** Deadline pursuit enemies grant no XP or kill-triggered healing. */
+  rewardless?: boolean;
   /** Equipped weapon uses the same items.json definition as the hero. */
   readonly weapon?: WeaponItem;
   mana: number;
