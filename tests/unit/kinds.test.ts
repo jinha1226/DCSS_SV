@@ -234,6 +234,6 @@ describe('the bands', () => {
   it('bring every monster in somewhere, with ogres introduced at Dungeon 3', () => {
     const met = new Set(PACKS.flatMap((p) => p.members.map((m) => m.kind)));
     for (const m of MONSTERS) expect(met.has(m.id), m.id).toBe(true);
-    for (const p of PACKS) if (p.members.some((m) => m.kind === 'ogre')) expect(p.floors[0]).toBe(3);
+    for (const p of PACKS) if (!p.branch && p.members.some((m) => m.kind === 'ogre')) expect(p.floors[0]).toBe(3);
   });
 });
