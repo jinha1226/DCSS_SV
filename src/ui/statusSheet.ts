@@ -1,4 +1,5 @@
 import { brandData, type ResistName } from '../data/items';
+import { SKILLS, BASIC_SKILLS, WEAPON_SKILLS } from '../data/skills';
 import { weaponOption } from '../sim/equipment';
 import { gearName } from '../sim/gear';
 import { effectValue, xpToNext } from '../sim/skills';
@@ -98,7 +99,9 @@ export function makeStatusSheet(root: HTMLElement): StatusSheet {
   columns.append(resists, equipment);
   const extra = document.createElement('div');
   extra.className = 'status-extra';
-  body.append(overview, columns, extra);
+  const skills = document.createElement('div');
+  skills.className = 'status-skills';
+  body.append(overview, columns, extra, skills);
   panel.append(header, body);
   root.append(panel);
   let world: World | undefined;
@@ -123,6 +126,28 @@ export function makeStatusSheet(root: HTMLElement): StatusSheet {
       target.append(line);
     }
   };
+  const renderSkillGroups = (w: World): void => {
+    skills.replaceChildren();
+    const groups: readonly { name: string; ids: readonly string[] }[] = [
+      { name: '기본', ids: BASIC_SKILLS },
+      { name: '무기', ids: WEAPON_SKILLS },
+      { name: '학파', ids: SKILLS.filter((skill) => ![...BASIC_SKILLS, ...WEAPON_SKILLS].some((id) => id === skill.id)).map((skill) => skill.id) },
+    ];
+    for (const group of groups) {
+      const trained = SKILLS.filter(
+        (skill) => group.ids.includes(skill.id) && ((w.hero.skills[skill.id] ?? 0) > 0 || (w.hero.skillXp[skill.id] ?? 0) > 0),
+      );
+      if (!trained.length) continue;
+      const title = document.createElement('h3');
+      title.textContent = group.name;
+      const rows = document.createElement('div');
+      renderRows(rows, trained.map((skill) => ({
+        label: skill.name,
+        value: (w.hero.skills[skill.id] ?? 0) + '단계',
+      })));
+      skills.append(title, rows);
+    }
+  };
   return {
     get open() {
       return opened;
@@ -136,6 +161,8 @@ export function makeStatusSheet(root: HTMLElement): StatusSheet {
         w.hero.mana,
         w.hero.level,
         w.hero.xp,
+        JSON.stringify(w.hero.skills),
+        JSON.stringify(w.hero.skillXp),
         w.kills,
         w.ammo,
         w.weapon.uid,
@@ -153,6 +180,7 @@ export function makeStatusSheet(root: HTMLElement): StatusSheet {
       renderRows(resists, values.resists);
       renderRows(equipment, values.equipment);
       renderRows(extra, values.extra);
+      renderSkillGroups(w);
     },
     openSheet() {
       if (!world || world.over) return;

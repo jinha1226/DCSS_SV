@@ -18,6 +18,7 @@ import { openSkill } from './skills';
 import { stowOffhand } from './gear';
 import { plainWeapon } from '../data/items';
 import { lootTier } from './lootTier';
+import { DUNGEON } from '../data/packs';
 import type { World } from './types';
 
 const RANDART = [0.1, 0.3, 0.5] as const;
@@ -97,6 +98,17 @@ export function generateMagicWeapon(w: World, kind: 'staff' | 'rod', school: str
   }
   return plainWeapon(choices[choices.length - 1]!.id, uid(w, kind));
 }
+/** Floor loot includes magic weapons from other schools and hand styles. */
+export function generateRandomMagicWeapon(w: World): WeaponItem {
+  const tier = lootTier(w);
+  const choices = ITEM_DEFINITIONS.filter(
+    (item) => item.enabled && ['staff', 'rod'].includes(item.kind) && (item.depthWeights[tier] ?? 0) > 0,
+  );
+  const total = choices.reduce((sum, item) => sum + (item.depthWeights[tier] ?? 0), 0);
+  let roll = w.rng() * total;
+  const picked = choices.find((item) => (roll -= item.depthWeights[tier] ?? 0) <= 0) ?? choices[choices.length - 1]!;
+  return plainWeapon(picked.id, uid(w, 'magic'));
+}
 export const generateAxe = (w: World): WeaponItem => generateWeapon(w, 'axe');
 export const generateBow = (w: World): WeaponItem => generateWeapon(w, 'ranged');
 
@@ -156,10 +168,11 @@ export function populateFloorItems(w: World): void {
     other: WeaponFamily = w.weapon.family === 'axe' ? 'ranged' : 'axe';
   for (let i = 0; i < count; i++) {
     const magic = w.weapon.kind === 'staff' || w.weapon.kind === 'rod';
-    const weapon =
-      magic && i < same
+    const surprise = i === count - 1 && w.rng() < DUNGEON.magicDropChance ? generateRandomMagicWeapon(w) : undefined;
+    const weapon = surprise ??
+      (magic && i < same
         ? generateMagicWeapon(w, w.weapon.kind!, w.weapon.school!)
-        : generateWeapon(w, magic ? 'axe' : i < same ? w.weapon.family : other);
+        : generateWeapon(w, magic ? 'axe' : i < same ? w.weapon.family : other));
     putWeapon(w, weapon, roomCell(w));
   }
   if (w.itemsEnabled) {

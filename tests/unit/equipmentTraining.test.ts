@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { ITEM_DEFINITIONS } from '../../src/data/itemCatalog';
 import { SKILLS, SCHOOL_SKILLS } from '../../src/data/skills';
 import { plainAxe, plainWeapon } from '../../src/data/items';
-import { equipStoredWeapon } from '../../src/sim/equipment';
+import { equipStoredWeapon, generateRandomMagicWeapon } from '../../src/sim/equipment';
 import { equipGear, hasShield, offhandSchool } from '../../src/sim/gear';
 import { lootTier } from '../../src/sim/lootTier';
 import { gainExperience, trainSkills } from '../../src/sim/skills';
@@ -97,6 +97,18 @@ describe('equipment-driven training and offhand', () => {
     const w = bare();
     w.depth = [...w.dungeonGraph.nodes.values()].find((node) => node.difficulty >= 11)!.id;
     expect(lootTier(w)).toBe(2);
+  });
+
+  it('floor loot can produce both types of non-randart magic main-hand weapons', () => {
+    const w = bare();
+    const seen = new Set<string>();
+    for (let i = 0; i < 80; i++) {
+      const item = generateRandomMagicWeapon(w);
+      seen.add(item.kind!);
+      expect(item.special).toBe(false);
+      expect(item.school).toBeDefined();
+    }
+    expect(seen).toEqual(new Set(['staff', 'rod']));
   });
 
   it('matching seed and choice produces matching cards and training', () => {

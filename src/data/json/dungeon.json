@@ -19,5 +19,6 @@
   "rewardSkipGoldBase": 10,
   "rewardSkipGoldPerDifficulty": 5,
   "spellRequirementStep": 3,
-  "magicTierMaxLevel": [3, 6, 9]
+  "magicTierMaxLevel": [3, 6, 9],
+  "magicDropChance": 0.25
 }

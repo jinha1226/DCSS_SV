@@ -1549,3 +1549,12 @@ canvas {
   font-size: 13px;
   color: #dbd0bc;
 }
+
+.status-skills {
+  margin-top: 12px;
+}
+.status-skills h3 {
+  margin: 12px 0 6px;
+  color: #ded0b3;
+  font-size: 13px;
+}
