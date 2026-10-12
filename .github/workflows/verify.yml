@@ -16,5 +16,11 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
+      - run: |
+          npx prettier src/data/json/monsters.json | diff -u src/data/json/monsters.json - || true
+          npx prettier src/data/json/packs.json | diff -u src/data/json/packs.json - || true
+          npx prettier src/data/packs.ts | diff -u src/data/packs.ts - || true
+          npx prettier src/sim/packs.ts | diff -u src/sim/packs.ts - || true
+          npx prettier tests/unit/branchCombat.test.ts | diff -u tests/unit/branchCombat.test.ts - || true
       - run: npm run check
       - run: npm run build
