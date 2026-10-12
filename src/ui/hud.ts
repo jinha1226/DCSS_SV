@@ -116,6 +116,7 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
         need,
         [...w.runes].sort().join(','),
         w.orbCollected,
+        w.gold,
       ].join('|');
       if (line !== last) {
         last = line;
@@ -144,7 +145,7 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
             if (target.branch === 'Zot' && w.runes.size < 2) place.textContent += ' (룬 2개 필요)';
           }
         }
-        elapsed.textContent = clock(w.time) + ' · 룬 ' + w.runes.size + '/2 · 처치 ' + w.kills;
+        elapsed.textContent = clock(w.time) + ' · 룬 ' + w.runes.size + '/2 · 금화 ' + w.gold + ' · 처치 ' + w.kills;
       }
       if (w.over !== shown) {
         if (w.over) closeMenu();
