@@ -237,10 +237,7 @@ function traverse(w: World, down: boolean): void {
   const destinations = downDestinations(w.dungeonGraph, previous);
   const target = down ? (destinations[slot] ?? destinations[0]) : current.parent;
   if (target === undefined) return;
-  if (
-    w.dungeonGraph.nodes.get(target)?.branch === 'Zot' &&
-    !w.dungeonGraph.runeBranches.every((branch) => w.runes.has(branch))
-  ) {
+  if (w.dungeonGraph.nodes.get(target)?.branch === 'Zot' && !w.dungeonGraph.runeBranches.every((branch) => w.runes.has(branch))) {
     w.descending = 0;
     return;
   }
