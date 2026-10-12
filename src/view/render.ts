@@ -7,6 +7,7 @@ import { Cell, cellAt } from '../sim/grid';
 import { cellNoise } from '../sim/rng';
 import { spellCandidates } from '../sim/spells';
 import { objectiveFor } from '../sim/objectives';
+import { shopLocation } from '../sim/branchLoot';
 import type { Monster, World } from '../sim/world';
 import { drawTile, type Atlas } from './atlas';
 import type { Fx } from './fx';
@@ -227,6 +228,21 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
       ctx.arc(sx, sy + px * 0.31, Math.max(2, px * 0.07), 0, Math.PI * 2);
       ctx.fill();
     }
+  }
+
+  const shop = shopLocation(w);
+  if (shop && w.seen[Math.floor(shop.y) * w.grid.w + Math.floor(shop.x)]) {
+    const sx = ox + shop.x * px;
+    const sy = oy + shop.y * px;
+    ctx.fillStyle = '#b8944d';
+    ctx.fillRect(sx - px * 0.3, sy - px * 0.24, px * 0.6, px * 0.48);
+    ctx.strokeStyle = '#f3d68c';
+    ctx.lineWidth = Math.max(1, px * 0.06);
+    ctx.strokeRect(sx - px * 0.3, sy - px * 0.24, px * 0.6, px * 0.48);
+    ctx.fillStyle = '#342718';
+    ctx.font = 'bold ' + Math.max(10, Math.floor(px * 0.36)) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('G', sx, sy + px * 0.13);
   }
 
   const objective = objectiveFor(w);

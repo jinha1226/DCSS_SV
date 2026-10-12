@@ -58,14 +58,32 @@ export function populateBranchLoot(w: World): void {
   }
 }
 
-/** The Orc:3 merchant stays at a fixed, discoverable room centre. */
+/** The merchant occupies a stable, walkable tile near the Orc:3 arrival stair. */
 export function shopLocation(w: World): { x: number; y: number } | undefined {
-  if (w.dungeonGraph.nodes.get(w.depth)?.branch !== 'Orc' || w.dungeonGraph.nodes.get(w.depth)?.floor !== 3) return undefined;
-  const room = w.rooms[0];
-  if (!room) return undefined;
-  // Shop access is intentionally adjacent to the arrival stair, without a new collision tile.
+  const node = w.dungeonGraph.nodes.get(w.depth);
+  if (node?.branch !== 'Orc' || node.floor !== 3) return undefined;
   const up = w.stairs.find((stair) => !stair.down);
-  return up ? { x: up.x + 0.5, y: up.y + 0.5 } : { x: room.x + 1.5, y: room.y + 1.5 };
+  const room = w.rooms[0];
+  const origin = up ?? (room ? { x: room.x + 1, y: room.y + 1 } : undefined);
+  if (!origin) return undefined;
+  // Never place the shop on a stair: standing on it must not initiate travel.
+  for (const [dx, dy] of [
+    [1, 0],
+    [0, 1],
+    [-1, 0],
+    [0, -1],
+    [1, 1],
+    [-1, 1],
+    [1, -1],
+    [-1, -1],
+  ] as const) {
+    const x = origin.x + dx;
+    const y = origin.y + dy;
+    if (cellAt(w.grid, x, y) === Cell.Floor && !w.stairs.some((stair) => stair.x === x && stair.y === y)) {
+      return { x: x + 0.5, y: y + 0.5 };
+    }
+  }
+  return undefined;
 }
 export function shopAccessible(w: World): boolean {
   const spot = shopLocation(w);

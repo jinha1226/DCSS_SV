@@ -1,5 +1,6 @@
 import { Cell, cellAt } from '../sim/grid';
 import { objectiveFor } from '../sim/objectives';
+import { shopLocation } from '../sim/branchLoot';
 import type { World } from '../sim/world';
 
 /** Draw into the dedicated HUD minimap canvas instead of the dungeon canvas. */
@@ -25,6 +26,11 @@ export function drawMiniMap(ctx: CanvasRenderingContext2D, w: World): void {
     if (!w.seen[iy * w.grid.w + ix]) continue;
     ctx.fillStyle = item.newPath ? '#66d7c2' : '#d9b866';
     ctx.fillRect(left + ix * scale, top + iy * scale, scale, scale);
+  }
+  const shop = shopLocation(w);
+  if (shop && w.seen[Math.floor(shop.y) * w.grid.w + Math.floor(shop.x)]) {
+    ctx.fillStyle = '#f3ca56';
+    ctx.fillRect(left + Math.floor(shop.x) * scale, top + Math.floor(shop.y) * scale, Math.max(scale, 2), Math.max(scale, 2));
   }
   const objective = objectiveFor(w);
   if (objective && w.seen[Math.floor(objective.y) * w.grid.w + Math.floor(objective.x)]) {
