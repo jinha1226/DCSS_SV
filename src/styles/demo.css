@@ -1,0 +1,200 @@
+/* Spell practice room. Same dark, warm palette as the game; the school colour marks the active tab. */
+:root {
+  --ink: #e7dcc2;
+  --muted: #8e8573;
+  --line: #3b342a;
+  --panel: #14110e;
+  --raised: #1f1a15;
+  --accent: #c9a35f;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #000;
+  color: var(--ink);
+  font-family: system-ui, 'Noto Sans KR', sans-serif;
+  overscroll-behavior: none;
+}
+button {
+  font: inherit;
+  touch-action: manipulation;
+}
+.demo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  padding: 0 16px;
+  border-bottom: 2px solid #5e2a20;
+  background: linear-gradient(90deg, #1b1612, #0b0907);
+}
+.demo-header h1 {
+  margin: 0;
+  font:
+    700 17px Georgia,
+    serif;
+  letter-spacing: 0.08em;
+}
+.demo-header a {
+  color: var(--accent);
+  font-size: 13px;
+  text-decoration: none;
+}
+#demo {
+  display: grid;
+  grid-template-rows: minmax(260px, 52svh) 1fr;
+  height: calc(100svh - 44px);
+}
+.demo-stage {
+  position: relative;
+  min-height: 0;
+}
+.demo-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+.demo-hint {
+  position: absolute;
+  left: 12px;
+  bottom: 6px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  pointer-events: none;
+}
+.demo-panel {
+  overflow-y: auto;
+  padding: 12px 16px 24px;
+  border-top: 1px solid var(--line);
+  background: var(--panel);
+}
+.demo-schools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-bottom: 10px;
+}
+.demo-school {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-bottom: 3px solid var(--school);
+  border-radius: 6px;
+  background: var(--raised);
+  color: var(--muted);
+}
+.demo-school.on {
+  background: color-mix(in srgb, var(--school) 22%, var(--raised));
+  color: var(--ink);
+  font-weight: 700;
+}
+.demo-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.demo-card {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 0 6px;
+  min-height: 52px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--raised);
+  color: var(--ink);
+  text-align: left;
+}
+.demo-card .lv {
+  grid-row: 1 / 3;
+  color: var(--accent);
+  font:
+    700 15px Georgia,
+    serif;
+}
+.demo-card strong {
+  font-size: 13px;
+}
+.demo-card small {
+  color: var(--muted);
+  font-size: 10px;
+}
+.demo-card.on {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.demo-card.off {
+  opacity: 0.45;
+}
+.demo-card:active {
+  transform: translateY(1px);
+}
+.demo-detail h2 {
+  margin: 14px 0 4px;
+  font:
+    700 18px Georgia,
+    serif;
+}
+.demo-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+}
+.demo-tags span {
+  padding: 2px 7px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.demo-summary {
+  margin: 8px 0 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.demo-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.demo-controls button {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--raised);
+  color: var(--ink);
+}
+.demo-cast {
+  flex: 1 0 100%;
+  border-color: #6b3a2a !important;
+  background: #4a1f17 !important;
+  font-weight: 700;
+}
+.demo-cast:disabled {
+  opacity: 0.5;
+}
+.demo-toggle[aria-pressed='true'] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+@media (min-width: 860px) {
+  #demo {
+    grid-template-rows: none;
+    grid-template-columns: 1fr 400px;
+  }
+  .demo-panel {
+    border-top: 0;
+    border-left: 1px solid var(--line);
+  }
+}

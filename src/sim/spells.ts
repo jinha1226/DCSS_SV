@@ -28,8 +28,11 @@ function spellExcess(w: World, spell: SpellData): number {
   return Math.max(0, skillLevel(w, spell.school) - requiredLevel(spell));
 }
 
+/** Skill adds a little reach, never more than this many cells, so cones and bolts stay on screen. */
+const MAX_RANGE_BONUS = 3;
+
 export function spellRange(w: World, spell: SpellData): number {
-  return (spell.range ?? 0) + Math.floor(spellExcess(w, spell) / 2);
+  return (spell.range ?? 0) + Math.min(MAX_RANGE_BONUS, Math.floor(spellExcess(w, spell) / 2));
 }
 
 /** Skill above the requirement adds damage, but pure control spells (no base damage) stay harmless. */
