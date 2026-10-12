@@ -1,5 +1,5 @@
 import { skillData } from '../data/skills';
-import { chooseSkill } from '../sim/skills';
+import { chooseReward } from '../sim/rewards';
 import type { World } from '../sim/world';
 
 export interface SkillPicker {
@@ -11,7 +11,7 @@ export function makeSkillPicker(root: HTMLElement): SkillPicker {
   wrap.className = 'skill-picker';
   root.append(wrap);
   const title = document.createElement('h2');
-  title.textContent = '스킬 선택';
+  title.textContent = '레벨업 · 아이템 선택';
   wrap.append(title);
   const cards = document.createElement('div');
   cards.className = 'skill-cards';
@@ -27,10 +27,10 @@ export function makeSkillPicker(root: HTMLElement): SkillPicker {
   return {
     show(w) {
       current = w;
-      const choices = w.choosing;
+      const choices = w.rewardChoices;
       wrap.classList.toggle('on', Boolean(choices));
       if (!choices) return;
-      const nextKey = choices.map((c) => c.id + ':' + c.to).join('|');
+      const nextKey = choices.map((c) => c.id).join('|');
       if (nextKey !== key) {
         key = nextKey;
         shownAt = performance.now();
@@ -43,14 +43,13 @@ export function makeSkillPicker(root: HTMLElement): SkillPicker {
           const name = document.createElement('strong');
           name.textContent = card.name;
           const level = document.createElement('span');
-          const badges = [card.gain > 1 ? '+' + card.gain : '', card.cap < 8 ? '최대 ' + card.cap : ''].filter(Boolean);
-          level.textContent = card.from + ' → ' + card.to + '단계' + (badges.length ? ' · ' + badges.join(' · ') : '');
+          level.textContent = card.kind === 'weapon' ? '무기' : card.kind === 'gear' ? '장비' : '소모품';
           const line = document.createElement('small');
           line.textContent = card.line;
           button.append(name, level, line);
           button.addEventListener('click', () => {
             if (performance.now() - shownAt < 400 || !current) return;
-            chooseSkill(current, card.id);
+            chooseReward(current, card.id);
           });
           cards.append(button);
         }
