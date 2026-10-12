@@ -15,6 +15,8 @@ import type { Fx } from './fx';
 import type { Look } from './look';
 import { drawHeroSprite, type HeroPose, type HeroSprites } from './heroSprite';
 import { drawWalker, walkFrame, type WalkSheet } from './walk';
+import { drawSpellFx } from './spellFx';
+import { drawMonsterStatus } from './statusIcons';
 
 export interface View {
   /** How many cells fit across the screen. */
@@ -121,16 +123,17 @@ function drawMonster(
     ctx.textAlign = 'center';
     ctx.fillText('z', cx, cy - px * 0.6);
   }
+  const by = Math.round(cy - px * 0.56);
   if (m.hp < m.maxHp) {
     const bw = Math.round(px * 0.7);
     const bh = Math.max(2, Math.round(px * 0.07));
     const bx = Math.round(cx - bw / 2);
-    const by = Math.round(cy - px * 0.56);
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
     ctx.fillRect(bx - 1, by - 1, bw + 2, bh + 2);
     ctx.fillStyle = '#c8473a';
     ctx.fillRect(bx, by, Math.round(bw * Math.max(0, m.hp / m.maxHp)), bh);
   }
+  drawMonsterStatus(ctx, m, cx, cy, px, by - (m.awake ? 0 : px * 0.35), w.time);
 }
 
 function drawThreatArrows(ctx: CanvasRenderingContext2D, w: World, px: number, width: number, height: number, dpr: number): void {
@@ -260,36 +263,7 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
     drawMonster(ctx, atlas, w, m, px, ox, oy, between);
   }
 
-  for (const cloud of w.spellClouds) {
-    ctx.fillStyle = cloud.colour + '28';
-    ctx.beginPath();
-    ctx.arc(ox + cloud.x * px, oy + cloud.y * px, cloud.radius * px, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  for (const visual of w.spellVisuals) {
-    ctx.strokeStyle = visual.colour;
-    ctx.lineWidth = Math.max(2, px * 0.08);
-    ctx.globalAlpha = Math.min(1, visual.left / 0.12);
-    if (visual.shape === 'beam') {
-      ctx.beginPath();
-      ctx.moveTo(ox + visual.x1 * px, oy + visual.y1 * px);
-      ctx.lineTo(ox + visual.x2 * px, oy + visual.y2 * px);
-      ctx.stroke();
-    } else {
-      ctx.beginPath();
-      ctx.arc(ox + visual.x2 * px, oy + visual.y2 * px, visual.radius * px, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-  }
-  for (const shot of w.spellShots) {
-    const sx = ox + (shot.px + (shot.x - shot.px) * between) * px;
-    const sy = oy + (shot.py + (shot.y - shot.py) * between) * px;
-    ctx.fillStyle = shot.colour;
-    ctx.beginPath();
-    ctx.arc(sx, sy, Math.max(2, px * 0.11), 0, Math.PI * 2);
-    ctx.fill();
-  }
+  drawSpellFx(ctx, w, ox, oy, px, between);
 
   drawThreatArrows(ctx, w, px, width, height, view.dpr);
 

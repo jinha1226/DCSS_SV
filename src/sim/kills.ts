@@ -10,5 +10,9 @@ export function recordKill(w: World, m: Monster): boolean {
     if (heal > 0) w.hero.hp = Math.min(w.hero.maxHp, w.hero.hp + heal);
   }
   w.events.push({ type: 'kill', x: m.x, y: m.y, name: m.kind.name });
+  if (m.mark) {
+    w.markQueue.push({ spellId: m.mark.spellId, x: m.x, y: m.y, damage: m.mark.damage });
+    m.mark = undefined;
+  }
   return true;
 }

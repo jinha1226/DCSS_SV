@@ -1560,6 +1560,38 @@ canvas {
   color: #ded0b3;
   font-size: 13px;
 }
+.status-spells h3 {
+  margin: 12px 0 6px;
+  color: #ded0b3;
+  font-size: 13px;
+}
+.spell-slot-row {
+  display: grid;
+  grid-template-columns: 1fr repeat(4, 40px);
+  gap: 6px;
+  align-items: center;
+  padding: 3px 0;
+  font-size: 13px;
+}
+.spell-slot-row .muted {
+  color: #8f8775;
+}
+.spell-slot-row button {
+  min-height: 40px;
+  border: 1px solid #5b5141;
+  border-radius: 6px;
+  background: #241f19;
+  color: #b9ad94;
+  font: inherit;
+  touch-action: manipulation;
+}
+.spell-slot-row button.on {
+  border-color: #c9a35f;
+  color: #f2e4c3;
+}
+.spell-slot-row button.pinned {
+  background: #4a3b22;
+}
 
 /* The three.js world sits under the 2D canvas, which keeps the numbers and takes the pointer. */
 canvas.world3d {

@@ -3,7 +3,7 @@ import '../styles/layout.css';
 import '../styles/theme.css';
 import { CHARACTERS } from '../data/characters';
 import { heroFor } from '../data/hero';
-import { spellData } from '../data/spells';
+import { selfSpell, spellData } from '../data/spells';
 import { guardZoom } from '../input/guards';
 import { keyPush, watchKeys } from '../input/keys';
 import { makeStick } from '../input/stick';
@@ -220,7 +220,7 @@ async function start(): Promise<void> {
     (event) => {
       if (!world || !spellButtons.targetingId) return;
       const spell = spellData(spellButtons.targetingId);
-      if (spell.shape === 'utility') return;
+      if (selfSpell(spell)) return;
       const point = floorPoint(event);
       if (!point) return;
       const target = spellAtPoint(world, spell, point.x, point.y);
@@ -239,7 +239,7 @@ async function start(): Promise<void> {
       const pressedSpell = spellButtons.takePress();
       if (pressedSpell) {
         const selectedSpell = spellData(pressedSpell);
-        if (selectedSpell.shape === 'utility') {
+        if (selfSpell(selectedSpell)) {
           queuedSpell = { id: pressedSpell, x: world.hero.x, y: world.hero.y };
         } else if (timeMode.superhot) {
           if (spellButtons.targetingId === pressedSpell) spellButtons.cancelTarget();

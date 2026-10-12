@@ -44,20 +44,22 @@ describe('spell button rendering', () => {
     vi.stubGlobal('document', { createElement: () => new Element() });
     const root = new Element();
     const ui = makeSpellButtons(root as unknown as HTMLElement);
+    // Level 1-2 spells need no school skill; a fire book's level 3 spell waits for fire 3.
     const w = makeWorld({ species: 'barachi', job: 'spellblade', monsters: false, items: false });
+    w.gear.offhand = 'spellbook_fire_0';
     ui.show(w);
     const wrap = root.children[0]!;
-    const locked = wrap.querySelector('[data-spell="phase_guard"]')!;
-    expect(locked.textContent).toContain('위상막');
-    expect(locked.textContent).toContain('주술 3 필요');
+    const locked = wrap.querySelector('[data-spell="ash_cloud"]')!;
+    expect(locked.textContent).toContain('잿불구름');
+    expect(locked.textContent).toContain('화염술 3 필요');
     expect(locked.disabled).toBe(true);
     expect(locked.classList.contains('locked')).toBe(true);
-    expect(wrap.querySelector('[data-spell="blink_step"]')!.disabled).toBe(false);
+    expect(wrap.querySelector('[data-spell="searing_line"]')!.disabled).toBe(false);
 
-    w.hero.skills.hexes = 3;
+    w.hero.skills.fire = 3;
     ui.show(w);
-    const unlocked = wrap.querySelector('[data-spell="phase_guard"]')!;
-    expect(unlocked.textContent).toContain('6 MP');
+    const unlocked = wrap.querySelector('[data-spell="ash_cloud"]')!;
+    expect(unlocked.textContent).toContain('7 MP');
     expect(unlocked.disabled).toBe(false);
     expect(unlocked.classList.contains('locked')).toBe(false);
   });

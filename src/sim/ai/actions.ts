@@ -1,4 +1,4 @@
-import { spellData } from '../../data/spells';
+import { monsterSpellMana, spellData } from '../../data/spells';
 import { itemDefinition } from '../../data/itemCatalog';
 import { LIGHTNING_RANGE } from '../itemEffects';
 import type { MonsterContext } from './context';
@@ -26,7 +26,7 @@ export function availableMonsterActions(context: MonsterContext): ActionCandidat
   if (ready && m.spellCooldown <= 0) {
     for (const spellId of m.stats.ai?.spells ?? []) {
       const spell = spellData(spellId);
-      if (m.mana < spell.mana) continue;
+      if (m.mana < monsterSpellMana(spell)) continue;
       if (spell.shape === 'utility') {
         if (spell.effect === 'guard' && m.guard <= 0 && m.hp < m.maxHp) choices.push({ action: 'spell', spellId });
         if (spell.effect === 'blink' && visible && d < 3) choices.push({ action: 'spell', spellId });

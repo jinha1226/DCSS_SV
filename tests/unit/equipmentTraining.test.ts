@@ -34,7 +34,7 @@ describe('equipment-driven training and offhand', () => {
   });
 
   it('does not split identical magic schools, and trains staff schools alone', () => {
-    const w = makeWorld({ species: 'deep_elf', job: 'conjurer', monsters: false, items: false });
+    const w = makeWorld({ species: 'deep_elf', job: 'air_mage', monsters: false, items: false });
     w.weapon = plainWeapon('rod_fire_0');
     w.gear.offhand = 'spellbook_fire_0';
     trainSkills(w, 3);
@@ -74,7 +74,9 @@ describe('equipment-driven training and offhand', () => {
     const w = makeWorld({ species: 'barachi', job: 'spellblade', monsters: false, items: false });
     expect(paidSpells(w).map((spell) => spell.id)).toContain('blink_step');
     w.gear.offhand = 'spellbook_fire_0';
-    expect(knownSpells(w).map((spell) => spell.id)).toContain('ember_dart');
+    // Level 1 (ember_dart) is now a staff auto attack; a fire book's first button is level 2.
+    expect(knownSpells(w).map((spell) => spell.id)).toContain('searing_line');
+    expect(knownSpells(w).map((spell) => spell.id)).not.toContain('ember_dart');
     expect(paidSpells(w).map((spell) => spell.id)).not.toContain('blink_step');
     w.gear.offhand = undefined;
     w.weapon = plainWeapon('rod_air_0');
@@ -89,7 +91,10 @@ describe('equipment-driven training and offhand', () => {
       expect(entry.tier).toBeGreaterThanOrEqual(0);
     }
     expect(requiredLevel(spellData('blink_step'))).toBe(0);
+    // Phase guard moved to level 5, so it now arrives with a journeyman (tier 1) hexes book.
     const w = makeWorld({ species: 'barachi', job: 'spellblade', monsters: false, items: false });
+    expect(lockedSpells(w).map((spell) => spell.id)).not.toContain('phase_guard');
+    w.gear.offhand = 'spellbook_hexes_1';
     expect(lockedSpells(w).map((spell) => spell.id)).toContain('phase_guard');
   });
 

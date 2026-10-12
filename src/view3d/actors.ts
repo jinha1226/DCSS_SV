@@ -196,9 +196,14 @@ function findBone(root: THREE.Object3D, name: RegExp): THREE.Object3D | undefine
 const HERO_MODELS: Record<string, string> = {
   berserker: 'chars/barbarian.glb',
   hunter: 'chars/rogue.glb',
-  conjurer: 'chars/mage.glb',
   spellblade: 'chars/knight.glb',
 };
+const CASTER_MODEL = 'chars/mage.glb';
+
+/** Every spellcasting job (fire_mage, summoner, hexer, ...) wears the mage's robe and hat. */
+function heroModel(job: string): string {
+  return HERO_MODELS[job] ?? (/mage|summoner|hexer|necromancer|conjurer/.test(job) ? CASTER_MODEL : 'chars/knight.glb');
+}
 const PROP = /(sword|axe|shield|staff|wand|crossbow|knife|throwable|spellbook|mug)/i;
 const HELMET = /(Knight_Helmet)/;
 const CAPE = /_Cape$/;
@@ -234,7 +239,7 @@ export class HeroActor extends Actor {
   private kind: 'blade' | 'axe' | 'ranged' | 'magic' = 'blade';
 
   static async create(models: ModelLibrary, job: string): Promise<HeroActor> {
-    const [model, clips] = await Promise.all([models.instance(HERO_MODELS[job] ?? HERO_MODELS.spellblade!), models.clips(RIG_CLIPS)]);
+    const [model, clips] = await Promise.all([models.instance(heroModel(job)), models.clips(RIG_CLIPS)]);
     return new HeroActor(models, model, clips);
   }
 

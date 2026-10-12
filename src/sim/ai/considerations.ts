@@ -1,4 +1,4 @@
-import { spellData } from '../../data/spells';
+import { monsterSpellMana, spellData } from '../../data/spells';
 import { itemDefinition } from '../../data/itemCatalog';
 import type { ActionCandidate } from './actions';
 import type { MonsterContext } from './context';
@@ -30,7 +30,7 @@ export function scoreMonsterAction(context: MonsterContext, candidate: ActionCan
     if (spell.effect === 'guard') return 38 + danger * 75 + (ai?.spellBias ?? 0);
     if (spell.effect === 'blink') return 26 + danger * 65 + clamp01(1 - d / 3) * 15 + (ai?.spellBias ?? 0);
     const damage = spell.damage ?? 0;
-    const manaPressure = spell.mana / Math.max(1, m.maxMana);
+    const manaPressure = monsterSpellMana(spell) / Math.max(1, m.maxMana);
     const rangeComfort = clamp01((spell.range ?? 0) - d);
     return 53 + Math.min(31, damage * 1.8) + rangeComfort * 4 - manaPressure * 8 + (ai?.spellBias ?? 0);
   }

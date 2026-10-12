@@ -53,6 +53,14 @@ export function spawnMonster(w: World, id: string, x: number, y: number, awake: 
     slowScale: 0,
     burning: 0,
     burnDamage: 0,
+    vulnerable: 0,
+    vulnerableScale: 0,
+    rot: 0,
+    rotArmour: 0,
+    rotDamage: 0,
+    poison: 0,
+    poisonDamage: 0,
+    afflictionTick: 0,
     facing: -1,
   };
   w.monsters.push(m);

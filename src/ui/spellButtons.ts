@@ -1,4 +1,5 @@
-import { paidSpells, lockedSpells, requiredLevel } from '../sim/spells';
+import { requiredLevel, spellCooldownLeft, spellSlots } from '../sim/spellAccess';
+import type { SpellData } from '../data/spells';
 import { skillData } from '../data/skills';
 import type { World } from '../sim/world';
 
@@ -8,6 +9,13 @@ export interface SpellButtons {
   beginTarget(id: string): void;
   cancelTarget(): void;
   show(w: World): void;
+}
+
+/** Cooldowns shorter than this are the shared double-tap gap and not worth showing. */
+const BUTTON_GAP_SHOWN = 0.3;
+
+function filled(w: World): SpellData[] {
+  return spellSlots(w).filter((spell): spell is SpellData => spell !== undefined);
 }
 
 export function makeSpellButtons(root: HTMLElement): SpellButtons {
@@ -20,7 +28,7 @@ export function makeSpellButtons(root: HTMLElement): SpellButtons {
   let key = '';
 
   const rebuild = (w: World): void => {
-    const spells = [...paidSpells(w), ...lockedSpells(w)];
+    const spells = filled(w);
     const nextKey = spells.map((spell) => spell.id + ':' + ((w.hero.skills[spell.school] ?? 0) >= requiredLevel(spell))).join('|');
     if (nextKey === key) return;
     key = nextKey;
@@ -60,20 +68,25 @@ export function makeSpellButtons(root: HTMLElement): SpellButtons {
     },
     show(w) {
       rebuild(w);
-      const spells = [...paidSpells(w), ...lockedSpells(w)];
+      const spells = filled(w);
       wrap.classList.toggle('on', spells.length > 0);
       wrap.classList.toggle('with-hop', w.heroDef.species === 'barachi');
       for (const spell of spells) {
         const button = wrap.querySelector<HTMLButtonElement>('[data-spell="' + spell.id + '"]');
         if (!button) continue;
         const locked = (w.hero.skills[spell.school] ?? 0) < requiredLevel(spell);
-        button.disabled = locked || w.hero.mana < spell.mana || w.hero.spellCooldown > 0;
+        const cooling = spellCooldownLeft(w, spell.id);
+        button.disabled = locked || w.hero.mana < spell.mana || cooling > 0;
         button.classList.toggle('targeting', targeting === spell.id);
         button.textContent = '';
         const name = document.createElement('strong');
         name.textContent = spell.name;
         const detail = document.createElement('span');
-        detail.textContent = locked ? skillData(spell.school).name + ' ' + requiredLevel(spell) + ' 필요' : spell.mana + ' MP';
+        detail.textContent = locked
+          ? skillData(spell.school).name + ' ' + requiredLevel(spell) + ' 필요'
+          : cooling > BUTTON_GAP_SHOWN
+            ? cooling.toFixed(1) + '초'
+            : spell.mana + ' MP';
         button.classList.toggle('locked', locked);
         button.append(name, detail);
       }

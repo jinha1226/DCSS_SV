@@ -39,7 +39,7 @@ describe('automatic skill training', () => {
   });
 
   it('does not train the decorative starting weapon of a magic attacker', () => {
-    const w = makeWorld({ species: 'deep_elf', job: 'conjurer', items: false, monsters: false });
+    const w = makeWorld({ species: 'deep_elf', job: 'air_mage', items: false, monsters: false });
     const before = skillLevel(w, 'axe');
     trainSkills(w, 150);
     expect(skillLevel(w, 'axe')).toBe(before);
@@ -74,7 +74,7 @@ describe('automatic skill training', () => {
 
   it('keeps the same cap for all aptitudes but a fast aptitude advances sooner', () => {
     const fast = makeWorld({ species: 'minotaur', job: 'berserker', items: false, monsters: false });
-    const slow = makeWorld({ species: 'deep_elf', job: 'conjurer', items: false, monsters: false });
+    const slow = makeWorld({ species: 'deep_elf', job: 'air_mage', items: false, monsters: false });
     trainSkills(fast, 200);
     trainSkills(slow, 200);
     expect(skillCap(fast, 'fighting')).toBe(27);

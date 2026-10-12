@@ -8,6 +8,7 @@ DCSS식 던전에서 떼를 상대하는 실시간 2D 게임 (가칭 던전 뱀�
 - 로드맵: [docs/IMPLEMENTATION_2RUNE.md](docs/IMPLEMENTATION_2RUNE.md)
 - 스킬·장비·성장 기획: [docs/SKILL_TRAINING.md](docs/SKILL_TRAINING.md)
 - 타일의 출처와 라이선스: [docs/TILES.md](docs/TILES.md)
+- 마법 연습장: <https://jinha1226.github.io/DCSS_SV/spells.html> (개발 서버에서는 `/DCSS_SV/spells.html`). `?school=ice&spell=cold_fan`으로 마법 하나를 바로 연다.
 
 ## 개발
 

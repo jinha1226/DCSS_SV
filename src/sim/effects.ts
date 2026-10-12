@@ -70,7 +70,10 @@ export function hurtHero(
   const physical = damageAfterDefense(
     amount,
     'physical',
-    effectValue(w, 'armour.reduce') + weaponOption(w.weapon, 'armour') + gearBonus(w, 'armour'),
+    effectValue(w, 'armour.reduce') +
+      weaponOption(w.weapon, 'armour') +
+      gearBonus(w, 'armour') +
+      (hero.armourBuff > 0 ? hero.armourBuffPower : 0),
     heroResists(w),
   );
   const elementalDamage = elemental ? damageAfterDefense(elemental.damage, elemental.type, 0, heroResists(w)) : 0;
