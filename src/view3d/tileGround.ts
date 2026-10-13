@@ -5,7 +5,7 @@ import { cellNoise } from '../sim/rng';
 import type { World } from '../sim/world';
 import type { Atlas } from '../view/atlas';
 import { lookFor, type Look } from '../view/look';
-import { stairTile } from '../view/stairTile';
+import { isGatewayTile, stairTile } from '../view/stairTile';
 import { open, REMEMBERED, updateWaterSight, wallCaps, waterSurface, type GroundView } from './dungeon';
 
 /** Wall blocks stand a little under a cell tall, so the camera sees over them to what is behind. */
@@ -129,10 +129,11 @@ export class TileGround implements GroundView {
         const kind = cellAt(grid, x, y);
         if (kind === Cell.Wall) continue;
         const stair = kind === Cell.StairsDown || kind === Cell.StairsUp ? stairTile(w, x, y, kind === Cell.StairsDown) : undefined;
-        const gate = stair?.startsWith('dngn/gateways/');
+        const down = kind === Cell.StairsDown;
+        const gate = stair !== undefined && isGatewayTile(stair);
         const tile = stair && !gate ? stair : pick(this.look.floor, x, y);
         if (tile) floors.push({ cell: y * grid.w + x, tile });
-        if (stair && gate) (stair.includes('/enter_') ? gates : exits).push({ cell: y * grid.w + x, tile: stair });
+        if (stair && gate) (down ? gates : exits).push({ cell: y * grid.w + x, tile: stair });
       }
     }
     const plane = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);

@@ -27,7 +27,7 @@ DCSS의 `LICENSE`는 타일 대부분이 CC0라고 밝히면서, 오래된 타�
 | `dngn/gateways` | `dngn/gateways` | `enter_lair`, `enter_orc`, `enter_snake`, `enter_spider`, `enter_vaults_open`, `enter_vaults_closed`, `enter_zot_open`, `enter_zot_closed`, `return_zot` |
 | `item` | `item/gold` | `10` (`gold.png`로 저장) |
 
-`enter_shoals`, `enter_swamp`, `enter_temple`과 `exit_*` 타일은 알 수 없는 라이선스 목록에 있어서 쓰지 않는다. 그 계단은 돌계단 타일로 그린다.
+`enter_shoals`, `enter_swamp`, `enter_temple`과 `exit_*` 타일은 알 수 없는 라이선스 목록에 있어서 쓰지 않는다(2010 배포본에도 없다). 입구는 라이브러리의 자유 타일로 대신한다(`src/view/stairTile.ts`의 `ENTRANCE_STAND_INS`): 사원은 `dcss/dngn/gateways/enter_depths`, 늪은 `dcss/dngn/gateways/slimy_stairs_down`, 해안은 `dcss/dngn/gateways/portal`. 출구는 돌계단 타일로 그린다.
 
 파일 이름과 그림은 원본 그대로다.
 

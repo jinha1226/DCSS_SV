@@ -3,7 +3,7 @@ import { TILE_SIZE, tileRect } from '../data/tiles';
 import { Cell, cellAt } from '../sim/grid';
 import type { World } from '../sim/world';
 import type { Sheet } from '../view/atlas';
-import { stairTile } from '../view/stairTile';
+import { isGatewayTile, stairTile } from '../view/stairTile';
 import { REMEMBERED } from './dungeon';
 
 /**
@@ -37,7 +37,7 @@ export class Gateways {
     this.marks = [];
     for (const s of w.stairs) {
       const tile = stairTile(w, s.x, s.y, s.down);
-      if (!tile.startsWith('dngn/gateways/') || cellAt(w.grid, s.x, s.y) === Cell.Wall) continue;
+      if (!isGatewayTile(tile) || cellAt(w.grid, s.x, s.y) === Cell.Wall) continue;
       const c = document.createElement('canvas');
       c.width = c.height = TILE_SIZE;
       const at = tileRect(tile);
