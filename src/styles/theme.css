@@ -895,97 +895,112 @@ button:focus-visible {
   background: #000 !important;
 }
 
-/* ---------- pickups: a short line over the middle of the game view ---------- */
+/* ---------- pickups and skill-ups: a few words over the hero's head that drift up and fade ---------- */
 
 .pickup-toast {
   position: fixed;
-  top: 36%;
+  top: 28%;
   left: 50%;
   z-index: 25;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 1px;
   translate: -50% 0;
   pointer-events: none;
 }
 
-#app[data-layout='landscape'] .pickup-toast {
+#app[data-layout='landscape'] .pickup-toast:not(.anchored) {
   left: calc((100% - var(--sidebar-width, 0px)) / 2);
+}
+
+/* Placed by the game over the hero's head: the lines' bottom edge sits on that point. */
+.pickup-toast.anchored {
+  translate: -50% -100%;
 }
 
 .pickup-line {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 3px 12px 3px 6px;
-  border: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.78);
-  color: #fff;
-  font: 700 14px var(--mono);
+  color: #e8e2d0;
+  font: 700 13px var(--mono);
+  line-height: 1.25;
   white-space: nowrap;
-  animation: pickup-in 0.22s var(--ease-out) both;
+  text-shadow:
+    1px 0 0 #000,
+    -1px 0 0 #000,
+    0 1px 0 #000,
+    0 -1px 0 #000,
+    0 0 4px #000;
+  animation:
+    pickup-in 0.18s var(--ease-out) both,
+    pickup-rise var(--stay, 1600ms) linear both;
 }
 
-.pickup-line.gold {
+.pickup-line b {
+  font-weight: 700;
+}
+
+.hl-item,
+.hl-gold,
+.hl-level {
   color: var(--gold-hi);
 }
 
-.pickup-line.skill {
-  max-width: min(90vw, 420px);
-  border-color: #2a6a6a;
+.hl-skill {
   color: var(--cyan);
-  white-space: normal;
 }
 
-.pickup-glyph {
-  width: 28px;
-  font-size: 18px;
-  text-align: center;
-}
-
-.pickup-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.25;
+.hl-perk {
+  color: var(--good);
 }
 
 .pickup-perk {
-  color: var(--good);
-  font: 400 12px var(--mono);
+  font-size: 12px;
 }
 
 .pickup-line.bump {
-  animation: pickup-bump 0.25s var(--ease-back);
+  animation:
+    pickup-bump 0.25s var(--ease-back),
+    pickup-rise var(--stay, 1600ms) linear both;
 }
 
 .pickup-line.leaving {
   transition:
-    opacity 0.25s,
-    translate 0.25s;
+    opacity 0.35s,
+    translate 0.35s;
   opacity: 0;
-  translate: 0 -10px;
-}
-
-.pickup-icon {
-  /* main.css pins every canvas to the screen; this one sits in its line. */
-  position: static !important;
-  inset: auto !important;
-  width: 28px !important;
-  height: 28px !important;
-  image-rendering: pixelated;
+  translate: 0 -12px;
 }
 
 @keyframes pickup-in {
   from {
     opacity: 0;
-    translate: 0 8px;
-    scale: 0.92;
+  }
+}
+
+@keyframes pickup-rise {
+  from {
+    transform: translateY(6px);
+  }
+  to {
+    transform: translateY(-6px);
   }
 }
 
 @keyframes pickup-bump {
   40% {
     scale: 1.08;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pickup-line,
+  .pickup-line.bump {
+    animation: pickup-in 0.18s both;
+  }
+  .pickup-line.leaving {
+    translate: 0 0;
   }
 }

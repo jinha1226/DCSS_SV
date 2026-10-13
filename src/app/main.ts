@@ -19,7 +19,8 @@ import { makeHud } from '../ui/hud';
 import { makeLayoutButton } from '../ui/layoutButton';
 import { makeInventorySheets } from '../ui/inventorySheets';
 import { makeHopButton } from '../ui/hopButton';
-import { makePickupToast } from '../ui/pickupToast';
+import { makePickupToast, screenFromUnit } from '../ui/pickupToast';
+import { tileFigureHeight } from '../view3d/tileFigures';
 import { makeSkillBar } from '../ui/skillBar';
 import { makeSkillPicker } from '../ui/skillPicker';
 import { makeSlotPicker } from '../ui/slotPicker';
@@ -31,7 +32,7 @@ import { loadAtlas } from '../view/atlas';
 import { Fx } from '../view/fx';
 import { LOOK, lookFor } from '../view/look';
 import { drawMiniMap } from '../view/minimap';
-import { drawWorld } from '../view/render';
+import { cellPixels, drawWorld } from '../view/render';
 import { composeDoll, DOLL_CUT, dollLayers } from '../view/doll';
 import { makeDollWalk, type WalkSheet } from '../view/walk';
 import { loadHeroSprites, makeHeroPose, stepPose, takePoseEvents, type HeroSprites } from '../view/heroSprite';
@@ -186,7 +187,7 @@ async function start(): Promise<void> {
   );
   const timeMode = makeTimeModeButton(hud.menuSlot);
   const gameLog = makeGameLog(root);
-  const pickups = makePickupToast(root, atlas);
+  const pickups = makePickupToast(root);
   const menuAction = (label: string, action: () => void): void => {
     const button = document.createElement('button');
     button.type = 'button';
@@ -359,6 +360,17 @@ async function start(): Promise<void> {
           fx,
           world.over ? 1 : between,
         );
+      // Pickup and skill-up lines float just over the hero's head.
+      const rect = canvas.getBoundingClientRect();
+      const t = world.over ? 1 : between;
+      const head = world3d
+        ? world3d.project(
+            world.hero.px + (world.hero.x - world.hero.px) * t,
+            world.hero.py + (world.hero.y - world.hero.py) * t,
+            (switches.figures === 'tiles' ? tileFigureHeight('hero') : 1.9) + 0.15,
+          )
+        : { u: 0.5, v: 0.5 - (cellPixels(canvas.width, viewCols) * 0.62) / Math.max(1, canvas.height) };
+      pickups.place(head ? screenFromUnit(head.u, head.v, rect) : undefined);
       hud.show(world);
       shopButton.hidden = !shopAccessible(world) || inventory.open || ledger.open || skillBar.expanded || gameLog.expanded;
       gameLog.show(world);
