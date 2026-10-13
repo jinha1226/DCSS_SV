@@ -1,6 +1,8 @@
+import { effectLines } from '../data/itemLore';
+import { brandData, type WeaponItem } from '../data/items';
 import { ITEM_DEFINITIONS } from '../data/itemCatalog';
 import { DUNGEON } from '../data/packs';
-import { generateWeapon, generateMagicWeapon } from './equipment';
+import { generateWeapon, generateMagicWeapon, weaponOption } from './equipment';
 import { lootTier } from './lootTier';
 import { addConsumable } from './consumables';
 import type { ItemChoice, World } from './types';
@@ -40,7 +42,7 @@ function gearCard(w: World): ItemChoice {
     id: 'gear:' + picked.id,
     kind: 'gear',
     name: picked.name,
-    line: '방어구·장신구 · 가방에 보관',
+    line: effectLines(picked.id).join(' · '),
     itemId: picked.id,
   };
 }
@@ -53,7 +55,14 @@ function consumableCard(w: World): ItemChoice {
   });
   const itemId = choose(w, eligible);
   const item = ITEM_DEFINITIONS.find((entry) => entry.id === itemId)!;
-  return { id: 'consumable:' + itemId, kind: 'consumable', name: item.name, line: '소모품 ×1 · 가방에 보관', itemId };
+  return { id: 'consumable:' + itemId, kind: 'consumable', name: item.name, line: effectLines(itemId).join(' '), itemId };
+}
+
+/** A weapon card's one line: its blow, its pace, its hands, and its brand if any. */
+function weaponSummary(weapon: WeaponItem): string {
+  const damage = weapon.damage + (weapon.enchantment ?? 0) + weaponOption(weapon, 'damage');
+  const brand = brandData(weapon.brand)?.name;
+  return [`피해 ${damage}`, `${weapon.every.toFixed(2)}초`, weapon.hands === 2 ? '양손' : '한손', ...(brand ? [brand] : [])].join(' · ');
 }
 
 /** One seeded, fixed set per character level; rerendering does not reroll. */
@@ -61,7 +70,7 @@ export function dealItemRewards(w: World): void {
   if (w.pendingChoices <= 0 || w.rewardChoices || w.choosing) return;
   const weapon = w.weapon.kind ? generateMagicWeapon(w, w.weapon.kind, w.weapon.school!) : generateWeapon(w, w.weapon.family);
   w.rewardChoices = [
-    { id: 'weapon:' + weapon.uid, kind: 'weapon', name: weapon.name, line: '무기 · 가방에 보관', weapon },
+    { id: 'weapon:' + weapon.uid, kind: 'weapon', name: weapon.name, line: weaponSummary(weapon), weapon },
     gearCard(w),
     consumableCard(w),
   ];

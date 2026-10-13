@@ -263,7 +263,16 @@ export type SimEvent =
   | { readonly type: 'wake'; readonly x: number; readonly y: number; readonly name?: string }
   | { readonly type: 'floor'; readonly depth: number }
   | { readonly type: 'rune'; readonly branch: Branch }
-  | { readonly type: 'orb' };
+  | { readonly type: 'orb' }
+  /** Something walked over and taken without asking: gold, gear, a consumable, or thrown ammo back. */
+  | {
+      readonly type: 'pickup';
+      readonly x: number;
+      readonly y: number;
+      readonly item: 'gold' | 'gear' | 'consumable' | 'ammo';
+      readonly id?: string;
+      readonly count: number;
+    };
 export interface Stairs {
   readonly x: number;
   readonly y: number;

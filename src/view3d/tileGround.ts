@@ -5,6 +5,7 @@ import { cellNoise } from '../sim/rng';
 import type { World } from '../sim/world';
 import type { Atlas } from '../view/atlas';
 import type { Look } from '../view/look';
+import { stairTile } from '../view/stairTile';
 import { open, REMEMBERED, updateWaterSight, wallCaps, waterSurface, type GroundView } from './dungeon';
 
 /** Wall blocks stand a little under a cell tall, so the camera sees over them to what is behind. */
@@ -85,7 +86,7 @@ export class TileGround implements GroundView {
   async ensure(w: World): Promise<boolean> {
     if (w.depth === this.builtFor) return false;
     this.builtFor = w.depth;
-    this.build(w.grid);
+    this.build(w);
     return true;
   }
 
@@ -100,30 +101,36 @@ export class TileGround implements GroundView {
     this.water = undefined;
   }
 
-  private build(grid: Grid): void {
+  private build(w: World): void {
+    const grid = w.grid;
     this.clear();
     const { width, height } = this.texture.image as { width: number; height: number };
     this.byCell = Array.from({ length: grid.w * grid.h }, () => []);
     this.shown = new Uint8Array(grid.w * grid.h).fill(255);
 
-    // Floor tiles: every open cell, stairs shown with their own tile.
+    // Floor tiles: every open cell. Stairs show their own tile; a branch gateway, drawn with see-through
+    // edges, lies over the floor tile.
     const floors: { cell: number; tile: TileName }[] = [];
+    const gates: { cell: number; tile: TileName }[] = [];
     for (let y = 0; y < grid.h; y++) {
       for (let x = 0; x < grid.w; x++) {
         const kind = cellAt(grid, x, y);
         if (kind === Cell.Wall) continue;
-        const tile =
-          kind === Cell.StairsDown
-            ? ('feat/stone_stairs_down' as TileName)
-            : kind === Cell.StairsUp
-              ? ('feat/stone_stairs_up' as TileName)
-              : pick(this.look.floor, x, y);
+        const stair = kind === Cell.StairsDown || kind === Cell.StairsUp ? stairTile(w, x, y, kind === Cell.StairsDown) : undefined;
+        const gate = stair?.startsWith('dngn/gateways/');
+        const tile = stair && !gate ? stair : pick(this.look.floor, x, y);
         if (tile) floors.push({ cell: y * grid.w + x, tile });
+        if (stair && gate) gates.push({ cell: y * grid.w + x, tile: stair });
       }
     }
     const plane = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
     const floorMesh = this.instanced(plane, atlasMaterial(this.texture), floors, grid, width, height, 0);
     floorMesh.receiveShadow = true;
+    if (gates.length) {
+      const gateMaterial = atlasMaterial(this.texture);
+      gateMaterial.alphaTest = 0.5;
+      this.instanced(plane.clone(), gateMaterial, gates, grid, width, height, 0.004).receiveShadow = true;
+    }
 
     // Wall blocks: every wall cell touching open ground, sides in brick, top in shade.
     const walls: { cell: number; tile: TileName }[] = [];

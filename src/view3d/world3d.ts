@@ -21,6 +21,7 @@ import { LootView } from './loot';
 import { ModelLibrary } from './models';
 import { Overlay } from './overlay';
 import { Particles } from './particles';
+import { Gateways } from './gateways';
 import { Remains } from './remains';
 import { HeroTile, makeMonsterTile, tileFigureHeight } from './tileFigures';
 
@@ -75,6 +76,7 @@ export class World3D {
   private heroKey = '';
   private readonly creatures = new Map<Monster, Creature>();
   private readonly remains: Remains;
+  private readonly gateways: Gateways;
   private readonly hemi = new THREE.HemisphereLight(0x9aa6cc, 0x3a2a1c, 0.7);
   private readonly sun = new THREE.DirectionalLight(0xe6ecff, 1.15);
   private readonly heroLight = new THREE.PointLight(0xffc27a, 5, 8, 1.3);
@@ -128,12 +130,14 @@ export class World3D {
     this.lootView = new LootView(this.models, atlas.image, figures === 'tiles');
     this.overlay = new Overlay(this.camera);
     this.remains = new Remains(atlas.image);
+    this.gateways = new Gateways(atlas.image);
     this.scene.add(
       this.kaykit.group,
       ...(this.tileGround ? [this.tileGround.group] : []),
       this.effects.group,
       this.lootView.group,
       this.remains.group,
+      this.gateways.group,
       this.particles.points,
     );
 
@@ -279,6 +283,9 @@ export class World3D {
     this.syncHero(w, between, dt);
     this.syncCreatures(w, between, dt);
     this.remains.update(w, dt);
+    // The tile ground draws its own gateways; the KayKit ground gets them laid over its stairs.
+    this.gateways.group.visible = this.dungeon === this.kaykit;
+    if (this.gateways.group.visible) this.gateways.update(w);
 
     const stair = w.stairs.find((s) => s.down && Math.floor(w.hero.x) === s.x && Math.floor(w.hero.y) === s.y);
     const objective = objectiveFor(w);

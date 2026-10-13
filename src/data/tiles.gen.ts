@@ -1,8 +1,17 @@
 // Written by tools/packTiles.mjs. Do not edit by hand.
 export const TILE_SIZE = 32;
 export const ATLAS_COLS = 16;
-export const SHEET_VERSION = '839270ce3d';
+export const SHEET_VERSION = '9ab99a0316';
 export const TILE_NAMES = [
+  'dngn/gateways/enter_lair',
+  'dngn/gateways/enter_orc',
+  'dngn/gateways/enter_snake',
+  'dngn/gateways/enter_spider',
+  'dngn/gateways/enter_vaults_closed',
+  'dngn/gateways/enter_vaults_open',
+  'dngn/gateways/enter_zot_closed',
+  'dngn/gateways/enter_zot_open',
+  'dngn/gateways/return_zot',
   'feat/stone_stairs_down',
   'feat/stone_stairs_up',
   'floor/grey_dirt0',
@@ -47,6 +56,7 @@ export const TILE_NAMES = [
   'item/boomerang1',
   'item/broad_axe1',
   'item/executioner_axe1',
+  'item/gold',
   'item/greatsword1',
   'item/hand_axe1',
   'item/long_sword1',

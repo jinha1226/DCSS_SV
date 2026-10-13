@@ -7,6 +7,7 @@ import { dropGear, equipGear, gearBonus, unequipGear, type GearSlot } from '../s
 import { itemDisplayName } from '../sim/identification';
 import type { World } from '../sim/world';
 import type { Atlas } from '../view/atlas';
+import { composeDoll, dollLayers } from '../view/doll';
 import { bagGroups, equipmentRows, overviewColumns, resistPips, skillRows, type ItemRow, type Pair } from './ledgerData';
 import { makeSpellSlotPanel } from './spellSlotPanel';
 import { statusValues } from './statusSheet';
@@ -149,7 +150,10 @@ export function makeLedger(root: HTMLElement, atlas: Atlas, canOpen: () => boole
   const renderStatus = (w: World): void => {
     colStatus.replaceChildren();
     const hero = el('div', 'lg-hero');
-    hero.append(tileCanvas(atlas, w.heroDef.tile, 'lg-portrait'));
+    // The hero as the run dresses them: species, worn armour and the weapon in hand.
+    const portrait = composeDoll(atlas.image, dollLayers(w));
+    portrait.className = 'lg-portrait';
+    hero.append(portrait);
     const who = el('div');
     who.append(el('b', 'tone-hi', w.heroDef.name), el('small', 'tone-muted', `레벨 ${w.hero.level} · 처치 ${w.kills}`));
     hero.append(who);

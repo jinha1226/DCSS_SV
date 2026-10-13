@@ -80,7 +80,11 @@ export interface SkillBar {
   close(): void;
 }
 
-export function makeSkillBar(root: HTMLElement, atlas: Atlas, onEquipment?: () => void): SkillBar {
+/**
+ * `onEquipment` runs when a gear chip is pressed; `onSkills`, when given, runs when a skill chip is
+ * pressed instead of the bar's own drawer (the ledger's skill screen takes its place).
+ */
+export function makeSkillBar(root: HTMLElement, atlas: Atlas, onEquipment?: () => void, onSkills?: () => void): SkillBar {
   const bar = document.createElement('div');
   bar.className = 'skillbar';
   bar.setAttribute('aria-label', '현재 스킬 레벨');
@@ -177,6 +181,10 @@ export function makeSkillBar(root: HTMLElement, atlas: Atlas, onEquipment?: () =
 
   rail.addEventListener('click', (event) => {
     if (!(event.target instanceof Element) || !event.target.closest('.skillbar-chip') || !current) return;
+    if (onSkills) {
+      onSkills();
+      return;
+    }
     setOpen(!open);
     if (open) showDetails(current);
   });

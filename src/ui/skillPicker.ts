@@ -1,5 +1,4 @@
 import { itemDefinition } from '../data/itemCatalog';
-import { itemLore } from '../data/itemLore';
 import { skillData } from '../data/skills';
 import { TILE_SIZE, tileRect, type TileName } from '../data/tiles';
 import { itemTile } from '../sim/identification';
@@ -11,14 +10,6 @@ export interface SkillPicker {
   show(w: World): void;
 }
 
-/** The DCSS description of what a card offers, unless it is a consumable not yet identified. */
-function loreOf(w: World, card: ItemChoice): string | undefined {
-  if (card.weapon) return itemLore(card.weapon.baseId);
-  if (!card.itemId || (card.kind === 'consumable' && !w.identifiedItems.has(card.itemId))) return undefined;
-  return itemLore(card.itemId);
-}
-
-const KIND_LABEL: Record<ItemChoice['kind'], string> = { weapon: '무기', gear: '장비', consumable: '소모품' };
 /** Cards cannot be taken until they have been dealt and turned, so a tap meant for the game is not a choice. */
 const READY_MS = 900;
 /** How long the chosen card shines before the rules take the choice. */
@@ -117,9 +108,6 @@ export function makeSkillPicker(root: HTMLElement, atlas: Atlas): SkillPicker {
       back.innerHTML = '<span>✦</span>';
       const face = document.createElement('div');
       face.className = 'card-face';
-      const kind = document.createElement('span');
-      kind.className = 'card-kind';
-      kind.textContent = KIND_LABEL[card.kind];
       const art = document.createElement('div');
       art.className = 'card-art';
       art.append(icon(atlas, tileOf(w, card)));
@@ -129,15 +117,7 @@ export function makeSkillPicker(root: HTMLElement, atlas: Atlas): SkillPicker {
       line.textContent = card.line;
       const hotkey = document.createElement('kbd');
       hotkey.textContent = String(i + 1);
-      face.append(kind, art, name, line);
-      const lore = loreOf(w, card);
-      if (lore) {
-        const text = document.createElement('p');
-        text.className = 'card-lore';
-        text.textContent = lore;
-        face.append(text);
-      }
-      face.append(hotkey);
+      face.append(art, name, line, hotkey);
       inner.append(back, face);
       button.append(inner);
       button.addEventListener('click', () => pick(i));

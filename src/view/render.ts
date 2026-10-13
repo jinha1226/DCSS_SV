@@ -1,3 +1,4 @@
+import { stairTile } from './stairTile';
 import { brandData } from '../data/items';
 import { itemDefinition } from '../data/itemCatalog';
 import { DUNGEON } from '../data/packs';
@@ -64,8 +65,8 @@ function drawFloor(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World, look: 
         ctx.fillStyle = w.dungeonGraph.nodes.get(w.depth)?.branch === 'Swamp' ? 'rgba(56, 91, 63, 0.62)' : 'rgba(41, 105, 151, 0.65)';
         ctx.fillRect(sx, sy, px, px);
       }
-      if (cell === Cell.StairsDown) drawTile(ctx, atlas.image, 'feat/stone_stairs_down', sx, sy, px);
-      if (cell === Cell.StairsUp) drawTile(ctx, atlas.image, 'feat/stone_stairs_up', sx, sy, px);
+      if (cell === Cell.StairsDown || cell === Cell.StairsUp)
+        drawTile(ctx, atlas.image, stairTile(w, x, y, cell === Cell.StairsDown), sx, sy, px);
       if (!w.visible[i]) ctx.fillRect(sx, sy, px, px);
     }
   }

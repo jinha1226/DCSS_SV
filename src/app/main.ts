@@ -18,6 +18,7 @@ import { makeHud } from '../ui/hud';
 import { makeLayoutButton } from '../ui/layoutButton';
 import { makeInventorySheets } from '../ui/inventorySheets';
 import { makeHopButton } from '../ui/hopButton';
+import { makePickupToast } from '../ui/pickupToast';
 import { makeSkillBar } from '../ui/skillBar';
 import { makeSkillPicker } from '../ui/skillPicker';
 import { makeLedger } from '../ui/ledger';
@@ -105,6 +106,7 @@ async function start(): Promise<void> {
     });
     fx.clear();
     gameLog.reset(world);
+    pickups.clear();
     skillBar.close();
     inventory.close();
     ledger.close();
@@ -116,6 +118,7 @@ async function start(): Promise<void> {
   const chooseCharacter = (): void => {
     world = undefined;
     gameLog.hide();
+    pickups.clear();
     skillBar.close();
     inventory.close();
     ledger.close();
@@ -155,12 +158,18 @@ async function start(): Promise<void> {
   root.append(shopButton);
   // Status, skills and bag on one DCSS-style sheet; % / m / i open it from the keyboard.
   const ledger = makeLedger(root, atlas, () => Boolean(world) && !world?.over && !world?.rewardChoices && !inventory.open);
-  const skillBar = makeSkillBar(hud.skillSlot, atlas, () => {
-    skillBar.close();
-    ledger.openTab('status');
-  });
+  const skillBar = makeSkillBar(
+    hud.skillSlot,
+    atlas,
+    () => {
+      skillBar.close();
+      ledger.openTab('status');
+    },
+    () => ledger.openTab('skills'),
+  );
   const timeMode = makeTimeModeButton(hud.menuSlot);
   const gameLog = makeGameLog(root);
+  const pickups = makePickupToast(root, atlas);
   const menuAction = (label: string, action: () => void): void => {
     const button = document.createElement('button');
     button.type = 'button';
@@ -286,6 +295,7 @@ async function start(): Promise<void> {
           stepPose(heroPose, heroSprites, world, STEP);
         }
         gameLog.take(world);
+        pickups.take(world);
         fx.step(STEP);
       }
     },

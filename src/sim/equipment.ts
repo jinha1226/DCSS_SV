@@ -319,21 +319,26 @@ export function collectGround(w: World): void {
   for (let i = w.groundItems.length - 1; i >= 0; i--) {
     const item = w.groundItems[i]!;
     if (Math.hypot(item.x - w.hero.x, item.y - w.hero.y) > PICKUP_RADIUS) continue;
+    const at = { x: item.x, y: item.y };
     if (item.kind === 'gold') {
       w.gold += item.count ?? 0;
       w.groundItems.splice(i, 1);
+      w.events.push({ type: 'pickup', ...at, item: 'gold', count: item.count ?? 0 });
     } else if (item.kind === 'gear') {
       if (item.itemId) w.inventory.push({ uid: item.uid, kind: 'gear', id: item.itemId });
       w.groundItems.splice(i, 1);
+      if (item.itemId) w.events.push({ type: 'pickup', ...at, item: 'gear', id: item.itemId, count: 1 });
     } else if (item.kind === 'consumable') {
       if (item.itemId) addConsumable(w, item.itemId as ConsumableId, item.count ?? 1);
       w.groundItems.splice(i, 1);
+      if (item.itemId) w.events.push({ type: 'pickup', ...at, item: 'consumable', id: item.itemId, count: item.count ?? 1 });
     } else if (item.kind === 'ammo') {
       const before = w.ammo;
       w.ammo = Math.min(EQUIPMENT.ammoMax, w.ammo + (item.count ?? 1));
       const took = w.ammo - before;
       if (took <= 0) continue;
       w.pickupStats.recovered += took;
+      w.events.push({ type: 'pickup', ...at, item: 'ammo', count: took });
       openSkill(w, 'throwing');
       const left = (item.count ?? 1) - took;
       if (left > 0) item.count = left;
