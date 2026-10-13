@@ -3,12 +3,13 @@ import '../styles/layout.css';
 import '../styles/theme.css';
 import '../styles/ledger.css';
 import { CHARACTERS } from '../data/characters';
+import { DUNGEON } from '../data/packs';
 import { selfSpell, spellData } from '../data/spells';
 import { guardZoom } from '../input/guards';
 import { keyPush, watchKeys } from '../input/keys';
 import { makeStick } from '../input/stick';
 import { makeGameZoom } from '../input/zoom';
-import { spellAtPoint, spellCandidates, spellTarget } from '../sim/spells';
+import { spellTarget } from '../sim/spells';
 import { shopAccessible } from '../sim/branchLoot';
 import { STEP, makeWorld, stepWorld, type Input, type World } from '../sim/world';
 import { makeCharacterSelect, type CharacterChoice } from '../ui/characterSelect';
@@ -29,12 +30,12 @@ import { loadAtlas } from '../view/atlas';
 import { Fx } from '../view/fx';
 import { LOOK } from '../view/look';
 import { drawMiniMap } from '../view/minimap';
-import { cellPixels, drawWorld } from '../view/render';
+import { drawWorld } from '../view/render';
 import { composeDoll, DOLL_CUT, dollLayers } from '../view/doll';
 import { makeDollWalk, type WalkSheet } from '../view/walk';
 import { loadHeroSprites, makeHeroPose, stepPose, takePoseEvents, type HeroSprites } from '../view/heroSprite';
 import { World3D } from '../view3d/world3d';
-import type { Monster } from '../sim/world';
+import { makeAiming, makeFloorPoint, viewForAim } from './aiming';
 import { runLoop } from './loop';
 import { stairHoldActive } from './stairInput';
 import { readSwitches } from './switches';
@@ -62,8 +63,8 @@ async function start(): Promise<void> {
   const world3d = canvas3d
     ? new World3D(canvas3d, atlas, switches.quality, switches.figures, switches.ground === 'tiles' ? LOOK[switches.look] : undefined)
     : undefined;
-  let aimFocus: Monster | undefined;
   let lastFrame = performance.now();
+  let visualScale = 1;
   // ?sprite=haven swaps the DCSS hero tile for the layered 8-facing sprites; a missing set keeps the tile.
   const heroSprites: HeroSprites | undefined = switches.sprite
     ? await loadHeroSprites(switches.sprite).catch((error: unknown) => {
@@ -90,6 +91,13 @@ async function start(): Promise<void> {
   let dpr = 1;
   let viewCols = switches.cols;
   let queuedSpell: Input['spell'];
+  const floorPoint = makeFloorPoint(
+    canvas,
+    () => world,
+    world3d,
+    () => viewCols,
+  );
+  const aim = makeAiming(canvas, floorPoint, () => world, spellButtons);
 
   const begin = (character: CharacterChoice): void => {
     selected = character;
@@ -110,7 +118,7 @@ async function start(): Promise<void> {
     skillBar.close();
     inventory.close();
     ledger.close();
-    spellButtons.cancelTarget();
+    aim.cancel();
     selector.hide();
     if (debug) debug.world = world;
   };
@@ -123,7 +131,7 @@ async function start(): Promise<void> {
     inventory.close();
     ledger.close();
     selected = undefined;
-    spellButtons.cancelTarget();
+    aim.cancel();
     selector.show();
   };
 
@@ -213,90 +221,83 @@ async function start(): Promise<void> {
     }
   };
 
-  /** The floor point under a pointer event, through the 3D camera or the flat 2D view. */
-  const floorPoint = (event: PointerEvent): { x: number; y: number } | undefined => {
-    if (!world) return undefined;
-    const rect = canvas.getBoundingClientRect();
-    const sx = (event.clientX - rect.left) * (canvas.width / rect.width);
-    const sy = (event.clientY - rect.top) * (canvas.height / rect.height);
-    if (world3d) return world3d.pick(sx, sy);
-    const px = cellPixels(canvas.width, viewCols);
-    return { x: world.hero.x + (sx - canvas.width / 2) / px, y: world.hero.y + (sy - canvas.height / 2) / px };
-  };
-
-  canvas.addEventListener('pointermove', (event) => {
-    if (!world || !spellButtons.targetingId) return;
-    const point = floorPoint(event);
-    aimFocus = point ? spellAtPoint(world, spellData(spellButtons.targetingId), point.x, point.y) : undefined;
-  });
-
-  canvas.addEventListener(
-    'pointerdown',
-    (event) => {
-      if (!world || !spellButtons.targetingId) return;
-      const spell = spellData(spellButtons.targetingId);
-      if (selfSpell(spell)) return;
-      const point = floorPoint(event);
-      if (!point) return;
-      const target = spellAtPoint(world, spell, point.x, point.y);
-      if (!target) return;
-      queuedSpell = { id: spell.id, x: target.x, y: target.y };
-      spellButtons.cancelTarget();
-      event.preventDefault();
-      event.stopImmediatePropagation();
-    },
-    true,
-  );
-
   runLoop(
     () => {
-      if (!world) return;
+      if (!world) {
+        root.classList.remove('slowmo');
+        return;
+      }
+      const paused = ledger.open || inventory.open || skillBar.expanded || gameLog.expanded;
       const pressedSpell = spellButtons.takePress();
-      if (pressedSpell) {
+      if (pressedSpell && !paused) {
         const selectedSpell = spellData(pressedSpell);
         if (selfSpell(selectedSpell)) {
+          aim.cancel();
           queuedSpell = { id: pressedSpell, x: world.hero.x, y: world.hero.y };
         } else if (timeMode.superhot) {
-          if (spellButtons.targetingId === pressedSpell) spellButtons.cancelTarget();
-          else spellButtons.beginTarget(pressedSpell);
+          if (aim.current?.kind === 'spell' && aim.current.id === pressedSpell) aim.cancel();
+          else aim.begin({ kind: 'spell', id: pressedSpell });
         } else {
+          aim.cancel();
           const spell = spellData(pressedSpell);
           const target = spellTarget(world, spell);
           if (target) queuedSpell = { id: spell.id, x: target.x, y: target.y };
         }
       }
-      if (!timeMode.superhot && spellButtons.targetingId) spellButtons.cancelTarget();
-      stick.enabled = !spellButtons.targetingId;
-
+      if (!timeMode.superhot && aim.current?.kind === 'spell') aim.cancel();
+      const buttonThrow = throwing.takePress();
+      const spaceThrow = keys.takeTap('Space');
+      const jThrow = keys.takeTap('KeyJ');
+      const throwPressed = buttonThrow || spaceThrow || jThrow;
+      let quickThrow = false;
+      if (!paused && throwPressed && world.openSkills.has('throwing') && world.ammo > 0 && world.hero.throwing <= 0) {
+        if (aim.current?.kind === 'throw') {
+          quickThrow = true;
+          aim.cancel();
+        } else {
+          aim.begin({ kind: 'throw' });
+        }
+      }
       const key = keyPush(keys);
+      const mx = stick.x + key.x;
+      const my = stick.y + key.y;
+      if (aim.current?.kind === 'throw' && Math.hypot(mx, my) > 0.3) aim.cancel();
+      stick.enabled = aim.current?.kind !== 'spell';
+      const aimed = aim.take();
+      const targeting = Boolean(aim.current);
       const input: Input = {
-        mx: stick.x + key.x,
-        my: stick.y + key.y,
-        throw: throwing.held || keys.has('Space') || keys.has('KeyJ'),
-        hop: hop.held || keys.has('ShiftLeft') || keys.has('KeyK'),
-        ...(queuedSpell ? { spell: queuedSpell } : {}),
+        mx: targeting ? 0 : mx,
+        my: targeting ? 0 : my,
+        throw: targeting ? false : quickThrow,
+        ...(aimed.throwAt ? { throwAt: aimed.throwAt } : {}),
+        hop: targeting ? false : hop.held || keys.has('ShiftLeft') || keys.has('KeyK'),
+        ...(aimed.spell || queuedSpell ? { spell: aimed.spell ?? queuedSpell } : {}),
       };
       queuedSpell = undefined;
-      const active = Math.hypot(input.mx, input.my) > 0.01 || input.throw || input.hop || Boolean(input.spell) || stairHoldActive(world);
-      if (
-        !ledger.open &&
-        !inventory.open &&
-        !skillBar.expanded &&
-        !gameLog.expanded &&
-        !spellButtons.targetingId &&
-        (!timeMode.superhot || active)
-      ) {
-        stepWorld(world, input);
+      throwing.aiming = aim.current?.kind === 'throw';
+      const active =
+        Math.hypot(input.mx, input.my) > 0.01 ||
+        input.throw ||
+        Boolean(input.throwAt) ||
+        input.hop ||
+        Boolean(input.spell) ||
+        stairHoldActive(world);
+      const slow = timeMode.superhot && !active;
+      const scale = slow ? DUNGEON.superhotSlow : 1;
+      visualScale = scale;
+      root.classList.toggle('slowmo', slow && !paused);
+      if (!paused) {
+        stepWorld(world, input, STEP * scale);
         if (world.events.some((event) => event.type === 'floor')) fx.clear();
         fx.take(world.events);
         world3d?.take(world, world.events);
         if (heroSprites) {
           takePoseEvents(heroPose, world, world.events);
-          stepPose(heroPose, heroSprites, world, STEP);
+          stepPose(heroPose, heroSprites, world, STEP * scale);
         }
         gameLog.take(world);
         pickups.take(world);
-        fx.step(STEP);
+        fx.step(STEP * scale);
       }
     },
     (between) => {
@@ -310,7 +311,7 @@ async function start(): Promise<void> {
         heroDoll = layers.join('|');
         heroWalk = makeDollWalk(composeDoll(atlas.image, layers), DOLL_CUT);
       }
-      const targeting = spellButtons.targetingId ? spellData(spellButtons.targetingId) : undefined;
+      const aimView = viewForAim(world, aim);
       if (world3d) {
         world3d.resize(canvas.width, canvas.height, dpr);
         world3d.render(
@@ -318,14 +319,12 @@ async function start(): Promise<void> {
           {
             cols: viewCols,
             dpr,
-            targetingSpell: targeting,
-            targets: targeting ? spellCandidates(world, targeting) : undefined,
-            focus: targeting ? aimFocus : undefined,
+            ...aimView,
             stairProgress: world.descending,
           },
           fx,
           world.over ? 1 : between,
-          dt,
+          dt * visualScale,
           ctx,
         );
       } else
@@ -339,7 +338,7 @@ async function start(): Promise<void> {
             dpr,
             heroWalk,
             ...(heroSprites ? { heroSprite: { sprites: heroSprites, pose: heroPose } } : {}),
-            targetingSpell: spellButtons.targetingId ? spellData(spellButtons.targetingId) : undefined,
+            ...aimView,
           },
           fx,
           world.over ? 1 : between,

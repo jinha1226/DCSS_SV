@@ -3,7 +3,8 @@ import { hopTrait } from '../sim/traits';
 import type { World } from '../sim/world';
 
 export interface ThrowButton {
-  readonly held: boolean;
+  aiming: boolean;
+  takePress(): boolean;
   show(w: World): void;
 }
 export function makeThrowButton(root: HTMLElement): ThrowButton {
@@ -13,31 +14,37 @@ export function makeThrowButton(root: HTMLElement): ThrowButton {
   button.innerHTML = '던지기<span class="ammo"></span><span class="cooldown"></span>';
   root.append(button);
   const cooldown = button.querySelector<HTMLElement>('.cooldown')!,
-    ammo = button.querySelector<HTMLElement>('.ammo')!,
-    active = new Set<number>();
+    ammo = button.querySelector<HTMLElement>('.ammo')!;
+  let pressed = false;
+  let aiming = false;
   button.addEventListener('pointerdown', (e) => {
     if (button.disabled || (e.pointerType === 'mouse' && e.button !== 0)) return;
-    active.add(e.pointerId);
-    button.setPointerCapture(e.pointerId);
+    pressed = true;
     e.preventDefault();
     e.stopPropagation();
   });
-  const release = (e: PointerEvent): void => {
-    active.delete(e.pointerId);
-  };
-  button.addEventListener('pointerup', release);
-  button.addEventListener('pointercancel', release);
-  window.addEventListener('blur', () => active.clear());
+  window.addEventListener('blur', () => {
+    pressed = false;
+  });
   return {
-    get held() {
-      return active.size > 0;
+    get aiming() {
+      return aiming;
+    },
+    set aiming(value) {
+      aiming = value;
+      button.classList.toggle('targeting', value);
+    },
+    takePress() {
+      const value = pressed;
+      pressed = false;
+      return value;
     },
     show(w) {
       const open = w.openSkills.has('throwing'),
         remaining = Math.max(0, w.hero.throwing);
       button.classList.toggle('on', open);
       button.classList.toggle('stacked', open && Boolean(hopTrait(w)));
-      button.disabled = !open || w.ammo <= 0;
+      button.disabled = !open || w.ammo <= 0 || remaining > 0;
       ammo.textContent = '×' + w.ammo;
       cooldown.textContent = !open ? '' : w.ammo <= 0 ? '탄약 없음' : remaining > 0 ? remaining.toFixed(1) + '초' : '준비';
       button.style.setProperty('--ready', String(1 - remaining / throwCooldown(w)));

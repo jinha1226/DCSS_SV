@@ -282,7 +282,8 @@ button:focus-visible {
   transform: scale(0.95);
 }
 
-.spell-buttons button.targeting {
+.spell-buttons button.targeting,
+.throw-button.targeting {
   border-color: var(--gold-hi) !important;
   box-shadow:
     0 0 0 1px var(--gold-hi),
@@ -711,8 +712,24 @@ button:focus-visible {
   .card-face::after,
   .reward-rays,
   .hp.low .hp-fill,
-  .spell-buttons button.targeting {
+  .spell-buttons button.targeting,
+  .throw-button.targeting {
     animation: none !important;
+  }
+}
+
+.game-canvas {
+  transition: filter 0.25s;
+}
+
+#app.slowmo .game-canvas.world3d,
+#app.slowmo:not(:has(.world3d)) .game-canvas {
+  filter: grayscale(0.85) brightness(0.9);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-canvas {
+    transition: none;
   }
 }
 

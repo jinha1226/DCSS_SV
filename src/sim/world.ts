@@ -457,7 +457,7 @@ export function stepWorld(w: World, input: Input, dt: number = STEP): void {
   if (w.choosing || w.rewardChoices) return;
   walkMonsters(w, dt);
   if (w.over) return;
-  heroStrikes(w, dt, input.throw === true);
+  heroStrikes(w, dt, input.throw === true, input.throwAt);
   stepSpells(w, dt);
   if (w.over || w.choosing || w.rewardChoices) return;
   if (w.itemsEnabled) collectGround(w);

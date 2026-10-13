@@ -74,8 +74,24 @@ function rankedThrowTargets(w: World): Monster[] {
       return rank(a) - rank(b);
     });
 }
+export function throwCandidates(w: World): Monster[] {
+  return rankedThrowTargets(w);
+}
 export function throwTarget(w: World): Monster | undefined {
   return rankedThrowTargets(w)[0];
+}
+
+export function throwAimTarget(w: World, x: number, y: number): Monster | undefined {
+  let nearest: Monster | undefined;
+  let best = Infinity;
+  for (const m of rankedThrowTargets(w)) {
+    const distance = Math.hypot(m.x - x, m.y - y);
+    if (distance <= Math.max(0.9, m.stats.radius + 0.4) && distance < best) {
+      nearest = m;
+      best = distance;
+    }
+  }
+  return nearest;
 }
 
 function bowRange(w: World): number {
@@ -101,11 +117,9 @@ export function bowTarget(w: World): Monster | undefined {
   return bowTargets(w)[0];
 }
 
-function makeThrowShot(w: World, target: Monster): Shot {
+function makeThrowShot(w: World, dx: number, dy: number): Shot {
   const h = w.hero,
     t = w.heroDef.thrown,
-    dx = target.x - h.x,
-    dy = target.y - h.y,
     d = Math.hypot(dx, dy) || 1;
   return {
     x: h.x,
@@ -123,13 +137,32 @@ function makeThrowShot(w: World, target: Monster): Shot {
     hit: [],
   };
 }
-function throwNow(w: World): void {
+function throwShotAt(w: World, target: Monster): Shot {
+  return makeThrowShot(w, target.x - w.hero.x, target.y - w.hero.y);
+}
+function throwAtFloor(w: World, at: { readonly x: number; readonly y: number }): void {
+  const dx = at.x - w.hero.x;
+  const dy = at.y - w.hero.y;
+  w.shots.push(makeThrowShot(w, dx || (dy === 0 ? w.hero.facing : 0), dy));
+  w.ammo--;
+  w.pickupStats.throws++;
+  if (Math.abs(dx) > 0.15) w.hero.facing = dx < 0 ? -1 : 1;
+  w.hero.throwing = throwCooldown(w);
+  w.events.push({ type: 'throw', x: w.hero.x, y: w.hero.y });
+}
+function throwNow(w: World, at?: { readonly x: number; readonly y: number }): void {
   if (w.ammo <= 0) return;
-  const targets = rankedThrowTargets(w);
+  let targets = rankedThrowTargets(w);
+  const aimed = at ? throwAimTarget(w, at.x, at.y) : undefined;
+  if (aimed) targets = [aimed, ...targets.filter((target) => target !== aimed)];
+  if (at && !aimed) {
+    throwAtFloor(w, at);
+    return;
+  }
   if (!targets.length) return;
   const desired = hasEffect(w, 'throwing.double') ? Math.round(effectValue(w, 'throwing.double')) : 1;
   const count = Math.min(desired, w.ammo, targets.length);
-  for (const target of targets.slice(0, count)) w.shots.push(makeThrowShot(w, target));
+  for (const target of targets.slice(0, count)) w.shots.push(throwShotAt(w, target));
   w.ammo -= count;
   w.pickupStats.throws += count;
   const first = targets[0]!,
@@ -270,7 +303,7 @@ function flyShots(w: World, dt: number): void {
   w.shots.length = kept;
 }
 
-export function heroStrikes(w: World, dt: number, wantsThrow: boolean): void {
+export function heroStrikes(w: World, dt: number, wantsThrow: boolean, throwAt?: { readonly x: number; readonly y: number }): void {
   const h = w.hero;
   mend(w, dt);
   tickBrands(w, dt);
@@ -280,7 +313,7 @@ export function heroStrikes(w: World, dt: number, wantsThrow: boolean): void {
   h.butt -= dt;
   if (h.throwing > 0) h.throwing -= dt;
   if (h.hopTime > 0) return;
-  if (wantsThrow && h.throwing <= 0) throwNow(w);
+  if ((wantsThrow || throwAt) && h.throwing <= 0) throwNow(w, throwAt);
 
   if (w.weapon.kind === 'staff' || w.weapon.kind === 'rod') {
     h.swing = Math.max(0, h.swing);

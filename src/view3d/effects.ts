@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import type { SpellData } from '../data/spells';
 import type { Monster, World } from '../sim/world';
 import { circleRingTexture, circleSigilTexture, glowTexture, lightMaterial } from './glyphs';
 import type { Particles } from './particles';
@@ -47,19 +46,21 @@ export class Effects {
     return g;
   }
 
-  /**
-   * Superhot targeting: a turning magic circle under every creature the spell can reach, sized to the
-   * blast for area spells; the circle under the creature nearest the pointer burns brighter.
-   */
-  showTargets(spell: SpellData | undefined, targets: readonly Monster[], time: number, focus?: Monster): void {
-    const count = spell ? targets.length : 0;
+  /** Turning circles under valid targets; the one nearest the pointer burns brighter. */
+  showTargets(
+    targets: readonly Monster[],
+    time: number,
+    focus: Monster | undefined,
+    style?: { readonly colour: string; readonly radius: (monster: Monster) => number },
+  ): void {
+    const count = style ? targets.length : 0;
     while (this.circles.length < count) this.circles.push(this.makeCircle());
-    const colour = new THREE.Color(spell?.colour ?? '#ffffff');
+    const colour = new THREE.Color(style?.colour ?? '#ffffff');
     this.circles.forEach((g, i) => {
       const m = targets[i];
-      g.visible = Boolean(spell && m && i < count);
-      if (!g.visible || !m || !spell) return;
-      const radius = Math.max(0.55, (spell.radius ?? 0) || m.stats.radius + 0.35);
+      g.visible = Boolean(style && m && i < count);
+      if (!g.visible || !m || !style) return;
+      const radius = Math.max(0.55, style.radius(m));
       const bright = m === focus ? 1.35 : 1;
       const pulse = 1 + Math.sin(time * 5 + i) * 0.04;
       g.position.set(m.x, 0.04, m.y);

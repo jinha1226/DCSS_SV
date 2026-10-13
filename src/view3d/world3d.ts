@@ -54,6 +54,7 @@ export interface View3D {
   readonly targets?: readonly Monster[];
   /** The creature nearest the pointer while aiming, drawn with a brighter circle. */
   readonly focus?: Monster;
+  readonly throwAim?: { readonly targets: readonly Monster[]; readonly focus?: Monster };
   readonly stairProgress: number;
 }
 
@@ -292,7 +293,15 @@ export class World3D {
     this.effects.syncMissiles(w, between, this.time, dt);
     this.lootView.syncLoot(w, this.time);
     this.lootView.syncMarkers(w, w.descending / DUNGEON.descend, w.descending > 0 ? stair : undefined, objective, this.time);
-    this.effects.showTargets(view.targetingSpell, view.targets ?? [], this.time, view.focus);
+    const targetStyle = view.targetingSpell
+      ? {
+          colour: view.targetingSpell.colour,
+          radius: (monster: Monster): number => view.targetingSpell?.radius || monster.stats.radius + 0.35,
+        }
+      : view.throwAim
+        ? { colour: '#ffff55', radius: (monster: Monster): number => monster.stats.radius + 0.35 }
+        : undefined;
+    this.effects.showTargets(view.throwAim?.targets ?? view.targets ?? [], this.time, view.throwAim?.focus ?? view.focus, targetStyle);
     this.effects.update(dt);
     this.particles.update(dt);
 

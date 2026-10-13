@@ -28,6 +28,7 @@ export interface View {
   /** The hero's walk, made from its standing tile. */
   readonly heroWalk: WalkSheet;
   readonly targetingSpell?: SpellData;
+  readonly throwAim?: { readonly targets: readonly Monster[]; readonly focus?: Monster };
   /** The layered 8-facing hero (?sprite=haven); the DCSS tile walk is used when absent. */
   readonly heroSprite?: { readonly sprites: HeroSprites; readonly pose: HeroPose };
 }
@@ -292,12 +293,13 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
     drawTile(ctx, atlas.image, tile, -px * 0.26, -px * 0.26, px * 0.52);
     ctx.restore();
   }
-  if (view.targetingSpell) {
-    for (const target of spellCandidates(w, view.targetingSpell)) {
+  if (view.targetingSpell || view.throwAim) {
+    const targets = view.throwAim?.targets ?? spellCandidates(w, view.targetingSpell!);
+    for (const target of targets) {
       const tx = ox + target.x * px;
       const ty = oy + target.y * px;
-      ctx.strokeStyle = view.targetingSpell.colour;
-      ctx.lineWidth = Math.max(2, px * 0.075);
+      ctx.strokeStyle = view.throwAim ? '#ffff55' : view.targetingSpell!.colour;
+      ctx.lineWidth = Math.max(2, px * (target === view.throwAim?.focus ? 0.11 : 0.075));
       ctx.beginPath();
       ctx.arc(tx, ty, px * 0.48, 0, Math.PI * 2);
       ctx.stroke();

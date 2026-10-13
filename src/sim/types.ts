@@ -377,6 +377,7 @@ export interface Input {
   readonly mx: number;
   readonly my: number;
   readonly throw?: boolean;
+  readonly throwAt?: { readonly x: number; readonly y: number };
   readonly hop?: boolean;
   readonly spell?: { readonly id: string; readonly x: number; readonly y: number };
 }
