@@ -9,6 +9,31 @@ import type { Figure, HeroFigure, HeroLook } from './actors';
 export const TILE_HEIGHT = 1.12;
 const BIG: Readonly<Record<string, number>> = { ogre: 1.45, hydra: 1.4, lair_yak: 1.3, swamp_drake: 1.25 };
 const FLASH = 0.16;
+/**
+ * How far (world units, along the line of sight) a figure is drawn nearer the camera than it stands.
+ * A camera-facing tile leans back about as far as it is tall, so beside a wall behind it the wall's
+ * face reaches up to ~0.6 nearer the camera than the tile and would swallow its head. The top of a
+ * wall in front is always more than 0.9 nearer than the figure's feet, so at 0.7 that wall still hides
+ * the legs of whoever stands behind it.
+ */
+const FIGURE_PULL = 0.7;
+
+/**
+ * A sprite material whose figure is drawn FIGURE_PULL nearer the camera: each corner slides along its
+ * own line of sight, so it covers exactly the same pixels and only its depth changes.
+ */
+function pulledSpriteMaterial(map: THREE.Texture): THREE.SpriteMaterial {
+  const material = new THREE.SpriteMaterial({ map, transparent: true, alphaTest: 0.35 });
+  material.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader.replace(
+      'gl_Position = projectionMatrix * mvPosition;',
+      `mvPosition.xyz *= max( 0.05, ( - mvPosition.z - ${FIGURE_PULL.toFixed(2)} ) / - mvPosition.z );
+	gl_Position = projectionMatrix * mvPosition;`,
+    );
+  };
+  material.customProgramCacheKey = () => 'pulled-figure';
+  return material;
+}
 
 /** A canvas holding one or more tile frames side by side, made into a crisp texture. */
 function frames(source: Sheet, x: number, y: number, w: number, h: number): THREE.CanvasTexture {
@@ -89,10 +114,7 @@ export class TileFigure implements Figure {
     size: number,
   ) {
     this.size = size;
-    // A camera-facing tile leans back as far as it is tall, so beside a wall behind it its head would
-    // sink into the wall block. Figures are drawn over the terrain instead, as in the flat 2D view;
-    // the figures themselves are still sorted back to front.
-    this.material = new THREE.SpriteMaterial({ map: normal, transparent: true, alphaTest: 0.35, depthTest: false });
+    this.material = pulledSpriteMaterial(normal);
     this.sprite = new THREE.Sprite(this.material);
     this.sprite.center.set(0.5, 0.04);
     this.sprite.renderOrder = 2;
