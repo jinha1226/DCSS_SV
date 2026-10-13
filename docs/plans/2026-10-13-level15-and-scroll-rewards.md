@@ -3,6 +3,8 @@
 작성일: 2026-10-13
 대상: Codex 구현, Claude 검토
 기준: `main` 880bc34
+> **보류 (2026-10-13 16:45)**: 레벨업 보상이 "두루마리 세 장"에서 "부위 강화"로 바뀌었다([SKILL_TRAINING.md](../SKILL_TRAINING.md) §4). 만렙(15 또는 27)도 사용자가 다시 정하는 중이다. 이 계획서의 §2~§6은 정해지면 다시 쓴다. 그 전에는 구현하지 않는다. §1(숙련 상한 15, 필요 숙련 2×)은 그대로 유효하다.
+
 기획 근거: [SKILL_TRAINING.md](../SKILL_TRAINING.md) §1, §2 마법 규칙, §4. [MAGIC_DESIGN.md](../MAGIC_DESIGN.md) §1-1의 필요 레벨 식.
 
 먼저 읽을 것: [DEVELOPMENT_GUARDRAILS.md](../DEVELOPMENT_GUARDRAILS.md). 특히 형식 검사(`npm run format`), 500줄 제한, `src/sim`은 DOM을 모른다는 규칙, 커밋을 연달아 push하지 않는다는 규칙.
