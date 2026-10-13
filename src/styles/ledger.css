@@ -117,6 +117,20 @@
 
 /* ---------- header and tabs ---------- */
 
+/* Each part keeps its own row, so the hidden tab bar on a wide screen does not shift the others. */
+.lg-head {
+  grid-row: 1;
+}
+.lg-tabs {
+  grid-row: 2;
+}
+.lg-body {
+  grid-row: 3;
+}
+.lg-detail {
+  grid-row: 4;
+}
+
 .lg-head {
   display: flex;
   align-items: baseline;
@@ -375,6 +389,14 @@
 
 .lg-desc p {
   margin: 0;
+}
+
+/* The DCSS description itself, above the numbers, as the game's item screens show it. */
+.lg-desc .lg-lore {
+  margin: 2px 0 6px;
+  max-width: 72ch;
+  color: var(--c-plain);
+  white-space: pre-line;
 }
 
 .lg-desc-icon {

@@ -1,3 +1,4 @@
+import { effectLines, itemLore } from '../data/itemLore';
 import { brandData } from '../data/items';
 import { TILE_SIZE, tileRect, type TileName } from '../data/tiles';
 import { CONSUMABLES, dropConsumable, useConsumable, type ConsumableId } from '../sim/consumables';
@@ -233,7 +234,7 @@ export function makeLedger(root: HTMLElement, atlas: Atlas, canOpen: () => boole
   };
 
   /** What the chosen item is and what can be done with it, as [key] action pairs. */
-  const describe = (w: World): { lines: string[]; moves: Move[]; name: string; tile?: TileName } | undefined => {
+  const describe = (w: World): { lines: string[]; moves: Move[]; name: string; tile?: TileName; lore?: string } | undefined => {
     if (!selected) return undefined;
     const weaponLines = (weapon: World['weapon']): string[] => {
       const damage = weapon.damage + (weapon.enchantment ?? 0) + weaponOption(weapon, 'damage');
@@ -242,8 +243,18 @@ export function makeLedger(root: HTMLElement, atlas: Atlas, canOpen: () => boole
         `속성 ${brandData(weapon.brand)?.name ?? '없음'}${weapon.special ? ' · 아티팩트' : ''}`,
       ];
     };
+    const loreOf = (id: string | undefined): { lore?: string } => {
+      const lore = id ? itemLore(id) : undefined;
+      return lore ? { lore } : {};
+    };
     if (selected === 'slot:weapon' || selected === w.weapon.uid) {
-      return { name: w.weapon.name, tile: w.weapon.tile, lines: [...weaponLines(w.weapon), '지금 들고 있는 무기입니다.'], moves: [] };
+      return {
+        name: w.weapon.name,
+        tile: w.weapon.tile,
+        lines: [...weaponLines(w.weapon), '지금 들고 있는 무기입니다.'],
+        moves: [],
+        ...loreOf(w.weapon.baseId),
+      };
     }
     if (selected.startsWith('slot:') || selected === 'offhand-equipped') {
       const slot = (selected === 'offhand-equipped' ? 'offhand' : selected.slice(5)) as GearSlot;
@@ -253,7 +264,8 @@ export function makeLedger(root: HTMLElement, atlas: Atlas, canOpen: () => boole
       return {
         name: row.name,
         ...(row.tile ? { tile: row.tile } : {}),
-        lines: [`${row.slot}에 착용 중${w.cursedGear.has(worn) ? ' · 저주받음' : ''}`],
+        lines: [...effectLines(worn), `${row.slot}에 착용 중${w.cursedGear.has(worn) ? ' · 저주받음' : ''}`],
+        ...loreOf(worn),
         moves: [
           { key: 'r', label: '벗기', run: () => (unequipGear(w, slot) ? '장비를 벗었습니다.' : '저주받은 장비는 벗을 수 없습니다.') },
         ],
@@ -270,6 +282,7 @@ export function makeLedger(root: HTMLElement, atlas: Atlas, canOpen: () => boole
       return {
         ...base,
         lines: [...weaponLines(stored.weapon), `지금 무기보다 ${compared >= 0 ? '+' : ''}${compared.toFixed(1)}`],
+        ...loreOf(stored.weapon.baseId),
         moves: [
           { key: 'e', label: '장착', run: () => (equipStoredWeapon(w, stored.uid), (selected = ''), '무기를 바꿔 들었습니다.') },
           { key: 'd', label: '버리기', run: () => (dropStoredWeapon(w, stored.uid), (selected = ''), '무기를 버렸습니다.') },
@@ -279,7 +292,8 @@ export function makeLedger(root: HTMLElement, atlas: Atlas, canOpen: () => boole
     if (stored.kind === 'gear') {
       return {
         ...base,
-        lines: ['장비 · 착용하면 효과가 납니다.'],
+        lines: [...effectLines(stored.id), '장비 · 착용하면 효과가 납니다.'],
+        ...loreOf(stored.id),
         moves: [
           {
             key: 'e',
@@ -318,7 +332,11 @@ export function makeLedger(root: HTMLElement, atlas: Atlas, canOpen: () => boole
       run: () =>
         dropConsumable(w, stored.id as ConsumableId) ? itemDisplayName(w, stored.id) + ' 1개를 버렸습니다.' : '버릴 수 없습니다.',
     });
-    return { ...base, lines: [`소모품 · ${stored.count}개${w.identifiedItems.has(stored.id) ? '' : ' · 미감정'}`], moves };
+    if (!w.identifiedItems.has(stored.id)) {
+      const unknown = '아직 감정하지 않았다. 써 보거나 감정 두루마리로 정체를 밝힐 수 있다.';
+      return { ...base, lines: [`소모품 · ${stored.count}개 · 미감정`], moves, lore: unknown };
+    }
+    return { ...base, lines: [...effectLines(stored.id), `소모품 · ${stored.count}개`], moves, ...loreOf(stored.id) };
   };
 
   const renderDetail = (w: World): void => {
@@ -329,6 +347,7 @@ export function makeLedger(root: HTMLElement, atlas: Atlas, canOpen: () => boole
       card.append(tileCanvas(atlas, info.tile, 'lg-desc-icon'));
       const text = el('div');
       text.append(el('b', 'tone-hi', info.name));
+      if (info.lore) text.append(el('p', 'lg-lore', info.lore));
       for (const line of info.lines) text.append(el('p', '', line));
       card.append(text);
       const actions = el('div', 'lg-actions');
