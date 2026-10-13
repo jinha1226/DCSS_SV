@@ -28,11 +28,14 @@ describe('aim state', () => {
     expect(aimRelease(w, dragged)).toEqual({ throwAt: { x: second.x, y: second.y } });
   });
 
-  it('releases a throw toward empty floor', () => {
+  it('clears focus after dragging to empty floor and releases toward that point', () => {
     const w = arena();
+    const target = spawnMonster(w, 'goblin', 13, 10, true);
     const point = { x: 16, y: 16 };
-    const state = aimPress(w, startAim(w, { kind: 'throw' }), point);
+    const pressed = aimPress(w, startAim(w, { kind: 'throw' }), target);
+    const state = aimDrag(w, pressed, point);
 
+    expect(state.focus).toBeUndefined();
     expect(aimRelease(w, state)).toEqual({ throwAt: point });
   });
 
@@ -45,7 +48,17 @@ describe('aim state', () => {
     expect(started.focus).toBe(spellCandidates(w, spellData('focus_ray'))[0]);
     expect(aimRelease(w, pressed)).toBeUndefined();
     expect(pressed.aim).toBe(started.aim);
-    expect(pressed.focus).toBe(started.focus);
+    expect(pressed.focus).toBeUndefined();
+  });
+
+  it('uses the screen-picked monster for focus and release', () => {
+    const w = arena();
+    const target = spawnMonster(w, 'goblin', 13, 10, true);
+    const behind = { x: 13, y: 8 };
+    const pressed = aimPress(w, startAim(w, { kind: 'throw' }), behind, target);
+
+    expect(pressed.focus).toBe(target);
+    expect(aimRelease(w, pressed)).toEqual({ throwAt: { x: target.x, y: target.y } });
   });
 
   it('confirms the focused throw target and falls back to automatic throwing without one', () => {

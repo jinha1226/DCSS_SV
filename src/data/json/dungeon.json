@@ -21,5 +21,5 @@
   "spellRequirementStep": 3,
   "magicTierMaxLevel": [3, 6, 9],
   "magicDropChance": 0.25,
-  "superhotSlow": 0.15
+  "superhotSlow": 0.06
 }

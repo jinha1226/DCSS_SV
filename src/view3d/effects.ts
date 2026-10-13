@@ -22,6 +22,10 @@ export class Effects {
   private readonly flares: Flare[] = [];
   private readonly circles: THREE.Group[] = [];
   private readonly targetMarker = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.25, 4), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+  private readonly aimPoint = new THREE.Mesh(
+    new THREE.RingGeometry(0.08, 0.13, 16),
+    new THREE.MeshBasicMaterial({ color: 0xffff55, transparent: true, opacity: 0.9, depthWrite: false }),
+  );
   private readonly shotMeshes = new Map<object, THREE.Object3D>();
   private readonly clouds = new Map<object, THREE.Mesh>();
   private readonly visuals = new Map<object, THREE.Object3D>();
@@ -30,7 +34,11 @@ export class Effects {
     this.targetMarker.rotation.z = Math.PI;
     this.targetMarker.renderOrder = 4;
     this.targetMarker.visible = false;
-    this.group.add(this.targetMarker);
+    this.aimPoint.rotation.x = -Math.PI / 2;
+    this.aimPoint.position.y = 0.045;
+    this.aimPoint.renderOrder = 4;
+    this.aimPoint.visible = false;
+    this.group.add(this.targetMarker, this.aimPoint);
   }
 
   // ---------- magic circles ----------
@@ -83,6 +91,12 @@ export class Effects {
       this.targetMarker.position.set(focus.x, 1.4 + Math.sin(time * 6) * 0.06, focus.y);
       (this.targetMarker.material as THREE.MeshBasicMaterial).color.set(style.colour);
     }
+  }
+
+  /** Marks an aimed empty floor point when no creature is selected. */
+  showAimPoint(point: { readonly x: number; readonly y: number } | undefined): void {
+    this.aimPoint.visible = Boolean(point);
+    if (point) this.aimPoint.position.set(point.x, 0.045, point.y);
   }
 
   // ---------- one-off flares ----------

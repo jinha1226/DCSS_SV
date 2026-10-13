@@ -40,6 +40,7 @@ const HIT_COLOURS: Record<string, number> = {
   thorns: 0xd8a6ff,
 };
 
+export const ndcFromUnit = (u: number, v: number): THREE.Vector2 => new THREE.Vector2(u * 2 - 1, -(v * 2 - 1));
 interface Creature {
   actor?: Figure;
   readonly look: Look;
@@ -54,7 +55,11 @@ export interface View3D {
   readonly targets?: readonly Monster[];
   /** The creature nearest the pointer while aiming, drawn with a brighter circle. */
   readonly focus?: Monster;
-  readonly throwAim?: { readonly targets: readonly Monster[]; readonly focus?: Monster };
+  readonly throwAim?: {
+    readonly targets: readonly Monster[];
+    readonly focus?: Monster;
+    readonly point?: { readonly x: number; readonly y: number };
+  };
   readonly stairProgress: number;
 }
 
@@ -92,7 +97,7 @@ export class World3D {
   private building = false;
 
   constructor(
-    private readonly canvas: HTMLCanvasElement,
+    canvas: HTMLCanvasElement,
     private readonly atlas: Atlas,
     private readonly quality: 'high' | 'low',
     /** 'tiles' stands DCSS tiles on the 3D floor; 'models' uses the rigged KayKit and Quaternius figures. */
@@ -165,14 +170,20 @@ export class World3D {
     this.scene.add(this.hero.root);
   }
 
-  /** Point on the floor under a canvas pixel, in floor units. */
-  pick(px: number, py: number): { x: number; y: number } | undefined {
-    const ndc = new THREE.Vector2((px / this.canvas.width) * 2 - 1, -(py / this.canvas.height) * 2 + 1);
+  /** Point on the floor under the pointer. u and v are fractions of the canvas box. */
+  pick(u: number, v: number): { x: number; y: number } | undefined {
     const ray = new THREE.Raycaster();
-    ray.setFromCamera(ndc, this.camera);
+    ray.setFromCamera(ndcFromUnit(u, v), this.camera);
     const hit = new THREE.Vector3();
     if (!ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), hit)) return undefined;
     return { x: hit.x, y: hit.z };
+  }
+
+  /** Where a point above the floor lands on the canvas, as fractions of the canvas box. */
+  project(x: number, z: number, height: number): { u: number; v: number } | undefined {
+    const point = new THREE.Vector3(x, height, z).project(this.camera);
+    if (point.z > 1) return undefined;
+    return { u: point.x * 0.5 + 0.5, v: -point.y * 0.5 + 0.5 };
   }
 
   resize(width: number, height: number, dpr: number): void {
@@ -302,6 +313,7 @@ export class World3D {
         ? { colour: '#ffff55', radius: (monster: Monster): number => monster.stats.radius + 0.35 }
         : undefined;
     this.effects.showTargets(view.throwAim?.targets ?? view.targets ?? [], this.time, view.throwAim?.focus ?? view.focus, targetStyle);
+    this.effects.showAimPoint(view.throwAim?.focus ? undefined : view.throwAim?.point);
     this.effects.update(dt);
     this.particles.update(dt);
 

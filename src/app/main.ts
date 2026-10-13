@@ -97,7 +97,14 @@ async function start(): Promise<void> {
     world3d,
     () => viewCols,
   );
-  const aim = makeAiming(canvas, floorPoint, () => world, spellButtons);
+  const aim = makeAiming(
+    canvas,
+    floorPoint,
+    () => world,
+    spellButtons,
+    world3d,
+    () => viewCols,
+  );
 
   const begin = (character: CharacterChoice): void => {
     selected = character;

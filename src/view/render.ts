@@ -29,7 +29,11 @@ export interface View {
   readonly heroWalk: WalkSheet;
   readonly targetingSpell?: SpellData;
   readonly focus?: Monster;
-  readonly throwAim?: { readonly targets: readonly Monster[]; readonly focus?: Monster };
+  readonly throwAim?: {
+    readonly targets: readonly Monster[];
+    readonly focus?: Monster;
+    readonly point?: { readonly x: number; readonly y: number };
+  };
   /** The layered 8-facing hero (?sprite=haven); the DCSS tile walk is used when absent. */
   readonly heroSprite?: { readonly sprites: HeroSprites; readonly pose: HeroPose };
 }
@@ -319,6 +323,15 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
         ctx.fill();
       }
       ctx.restore();
+    }
+    if (view.throwAim?.point && !focus) {
+      const tx = ox + view.throwAim.point.x * px;
+      const ty = oy + view.throwAim.point.y * px;
+      ctx.strokeStyle = colour;
+      ctx.lineWidth = Math.max(2, px * 0.08);
+      ctx.beginPath();
+      ctx.arc(tx, ty, px * 0.13, 0, Math.PI * 2);
+      ctx.stroke();
     }
   } else {
     const target = bowTarget(w) ?? throwTarget(w);

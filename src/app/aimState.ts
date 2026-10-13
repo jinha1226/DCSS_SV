@@ -18,12 +18,58 @@ export interface AimState {
   readonly point?: { readonly x: number; readonly y: number };
 }
 
-function targetAt(w: World, state: AimState, point: { readonly x: number; readonly y: number }): Monster | undefined {
-  return state.aim.kind === 'throw' ? throwAimTarget(w, point.x, point.y) : spellAtPoint(w, spellData(state.aim.id), point.x, point.y);
+interface ScreenPoint {
+  readonly u: number;
+  readonly v: number;
 }
 
-function pointState(w: World, state: AimState, point: { readonly x: number; readonly y: number }, pressing: boolean): AimState {
-  return { ...state, focus: targetAt(w, state, point) ?? state.focus, pressing, point };
+/** Picks the creature whose projected body is nearest the pointer. */
+export function nearestOnScreen(
+  candidates: readonly Monster[],
+  pointer: ScreenPoint,
+  project: (monster: Monster, height: number) => ScreenPoint | undefined,
+  aspect: number,
+  maxDistance = 0.07,
+): Monster | undefined {
+  let nearest: Monster | undefined;
+  let best = maxDistance;
+  for (const monster of candidates) {
+    const foot = project(monster, 0);
+    const body = project(monster, 0.55);
+    if (!foot || !body) continue;
+    const ax = (foot.u - pointer.u) * aspect;
+    const ay = foot.v - pointer.v;
+    const bx = (body.u - pointer.u) * aspect;
+    const by = body.v - pointer.v;
+    const dx = bx - ax;
+    const dy = by - ay;
+    const lengthSquared = dx * dx + dy * dy;
+    const t = lengthSquared > 0 ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / lengthSquared)) : 0;
+    const distance = Math.hypot(ax + dx * t, ay + dy * t);
+    if (distance <= best) {
+      best = distance;
+      nearest = monster;
+    }
+  }
+  return nearest;
+}
+
+function targetAt(w: World, state: AimState, point: { readonly x: number; readonly y: number }, picked?: Monster): Monster | undefined {
+  return (
+    picked ??
+    (state.aim.kind === 'throw' ? throwAimTarget(w, point.x, point.y) : spellAtPoint(w, spellData(state.aim.id), point.x, point.y))
+  );
+}
+
+function pointState(
+  w: World,
+  state: AimState,
+  point: { readonly x: number; readonly y: number },
+  pressing: boolean,
+  picked?: Monster,
+): AimState {
+  const focus = targetAt(w, state, point, picked);
+  return { ...state, focus: pressing ? focus : (focus ?? state.focus), pressing, point };
 }
 
 export function startAim(w: World, aim: Aim): AimState {
@@ -31,25 +77,24 @@ export function startAim(w: World, aim: Aim): AimState {
   return { aim, focus, pressing: false };
 }
 
-export function aimHover(w: World, state: AimState, point: { readonly x: number; readonly y: number }): AimState {
-  return state.pressing ? state : pointState(w, state, point, false);
+export function aimHover(w: World, state: AimState, point: { readonly x: number; readonly y: number }, picked?: Monster): AimState {
+  return state.pressing ? state : pointState(w, state, point, false, picked);
 }
 
-export function aimPress(w: World, state: AimState, point: { readonly x: number; readonly y: number }): AimState {
-  return pointState(w, state, point, true);
+export function aimPress(w: World, state: AimState, point: { readonly x: number; readonly y: number }, picked?: Monster): AimState {
+  return pointState(w, state, point, true, picked);
 }
 
-export function aimDrag(w: World, state: AimState, point: { readonly x: number; readonly y: number }): AimState {
-  return state.pressing ? pointState(w, state, point, true) : state;
+export function aimDrag(w: World, state: AimState, point: { readonly x: number; readonly y: number }, picked?: Monster): AimState {
+  return state.pressing ? pointState(w, state, point, true, picked) : state;
 }
 
-export function aimRelease(w: World, state: AimState): AimResult | undefined {
+export function aimRelease(_w: World, state: AimState): AimResult | undefined {
   if (!state.point) return undefined;
-  const target = targetAt(w, state, state.point);
   if (state.aim.kind === 'throw') {
-    return target ? { throwAt: { x: target.x, y: target.y } } : { throwAt: state.point };
+    return state.focus ? { throwAt: { x: state.focus.x, y: state.focus.y } } : { throwAt: state.point };
   }
-  return target ? { spell: { id: state.aim.id, x: target.x, y: target.y } } : undefined;
+  return state.focus ? { spell: { id: state.aim.id, x: state.focus.x, y: state.focus.y } } : undefined;
 }
 
 export function aimConfirm(_w: World, state: AimState): AimResult | undefined {
