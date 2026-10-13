@@ -89,3 +89,11 @@ export function skillData(id: string): SkillData {
   if (!found) throw new Error('skills.json: ' + id + ': 없는 스킬');
   return found;
 }
+
+/** The perks a skill opens on the way from one level to another, in level order. */
+export function unlockedPerks(id: string, from: number, to: number): string[] {
+  return skillData(id)
+    .effects.filter((effect) => effect.level !== undefined && from < effect.level && effect.level <= to && effect.text !== undefined)
+    .sort((a, b) => a.level! - b.level!)
+    .map((effect) => effect.text!);
+}

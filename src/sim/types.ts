@@ -264,6 +264,8 @@ export type SimEvent =
   | { readonly type: 'floor'; readonly depth: number }
   | { readonly type: 'rune'; readonly branch: Branch }
   | { readonly type: 'orb' }
+  /** A skill went up: the level it reached, and the level it had before. */
+  | { readonly type: 'skill'; readonly id: string; readonly from: number; readonly level: number }
   /** Something walked over and taken without asking: gold, gear, a consumable, or thrown ammo back. */
   | {
       readonly type: 'pickup';

@@ -5,7 +5,7 @@ import { drawTile, type Atlas } from '../view/atlas';
 import type { TileName } from '../data/tiles';
 import type { World } from '../sim/world';
 
-const ICONS: Readonly<Record<string, string>> = {
+export const SKILL_ICONS: Readonly<Record<string, string>> = {
   fighting: '✦',
   axe: '⚒',
   blade: '⚔',
@@ -46,7 +46,7 @@ export function listedSkills(w: World, includeUntrained = false): SkillDisplay[]
     .map((skill) => ({
       id: skill.id,
       name: skill.name,
-      icon: ICONS[skill.id] ?? '✦',
+      icon: SKILL_ICONS[skill.id] ?? '✦',
       level: w.hero.skills[skill.id] ?? 0,
       description: skill.each,
       progress: w.hero.skillXp[skill.id] ?? 0,

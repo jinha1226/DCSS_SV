@@ -83,6 +83,7 @@ function earnSkillXp(w: World, id: string, amount: number): void {
   if (amount <= 0) return;
   const rate = APTITUDE_RATE[aptitude(w, id)];
   let level = skillLevel(w, id);
+  const before = level;
   let progress = (w.hero.skillXp[id] ?? 0) + amount * rate;
   openSkill(w, id, false);
   while (level < skillCap(w, id) && progress >= skillXpToNext(level)) {
@@ -99,6 +100,7 @@ function earnSkillXp(w: World, id: string, amount: number): void {
   }
   w.hero.skills[id] = level;
   w.hero.skillXp[id] = level >= MAX_SKILL ? 0 : progress;
+  if (level > before) w.events.push({ type: 'skill', id, from: before, level });
 }
 
 export function trainSkills(w: World, amount: number): void {
@@ -208,6 +210,7 @@ export function chooseSkill(w: World, id: string): void {
     w.hero.maxHp += hp;
     w.hero.hp += hp;
   }
+  if (gained > 0) w.events.push({ type: 'skill', id, from: before, level: choice.to });
   w.pendingChoices = Math.max(0, w.pendingChoices - 1);
   w.choosing = null;
   deal(w);

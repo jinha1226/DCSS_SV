@@ -922,6 +922,30 @@ button:focus-visible {
   color: var(--gold-hi);
 }
 
+.pickup-line.skill {
+  max-width: min(90vw, 420px);
+  border-color: #2a6a6a;
+  color: var(--cyan);
+  white-space: normal;
+}
+
+.pickup-glyph {
+  width: 28px;
+  font-size: 18px;
+  text-align: center;
+}
+
+.pickup-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.pickup-perk {
+  color: var(--good);
+  font: 400 12px var(--mono);
+}
+
 .pickup-line.bump {
   animation: pickup-bump 0.25s var(--ease-back);
 }
