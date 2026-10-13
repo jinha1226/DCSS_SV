@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { plainWeapon } from '../../src/data/items';
 import { spellData } from '../../src/data/spells';
 import { DUNGEON } from '../../src/data/packs';
@@ -14,6 +14,23 @@ function grant(w: ReturnType<typeof makeWorld>, id: SlotId, resist?: 'fire' | 'c
 }
 
 describe('level cap and ordered reward schedule', () => {
+  // Slot enhancement is switched off in the data for now; these check the path for when it is on.
+  const rewards = DUNGEON.levelRewards as { slot: boolean };
+  beforeEach(() => {
+    rewards.slot = true;
+  });
+  afterEach(() => {
+    rewards.slot = false;
+  });
+
+  it('queues only acquirement while slot enhancement is switched off', () => {
+    rewards.slot = false;
+    const w = makeWorld({ monsters: false, items: false });
+    for (let level = 1; level < 9; level++) gainExperience(w, xpToNext(w.hero.level));
+    expect(w.hero.level).toBe(9);
+    expect(w.pendingRewards).toEqual(['acquire']);
+  });
+
   it('stops at level 27 and no longer stores character XP', () => {
     const w = makeWorld({ monsters: false, items: false });
     const throughCap = Array.from({ length: DUNGEON.levelCap - 1 }, (_, i) => xpToNext(i + 1)).reduce((a, b) => a + b, 0);

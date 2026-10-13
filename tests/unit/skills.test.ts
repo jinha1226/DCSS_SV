@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { DUNGEON } from '../../src/data/packs';
 import { plainAxe, plainBow } from '../../src/data/items';
 import { hurtHero } from '../../src/sim/effects';
 import { recordKill } from '../../src/sim/kills';
@@ -123,6 +124,14 @@ describe('automatic skill training', () => {
 });
 
 describe('level rewards', () => {
+  // Slot enhancement is switched off in the data for now; these check the path for when it is on.
+  const rewards = DUNGEON.levelRewards as { slot: boolean };
+  beforeEach(() => {
+    rewards.slot = true;
+  });
+  afterEach(() => {
+    rewards.slot = false;
+  });
   it('replaces the old three item cards with a mandatory slot reward and pauses simulation time', () => {
     const w = arena();
     gainExperience(w, xpToNext(1));

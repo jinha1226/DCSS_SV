@@ -13,7 +13,7 @@
   "levelXpBase": 6,
   "levelXpStep": 4,
   "levelCap": 27,
-  "levelRewards": { "acquire": [9, 18, 27] },
+  "levelRewards": { "slot": false, "acquire": [9, 18, 27] },
   "acquireRandartChance": 0.7,
   "floorLimit": 180,
   "overdueBandEvery": 5,

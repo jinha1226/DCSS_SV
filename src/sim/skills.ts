@@ -180,7 +180,8 @@ export function gainExperience(w: World, amount: number): void {
   while (w.hero.level < DUNGEON.levelCap && w.hero.xp >= xpToNext(w.hero.level)) {
     w.hero.xp -= xpToNext(w.hero.level);
     w.hero.level++;
-    w.pendingRewards.push('slot');
+    // Slot enhancement on every level is switched off for now (levelRewards.slot in dungeon.json).
+    if (DUNGEON.levelRewards.slot) w.pendingRewards.push('slot');
     if (DUNGEON.levelRewards.acquire.includes(w.hero.level)) w.pendingRewards.push('acquire');
   }
   if (w.hero.level >= DUNGEON.levelCap) w.hero.xp = 0;
