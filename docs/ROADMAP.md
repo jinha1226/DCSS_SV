@@ -5,6 +5,7 @@
 
 관련 문서
 - 근거 조사: [research/2026-10-13-dcss-popular-builds.md](research/2026-10-13-dcss-popular-builds.md)
+- 원작과의 비교(무엇을 얼마나 담았나): [research/2026-10-13-dcss-coverage.md](research/2026-10-13-dcss-coverage.md)
 - 라이선스와 출처: [CREDITS.md](CREDITS.md), [TILES.md](TILES.md)
 - 작업 규칙: [DEVELOPMENT_GUARDRAILS.md](DEVELOPMENT_GUARDRAILS.md)
 - 진행 기록: [IMPLEMENTATION_2RUNE.md](IMPLEMENTATION_2RUNE.md)
