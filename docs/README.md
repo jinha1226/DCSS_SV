@@ -6,6 +6,7 @@
 
 | 문서 | 내용 |
 | --- | --- |
+| [ROADMAP.md](ROADMAP.md) | **큰 방향과 전체 로드맵**: 타겟, 배포 단계(웹 알파 → 레딧 → 스팀), DCSS 데이터 적용 규칙, 아직 없는 시스템(저장·신앙·다국어·몬스터 등), 다음 구현계획서 순서 |
 | [DEVELOPMENT_GUARDRAILS.md](DEVELOPMENT_GUARDRAILS.md) | 작업 규칙과 불변 조건. 코드를 고치기 전에 반드시 읽는다 |
 | [IMPLEMENTATION_2RUNE.md](IMPLEMENTATION_2RUNE.md) | 현재 로드맵(24층·2룬, 01~08 단계)과 진행·검증 기록 |
 | [SKILL_TRAINING.md](SKILL_TRAINING.md) | 현재 성장 기획: 스킬 20개(상한 27), 주손/보조손, 장비 기반 훈련, 레벨업 보상(부위 강화·획득). §6에 사용자가 정할 것. 구현계획은 [plans/2026-10-13-level27-slot-enhancement.md](plans/2026-10-13-level27-slot-enhancement.md) |
