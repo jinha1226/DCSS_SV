@@ -1,5 +1,7 @@
 import jobsRaw from '../data/json/jobs.json';
 import speciesRaw from '../data/json/species.json';
+import recommendedRaw from '../data/json/recommended.json';
+import { itemDefinition } from '../data/itemCatalog';
 import { plainWeapon } from '../data/items';
 import { skillData } from '../data/skills';
 import { type Atlas } from '../view/atlas';
@@ -78,7 +80,10 @@ export function makeCharacterSelect(root: HTMLElement, atlas: Atlas, choose: (ch
 
     for (const job of jobsRaw) {
       const weapon = plainWeapon(job.startingWeapon);
-      const gear = 'startingArmour' in job && job.startingArmour ? { armour: job.startingArmour } : {};
+      const gear = {
+        ...('startingArmour' in job && job.startingArmour ? { armour: job.startingArmour } : {}),
+        ...('startingOffhand' in job && job.startingOffhand ? { offhand: job.startingOffhand } : {}),
+      };
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'character-card job-card';
@@ -86,6 +91,13 @@ export function makeCharacterSelect(root: HTMLElement, atlas: Atlas, choose: (ch
       const portrait = drawPortrait(layersFor(selectedSpecies.id, job.id, gear, weapon));
       const name = document.createElement('strong');
       name.textContent = job.name;
+      const recommendation = recommendedRaw.find((entry) => entry.species === selectedSpecies!.id && entry.job === job.id);
+      if (recommendation) {
+        const badge = document.createElement('small');
+        badge.className = 'recommendation-badge';
+        badge.textContent = recommendation.label;
+        name.append(' ', badge);
+      }
 
       const details = document.createElement('span');
       details.className = 'choice-details';
@@ -93,7 +105,9 @@ export function makeCharacterSelect(root: HTMLElement, atlas: Atlas, choose: (ch
         .filter(([, level]) => typeof level === 'number' && level > 0)
         .map(([id, level]) => skillData(id).name + ' ' + level)
         .join(' · ');
-      const items = [weapon.name, job.startingAmmo > 0 ? '부메랑 ×' + job.startingAmmo : ''].filter(Boolean).join(' · ');
+      const extras =
+        'startingItems' in job ? (job.startingItems ?? []).map((item) => itemDefinition(item.id).name + ' ×' + item.count) : [];
+      const items = [weapon.name, job.startingAmmo > 0 ? '부메랑 ×' + job.startingAmmo : '', ...extras].filter(Boolean).join(' · ');
       details.innerHTML = '<b>시작 아이템</b> ' + items + '<br><b>시작 스킬</b> ' + skills;
 
       button.append(portrait, name, details);

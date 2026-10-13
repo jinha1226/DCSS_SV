@@ -11,11 +11,15 @@ const BASE: Readonly<Record<string, string>> = {
   minotaur: 'player/base/minotaur_m',
   barachi: 'player/base/frog_m',
   deep_elf: 'player/base/deep_elf_m',
+  gargoyle: 'dcss/player/base/gargoyle_m',
+  troll: 'player/base/troll_m',
+  mountain_dwarf: 'dcss/player/base/dwarf_m',
 };
 const HAIR: Readonly<Record<string, string>> = { deep_elf: 'player/hair/elf_black' };
 
 /** What each job wears when no body armour is on, as DCSS dresses its starting characters. */
 const OUTFIT: Readonly<Record<string, string>> = {
+  fighter: 'player/body/scalemail',
   berserker: 'player/body/animal_skin',
   hunter: 'player/body/leather_jacket',
   spellblade: 'player/body/leather_red',
@@ -32,6 +36,7 @@ const WORN: Readonly<Record<string, string>> = {
   animal_skin: 'player/body/animal_skin',
   leather_armour: 'player/body/leather_armour',
   chain_mail: 'player/body/chainmail',
+  scale_mail: 'player/body/scalemail',
   helmet_iron: 'player/head/iron1',
   cloak_wool: 'player/cloak/gray',
   gloves_leather: 'player/gloves/glove_brown',

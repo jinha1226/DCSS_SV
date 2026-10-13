@@ -41,33 +41,33 @@
   },
   {
     "id": "mountain_dwarf",
-    "name": "산악 드워프",
+    "name": "마운틴 드워프",
     "role": "armoured_caster",
     "identity": "중갑에서 주문 방해 감소",
     "signatureTrait": "armour_casting",
-    "implementation": "planned",
-    "playable": false,
-    "requires": ["equipment", "spellcasting"]
+    "implementation": "ready",
+    "playable": true,
+    "requires": []
   },
   {
     "id": "gargoyle",
     "name": "가고일",
     "role": "tank",
-    "identity": "돌 피부와 독 면역",
+    "identity": "돌 피부와 전기·음에너지 저항",
     "signatureTrait": "stone_skin",
-    "implementation": "planned",
-    "playable": false,
-    "requires": ["resistance", "defence"]
+    "implementation": "ready",
+    "playable": true,
+    "requires": []
   },
   {
     "id": "troll",
     "name": "트롤",
     "role": "bruiser",
-    "identity": "발톱 공격과 빠른 재생",
+    "identity": "높은 체력과 빠른 재생",
     "signatureTrait": "claws_regen",
-    "implementation": "planned",
-    "playable": false,
-    "requires": ["natural_attack", "regeneration"]
+    "implementation": "ready",
+    "playable": true,
+    "requires": []
   },
   {
     "id": "oni",

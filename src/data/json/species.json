@@ -144,5 +144,138 @@
       "hexes": "good",
       "necromancy": "good"
     }
+  },
+  {
+    "id": "gargoyle",
+    "name": "가고일",
+    "tile": "dcss/player/base/gargoyle_m",
+    "hp": 50,
+    "mana": 0,
+    "manaRegen": 0,
+    "radius": 0.35,
+    "speed": 6.5,
+    "sight": 7,
+    "regen": 0.5,
+    "give": 0.3,
+    "walk": {
+      "legs": 25,
+      "mid": 17
+    },
+    "traits": [
+      {
+        "id": "stone_body",
+        "base": 2,
+        "perLevel": 0.4,
+        "lateFrom": 7,
+        "latePerLevel": 0.4,
+        "scale": 0.5
+      }
+    ],
+    "resists": {
+      "electric": 1,
+      "negative": 1
+    },
+    "aptitudes": {
+      "fighting": "normal",
+      "armour": "normal",
+      "dodging": "bad",
+      "shield": "normal",
+      "stealth": "good",
+      "spellcasting": "normal",
+      "throwing": "normal",
+      "blade": "normal",
+      "axe": "normal",
+      "mace": "normal",
+      "polearm": "normal",
+      "unarmed": "normal",
+      "ranged": "normal",
+      "fire": "normal",
+      "ice": "normal",
+      "air": "bad",
+      "earth": "good",
+      "summoning": "normal",
+      "hexes": "normal",
+      "necromancy": "bad"
+    }
+  },
+  {
+    "id": "troll",
+    "name": "트롤",
+    "tile": "player/base/troll_m",
+    "hp": 70,
+    "mana": 0,
+    "manaRegen": 0,
+    "radius": 0.39,
+    "speed": 6.5,
+    "sight": 7,
+    "regen": 1,
+    "give": 0.3,
+    "walk": {
+      "legs": 25,
+      "mid": 17
+    },
+    "traits": [],
+    "aptitudes": {
+      "fighting": "bad",
+      "armour": "bad",
+      "dodging": "bad",
+      "shield": "normal",
+      "stealth": "bad",
+      "spellcasting": "bad",
+      "throwing": "normal",
+      "blade": "bad",
+      "axe": "bad",
+      "mace": "normal",
+      "polearm": "bad",
+      "unarmed": "normal",
+      "ranged": "bad",
+      "fire": "bad",
+      "ice": "bad",
+      "air": "bad",
+      "earth": "normal",
+      "summoning": "bad",
+      "hexes": "bad",
+      "necromancy": "bad"
+    }
+  },
+  {
+    "id": "mountain_dwarf",
+    "name": "마운틴 드워프",
+    "tile": "dcss/player/base/dwarf_m",
+    "hp": 60,
+    "mana": 0,
+    "manaRegen": 0,
+    "radius": 0.35,
+    "speed": 6.5,
+    "sight": 7,
+    "regen": 0.5,
+    "give": 0.3,
+    "walk": {
+      "legs": 25,
+      "mid": 17
+    },
+    "traits": [],
+    "aptitudes": {
+      "fighting": "normal",
+      "armour": "normal",
+      "dodging": "bad",
+      "shield": "normal",
+      "stealth": "bad",
+      "spellcasting": "bad",
+      "throwing": "bad",
+      "blade": "normal",
+      "axe": "good",
+      "mace": "good",
+      "polearm": "normal",
+      "unarmed": "normal",
+      "ranged": "bad",
+      "fire": "good",
+      "ice": "normal",
+      "air": "bad",
+      "earth": "normal",
+      "summoning": "bad",
+      "hexes": "normal",
+      "necromancy": "normal"
+    }
   }
 ]

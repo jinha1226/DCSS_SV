@@ -1,0 +1,27 @@
+[
+  {
+    "species": "minotaur",
+    "job": "berserker",
+    "label": "입문 추천"
+  },
+  {
+    "species": "deep_elf",
+    "job": "fire_mage",
+    "label": "첫 마법사 추천"
+  },
+  {
+    "species": "minotaur",
+    "job": "fighter",
+    "label": "추천"
+  },
+  {
+    "species": "gargoyle",
+    "job": "fighter",
+    "label": "추천"
+  },
+  {
+    "species": "troll",
+    "job": "fighter",
+    "label": "추천"
+  }
+]

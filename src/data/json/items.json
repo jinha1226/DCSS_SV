@@ -1242,6 +1242,23 @@
     "tile": "item/armour/shields/buckler1"
   },
   {
+    "id": "scale_mail",
+    "kind": "armour",
+    "name": "비늘 갑옷",
+    "tile": "dcss/item/armour/scale_mail1",
+    "enabled": true,
+    "useMode": "equip",
+    "stackable": false,
+    "maxStack": 1,
+    "depthWeights": [1, 2, 3],
+    "effects": [
+      {
+        "id": "armour",
+        "power": 3
+      }
+    ]
+  },
+  {
     "id": "chain_mail",
     "kind": "armour",
     "name": "사슬 갑옷",

@@ -1,11 +1,29 @@
 {
   "_source": "Dungeon Crawl Stone Soup, crawl-ref/source/dat/descript/items.txt and ko/items.txt (GPL-2.0+). Entries missing from the Korean file are translated from the English one.",
-  "hand_axe": { "dcss": "hand axe", "text": "작은 도끼다." },
-  "war_axe": { "dcss": "war axe", "text": "자루가 길고 날이 한쪽에만 달린 군용 도끼다." },
-  "battle_axe": { "dcss": "battleaxe", "text": "양쪽에 무시무시한 날이 달린 커다란 전투용 도끼다." },
-  "long_sword": { "dcss": "long sword", "text": "베기 좋은 길쭉한 날을 가진 검이다." },
-  "great_sword": { "dcss": "great sword", "text": "아주 길고 무거운 날과 긴 손잡이를 가진 검이다." },
-  "shortbow": { "dcss": "shortbow", "text": "화살을 쏘기 위해 만든, 굽은 나무와 줄로 된 활이다." },
+  "hand_axe": {
+    "dcss": "hand axe",
+    "text": "작은 도끼다."
+  },
+  "war_axe": {
+    "dcss": "war axe",
+    "text": "자루가 길고 날이 한쪽에만 달린 군용 도끼다."
+  },
+  "battle_axe": {
+    "dcss": "battleaxe",
+    "text": "양쪽에 무시무시한 날이 달린 커다란 전투용 도끼다."
+  },
+  "long_sword": {
+    "dcss": "long sword",
+    "text": "베기 좋은 길쭉한 날을 가진 검이다."
+  },
+  "great_sword": {
+    "dcss": "great sword",
+    "text": "아주 길고 무거운 날과 긴 손잡이를 가진 검이다."
+  },
+  "shortbow": {
+    "dcss": "shortbow",
+    "text": "화살을 쏘기 위해 만든, 굽은 나무와 줄로 된 활이다."
+  },
   "orcbow": {
     "dcss": "orcbow",
     "text": "트롤의 뼈와 와그의 털로 거칠게 만든 만곡궁이다. 지상에 살던 조상들과 달리 동굴 오크들이 활을 쓰게 된 것은 엘프 동맹의 영향이다."
@@ -14,8 +32,14 @@
     "dcss": "longbow",
     "text": "주목나무로 만들어진 강력한 장궁. 적에게 큰 피해를 줄 수 있으며, 숙련된 궁수가 들면 그 진가를 발휘한다."
   },
-  "boomerang": { "dcss": "boomerang", "text": "던지면 사용자에게 되돌아오도록 만든, 굽고 납작한 투척용 막대다." },
-  "stone": { "dcss": "stone", "text": "평범한 돌이다. 던져서 약간의 피해를 줄 수 있다." },
+  "boomerang": {
+    "dcss": "boomerang",
+    "text": "던지면 사용자에게 되돌아오도록 만든, 굽고 납작한 투척용 막대다."
+  },
+  "stone": {
+    "dcss": "stone",
+    "text": "평범한 돌이다. 던져서 약간의 피해를 줄 수 있다."
+  },
   "staff_fire": {
     "dcss": "staff of fire",
     "text": "쥔 사람이 쓰는 화염 주문의 위력을 높이고, 불의 영향으로부터 보호해 주는 지팡이다. 발동술과 화염 마법에 숙련된 사람이 휘두르면 맞은 상대를 불태울 수 있다."
@@ -44,14 +68,38 @@
     "dcss": "staff of necromancy",
     "text": "쥔 사람이 쓰는 강령 주문의 위력을 높이고, 음에너지로부터 보호해 주는 지팡이다. 발동술과 강령술에 숙련된 사람이 휘두르면 살아 있는 상대에게 갑옷을 무시하는 음에너지 고통을 안긴다."
   },
-  "rod_fire": { "dcss": "rod", "text": "화염 주문을 담아 두었다가 꺼내 쓰는 마법봉이다. 쓸 때마다 담긴 힘이 조금씩 소모된다." },
-  "rod_ice": { "dcss": "rod", "text": "냉기 주문을 담아 두었다가 꺼내 쓰는 마법봉이다. 쓸 때마다 담긴 힘이 조금씩 소모된다." },
-  "rod_air": { "dcss": "rod", "text": "대기 주문을 담아 두었다가 꺼내 쓰는 마법봉이다. 쓸 때마다 담긴 힘이 조금씩 소모된다." },
-  "rod_earth": { "dcss": "rod", "text": "대지 주문을 담아 두었다가 꺼내 쓰는 마법봉이다. 쓸 때마다 담긴 힘이 조금씩 소모된다." },
-  "rod_summoning": { "dcss": "rod", "text": "소환 주문을 담아 두었다가 꺼내 쓰는 마법봉이다. 쓸 때마다 담긴 힘이 조금씩 소모된다." },
-  "rod_hexes": { "dcss": "rod", "text": "주술을 담아 두었다가 꺼내 쓰는 마법봉이다. 쓸 때마다 담긴 힘이 조금씩 소모된다." },
-  "rod_necromancy": { "dcss": "rod", "text": "강령 주문을 담아 두었다가 꺼내 쓰는 마법봉이다. 쓸 때마다 담긴 힘이 조금씩 소모된다." },
-  "spellbook_fire": { "dcss": "book of fire", "text": "진의 비밀 학회에서 훔쳐 온, 화염 계열의 고급 주문들이 담긴 책이다." },
+  "rod_fire": {
+    "dcss": "rod",
+    "text": "화염 주문을 담아 두었다가 꺼내 쓰는 마법봉이다. 쓸 때마다 담긴 힘이 조금씩 소모된다."
+  },
+  "rod_ice": {
+    "dcss": "rod",
+    "text": "냉기 주문을 담아 두었다가 꺼내 쓰는 마법봉이다. 쓸 때마다 담긴 힘이 조금씩 소모된다."
+  },
+  "rod_air": {
+    "dcss": "rod",
+    "text": "대기 주문을 담아 두었다가 꺼내 쓰는 마법봉이다. 쓸 때마다 담긴 힘이 조금씩 소모된다."
+  },
+  "rod_earth": {
+    "dcss": "rod",
+    "text": "대지 주문을 담아 두었다가 꺼내 쓰는 마법봉이다. 쓸 때마다 담긴 힘이 조금씩 소모된다."
+  },
+  "rod_summoning": {
+    "dcss": "rod",
+    "text": "소환 주문을 담아 두었다가 꺼내 쓰는 마법봉이다. 쓸 때마다 담긴 힘이 조금씩 소모된다."
+  },
+  "rod_hexes": {
+    "dcss": "rod",
+    "text": "주술을 담아 두었다가 꺼내 쓰는 마법봉이다. 쓸 때마다 담긴 힘이 조금씩 소모된다."
+  },
+  "rod_necromancy": {
+    "dcss": "rod",
+    "text": "강령 주문을 담아 두었다가 꺼내 쓰는 마법봉이다. 쓸 때마다 담긴 힘이 조금씩 소모된다."
+  },
+  "spellbook_fire": {
+    "dcss": "book of fire",
+    "text": "진의 비밀 학회에서 훔쳐 온, 화염 계열의 고급 주문들이 담긴 책이다."
+  },
   "spellbook_ice": {
     "dcss": "book of frost",
     "text": "냉기 원소 마법의 입문서로 흔히 쓰이는 마법책이다. 책장이 유난히 바스러지기 쉬워서, 손만 대도 부서질 것 같다."
@@ -76,17 +124,38 @@
     "dcss": "book of necromancy",
     "text": "마법을 담고 있는 섬뜩한 책이며, 강령술사들이 그들의 첫발을 내디딜 때 사용하게 될 책이다. 강령술을 배우면서 생길 수 있는 위험성을 고려했을 때, 이 책은 초보 강령술사가 배우게 될 *마지막* 마법책이 되기도 한다."
   },
-  "potion_healing": { "dcss": "potion of heal wounds", "text": "상처를 거의 즉시 아물게 하는 마법의 치료 영약이다." },
-  "potion_curing": { "dcss": "potion of curing", "text": "체력을 조금 회복시키고, 독과 혼란을 치료해 주는 물약이다." },
-  "potion_magic": { "dcss": "potion of magic", "text": "마력을 불어넣어 주는 귀중한 물약이다." },
-  "potion_might": { "dcss": "potion of might", "text": "이 마법의 물약은, 마신 사람의 힘과 공격력을 짧은 시간동안 엄청나게 올려준다." },
-  "potion_haste": { "dcss": "potion of haste", "text": "마신 사람의 행동을 빠르게 해 주는 마법이 깃든 음료다." },
-  "potion_poison": { "dcss": "potion of poison", "text": "고약한 독이 든 액체다. 마시는 것은 권하지 않는다." },
+  "potion_healing": {
+    "dcss": "potion of heal wounds",
+    "text": "상처를 거의 즉시 아물게 하는 마법의 치료 영약이다."
+  },
+  "potion_curing": {
+    "dcss": "potion of curing",
+    "text": "체력을 조금 회복시키고, 독과 혼란을 치료해 주는 물약이다."
+  },
+  "potion_magic": {
+    "dcss": "potion of magic",
+    "text": "마력을 불어넣어 주는 귀중한 물약이다."
+  },
+  "potion_might": {
+    "dcss": "potion of might",
+    "text": "이 마법의 물약은, 마신 사람의 힘과 공격력을 짧은 시간동안 엄청나게 올려준다."
+  },
+  "potion_haste": {
+    "dcss": "potion of haste",
+    "text": "마신 사람의 행동을 빠르게 해 주는 마법이 깃든 음료다."
+  },
+  "potion_poison": {
+    "dcss": "potion of poison",
+    "text": "고약한 독이 든 액체다. 마시는 것은 권하지 않는다."
+  },
   "scroll_blink": {
     "dcss": "scroll of blinking",
     "text": "이 두루마리를 읽으면 완벽하게 제어된 단거리 순간이동을 할 수 있다."
   },
-  "scroll_identify": { "dcss": "scroll of identify", "text": "이 유용한 두루마리는 지정한 물건을 감정할 때 쓰인다." },
+  "scroll_identify": {
+    "dcss": "scroll of identify",
+    "text": "이 유용한 두루마리는 지정한 물건을 감정할 때 쓰인다."
+  },
   "scroll_teleport": {
     "dcss": "scroll of teleportation",
     "text": "이 두루마리는 읽는 사람을 무작위한 곳으로 이동시킨다. 이동하기까지 약간의 시간이 필요하다."
@@ -103,19 +172,34 @@
     "dcss": "scroll of enchant armour",
     "text": "읽는 사람이 고른 방어구 하나에 마법을 거는 두루마리다. 마법 아티팩트에는 전혀 통하지 않는다."
   },
-  "scroll_remove_curse": { "dcss": "scroll of remove curse", "text": "착용하고 있는 모든 장비의 저주를 풀어주는 두루마리다." },
+  "scroll_remove_curse": {
+    "dcss": "scroll of remove curse",
+    "text": "착용하고 있는 모든 장비의 저주를 풀어주는 두루마리다."
+  },
   "scroll_confusion": {
     "dcss": "scroll of confusion",
     "text": "읽는 순간 주변의 적들을 혼란에 빠뜨리는 두루마리다. 혼란에 빠진 적은 제대로 움직이지 못한다."
   },
-  "wand_sparks": { "dcss": "wand of lightning", "text": "번개 줄기를 쏘아 보내는 마법 장치다." },
+  "wand_sparks": {
+    "dcss": "wand of lightning",
+    "text": "번개 줄기를 쏘아 보내는 마법 장치다."
+  },
   "ring_warding": {
     "dcss": "ring of protection",
     "text": "이 반지는 착용자의 방어력에 영향을 준다. 반지의 품질에 따라 방어력이 올라갈 수도, 내려갈 수도 있다."
   },
-  "ring_fire": { "dcss": "ring of protection from fire", "text": "이 반지는 착용자를 불로부터 보호한다." },
-  "ring_cold": { "dcss": "ring of protection from cold", "text": "이 반지는 착용자를 냉기 공격으로부터 보호한다." },
-  "amulet_warding": { "dcss": "amulet of guardian spirit", "text": "보호의 정령이 깃든 목걸이다. 착용자가 받는 피해를 조금 덜어 준다." },
+  "ring_fire": {
+    "dcss": "ring of protection from fire",
+    "text": "이 반지는 착용자를 불로부터 보호한다."
+  },
+  "ring_cold": {
+    "dcss": "ring of protection from cold",
+    "text": "이 반지는 착용자를 냉기 공격으로부터 보호한다."
+  },
+  "amulet_warding": {
+    "dcss": "amulet of guardian spirit",
+    "text": "보호의 정령이 깃든 목걸이다. 착용자가 받는 피해를 조금 덜어 준다."
+  },
   "robe": {
     "dcss": "robe",
     "text": "가벼운 천으로 만든, 크고 헐렁하며 소매가 넓은 겉옷이다. 물리적인 피해는 거의 막아 주지 못하지만, 회피나 주문 시전을 방해하지 않는다."
@@ -140,8 +224,24 @@
     "dcss": "kite shield",
     "text": "일반적인 크기의 나무와 금속 조각을 이용해 만든, 한쪽 팔에 고정하는 방식으로 사용하는 방패다. 꽤 걸리적거리기 때문에, 충분한 방패술 수련 없이는 적을 공격하거나 마법을 사용하기 불편할 것이다."
   },
-  "helmet_iron": { "dcss": "helmet", "text": "평범한 금속제 투구다." },
-  "gloves_leather": { "dcss": "pair of gloves", "text": "한 쌍의 평범한 장갑이다." },
-  "boots_leather": { "dcss": "pair of boots", "text": "질긴 가죽으로 튼튼하게 만들어진, 한 쌍의 장화다." },
-  "cloak_wool": { "dcss": "cloak", "text": "천 재질의, 평범한 망토다." }
+  "helmet_iron": {
+    "dcss": "helmet",
+    "text": "평범한 금속제 투구다."
+  },
+  "gloves_leather": {
+    "dcss": "pair of gloves",
+    "text": "한 쌍의 평범한 장갑이다."
+  },
+  "boots_leather": {
+    "dcss": "pair of boots",
+    "text": "질긴 가죽으로 튼튼하게 만들어진, 한 쌍의 장화다."
+  },
+  "cloak_wool": {
+    "dcss": "cloak",
+    "text": "천 재질의, 평범한 망토다."
+  },
+  "scale_mail": {
+    "dcss": "scale mail",
+    "text": "가죽조각에 작은 철 조각을 겹겹이 덧댄 것으로 상당한 방어력을 제공하지만, 고리 갑옷보다 무겁고 소리도 더 크게 난다."
+  }
 }

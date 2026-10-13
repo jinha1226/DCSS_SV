@@ -8,10 +8,10 @@ describe('DCSS-inspired species catalog', () => {
     expect(new Set(speciesCatalog.map((row) => row.id)).size).toBe(27);
   });
 
-  it('keeps only the three implemented species playable', () => {
+  it('keeps all implemented species playable', () => {
     const ready = speciesCatalog.filter((row) => row.playable);
     expect(ready.map((row) => row.id).sort()).toEqual(activeSpecies.map((row) => row.id).sort());
-    expect(ready).toHaveLength(3);
+    expect(ready).toHaveLength(6);
   });
 
   it('identifies required systems for unimplemented species', () => {

@@ -16,5 +16,8 @@
   "dcss/dngn/floor/rect_gray#",
   "dcss/dngn/wall/vault#",
   "dcss/dngn/floor/tomb#",
-  "dcss/derived/wall/zot_yellow#"
+  "dcss/derived/wall/zot_yellow#",
+  "dcss/player/base/gargoyle_m",
+  "dcss/player/base/dwarf_m",
+  "dcss/item/armour/scale_mail1"
 ]

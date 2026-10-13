@@ -109,3 +109,6 @@ npm run tiles
 1. 원본에서 32×32 PNG를 `assets/tiles/<폴더>/`에 넣는다.
 2. 위의 규칙으로 대조하고, 이 문서의 표에 적는다.
 3. `npm run tiles`를 돌린다. `public/tiles.png`(한 장으로 묶은 것)와 `src/data/tiles.gen.ts`(이름 목록)가 다시 만들어진다.
+
+- `player/base/troll_m.png`: 트롤 플레이어 바탕. crawl-tiles `releases/Ancient/Oct-5-2010/player/base/troll_m.png` (CC0 2010 배포본), SHA-1 `7092878e990650f59cfc06630948db4590f6f939`.
+- `player/body/scalemail.png`: 비늘 갑옷 착용 레이어. crawl-tiles `releases/Ancient/Oct-5-2010/player/body/scalemail.png` (CC0 2010 배포본), SHA-1 `578d5954d9477c974307a46b7802f4dc12f764c0`.

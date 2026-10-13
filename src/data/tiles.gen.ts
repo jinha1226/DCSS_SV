@@ -1,7 +1,7 @@
 // Written by tools/packTiles.mjs. Do not edit by hand.
 export const TILE_SIZE = 32;
 export const ATLAS_COLS = 16;
-export const SHEET_VERSION = '21f8a683f3';
+export const SHEET_VERSION = 'e0b932f4a9';
 export const TILE_NAMES = [
   'dcss/derived/wall/zot_yellow0',
   'dcss/derived/wall/zot_yellow1',
@@ -142,6 +142,7 @@ export const TILE_NAMES = [
   'dcss/dngn/wall/wall_vines4',
   'dcss/dngn/wall/wall_vines5',
   'dcss/dngn/wall/wall_vines6',
+  'dcss/item/armour/scale_mail1',
   'dcss/mon/animals/orb_spider',
   'dcss/mon/animals/wolf',
   'dcss/mon/animals/wolf_spider',
@@ -154,6 +155,8 @@ export const TILE_NAMES = [
   'dcss/mon/demihumanoids/salamander',
   'dcss/mon/dragons/hydra1',
   'dcss/mon/undead/bog_body',
+  'dcss/player/base/dwarf_m',
+  'dcss/player/base/gargoyle_m',
   'dngn/gateways/enter_lair',
   'dngn/gateways/enter_orc',
   'dngn/gateways/enter_snake',
@@ -280,6 +283,7 @@ export const TILE_NAMES = [
   'player/base/deep_elf_m',
   'player/base/frog_m',
   'player/base/minotaur_m',
+  'player/base/troll_m',
   'player/body/animal_skin',
   'player/body/chainmail',
   'player/body/leather_armour',
@@ -292,6 +296,7 @@ export const TILE_NAMES = [
   'player/body/robe_green',
   'player/body/robe_purple',
   'player/body/robe_red',
+  'player/body/scalemail',
   'player/boots/short_brown',
   'player/cloak/gray',
   'player/gloves/glove_brown',

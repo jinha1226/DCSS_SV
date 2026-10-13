@@ -843,5 +843,15 @@
   "from": "crawl",
   "path": "dngn/wall/brick_gray3.png",
   "sha1": "299dcb6b101f3f58ac9c01e7a84fce4dfc435a47"
+ },
+ "player/base/troll_m": {
+  "from": "ancient-2010",
+  "path": "player/base/troll_m.png",
+  "sha1": "7092878e990650f59cfc06630948db4590f6f939"
+ },
+ "player/body/scalemail": {
+  "from": "ancient-2010",
+  "path": "player/body/scalemail.png",
+  "sha1": "578d5954d9477c974307a46b7802f4dc12f764c0"
  }
 }

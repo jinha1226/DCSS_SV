@@ -65,8 +65,12 @@ function job(id: string): JobRow {
   const row = jobsRaw.find((entry) => entry.id === id);
   if (!row) throw new Error('jobs.json: ' + id + ': 없는 직업');
   plainWeapon(row.startingWeapon);
-  if ('startingOffhand' in row && typeof row.startingOffhand === 'string' && itemDefinition(row.startingOffhand).kind !== 'spellbook') {
-    throw new Error('jobs.json: ' + row.id + '.startingOffhand: 마법서가 아님');
+  if (
+    'startingOffhand' in row &&
+    typeof row.startingOffhand === 'string' &&
+    !['spellbook', 'shield'].includes(itemDefinition(row.startingOffhand).kind)
+  ) {
+    throw new Error('jobs.json: ' + row.id + '.startingOffhand: 마법서 또는 방패가 아님');
   }
   if ('startingArmour' in row && typeof row.startingArmour === 'string' && itemDefinition(row.startingArmour).kind !== 'armour') {
     throw new Error('jobs.json: ' + row.id + '.startingArmour: 갑옷이 아님');

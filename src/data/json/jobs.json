@@ -1,5 +1,25 @@
 [
   {
+    "id": "fighter",
+    "name": "전사",
+    "startingWeapon": "hand_axe",
+    "startingAmmo": 5,
+    "startingSkills": {
+      "fighting": 1,
+      "armour": 1,
+      "shield": 1,
+      "axe": 1
+    },
+    "startingArmour": "scale_mail",
+    "startingOffhand": "buckler",
+    "startingItems": [
+      {
+        "id": "potion_might",
+        "count": 2
+      }
+    ]
+  },
+  {
     "id": "berserker",
     "name": "광전사",
     "startingWeapon": "hand_axe",

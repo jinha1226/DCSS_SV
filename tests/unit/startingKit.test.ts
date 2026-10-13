@@ -19,4 +19,11 @@ describe('DCSS starting kits', () => {
     expect(w.gear.armour).toBe('leather_armour');
     expect(w.inventory.some((e) => e.kind === 'consumable' && e.id === 'scroll_blink')).toBe(true);
   });
+  it('gives a fighter scale mail, buckler, might potions, and a hand axe', () => {
+    const w = makeWorld({ monsters: false, items: false, job: 'fighter' });
+    expect(w.gear.armour).toBe('scale_mail');
+    expect(w.gear.offhand).toBe('buckler');
+    expect(w.weapon.baseId).toBe('hand_axe');
+    expect(w.inventory.some((e) => e.kind === 'consumable' && e.id === 'potion_might' && e.count === 2)).toBe(true);
+  });
 });

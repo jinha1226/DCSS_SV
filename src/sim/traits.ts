@@ -1,4 +1,4 @@
-import type { HeadbuttBackTrait, HopTrait, HornTrait, TraitData } from '../data/traits';
+import type { HeadbuttBackTrait, HopTrait, HornTrait, StoneBodyTrait, TraitData } from '../data/traits';
 import { recordKill } from './kills';
 import type { Monster, World } from './types';
 
@@ -8,6 +8,14 @@ export function trait<T extends TraitData['id']>(w: World, id: T): Extract<Trait
 export const hornTrait = (w: World): HornTrait | undefined => trait(w, 'horns');
 export const headbuttBackTrait = (w: World): HeadbuttBackTrait | undefined => trait(w, 'headbutt_back');
 export const hopTrait = (w: World): HopTrait | undefined => trait(w, 'hop');
+const stoneBodyTrait = (w: World): StoneBodyTrait | undefined => trait(w, 'stone_body');
+/** Armour a stone body gives at the hero's level; 0 for anyone without one. */
+export function stoneBodyArmour(w: World): number {
+  const rule = stoneBodyTrait(w);
+  if (!rule) return 0;
+  const level = w.hero.level;
+  return (rule.base + rule.perLevel * level + rule.latePerLevel * Math.max(0, level - rule.lateFrom)) * rule.scale;
+}
 export function hornDamage(w: World): number {
   const h = hornTrait(w);
   return h ? h.damage + Math.floor(w.hero.level / h.damageEveryLevel) * h.damageGain : 0;

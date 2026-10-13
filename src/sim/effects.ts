@@ -4,7 +4,7 @@ import { damageAfterDefense } from './damage';
 import type { ResistName } from '../data/items';
 import { recordKill } from './kills';
 import { effectValue, hasEffect } from './skills';
-import { headbuttBack } from './traits';
+import { headbuttBack, stoneBodyArmour } from './traits';
 import type { Monster, World } from './types';
 import { slotBonus } from './slots';
 
@@ -75,6 +75,7 @@ export function hurtHero(
       weaponOption(w.weapon, 'armour') +
       gearBonus(w, 'armour') +
       slotBonus(w, 'armour') +
+      stoneBodyArmour(w) +
       (hero.armourBuff > 0 ? hero.armourBuffPower : 0),
     heroResists(w),
   );

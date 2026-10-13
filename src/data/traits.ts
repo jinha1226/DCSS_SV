@@ -1,4 +1,4 @@
-export const TRAIT_IDS = new Set(['horns', 'headbutt_back', 'hop']);
+export const TRAIT_IDS = new Set(['horns', 'headbutt_back', 'hop', 'stone_body']);
 
 export interface HornTrait {
   readonly id: 'horns';
@@ -27,4 +27,17 @@ export interface HopTrait {
   readonly duration: number;
 }
 
-export type TraitData = HornTrait | HeadbuttBackTrait | HopTrait;
+/**
+ * A gargoyle's stone body: armour that grows with level, as DCSS's stone_body_armour_bonus
+ * (2 + 0.4 per level, and another 0.4 per level past 7), times `scale` to fit this game's armour.
+ */
+export interface StoneBodyTrait {
+  readonly id: 'stone_body';
+  readonly base: number;
+  readonly perLevel: number;
+  readonly lateFrom: number;
+  readonly latePerLevel: number;
+  readonly scale: number;
+}
+
+export type TraitData = HornTrait | HeadbuttBackTrait | HopTrait | StoneBodyTrait;
