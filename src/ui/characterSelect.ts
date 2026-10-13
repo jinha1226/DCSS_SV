@@ -1,6 +1,6 @@
 import jobsRaw from '../data/json/jobs.json';
 import speciesRaw from '../data/json/species.json';
-import { weaponBase } from '../data/items';
+import { plainWeapon } from '../data/items';
 import { skillData } from '../data/skills';
 import { type Atlas } from '../view/atlas';
 import { composeDoll, layersFor } from '../view/doll';
@@ -77,12 +77,13 @@ export function makeCharacterSelect(root: HTMLElement, atlas: Atlas, choose: (ch
     cards.replaceChildren();
 
     for (const job of jobsRaw) {
-      const weapon = weaponBase(job.startingWeapon);
+      const weapon = plainWeapon(job.startingWeapon);
+      const gear = 'startingArmour' in job && job.startingArmour ? { armour: job.startingArmour } : {};
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'character-card job-card';
 
-      const portrait = drawPortrait(layersFor(selectedSpecies.id, job.id, {}, weapon));
+      const portrait = drawPortrait(layersFor(selectedSpecies.id, job.id, gear, weapon));
       const name = document.createElement('strong');
       name.textContent = job.name;
 

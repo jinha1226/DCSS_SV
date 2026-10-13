@@ -97,6 +97,11 @@ export class TileFigure implements Figure {
     this.root.add(this.ground, this.sprite);
   }
 
+  /** DCSS draws figures facing left; true once this one has turned to face right. */
+  get facingRight(): boolean {
+    return this.facing > 0;
+  }
+
   get busy(): boolean {
     return this.lunge >= 0 || this.dying >= 0;
   }

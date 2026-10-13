@@ -1,7 +1,7 @@
 // Written by tools/packTiles.mjs. Do not edit by hand.
 export const TILE_SIZE = 32;
 export const ATLAS_COLS = 16;
-export const SHEET_VERSION = '33283e3a05';
+export const SHEET_VERSION = '839270ce3d';
 export const TILE_NAMES = [
   'feat/stone_stairs_down',
   'feat/stone_stairs_up',
@@ -92,6 +92,21 @@ export const TILE_NAMES = [
   'item/stone',
   'item/wand/gem_brass',
   'item/war_axe1',
+  'misc/blood/blood_puddle_red',
+  'misc/blood/blood_puddle_red1',
+  'misc/blood/blood_puddle_red2',
+  'misc/blood/blood_puddle_red3',
+  'misc/blood/blood_puddle_red4',
+  'misc/blood/blood_red00',
+  'misc/blood/blood_red01',
+  'misc/blood/blood_red02',
+  'misc/blood/blood_red03',
+  'misc/blood/blood_red04',
+  'misc/blood/blood_red05',
+  'misc/blood/blood_red06',
+  'misc/blood/blood_red07',
+  'misc/blood/blood_red08',
+  'misc/blood/blood_red09',
   'mon/adder',
   'mon/bat',
   'mon/gnoll',

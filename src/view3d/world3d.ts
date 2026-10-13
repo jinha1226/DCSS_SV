@@ -21,6 +21,7 @@ import { LootView } from './loot';
 import { ModelLibrary } from './models';
 import { Overlay } from './overlay';
 import { Particles } from './particles';
+import { Remains } from './remains';
 import { HeroTile, makeMonsterTile, tileFigureHeight } from './tileFigures';
 
 const PITCH = THREE.MathUtils.degToRad(56);
@@ -28,7 +29,6 @@ const FOV = 34;
 /** The 3D view stands closer than the flat one: models need more pixels than DCSS tiles to read. */
 const ZOOM = 0.68;
 const TORCH_LIGHTS = 4;
-const CORPSE_SECONDS = 2.6;
 const HIT_COLOURS: Record<string, number> = {
   axe: 0xfff1d0,
   arrow: 0xf0e2b8,
@@ -74,7 +74,7 @@ export class World3D {
   private hero?: HeroFigure;
   private heroKey = '';
   private readonly creatures = new Map<Monster, Creature>();
-  private readonly corpses: { actor: Figure; age: number }[] = [];
+  private readonly remains: Remains;
   private readonly hemi = new THREE.HemisphereLight(0x9aa6cc, 0x3a2a1c, 0.7);
   private readonly sun = new THREE.DirectionalLight(0xe6ecff, 1.15);
   private readonly heroLight = new THREE.PointLight(0xffc27a, 5, 8, 1.3);
@@ -127,11 +127,13 @@ export class World3D {
     this.effects = new Effects(this.particles);
     this.lootView = new LootView(this.models, atlas.image, figures === 'tiles');
     this.overlay = new Overlay(this.camera);
+    this.remains = new Remains(atlas.image);
     this.scene.add(
       this.kaykit.group,
       ...(this.tileGround ? [this.tileGround.group] : []),
       this.effects.group,
       this.lootView.group,
+      this.remains.group,
       this.particles.points,
     );
 
@@ -244,10 +246,9 @@ export class World3D {
   private clearFloor(): void {
     for (const c of this.creatures.values()) c.actor?.dispose();
     this.creatures.clear();
-    for (const c of this.corpses) c.actor.dispose();
-    this.corpses.length = 0;
     this.effects.clearFloor();
     this.lootView.clearFloor();
+    this.remains.clear();
   }
 
   /** Draws one frame. `between` blends the last two steps of the rules; `dt` is real seconds since the last frame. */
@@ -277,7 +278,7 @@ export class World3D {
     this.dungeon.updateSight(w, this.time);
     this.syncHero(w, between, dt);
     this.syncCreatures(w, between, dt);
-    this.updateCorpses(dt);
+    this.remains.update(w, dt);
 
     const stair = w.stairs.find((s) => s.down && Math.floor(w.hero.x) === s.x && Math.floor(w.hero.y) === s.y);
     const objective = objectiveFor(w);
@@ -392,25 +393,7 @@ export class World3D {
       if (live.has(m)) continue;
       this.creatures.delete(m);
       if (!c.actor) continue;
-      c.actor.die();
-      this.corpses.push({ actor: c.actor, age: 0 });
-    }
-  }
-
-  private updateCorpses(dt: number): void {
-    for (let i = this.corpses.length - 1; i >= 0; i--) {
-      const c = this.corpses[i]!;
-      c.age += dt;
-      c.actor.update(dt);
-      const fade = (c.age - (CORPSE_SECONDS - 0.8)) / 0.8;
-      if (fade > 0) {
-        c.actor.setOpacity(1 - fade);
-        c.actor.root.position.y -= dt * 0.25;
-      }
-      if (c.age >= CORPSE_SECONDS) {
-        c.actor.dispose();
-        this.corpses.splice(i, 1);
-      }
+      this.remains.killed(m.kind.id, m.kind.tile, c.actor);
     }
   }
 
