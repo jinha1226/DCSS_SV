@@ -119,33 +119,26 @@ export class TileGround implements GroundView {
     this.byCell = Array.from({ length: grid.w * grid.h }, () => []);
     this.shown = new Uint8Array(grid.w * grid.h).fill(255);
 
-    // Floor tiles: every open cell. Stairs show their own tile. A branch entrance, drawn with see-through
-    // edges, stands up over the floor tile; a branch exit lies flat on it.
+    // Floor tiles: every open cell. Stairs show their own tile. A branch gateway (way in or out), drawn
+    // with see-through edges, stands up over the floor tile.
     const floors: { cell: number; tile: TileName }[] = [];
     const gates: { cell: number; tile: TileName }[] = [];
-    const exits: { cell: number; tile: TileName }[] = [];
     for (let y = 0; y < grid.h; y++) {
       for (let x = 0; x < grid.w; x++) {
         const kind = cellAt(grid, x, y);
         if (kind === Cell.Wall) continue;
         const stair = kind === Cell.StairsDown || kind === Cell.StairsUp ? stairTile(w, x, y, kind === Cell.StairsDown) : undefined;
-        const down = kind === Cell.StairsDown;
         const gate = stair !== undefined && isGatewayTile(stair);
         const tile = stair && !gate ? stair : pick(this.look.floor, x, y);
         if (tile) floors.push({ cell: y * grid.w + x, tile });
-        if (stair && gate) (down ? gates : exits).push({ cell: y * grid.w + x, tile: stair });
+        if (stair && gate) gates.push({ cell: y * grid.w + x, tile: stair });
       }
     }
     const plane = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
     const floorMesh = this.instanced(plane, atlasMaterial(this.texture), floors, grid, width, height, 0);
     floorMesh.receiveShadow = true;
-    if (exits.length) {
-      const exitMaterial = atlasMaterial(this.texture);
-      exitMaterial.alphaTest = 0.5;
-      this.instanced(plane.clone(), exitMaterial, exits, grid, width, height, 0.004).receiveShadow = true;
-    }
     if (gates.length) {
-      // A branch entrance stands up on its cell like a doorway, leaned back toward the camera so its
+      // A branch gateway stands up on its cell like a doorway, leaned back toward the camera so its
       // picture reads as an arch or a hole rather than a mark on the floor.
       const gateMaterial = atlasMaterial(this.texture);
       gateMaterial.alphaTest = 0.5;

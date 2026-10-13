@@ -24,4 +24,10 @@ describe('stair tiles', () => {
     expect(downTiles(1, 102)).toContain('dcss/dngn/gateways/slimy_stairs_down');
     expect(downTiles(2, 102)).toContain('dcss/dngn/gateways/portal');
   });
+
+  it('shows the branch gateway on the way out of a branch too', () => {
+    const w = makeWorld({ monsters: false, items: false, seed: 1, depth: 301 });
+    const up = w.stairs.filter((s) => !s.down).map((s) => stairTile(w, s.x, s.y, false));
+    expect(up).toContain('dngn/gateways/enter_spider');
+  });
 });
