@@ -6,6 +6,7 @@ import { equipGear, unequipGear, dropGear, gearName, gearBonus, type GearSlot } 
 import { CONSUMABLES, dropConsumable, useConsumable, type ConsumableId } from '../sim/consumables';
 import { dropStoredWeapon, equipStoredWeapon, weaponOption, weaponScore } from '../sim/equipment';
 import type { World } from '../sim/world';
+import type { SlotId } from '../sim/slots';
 
 export type BagTab = 'all' | 'equipment' | 'consumable' | 'other';
 export type SheetName = 'equipment' | 'bag' | 'shop';
@@ -29,16 +30,20 @@ const SLOTS = [
   { id: 'ring2', name: '반지 2' },
 ] as const;
 export function equipmentSlots(w: World): EquipmentSlot[] {
-  return SLOTS.map((slot) => ({
-    ...slot,
-    value:
+  return SLOTS.map((slot) => {
+    const enhancement = (slot.id === 'armour' ? 'body' : slot.id) as SlotId;
+    const value =
       slot.id === 'weapon'
         ? w.weapon.name + ((w.weapon.enchantment ?? 0) > 0 ? ' +' + w.weapon.enchantment : '')
         : w.gear[slot.id as GearSlot]
           ? gearName(w, w.gear[slot.id as GearSlot]!)
-          : '—',
-    available: slot.id !== 'offhand' || w.weapon.hands === 1,
-  }));
+          : '—';
+    return {
+      ...slot,
+      value: value + ` · 부위 +${w.hero.slotLevels[enhancement]}`,
+      available: slot.id !== 'offhand' || w.weapon.hands === 1,
+    };
+  });
 }
 export interface BagEntry {
   readonly id: string;

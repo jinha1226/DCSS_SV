@@ -15,10 +15,18 @@ const READY_MS = 900;
 /** How long the chosen card shines before the rules take the choice. */
 const PICK_MS = 520;
 
+/** Acquirement deals categories, not items, so each shows a typical piece of its kind. */
+const CATEGORY_TILES: Partial<Record<ItemChoice['kind'], TileName>> = {
+  armour: 'item/armour/chain_mail1' as TileName,
+  jewellery: 'item/amulet/sapphire' as TileName,
+  offhand: 'item/armour/shields/kite_shield1' as TileName,
+};
+
 function tileOf(w: World, card: ItemChoice): TileName | undefined {
   if (card.weapon) return card.weapon.tile;
   if (card.itemId) return (itemTile(w, card.itemId) ?? itemDefinition(card.itemId).tile) as TileName;
-  return undefined;
+  if (card.kind === 'weapon') return w.weapon.tile;
+  return CATEGORY_TILES[card.kind];
 }
 
 function icon(atlas: Atlas, tile: TileName | undefined): HTMLCanvasElement {
@@ -88,12 +96,13 @@ export function makeSkillPicker(root: HTMLElement, atlas: Atlas): SkillPicker {
   window.addEventListener('keydown', (event) => {
     if (!wrap.classList.contains('on')) return;
     const n = Number(event.key);
-    if (n >= 1 && n <= 3) pick(n - 1);
+    if (n >= 1 && n <= 4) pick(n - 1);
   });
 
   const deal = (w: World, choices: readonly ItemChoice[]): void => {
     shownAt = performance.now();
-    eyebrow.textContent = `레벨 ${w.hero.level} 달성`;
+    eyebrow.textContent = `레벨 ${w.hero.level} 획득`;
+    title.textContent = '획득할 종류를 고르세요';
     cards.replaceChildren();
     choices.forEach((card, i) => {
       const button = document.createElement('button');

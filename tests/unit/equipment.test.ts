@@ -5,14 +5,14 @@ import { applyWeaponBrand, emberBurst, tickBrands } from '../../src/sim/brands';
 import { heroStrikes } from '../../src/sim/combat';
 import { acceptPickup, artefactAxe, collectGround, declinePickup, dropAmmo, generateAxe, resistanceFactor } from '../../src/sim/equipment';
 import { spawnMonster } from '../../src/sim/monster';
-import { chooseSkill, effectValue, gainExperience, makeSkillChoice, skillLevel, xpToNext } from '../../src/sim/skills';
+import { chooseSkill, effectValue, makeSkillChoice, skillLevel } from '../../src/sim/skills';
 import { STEP, makeWorld, stepWorld } from '../../src/sim/world';
+import { dealItemRewards } from '../../src/sim/rewards';
 import { STILL, arena, run } from './arena';
 
 const grant = (w: ReturnType<typeof arena>, id: string, times = 1): void => {
   for (let i = 0; i < times; i++) {
     w.choosing = [makeSkillChoice(w, id)];
-    w.pendingChoices = 1;
     chooseSkill(w, id);
   }
 };
@@ -30,8 +30,9 @@ describe('axe equipment', () => {
     expect(effectValue(w, 'shield.chance')).toBeGreaterThan(0);
     w.weapon = plainAxe('battle_axe', 'two');
     expect(effectValue(w, 'shield.chance')).toBe(0);
-    gainExperience(w, xpToNext(1));
-    expect(w.rewardChoices?.map((c) => c.kind)).toEqual(['weapon', 'gear', 'consumable']);
+    w.pendingRewards.push('acquire');
+    dealItemRewards(w);
+    expect(w.rewardChoices?.map((c) => c.kind)).toEqual(['weapon', 'armour', 'jewellery']);
     w.weapon = plainAxe('hand_axe', 'one');
     expect(skillLevel(w, 'shield')).toBe(8);
     expect(effectValue(w, 'shield.chance')).toBeGreaterThan(0);

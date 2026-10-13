@@ -21,6 +21,7 @@ import { identifyItem, initializeItemKnowledge } from './identification';
 import { addConsumable, type ConsumableId } from './consumables';
 import { heroSpeed, openStartingSkills } from './skills';
 import { castAt, stepSpells } from './spells';
+import { emptySlotLevels } from './slots';
 import type { FloorState, Input, Stairs, World } from './types';
 export type { GroundItem, Hero, Input, ItemChoice, Monster, PickupStats, Shot, SimEvent, SkillChoice, Stairs, World } from './types';
 export const STEP = 1 / 60;
@@ -139,6 +140,8 @@ export function makeWorld(options: WorldOptions = {}): World {
       xp: 0,
       skills: {},
       skillXp: {},
+      slotLevels: emptySlotLevels(),
+      ringResist: {},
       invulnerable: 0,
       lastStandUsed: false,
       might: 0,
@@ -213,7 +216,7 @@ export function makeWorld(options: WorldOptions = {}): World {
     nextBand: Infinity,
     descending: 0,
     stairsArmed: true,
-    pendingChoices: 0,
+    pendingRewards: [],
     choosing: null,
     rewardChoices: null,
     over: false,
@@ -433,7 +436,7 @@ function stairsUnderfoot(w: World, dt: number): void {
 }
 export function stepWorld(w: World, input: Input, dt: number = STEP): void {
   w.events.length = 0;
-  if (w.over || w.choosing || w.rewardChoices || w.pendingPickup) return;
+  if (w.over || w.pendingRewards.length || w.choosing || w.rewardChoices || w.pendingPickup) return;
   const h = w.hero,
     cx = Math.floor(h.x),
     cy = Math.floor(h.y);
@@ -454,12 +457,12 @@ export function stepWorld(w: World, input: Input, dt: number = STEP): void {
     if (w.pendingPickup) return;
   }
   if (input.spell) castAt(w, input.spell.id, input.spell.x, input.spell.y);
-  if (w.choosing || w.rewardChoices) return;
+  if (w.pendingRewards.length || w.choosing || w.rewardChoices) return;
   walkMonsters(w, dt);
   if (w.over) return;
   heroStrikes(w, dt, input.throw === true, input.throwAt);
   stepSpells(w, dt);
-  if (w.over || w.choosing || w.rewardChoices) return;
+  if (w.over || w.pendingRewards.length || w.choosing || w.rewardChoices) return;
   if (w.itemsEnabled) collectGround(w);
   collectObjective(w);
   if (w.over) return;

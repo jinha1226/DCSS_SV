@@ -27,6 +27,11 @@ function validateMagicItem(item: ItemDefinition): void {
 export function validateData(): void {
   validateItemDefinitions();
   if (!MONSTERS.length) throw new Error('monsters.json: 비어 있음');
+  if (!Number.isInteger(DUNGEON.levelCap) || DUNGEON.levelCap < 2) throw new Error('dungeon.json: 잘못된 levelCap');
+  if (DUNGEON.levelRewards.acquire.some((level) => !Number.isInteger(level) || level < 2 || level > DUNGEON.levelCap)) {
+    throw new Error('dungeon.json: 잘못된 acquire 레벨');
+  }
+  if (DUNGEON.acquireRandartChance < 0 || DUNGEON.acquireRandartChance > 1) throw new Error('dungeon.json: 잘못된 acquireRandartChance');
   if (!PACKS.length) throw new Error('packs.json: 비어 있음');
   if (SKILLS.length !== 20 || new Set(SKILLS.map((skill) => skill.id)).size !== 20) {
     throw new Error('skills.json: 정확히 20개의 스킬이 필요함');

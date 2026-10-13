@@ -4,6 +4,7 @@ import { SKILLS, skillData, type SkillData, type SkillEffect } from '../data/ski
 import { hasShield, offhandSchool } from './gear';
 import type { SkillChoice, World } from './types';
 import { dealItemRewards } from './rewards';
+import { slotBonus } from './slots';
 
 export const MAX_SKILL = 27;
 const COMMON = ['fighting', 'armour', 'dodging', 'stealth', 'spellcasting', 'throwing'] as const;
@@ -161,40 +162,28 @@ function candidates(w: World): SkillData[] {
   return SKILLS.filter((skill) => allowed(w, skill));
 }
 
-function deal(w: World): void {
-  while (w.pendingChoices > 0 && !w.choosing) {
-    const available = candidates(w);
-    if (!available.length) {
-      w.hero.hp = w.hero.maxHp;
-      w.pendingChoices--;
-      continue;
-    }
-
-    const picked: SkillData[] = [];
-    const guaranteed = w.guaranteedSkills.find((id) => available.some((skill) => skill.id === id));
-    if (guaranteed) {
-      picked.push(skillData(guaranteed));
-      w.guaranteedSkills.splice(w.guaranteedSkills.indexOf(guaranteed), 1);
-    }
-
-    const pool = available.filter((skill) => !picked.some((entry) => entry.id === skill.id));
-    while (picked.length < 3 && pool.length) {
-      const chosen = weightedPick(w, pool);
-      picked.push(chosen);
-      pool.splice(pool.indexOf(chosen), 1);
-    }
-    w.choosing = picked.map((skill) => makeSkillChoice(w, skill.id));
+function dealLegacySkillChoice(w: World): void {
+  if (w.choosing) return;
+  const pool = candidates(w);
+  const picked: SkillData[] = [];
+  while (picked.length < 3 && pool.length) {
+    const chosen = weightedPick(w, pool);
+    picked.push(chosen);
+    pool.splice(pool.indexOf(chosen), 1);
   }
+  w.choosing = picked.length ? picked.map((skill) => makeSkillChoice(w, skill.id)) : null;
 }
 
 export function gainExperience(w: World, amount: number): void {
   if (amount <= 0) return;
-  w.hero.xp += amount;
-  while (w.hero.xp >= xpToNext(w.hero.level)) {
+  if (w.hero.level < DUNGEON.levelCap) w.hero.xp += amount;
+  while (w.hero.level < DUNGEON.levelCap && w.hero.xp >= xpToNext(w.hero.level)) {
     w.hero.xp -= xpToNext(w.hero.level);
     w.hero.level++;
-    w.pendingChoices++;
+    w.pendingRewards.push('slot');
+    if (DUNGEON.levelRewards.acquire.includes(w.hero.level)) w.pendingRewards.push('acquire');
   }
+  if (w.hero.level >= DUNGEON.levelCap) w.hero.xp = 0;
   trainSkills(w, amount);
   dealItemRewards(w);
 }
@@ -211,15 +200,16 @@ export function chooseSkill(w: World, id: string): void {
     w.hero.hp += hp;
   }
   if (gained > 0) w.events.push({ type: 'skill', id, from: before, level: choice.to });
-  w.pendingChoices = Math.max(0, w.pendingChoices - 1);
   w.choosing = null;
-  deal(w);
 }
 
 export function heroSpeed(w: World): number {
   return (
     w.speed *
-    (1 + effectValue(w, 'dodging.speed') + (w.weapon.options.find((option) => option.id === 'speed')?.value ?? 0)) *
+    (1 +
+      effectValue(w, 'dodging.speed') +
+      (w.weapon.options.find((option) => option.id === 'speed')?.value ?? 0) +
+      slotBonus(w, 'move_speed')) *
     (w.hero.haste > 0 ? 1.3 : 1) *
     (1 + (w.hero.speedBuff > 0 ? w.hero.speedBuffPower : 0))
   );
@@ -235,5 +225,5 @@ export function throwCooldown(w: World): number {
 }
 
 export function dealSkillChoices(w: World): void {
-  deal(w);
+  dealLegacySkillChoice(w);
 }

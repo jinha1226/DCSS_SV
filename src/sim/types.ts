@@ -7,10 +7,11 @@ import type { Room } from './floor';
 import type { Flow } from './flow';
 import type { Grid } from './grid';
 import type { Rng } from './rng';
+import type { RingSlotId, SlotId } from './slots';
 
 export interface ItemChoice {
   readonly id: string;
-  readonly kind: 'weapon' | 'gear' | 'consumable';
+  readonly kind: 'weapon' | 'armour' | 'jewellery' | 'offhand';
   readonly name: string;
   readonly line: string;
   readonly weapon?: WeaponItem;
@@ -56,6 +57,9 @@ export interface Hero {
   skills: Record<string, number>;
   /** Progress towards each next skill level; persists across equipment changes and floors. */
   skillXp: Record<string, number>;
+  /** Permanent enhancement belongs to the body slot, not the equipped item. */
+  slotLevels: Record<SlotId, number>;
+  ringResist: Partial<Record<RingSlotId, ResistName>>;
   invulnerable: number;
   lastStandUsed: boolean;
   might: number;
@@ -368,7 +372,8 @@ export interface World {
   descending: number;
   /** A transition disarms the arrival stair until the hero leaves it. */
   stairsArmed: boolean;
-  pendingChoices: number;
+  /** Level rewards are resolved from the front while simulation time is paused. */
+  readonly pendingRewards: ('slot' | 'acquire')[];
   choosing: readonly SkillChoice[] | null;
   /** Level-up item cards; legacy skill-choice field remains for existing tools. */
   rewardChoices: readonly ItemChoice[] | null;

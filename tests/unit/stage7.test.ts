@@ -47,7 +47,6 @@ describe('stage 7 character data', () => {
 describe('legacy skill card compatibility', () => {
   it('keeps the direct skill-card helper available independently of automatic training', () => {
     const w = makeWorld({ floor: openFloor(), monsters: false, items: false });
-    w.pendingChoices = 1;
     dealSkillChoices(w);
     expect(w.choosing).toHaveLength(3);
     expect(w.choosing!.every((card) => card.cap === 27)).toBe(true);

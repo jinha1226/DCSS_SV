@@ -3,7 +3,7 @@ import { plainAxe, plainBow } from '../../src/data/items';
 import { hurtHero } from '../../src/sim/effects';
 import { recordKill } from '../../src/sim/kills';
 import { spawnMonster } from '../../src/sim/monster';
-import { chooseReward } from '../../src/sim/rewards';
+import { upgradeSlot } from '../../src/sim/slots';
 import { gainExperience, openSkill, skillCap, skillLevel, skillXpToNext, trainSkills, xpToNext } from '../../src/sim/skills';
 import { STEP, makeWorld, stepWorld } from '../../src/sim/world';
 import { STILL, arena } from './arena';
@@ -123,28 +123,26 @@ describe('automatic skill training', () => {
 });
 
 describe('level rewards', () => {
-  it('replaces skill cards with three different item categories and pauses simulation time', () => {
+  it('replaces the old three item cards with a mandatory slot reward and pauses simulation time', () => {
     const w = arena();
     gainExperience(w, xpToNext(1));
     expect(w.hero.level).toBe(2);
     expect(w.choosing).toBeNull();
-    expect(w.rewardChoices?.map((card) => card.kind)).toEqual(['weapon', 'gear', 'consumable']);
+    expect(w.pendingRewards).toEqual(['slot']);
+    expect(w.rewardChoices).toBeNull();
     const time = w.time;
     stepWorld(w, STILL);
     expect(w.time).toBe(time);
   });
 
-  it('queues simultaneous level rewards and consumes each exactly once', () => {
+  it('queues simultaneous slot rewards and consumes each exactly once', () => {
     const w = arena();
     gainExperience(w, xpToNext(1) + xpToNext(2));
-    expect(w.pendingChoices).toBe(2);
-    const first = w.rewardChoices![0]!;
-    expect(chooseReward(w, first.id)).toBe(true);
-    expect(w.pendingChoices).toBe(1);
-    expect(w.rewardChoices).not.toBeNull();
-    expect(chooseReward(w, w.rewardChoices![0]!.id)).toBe(true);
-    expect(w.pendingChoices).toBe(0);
-    expect(w.rewardChoices).toBeNull();
-    expect(chooseReward(w, first.id)).toBe(false);
+    expect(w.pendingRewards).toEqual(['slot', 'slot']);
+    expect(upgradeSlot(w, 'weapon')).toBe(true);
+    expect(w.pendingRewards).toEqual(['slot']);
+    expect(upgradeSlot(w, 'body')).toBe(true);
+    expect(w.pendingRewards).toEqual([]);
+    expect(upgradeSlot(w, 'body')).toBe(false);
   });
 });

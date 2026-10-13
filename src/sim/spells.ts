@@ -8,6 +8,7 @@ import { updateFlow } from './flow';
 import { skillLevel } from './skills';
 import { basicSpell, paidSpells, requiredLevel, slottedSpell, spellCooldownLeft, tickSpellCooldowns } from './spellAccess';
 import type { Monster, World } from './types';
+import { slotBonus } from './slots';
 
 export {
   basicSpell,
@@ -38,7 +39,7 @@ export function spellRange(w: World, spell: SpellData): number {
 /** Skill above the requirement adds damage, but pure control spells (no base damage) stay harmless. */
 export function spellDamage(w: World, spell: SpellData): number {
   if (!spell.damage) return 0;
-  return spell.damage + spellExcess(w, spell) * 2;
+  return spell.damage + spellExcess(w, spell) * 2 + slotBonus(w, 'magic_power', spell.school);
 }
 
 export function spellCandidates(w: World, spell: SpellData): Monster[] {

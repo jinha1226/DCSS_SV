@@ -1,5 +1,6 @@
 import { skillData } from '../data/skills';
 import { xpToNext } from '../sim/skills';
+import { DUNGEON } from '../data/packs';
 import { downDestinations, nodeLabel } from '../sim/dungeonGraph';
 import { shopAccessible } from '../sim/branchLoot';
 import { Cell, cellAt } from '../sim/grid';
@@ -171,8 +172,8 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
         mana.classList.toggle('on', w.hero.maxMana > 0);
         manaFill.style.width = (w.hero.maxMana > 0 ? w.hero.mana / w.hero.maxMana : 0) * 100 + '%';
         manaText.textContent = Math.floor(w.hero.mana) + ' / ' + w.hero.maxMana;
-        levelText.textContent = 'Lv ' + w.hero.level;
-        xpFill.style.width = Math.min(1, w.hero.xp / need) * 100 + '%';
+        levelText.textContent = w.hero.level >= DUNGEON.levelCap ? '최대 레벨' : 'Lv ' + w.hero.level;
+        xpFill.style.width = (w.hero.level >= DUNGEON.levelCap ? 1 : Math.min(1, w.hero.xp / need)) * 100 + '%';
         const location = w.dungeonGraph.nodes.get(w.depth);
         place.textContent =
           location?.branch === 'Dungeon'

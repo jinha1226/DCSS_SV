@@ -22,6 +22,7 @@ import { makeHopButton } from '../ui/hopButton';
 import { makePickupToast } from '../ui/pickupToast';
 import { makeSkillBar } from '../ui/skillBar';
 import { makeSkillPicker } from '../ui/skillPicker';
+import { makeSlotPicker } from '../ui/slotPicker';
 import { makeLedger } from '../ui/ledger';
 import { makeSpellButtons } from '../ui/spellButtons';
 import { makeThrowButton } from '../ui/throwButton';
@@ -80,6 +81,7 @@ async function start(): Promise<void> {
   const hop = makeHopButton(root);
   const throwing = makeThrowButton(root);
   const picker = makeSkillPicker(root, atlas);
+  const slotPicker = makeSlotPicker(root, atlas);
   const gear = makeEquipmentPicker(root);
   const spellButtons = makeSpellButtons(root);
 
@@ -364,6 +366,7 @@ async function start(): Promise<void> {
       inventory.show(world);
       ledger.show(world);
       picker.show(world);
+      slotPicker.show(world);
       gear.show(world);
       spellButtons.show(world);
       hop.show(world);

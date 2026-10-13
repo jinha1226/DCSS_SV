@@ -114,7 +114,6 @@ describe('automatic bow fire', () => {
     const w = hunter();
     w.hero.skills.shield = 8;
     expect(effectValue(w, 'shield.chance')).toBe(0);
-    w.pendingChoices = 1;
     dealSkillChoices(w);
     expect(w.choosing!.some((card) => card.id === 'shield')).toBe(false);
   });

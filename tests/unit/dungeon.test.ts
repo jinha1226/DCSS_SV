@@ -8,10 +8,20 @@ import { Cell, cellAt, walkable } from '../../src/sim/grid';
 import { spawnMonster } from '../../src/sim/monster';
 import { chooseReward } from '../../src/sim/rewards';
 import { chooseSkill } from '../../src/sim/skills';
+import { SLOTS, upgradeSlot } from '../../src/sim/slots';
 import { STEP, floorSeed, makeWorld, stepWorld, type World } from '../../src/sim/world';
 import { STILL, arena, count, run } from './arena';
 
 const SEEDS = Array.from({ length: 40 }, (_, i) => i * 7919 + 13);
+
+function resolveRewards(w: World): void {
+  if (w.pendingRewards[0] === 'slot') {
+    const slot = SLOTS.find((entry) => w.hero.slotLevels[entry.id] < entry.cap);
+    if (slot) upgradeSlot(w, slot.id, slot.id === 'ring1' || slot.id === 'ring2' ? 'fire' : undefined);
+  }
+  if (w.rewardChoices) chooseReward(w, w.rewardChoices[0]!.id);
+  if (w.choosing) chooseSkill(w, w.choosing[0]!.id);
+}
 
 function cellsOf(floor: ReturnType<typeof makeFloor>, kind: Cell): { x: number; y: number }[] {
   const out: { x: number; y: number }[] = [];
@@ -174,8 +184,7 @@ describe('lingering', () => {
     w.hero.maxHp = w.hero.hp = 1e9;
     const grow = (seconds: number): void => {
       for (let i = 0; i < Math.round(seconds / STEP); i++) {
-        if (w.rewardChoices) chooseReward(w, w.rewardChoices[0]!.id);
-        if (w.choosing) chooseSkill(w, w.choosing[0]!.id);
+        resolveRewards(w);
         stepWorld(w, STILL);
       }
     };
@@ -188,8 +197,7 @@ describe('lingering', () => {
     const arrivals: number[] = [];
     let seen = first;
     for (let i = 0; i < Math.round(150 / STEP); i++) {
-      if (w.rewardChoices) chooseReward(w, w.rewardChoices[0]!.id);
-      if (w.choosing) chooseSkill(w, w.choosing[0]!.id);
+      resolveRewards(w);
       stepWorld(w, STILL);
       if (w.monsters.length + w.kills > seen) {
         seen = w.monsters.length + w.kills;

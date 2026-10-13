@@ -115,7 +115,7 @@ export function stepStage(stage: Stage, options: StageOptions): void {
   w.nextBand = Infinity;
   stepWorld(w, STILL);
   w.rewardChoices = null;
-  w.pendingChoices = 0;
+  w.pendingRewards.length = 0;
   w.choosing = null;
   stage.dummies.forEach((m, i) => {
     if (m && m.hp > 0) {

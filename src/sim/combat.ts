@@ -8,6 +8,7 @@ import { hurtMonster } from './hits';
 import { hurtHero, wake } from './effects';
 import { FAR } from './flow';
 import { walkable } from './grid';
+import { slotBonus } from './slots';
 
 import { effectValue, hasEffect, skillLevel, throwCooldown } from './skills';
 import { hornDamage, hornEvery, hornTrait } from './traits';
@@ -188,7 +189,12 @@ function makeArrow(w: World, target: Monster): Shot {
     py: h.y,
     vx: (dx / d) * speed,
     vy: (dy / d) * speed,
-    damage: w.weapon.damage + (w.weapon.enchantment ?? 0) + weaponOption(w.weapon, 'damage') + effectValue(w, 'ranged.damage'),
+    damage:
+      w.weapon.damage +
+      (w.weapon.enchantment ?? 0) +
+      weaponOption(w.weapon, 'damage') +
+      effectValue(w, 'ranged.damage') +
+      slotBonus(w, 'weapon_damage'),
     left: (range + 0.25) / speed,
     mine: true,
     pierce,
@@ -209,7 +215,7 @@ export function weaponEvery(w: World): number {
 }
 function bowCooldown(w: World): number {
   const randart = Math.min(0.5, weaponOption(w.weapon, 'haste'));
-  return Math.max(0.18, weaponEvery(w) * (1 - randart) * (w.hero.haste > 0 ? 0.7 : 1));
+  return Math.max(0.18, weaponEvery(w) * (1 - randart) * (1 - slotBonus(w, 'attack_speed')) * (w.hero.haste > 0 ? 0.7 : 1));
 }
 function shootNow(w: World): void {
   const targets = bowTargets(w);
@@ -336,6 +342,7 @@ export function heroStrikes(w: World, dt: number, wantsThrow: boolean, throwAt?:
       (w.weapon.damage +
         (w.weapon.enchantment ?? 0) +
         weaponOption(w.weapon, 'damage') +
+        slotBonus(w, 'weapon_damage') +
         (isBlade ? effectValue(w, 'blade.damage') : effectValue(w, 'axe.damage'))) *
       spin;
     let any = false,
@@ -355,7 +362,9 @@ export function heroStrikes(w: World, dt: number, wantsThrow: boolean, throwAt?:
       h.axeSwings = next;
       const haste = Math.min(0.5, weaponOption(w.weapon, 'haste'));
       h.swing =
-        kill && hasEffect(w, isBlade ? 'blade.reset' : 'axe.reset') ? 0 : weaponEvery(w) * (1 - haste) * (w.hero.haste > 0 ? 0.7 : 1);
+        kill && hasEffect(w, isBlade ? 'blade.reset' : 'axe.reset')
+          ? 0
+          : weaponEvery(w) * (1 - haste) * (1 - slotBonus(w, 'attack_speed')) * (w.hero.haste > 0 ? 0.7 : 1);
       noise(w, DUNGEON.loud);
     } else h.swing = 0;
   }

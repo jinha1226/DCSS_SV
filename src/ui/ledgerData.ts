@@ -8,6 +8,8 @@ import type { World } from '../sim/world';
 import { bagEntries, equipmentSlots } from './inventorySheets';
 import { listedSkills } from './skillBar';
 import { statusValues } from './statusSheet';
+import { heroResists } from '../sim/effects';
+import { DUNGEON } from '../data/packs';
 
 /** The DCSS console colours the ledger speaks in. */
 export type Tone = 'plain' | 'hi' | 'good' | 'warn' | 'bad' | 'muted' | 'gold' | 'cyan' | 'magic';
@@ -49,7 +51,11 @@ export function overviewColumns(w: World): Pair[][] {
     ],
     [
       { label: '레벨', value: String(w.hero.level), tone: 'hi' },
-      { label: '경험', value: Math.floor((Math.min(1, w.hero.xp / need) || 0) * 100) + '%', tone: 'plain' },
+      {
+        label: '경험',
+        value: w.hero.level >= DUNGEON.levelCap ? '최대' : Math.floor((Math.min(1, w.hero.xp / need) || 0) * 100) + '%',
+        tone: 'plain',
+      },
       { label: '처치', value: String(w.kills), tone: 'plain' },
     ],
   ];
@@ -66,7 +72,7 @@ const RESISTS: readonly { id: ResistName; label: string }[] = [
 /** Resistances as DCSS pips: '+' for each level held, 'x' for each level of weakness, '.' otherwise. */
 export function resistPips(w: World): { label: string; pips: string }[] {
   return RESISTS.map(({ id, label }) => {
-    const level = Math.max(-3, Math.min(3, w.heroDef.resists[id] ?? 0));
+    const level = Math.max(-3, Math.min(3, heroResists(w)[id] ?? 0));
     const mark = level >= 0 ? '+' : 'x';
     const pips = Array.from({ length: 3 }, (_, i) => (i < Math.abs(level) ? mark : '.')).join(' ');
     return { label, pips };

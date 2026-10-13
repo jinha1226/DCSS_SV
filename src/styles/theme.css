@@ -418,6 +418,10 @@ button:focus-visible {
   perspective: 1100px;
 }
 
+.reward-cards:has(.reward-card:nth-child(4)) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .reward-card {
   position: relative;
   min-height: clamp(210px, 46vw, 300px);
@@ -635,6 +639,7 @@ button:focus-visible {
 
 .reward-skip button {
   padding: 9px 14px;
+  font-family: inherit;
   font-size: 13px;
 }
 
@@ -694,6 +699,10 @@ button:focus-visible {
     grid-template-columns: repeat(3, minmax(0, 220px)) !important;
     justify-content: center;
     gap: 22px;
+  }
+
+  .reward-cards:has(.reward-card:nth-child(4)) {
+    grid-template-columns: repeat(4, minmax(0, 190px)) !important;
   }
 
   .reward-card {

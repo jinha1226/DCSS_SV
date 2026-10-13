@@ -52,10 +52,10 @@ function randomName(w: World, base: string): string {
   const b = NAME_PARTS.suffixes[Math.floor(w.rng() * NAME_PARTS.suffixes.length)] ?? '둠';
   return a + b + '의 ' + base;
 }
-export function generateWeapon(w: World, family: WeaponFamily): WeaponItem {
+export function generateWeapon(w: World, family: WeaponFamily, randartChance?: number): WeaponItem {
   const base = weighted(w, family),
     index = lootTier(w);
-  const isRandart = w.rng() < RANDART[index]!;
+  const isRandart = w.rng() < (randartChance ?? RANDART[index]!);
   const brand = isRandart || w.rng() < BRAND[index]! ? randomBrand(w) : undefined;
   const options: WeaponOption[] = [];
   if (isRandart) {

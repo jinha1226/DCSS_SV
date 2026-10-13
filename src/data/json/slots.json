@@ -1,0 +1,12 @@
+[
+  { "id": "weapon", "name": "무기", "effect": "weapon", "perLevel": 1, "cap": 9 },
+  { "id": "offhand", "name": "보조손", "effect": "offhand", "perLevel": 1, "cap": 5 },
+  { "id": "body", "name": "몸", "effect": "armour", "perLevel": 1, "cap": 9 },
+  { "id": "helmet", "name": "투구", "effect": "max_hp", "perLevel": 4, "cap": 3 },
+  { "id": "gloves", "name": "장갑", "effect": "attack_speed", "perLevel": 0.03, "cap": 3 },
+  { "id": "boots", "name": "장화", "effect": "move_speed", "perLevel": 0.03, "cap": 3 },
+  { "id": "cloak", "name": "망토", "effect": "dodge", "perLevel": 0.02, "cap": 3 },
+  { "id": "amulet", "name": "목걸이", "effect": "max_mana", "perLevel": 2, "cap": 3 },
+  { "id": "ring1", "name": "왼쪽 반지", "effect": "resist", "perLevel": 1, "cap": 3 },
+  { "id": "ring2", "name": "오른쪽 반지", "effect": "resist", "perLevel": 1, "cap": 3 }
+]

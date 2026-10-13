@@ -4,6 +4,7 @@ import { acceptPickup, declinePickup, weaponScore } from '../../src/sim/equipmen
 import { Cell, cellAt, walkable } from '../../src/sim/grid';
 import { chooseSkill, effectValue, skillLevel } from '../../src/sim/skills';
 import { chooseReward } from '../../src/sim/rewards';
+import { SLOTS, slotData, upgradeSlot } from '../../src/sim/slots';
 import { makeWorld, stepWorld, type Input, type SkillChoice, type World } from '../../src/sim/world';
 
 export type Bot = (w: World) => Input;
@@ -196,6 +197,7 @@ export interface RunResult {
   readonly depth: number;
   readonly won: boolean;
   readonly level: number;
+  readonly mainSkill: string;
   readonly offered: number;
   readonly swapped: number;
   readonly throws: number;
@@ -216,8 +218,17 @@ export function play(bot: Bot, seed: number, limit: number, chooser: Chooser = a
       else declinePickup(w);
       continue;
     }
+    if (w.pendingRewards[0] === 'slot') {
+      const preferred = w.hero.slotLevels.weapon < slotData('weapon').cap ? 'weapon' : 'body';
+      const id =
+        w.hero.slotLevels[preferred] < slotData(preferred).cap
+          ? preferred
+          : SLOTS.find((slot) => w.hero.slotLevels[slot.id] < slot.cap)?.id;
+      if (id) upgradeSlot(w, id, id === 'ring1' || id === 'ring2' ? 'fire' : undefined);
+      continue;
+    }
     if (w.rewardChoices) {
-      chooseReward(w, w.rewardChoices[0]!.id);
+      chooseReward(w, 'weapon');
       continue;
     }
     if (w.choosing) {
@@ -234,6 +245,7 @@ export function play(bot: Bot, seed: number, limit: number, chooser: Chooser = a
     depth: w.depth,
     won: w.won,
     level: w.hero.level,
+    mainSkill: `${w.weapon.school ?? w.weapon.family} ${skillLevel(w, w.weapon.school ?? w.weapon.family)}`,
     offered: w.pickupStats.offered,
     swapped: w.pickupStats.swapped,
     throws: w.pickupStats.throws,
@@ -244,6 +256,7 @@ export function play(bot: Bot, seed: number, limit: number, chooser: Chooser = a
 export function summary(runs: readonly RunResult[]): string {
   const mean = (f: (r: RunResult) => number): number => runs.reduce((a, r) => a + f(r), 0) / runs.length;
   const times = runs.map((r) => r.seconds).sort((a, b) => a - b);
+  const mainSkills = [...new Set(runs.map((r) => r.mainSkill))].join('/');
   return (
     'won ' +
     runs.filter((r) => r.won).length +
@@ -262,6 +275,8 @@ export function summary(runs: readonly RunResult[]): string {
     mean((r) => r.kills).toFixed(0) +
     ', level ' +
     mean((r) => r.level).toFixed(1) +
+    ', main skill ' +
+    mainSkills +
     ', offers ' +
     mean((r) => r.offered).toFixed(1) +
     ', swaps ' +

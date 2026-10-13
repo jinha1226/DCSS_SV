@@ -1,10 +1,13 @@
 import { brandData, type ResistName } from '../data/items';
 import { SKILLS, BASIC_SKILLS, WEAPON_SKILLS } from '../data/skills';
 import { weaponOption } from '../sim/equipment';
-import { gearName } from '../sim/gear';
+import { gearBonus, gearName } from '../sim/gear';
 import { effectValue, xpToNext } from '../sim/skills';
 import type { World } from '../sim/world';
 import { makeSpellSlotPanel } from './spellSlotPanel';
+import { heroResists } from '../sim/effects';
+import { slotBonus, type SlotId } from '../sim/slots';
+import { DUNGEON } from '../data/packs';
 
 const RESISTS: readonly { id: ResistName; label: string }[] = [
   { id: 'fire', label: '화염저항' },
@@ -22,34 +25,39 @@ export interface StatusValue {
 
 export function statusValues(w: World): { vitals: StatusValue[]; resists: StatusValue[]; equipment: StatusValue[]; extra: StatusValue[] } {
   const resists = RESISTS.map(({ id, label }) => {
-    const level = w.heroDef.resists[id] ?? 0;
+    const level = heroResists(w)[id] ?? 0;
     return {
       label,
       value: level > 0 ? '+'.repeat(level) : level < 0 ? '-'.repeat(-level) : '· · ·',
       tone: level > 0 ? ('positive' as const) : level < 0 ? ('negative' as const) : ('muted' as const),
     };
   });
-  const slots = [
-    ['무기', w.weapon.name + (w.weapon.brand ? ' (' + brandData(w.weapon.brand)?.name + ')' : '')],
-    ['보조손', w.weapon.hands === 2 ? '양손 무기 사용 중' : w.gear.offhand ? gearName(w, w.gear.offhand) : '미착용'],
-    ['갑옷', '미착용'],
-    ['투구', '미착용'],
-    ['장갑', '미착용'],
-    ['장화', '미착용'],
-    ['망토', '미착용'],
-    ['목걸이', '미착용'],
-    ['반지 1', '미착용'],
-    ['반지 2', '미착용'],
+  const slots: readonly [string, string, SlotId][] = [
+    ['무기', w.weapon.name + (w.weapon.brand ? ' (' + brandData(w.weapon.brand)?.name + ')' : ''), 'weapon'],
+    ['보조손', w.weapon.hands === 2 ? '양손 무기 사용 중' : w.gear.offhand ? gearName(w, w.gear.offhand) : '미착용', 'offhand'],
+    ['갑옷', w.gear.armour ? gearName(w, w.gear.armour) : '미착용', 'body'],
+    ['투구', w.gear.helmet ? gearName(w, w.gear.helmet) : '미착용', 'helmet'],
+    ['장갑', w.gear.gloves ? gearName(w, w.gear.gloves) : '미착용', 'gloves'],
+    ['장화', w.gear.boots ? gearName(w, w.gear.boots) : '미착용', 'boots'],
+    ['망토', w.gear.cloak ? gearName(w, w.gear.cloak) : '미착용', 'cloak'],
+    ['목걸이', w.gear.amulet ? gearName(w, w.gear.amulet) : '미착용', 'amulet'],
+    ['반지 1', w.gear.ring1 ? gearName(w, w.gear.ring1) : '미착용', 'ring1'],
+    ['반지 2', w.gear.ring2 ? gearName(w, w.gear.ring2) : '미착용', 'ring2'],
   ] as const;
-  const armour = effectValue(w, 'armour.reduce') + weaponOption(w.weapon, 'armour') + (w.hero.armourBuff > 0 ? w.hero.armourBuffPower : 0);
-  const evasion = effectValue(w, 'dodging.chance') + weaponOption(w.weapon, 'evasion');
-  const shield = effectValue(w, 'shield.chance');
+  const armour =
+    effectValue(w, 'armour.reduce') +
+    weaponOption(w.weapon, 'armour') +
+    gearBonus(w, 'armour') +
+    slotBonus(w, 'armour') +
+    (w.hero.armourBuff > 0 ? w.hero.armourBuffPower : 0);
+  const evasion = effectValue(w, 'dodging.chance') + weaponOption(w.weapon, 'evasion') + slotBonus(w, 'dodge');
+  const shield = effectValue(w, 'shield.chance') + (w.weapon.hands === 2 ? 0 : gearBonus(w, 'shield') * 0.12) + slotBonus(w, 'block');
   return {
     vitals: [
       { label: '체력', value: Math.ceil(w.hero.hp) + '/' + w.hero.maxHp },
       { label: '마력', value: Math.floor(w.hero.mana) + '/' + w.hero.maxMana },
       { label: '레벨', value: String(w.hero.level) },
-      { label: '경험치', value: Math.floor(w.hero.xp) + '/' + xpToNext(w.hero.level) },
+      { label: '경험치', value: w.hero.level >= DUNGEON.levelCap ? '최대 레벨' : Math.floor(w.hero.xp) + '/' + xpToNext(w.hero.level) },
       { label: '물리감소', value: armour.toFixed(1) },
       { label: '회피확률', value: Math.round(evasion * 100) + '%' },
       { label: '방패확률', value: Math.round(shield * 100) + '%' },
@@ -59,12 +67,16 @@ export function statusValues(w: World): { vitals: StatusValue[]; resists: Status
       { label: '조트의 보주', value: w.orbCollected ? '획득' : '미획득' },
     ],
     resists,
-    equipment: slots.map(([label, value]) => ({ label, value, tone: value === '미착용' ? ('muted' as const) : undefined })),
+    equipment: slots.map(([label, value, id]) => ({
+      label,
+      value: `${value} · 부위 +${w.hero.slotLevels[id]}`,
+      tone: value === '미착용' ? ('muted' as const) : undefined,
+    })),
     extra: [
       { label: '체력재생', value: w.heroDef.regen.toFixed(2) + '/초' },
       { label: '마력재생', value: w.heroDef.manaRegen.toFixed(2) + '/초' },
-      { label: '무기 피해', value: String(w.weapon.damage + weaponOption(w.weapon, 'damage')) },
-      { label: '공격 간격', value: w.weapon.every.toFixed(2) + '초' },
+      { label: '무기 피해', value: String(w.weapon.damage + weaponOption(w.weapon, 'damage') + slotBonus(w, 'weapon_damage')) },
+      { label: '공격 간격', value: (w.weapon.every * (1 - slotBonus(w, 'attack_speed'))).toFixed(2) + '초' },
       { label: '투척물', value: String(w.ammo) },
       { label: '고유 특성', value: w.heroDef.traits.length ? w.heroDef.traits.map((trait) => trait.id).join(', ') : '없음' },
     ],

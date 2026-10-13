@@ -6,8 +6,8 @@ describe('equipment and bag presentation', () => {
   it("shows the real equipped weapon and the job's starting armour", () => {
     const w = makeWorld({ monsters: false, items: false });
     const slots = equipmentSlots(w);
-    expect(slots.find((slot) => slot.id === 'weapon')?.value).toBe(w.weapon.name);
-    expect(slots.find((slot) => slot.id === 'armour')).toMatchObject({ available: true, value: '짐승 가죽 갑옷' });
+    expect(slots.find((slot) => slot.id === 'weapon')?.value).toBe(w.weapon.name + ' · 부위 +0');
+    expect(slots.find((slot) => slot.id === 'armour')).toMatchObject({ available: true, value: '짐승 가죽 갑옷 · 부위 +0' });
     expect(slots.filter((slot) => slot.available)).toHaveLength(10);
   });
 

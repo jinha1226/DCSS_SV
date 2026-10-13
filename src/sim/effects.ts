@@ -6,16 +6,17 @@ import { recordKill } from './kills';
 import { effectValue, hasEffect } from './skills';
 import { headbuttBack } from './traits';
 import type { Monster, World } from './types';
+import { slotBonus } from './slots';
 
 /** Hostile spells use their own hit category (not the stone-only defence perks). */
 export type HurtKind = 'melee' | 'stone' | 'spell';
 
-function heroResists(w: World): Readonly<Partial<Record<ResistName, number>>> {
-  return {
-    ...w.heroDef.resists,
-    fire: (w.heroDef.resists.fire ?? 0) + gearBonus(w, 'fire_resist'),
-    cold: (w.heroDef.resists.cold ?? 0) + gearBonus(w, 'cold_resist'),
-  };
+export function heroResists(w: World): Readonly<Partial<Record<ResistName, number>>> {
+  const result: Partial<Record<ResistName, number>> = {};
+  for (const id of ['fire', 'cold', 'electric', 'negative', 'poison'] as const) {
+    result[id] = (w.heroDef.resists[id] ?? 0) + gearBonus(w, id + '_resist') + slotBonus(w, id);
+  }
+  return result;
 }
 
 function pushDamageEvents(w: World, physical: number, elemental: number, element?: ResistName): void {
@@ -33,7 +34,7 @@ export function hurtHero(
 ): boolean {
   const hero = w.hero;
   if (hero.invulnerable > 0) return false;
-  const dodge = effectValue(w, 'dodging.chance') + weaponOption(w.weapon, 'evasion');
+  const dodge = effectValue(w, 'dodging.chance') + weaponOption(w.weapon, 'evasion') + slotBonus(w, 'dodge');
   if (kind === 'melee' && w.weapon.family === 'blade' && w.rng() < effectValue(w, 'blade.parry')) {
     w.events.push({ type: 'block', x: hero.x, y: hero.y });
     hero.swing = 0;
@@ -47,7 +48,7 @@ export function hurtHero(
     if (grace > 0) hero.invulnerable = Math.max(hero.invulnerable, grace);
     return false;
   }
-  let block = effectValue(w, 'shield.chance') + (w.weapon.hands === 2 ? 0 : gearBonus(w, 'shield') * 0.12);
+  let block = effectValue(w, 'shield.chance') + (w.weapon.hands === 2 ? 0 : gearBonus(w, 'shield') * 0.12) + slotBonus(w, 'block');
   if (kind === 'stone' && hasEffect(w, 'shield.missile')) block *= effectValue(w, 'shield.missile');
   if (block > 0 && w.rng() < Math.min(1, block)) {
     w.events.push({ type: 'block', x: hero.x, y: hero.y });
@@ -73,6 +74,7 @@ export function hurtHero(
     effectValue(w, 'armour.reduce') +
       weaponOption(w.weapon, 'armour') +
       gearBonus(w, 'armour') +
+      slotBonus(w, 'armour') +
       (hero.armourBuff > 0 ? hero.armourBuffPower : 0),
     heroResists(w),
   );

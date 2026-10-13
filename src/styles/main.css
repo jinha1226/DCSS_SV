@@ -294,6 +294,146 @@ canvas {
 .skill-card:disabled {
   opacity: 0.72;
 }
+
+.slot-picker {
+  position: fixed;
+  inset: 0;
+  z-index: 31;
+  display: none;
+  place-content: center;
+  justify-items: center;
+  gap: 8px;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) 10px calc(10px + env(safe-area-inset-bottom, 0px));
+  overflow: auto;
+  background: rgba(0, 0, 0, 0.9);
+}
+.slot-picker.on {
+  display: grid;
+}
+.slot-picker h2,
+.slot-picker p {
+  margin: 0;
+}
+.slot-picker p {
+  color: #cdbf9d;
+  font-size: 12px;
+}
+.slot-layout {
+  display: grid;
+  grid-template-columns: minmax(100px, 150px) 100px minmax(100px, 150px);
+  grid-template-areas:
+    'weapon blank offhand'
+    'body doll helmet'
+    'gloves doll boots'
+    'cloak doll amulet'
+    'ring1 blank2 ring2';
+  gap: 6px;
+  align-items: stretch;
+}
+.slot-doll {
+  grid-area: doll;
+  display: grid;
+  place-items: center;
+}
+.slot-doll canvas {
+  /* The rule above pins every canvas to the screen; this one sits in its grid cell. */
+  position: static;
+  inset: auto;
+  width: 96px;
+  height: 192px;
+  image-rendering: pixelated;
+}
+.slot-button,
+.slot-resists button,
+.slot-confirm {
+  min-height: 48px;
+  border: 1px solid #9f895d;
+  border-radius: 9px;
+  background: #29251e;
+  color: #f7edd3;
+  font-family: inherit;
+  touch-action: manipulation;
+}
+.slot-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 5px 7px;
+}
+.slot-button strong {
+  font-size: 13px;
+}
+.slot-button small {
+  color: #cdbf9d;
+  font-size: 11px;
+}
+.slot-button.selected,
+.slot-resists button.selected {
+  border-color: #ffe090;
+  box-shadow: 0 0 0 2px rgba(255, 224, 144, 0.25);
+}
+.slot-button:disabled {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+.slot-weapon {
+  grid-area: weapon;
+}
+.slot-offhand {
+  grid-area: offhand;
+}
+.slot-body {
+  grid-area: body;
+}
+.slot-helmet {
+  grid-area: helmet;
+}
+.slot-gloves {
+  grid-area: gloves;
+}
+.slot-boots {
+  grid-area: boots;
+}
+.slot-cloak {
+  grid-area: cloak;
+}
+.slot-amulet {
+  grid-area: amulet;
+}
+.slot-ring1 {
+  grid-area: ring1;
+}
+.slot-ring2 {
+  grid-area: ring2;
+}
+.slot-resists {
+  display: none;
+  grid-template-columns: repeat(5, minmax(48px, 1fr));
+  gap: 5px;
+  width: min(100%, 520px);
+}
+.slot-resists.on {
+  display: grid;
+}
+.slot-confirm {
+  min-width: 210px;
+  padding: 8px 18px;
+  font-weight: 700;
+}
+.slot-confirm:disabled {
+  opacity: 0.45;
+}
+
+@media (max-width: 390px) {
+  .slot-layout {
+    grid-template-columns: minmax(94px, 1fr) 76px minmax(94px, 1fr);
+    gap: 4px;
+  }
+  .slot-doll canvas {
+    width: 72px;
+    height: 144px;
+  }
+}
 .skill-owned {
   min-height: 34px;
   margin-top: 14px;
