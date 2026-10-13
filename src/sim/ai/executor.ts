@@ -41,6 +41,12 @@ export function executeMonsterAction(context: MonsterContext, choice: ActionCand
       m.attackMode = choice.action;
       m.queuedSpell = choice.spellId;
       m.queuedItem = choice.itemId;
+      if (choice.action === 'melee') {
+        m.wind = -1;
+        m.lunge = 0.12;
+        finishMonsterAttack(context);
+        return STILL;
+      }
       m.wind = m.stats.windup;
       return STILL;
     case 'approach':

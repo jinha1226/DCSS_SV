@@ -121,6 +121,12 @@ function drawMonster(
     x += ((w.hero.x - m.x) / d) * lean;
     y += ((w.hero.y - m.y) / d) * lean;
   }
+  if (m.lunge > 0) {
+    const d = Math.hypot(w.hero.x - m.x, w.hero.y - m.y) || 1;
+    const push = (m.lunge / 0.12) * 0.13;
+    x += ((w.hero.x - m.x) / d) * push;
+    y += ((w.hero.y - m.y) / d) * push;
+  }
   const cx = ox + x * px;
   const cy = oy + y * px;
   drawFigure(ctx, m.flash > 0 ? atlas.struck : atlas.image, m.kind.tile, cx, cy, px, m.facing === 1);

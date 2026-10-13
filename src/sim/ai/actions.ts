@@ -1,6 +1,7 @@
 import { monsterSpellMana, spellData } from '../../data/spells';
 import { itemDefinition } from '../../data/itemCatalog';
 import { LIGHTNING_RANGE } from '../itemEffects';
+import { DUNGEON } from '../../data/packs';
 import type { MonsterContext } from './context';
 
 export type MonsterAction = 'melee' | 'ranged' | 'spell' | 'item' | 'approach' | 'retreat' | 'hold';
@@ -19,7 +20,7 @@ export interface ActionCandidate {
 export function availableMonsterActions(context: MonsterContext): ActionCandidate[] {
   const { monster: m, distance: d, reach, rangedRange, effectiveRange, visible, ready, preferredRange } = context;
   const choices: ActionCandidate[] = [{ action: 'hold' }];
-  if (visible && ready && d <= reach) choices.push({ action: 'melee' });
+  if (visible && ready && d <= reach && m.contact >= DUNGEON.melee.firstContact) choices.push({ action: 'melee' });
   if (visible && ready && rangedRange > 0 && d > reach && d <= rangedRange) {
     choices.push({ action: 'ranged' });
   }

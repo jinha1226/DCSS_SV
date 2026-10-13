@@ -32,6 +32,8 @@ export function validateData(): void {
     throw new Error('dungeon.json: 잘못된 acquire 레벨');
   }
   if (DUNGEON.acquireRandartChance < 0 || DUNGEON.acquireRandartChance > 1) throw new Error('dungeon.json: 잘못된 acquireRandartChance');
+  if (!(DUNGEON.melee.firstContact >= 0) || !(DUNGEON.melee.engagedSlow > 0 && DUNGEON.melee.engagedSlow <= 1))
+    throw new Error('dungeon.json: 잘못된 melee 설정');
   if (!PACKS.length) throw new Error('packs.json: 비어 있음');
   if (SKILLS.length !== 20 || new Set(SKILLS.map((skill) => skill.id)).size !== 20) {
     throw new Error('skills.json: 정확히 20개의 스킬이 필요함');

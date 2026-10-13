@@ -25,6 +25,11 @@
   "magicTierMaxLevel": [3, 6, 9],
   "magicDropChance": 0.25,
   "superhotSlow": 0.06,
+  "melee": {
+    "note": "근접 공격은 준비 동작 없이 바로 맞는다. firstContact는 사거리에 처음 들어온 뒤 첫 공격까지의 초, engagedSlow는 근접 적 사거리 안에서의 이동 속도 배율",
+    "firstContact": 0.2,
+    "engagedSlow": 0.7
+  },
   "dcssTime": {
     "note": "DCSS 1턴(속도 10, 행동 비용 10)을 실시간으로 바꾸는 값. monsterMove는 칸/초, monsterAttack과 heroAttack은 한 행동의 초, minRest는 젖히기 뒤 최소 쉬는 시간",
     "monsterMove": 4.4,

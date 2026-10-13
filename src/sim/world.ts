@@ -20,6 +20,7 @@ import { cellNoise, makeRng, type Rng } from './rng';
 import { identifyItem, initializeItemKnowledge } from './identification';
 import { addConsumable, type ConsumableId } from './consumables';
 import { heroSpeed, openStartingSkills } from './skills';
+import { engagementSlow } from './engagement';
 import { castAt, stepSpells } from './spells';
 import { emptySlotLevels } from './slots';
 import type { FloorState, Input, Stairs, World } from './types';
@@ -354,7 +355,7 @@ function walkHero(w: World, input: Input, dt: number): void {
   if (h.constricted > 0) h.constricted = Math.max(0, h.constricted - dt * (h.moving ? 2 : 1));
   if (!h.moving) return;
   const terrain = cellAt(w.grid, Math.floor(h.x), Math.floor(h.y));
-  const slow = (terrain === Cell.Water ? 0.7 : 1) * (h.constricted > 0 ? 0.45 : 1);
+  const slow = (terrain === Cell.Water ? 0.7 : 1) * (h.constricted > 0 ? 0.45 : 1) * engagementSlow(w);
   const speed = heroSpeed(w) * slow,
     to = moveCircle(w.grid, h, w.heroDef.radius, mx * speed * dt, my * speed * dt);
   h.x = to.x;

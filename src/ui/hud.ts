@@ -6,6 +6,7 @@ import { shopAccessible } from '../sim/branchLoot';
 import { Cell, cellAt } from '../sim/grid';
 import type { World } from '../sim/world';
 import { statusValues } from './statusSheet';
+import { heroEngaged } from '../sim/engagement';
 
 export interface Hud {
   readonly minimap: HTMLCanvasElement;
@@ -52,6 +53,7 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
   const location = el('div', 'hud-location', header);
   const place = el('strong', 'hud-place', location);
   const elapsed = el('span', 'hud-time', location);
+  const engagement = el('span', 'hud-engaged', location);
   const menuArea = el('div', 'hud-menu-area', header);
   const menuButton = document.createElement('button');
   menuButton.type = 'button';
@@ -142,6 +144,7 @@ export function makeHud(root: HTMLElement, again: () => void, chooseCharacter: (
         weapon.textContent = '무기 ' + (values.equipment[0]?.value ?? w.weapon.name) + ' · 투척물 ' + w.ammo;
       }
       const hp = Math.ceil(w.hero.hp);
+      engagement.textContent = heroEngaged(w) ? ' · 교전' : '';
       const need = xpToNext(w.hero.level);
       const line = [
         hp,

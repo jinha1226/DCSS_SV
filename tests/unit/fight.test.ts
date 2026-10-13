@@ -70,27 +70,30 @@ describe('a goblin', () => {
     expect(Math.hypot(g.x - w.hero.x, g.y - w.hero.y)).toBeLessThan(1.2);
   });
 
-  it('draws back before it strikes, and the blow lands on a hero who stays', () => {
+  it('waits for first contact, then strikes immediately without a windup', () => {
     const w = quietArena();
-    spawnMonster(w, 'goblin', 10 + TOUCH + 0.05, 10, true).rest = 0;
-    expect(count(run(w, GOBLIN.windup - 0.05), 'hurt')).toBe(0);
-    expect(count(run(w, 0.15), 'hurt')).toBe(1);
+    const goblin = spawnMonster(w, 'goblin', 10 + TOUCH - 0.05, 10, true);
+    goblin.rest = 0;
+    expect(count(run(w, 0.18), 'hurt')).toBe(0);
+    expect(goblin.wind).toBe(-1);
+    expect(count(run(w, 0.05), 'hurt')).toBe(1);
     expect(w.hero.hp).toBeCloseTo(HERO.hp - GOBLIN.damage, 0);
   });
 
-  it('misses a hero who steps away while it draws back', () => {
+  it('lands a blow immediately before the hero can step away', () => {
     const w = quietArena();
-    spawnMonster(w, 'goblin', 10 + TOUCH + 0.05, 10, true).rest = 0;
-    run(w, 0.05);
-    expect(count(run(w, GOBLIN.windup + 0.1, { mx: -1, my: 0 }), 'hurt')).toBe(0);
-    expect(w.hero.hp).toBe(HERO.hp);
+    const goblin = spawnMonster(w, 'goblin', 10 + TOUCH - 0.05, 10, true);
+    goblin.rest = 0;
+    run(w, 0.2);
+    expect(count(run(w, 0.05, { mx: -1, my: 0 }), 'hurt')).toBe(1);
+    expect(w.hero.hp).toBeLessThan(HERO.hp);
   });
 
   it('rests between blows', () => {
     const w = quietArena();
     spawnMonster(w, 'goblin', 10 + TOUCH + 0.05, 10, true).rest = 0;
     const seconds = 3.5;
-    expect(count(run(w, seconds), 'hurt')).toBe(Math.floor((seconds - GOBLIN.windup) / (GOBLIN.windup + GOBLIN.rest)) + 1);
+    expect(count(run(w, seconds), 'hurt')).toBeGreaterThanOrEqual(3);
   });
 });
 

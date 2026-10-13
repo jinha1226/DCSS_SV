@@ -38,6 +38,8 @@ export function spawnMonster(w: World, id: string, x: number, y: number, awake: 
     ...(kind.stats.weapon ? { weapon: plainWeapon(kind.stats.weapon, 'monster-' + id) } : {}),
     awake,
     wind: -1,
+    contact: 0,
+    lunge: 0,
     attackMode: 'melee',
     queuedSpell: undefined,
     queuedItem: undefined,
@@ -81,6 +83,7 @@ export function thinkMonster(w: World, m: Monster, dt: number): Stride {
   const d = Math.hypot(dx, w.hero.y - m.y);
   const visible = w.visible[Math.floor(m.y) * w.grid.w + Math.floor(m.x)] === 1;
   if (m.flash > 0) m.flash -= dt;
+  if (m.lunge > 0) m.lunge = Math.max(0, m.lunge - dt);
   if (m.slow > 0) {
     m.slow -= dt;
     if (m.slow <= 0) m.slowScale = 0;
@@ -94,6 +97,8 @@ export function thinkMonster(w: World, m: Monster, dt: number): Stride {
     if (d > BUMP && (!visible || d > m.stats.notice)) return STILL;
     wake(w, m);
   }
+  const context = monsterContext(w, m);
+  m.contact = context.distance <= context.reach ? m.contact + dt : 0;
   if (m.rest > 0) m.rest -= dt;
   if (m.stun > 0) {
     m.stun -= dt;
@@ -113,7 +118,6 @@ export function thinkMonster(w: World, m: Monster, dt: number): Stride {
     const angle = w.rng() * Math.PI * 2;
     return { vx: Math.cos(angle) * m.stats.speed * 0.7, vy: Math.sin(angle) * m.stats.speed * 0.7 };
   }
-  const context = monsterContext(w, m);
   const locked = continueMonsterAction(context, dt);
   if (locked) return locked;
   return executeMonsterAction(context, selectMonsterAction(context));

@@ -44,7 +44,7 @@ describe('the monster roster', () => {
   });
 
   it('strike once per DCSS action: an ogre (attack energy 15) waits half again as long as a goblin', () => {
-    const cycle = (id: string): number => stats(id).windup + stats(id).rest;
+    const cycle = (id: string): number => stats(id).rest;
     expect(cycle('goblin')).toBeCloseTo(DCSS_TIME.monsterAttack);
     expect(cycle('ogre')).toBeCloseTo(DCSS_TIME.monsterAttack * 1.5);
     expect(cycle('jackal')).toBeCloseTo(Math.max(DCSS_TIME.monsterAttack * (10 / 14), stats('jackal').windup + DCSS_TIME.minRest));
@@ -153,23 +153,24 @@ describe('a gnoll', () => {
     const reach = HERO.radius + stats('gnoll').reach;
     expect(far(gnoll, w)).toBeLessThan(reach);
     expect(far(gnoll, w)).toBeGreaterThan(HERO.radius + stats('goblin').reach);
-    stepWorld(w, STILL);
-    expect(gnoll.wind).toBeGreaterThanOrEqual(0);
+    run(w, 0.25);
+    expect(gnoll.wind).toBe(-1);
+    expect(w.hero.hp).toBeLessThan(HERO.hp);
   });
 });
 
 describe('an ogre', () => {
-  it('hits hard, but draws back long enough to walk away from', () => {
+  it('hits hard immediately after first contact', () => {
     const w = quietArena();
     const ogre = spawnMonster(w, 'ogre', 10.9, 10, true);
     ogre.rest = 0;
-    run(w, 0.3);
-    expect(ogre.wind).toBeGreaterThanOrEqual(0);
-    expect(count(run(w, stats('ogre').windup, { mx: -1, my: 0 }), 'hurt')).toBe(0);
+    run(w, 0.25);
+    expect(ogre.wind).toBe(-1);
+    expect(w.hero.hp).toBeLessThan(HERO.hp);
 
     const s = quietArena();
     spawnMonster(s, 'ogre', 10.9, 10, true).rest = 0;
-    run(s, stats('ogre').windup + 0.1);
+    run(s, 0.25);
     expect(s.hero.hp).toBeCloseTo(HERO.hp - stats('ogre').damage, 0);
   });
 });

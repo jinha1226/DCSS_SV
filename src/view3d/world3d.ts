@@ -23,6 +23,7 @@ import { Overlay } from './overlay';
 import { Particles } from './particles';
 import { Gateways } from './gateways';
 import { Remains } from './remains';
+import { floorName } from '../view/floorName';
 import { HeroTile, makeMonsterTile, tileFigureHeight } from './tileFigures';
 
 const PITCH = THREE.MathUtils.degToRad(56);
@@ -45,6 +46,7 @@ interface Creature {
   actor?: Figure;
   readonly look: Look;
   wind: number;
+  lunge: number;
   dead: number;
 }
 
@@ -383,7 +385,7 @@ export class World3D {
       live.add(m);
       let c = this.creatures.get(m);
       if (!c) {
-        c = { look: lookFor(m.kind.id), wind: -1, dead: 0 };
+        c = { look: lookFor(m.kind.id), wind: -1, lunge: 0, dead: 0 };
         this.creatures.set(m, c);
         const slot = c;
         if (this.figures === 'tiles') {
@@ -414,7 +416,9 @@ export class World3D {
       } else if (Math.hypot(dx, dy) > 1e-4) {
         actor.face(dx, dy);
       }
+      if (m.lunge > 0 && c.lunge <= 0) actor.attack(0.25);
       c.wind = m.wind;
+      c.lunge = m.lunge;
       actor.move(m.stun > 0 ? 0 : Math.hypot(dx, dy) / STEP);
       if (m.flash > 0) actor.strike(0.8);
       actor.update(dt);
@@ -484,17 +488,4 @@ function nearest(w: World, x: number, y: number, within: number): Monster | unde
     }
   }
   return best;
-}
-
-function floorName(w: World): string {
-  const node = w.dungeonGraph.nodes.get(w.depth);
-  const names: Record<string, string> = {
-    Dungeon: '던전',
-    Lair: '짐승굴',
-    Swamp: '늪',
-    Orc: '오크 광산',
-    Temple: '사원',
-    Zot: '조트의 영역',
-  };
-  return node ? `${names[node.branch] ?? node.branch} ${node.floor}층` : '새 층';
 }

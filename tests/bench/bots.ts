@@ -193,6 +193,7 @@ export interface RunResult {
   readonly seconds: number;
   readonly kills: number;
   readonly hp: number;
+  readonly taken: number;
   readonly fell: boolean;
   readonly depth: number;
   readonly won: boolean;
@@ -211,6 +212,7 @@ export interface PlayOptions {
 
 export function play(bot: Bot, seed: number, limit: number, chooser: Chooser = axeFirst, options: PlayOptions = {}): RunResult {
   const w = makeWorld({ seed, ...options });
+  let taken = 0;
   while (!w.over && w.time < limit) {
     if (w.pendingPickup) {
       const found = w.pendingPickup.axe;
@@ -236,11 +238,13 @@ export function play(bot: Bot, seed: number, limit: number, chooser: Chooser = a
       continue;
     }
     stepWorld(w, bot(w));
+    for (const event of w.events.splice(0)) if (event.type === 'hurt') taken += event.amount;
   }
   return {
     seconds: w.time,
     kills: w.kills,
     hp: w.hero.hp,
+    taken,
     fell: w.over && !w.won,
     depth: w.depth,
     won: w.won,
@@ -273,6 +277,8 @@ export function summary(runs: readonly RunResult[]): string {
     ')' +
     ', kills ' +
     mean((r) => r.kills).toFixed(0) +
+    ', taken ' +
+    mean((r) => r.taken).toFixed(0) +
     ', level ' +
     mean((r) => r.level).toFixed(1) +
     ', main skill ' +

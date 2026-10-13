@@ -102,6 +102,8 @@ export interface Monster {
   hp: number;
   awake: boolean;
   wind: number;
+  contact: number;
+  lunge: number;
   attackMode: 'melee' | 'ranged' | 'spell' | 'item';
   queuedSpell?: string;
   queuedItem?: string;

@@ -35,6 +35,7 @@ export const DUNGEON = {
   rewardSkipGoldBase: dungeonRaw.rewardSkipGoldBase,
   rewardSkipGoldPerDifficulty: dungeonRaw.rewardSkipGoldPerDifficulty,
   superhotSlow: dungeonRaw.superhotSlow,
+  melee: dungeonRaw.melee,
 } as const;
 export const PACKS: readonly PackKind[] = packsRaw.map((row) => {
   for (const member of row.members) monsterKind(member.kind);

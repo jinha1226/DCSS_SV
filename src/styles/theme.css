@@ -1004,3 +1004,9 @@ button:focus-visible {
     translate: 0 0;
   }
 }
+
+/* Shown while a melee enemy has the hero in reach: movement is slowed until the hero steps out. */
+.hud-engaged {
+  color: #ff6a55;
+  font-weight: 700;
+}

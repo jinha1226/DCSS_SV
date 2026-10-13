@@ -24,7 +24,7 @@ export interface DcssEnergy {
 export interface MonsterTiming {
   /** Cells per second on dry ground. */
   readonly speed: number;
-  /** Seconds after the strike lands, so windup + rest is one melee action. */
+  /** Seconds between melee strikes. */
   readonly rest: number;
   readonly restMissile: number;
   readonly restSpell: number;
@@ -49,13 +49,14 @@ export function readEnergy(id: string, raw: unknown): DcssEnergy {
 export function monsterTiming(id: string, dcssSpeed: number, energy: DcssEnergy, windup: number): MonsterTiming {
   if (!Number.isFinite(dcssSpeed) || dcssSpeed <= 0) throw new Error('monsters.json: ' + id + '.dcssSpeed: 양수가 아님');
   const turns = (cost = 10): number => cost / dcssSpeed;
-  const rest = (cost?: number): number => Math.max(DCSS_TIME.minRest, DCSS_TIME.monsterAttack * turns(cost) - windup);
+  const rest = (cost?: number): number => Math.max(DCSS_TIME.minRest, DCSS_TIME.monsterAttack * turns(cost));
+  const rangedRest = (cost?: number): number => Math.max(DCSS_TIME.minRest, DCSS_TIME.monsterAttack * turns(cost) - windup);
   const move = energy.move ?? 10;
   return {
     speed: DCSS_TIME.monsterMove / turns(move),
     rest: rest(energy.attack),
-    restMissile: rest(energy.missile),
-    restSpell: rest(energy.spell),
+    restMissile: rangedRest(energy.missile),
+    restSpell: rangedRest(energy.spell),
     swimScale: energy.swim ? move / energy.swim : 1,
   };
 }
