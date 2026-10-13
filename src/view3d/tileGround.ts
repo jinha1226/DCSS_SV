@@ -10,6 +10,8 @@ import { open, REMEMBERED, updateWaterSight, wallCaps, waterSurface, type Ground
 
 /** Wall blocks stand a little under a cell tall, so the camera sees over them to what is behind. */
 const WALL_HEIGHT = 0.9;
+/** Gateways drawn as stairs going down: they lie on the floor like stairs instead of standing up. */
+const FLAT_GATEWAYS: ReadonlySet<string> = new Set(['dngn/gateways/enter_lair', 'dcss/dngn/gateways/slimy_stairs_down']);
 /** A branch gateway stands a little taller than a wall, so it shows over the walls around it. */
 const GATE_HEIGHT = 1;
 /** How far a gateway leans back from upright, toward the camera's 56° view. */
@@ -120,9 +122,10 @@ export class TileGround implements GroundView {
     this.shown = new Uint8Array(grid.w * grid.h).fill(255);
 
     // Floor tiles: every open cell. Stairs show their own tile. A branch gateway (way in or out), drawn
-    // with see-through edges, stands up over the floor tile.
+    // with see-through edges, stands up over the floor tile, unless it is drawn as stairs.
     const floors: { cell: number; tile: TileName }[] = [];
     const gates: { cell: number; tile: TileName }[] = [];
+    const flatGates: { cell: number; tile: TileName }[] = [];
     for (let y = 0; y < grid.h; y++) {
       for (let x = 0; x < grid.w; x++) {
         const kind = cellAt(grid, x, y);
@@ -131,12 +134,17 @@ export class TileGround implements GroundView {
         const gate = stair !== undefined && isGatewayTile(stair);
         const tile = stair && !gate ? stair : pick(this.look.floor, x, y);
         if (tile) floors.push({ cell: y * grid.w + x, tile });
-        if (stair && gate) gates.push({ cell: y * grid.w + x, tile: stair });
+        if (stair && gate) (FLAT_GATEWAYS.has(stair) ? flatGates : gates).push({ cell: y * grid.w + x, tile: stair });
       }
     }
     const plane = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
     const floorMesh = this.instanced(plane, atlasMaterial(this.texture), floors, grid, width, height, 0);
     floorMesh.receiveShadow = true;
+    if (flatGates.length) {
+      const flatMaterial = atlasMaterial(this.texture);
+      flatMaterial.alphaTest = 0.5;
+      this.instanced(plane.clone(), flatMaterial, flatGates, grid, width, height, 0.004).receiveShadow = true;
+    }
     if (gates.length) {
       // A branch gateway stands up on its cell like a doorway, leaned back toward the camera so its
       // picture reads as an arch or a hole rather than a mark on the floor.

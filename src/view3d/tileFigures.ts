@@ -89,7 +89,10 @@ export class TileFigure implements Figure {
     size: number,
   ) {
     this.size = size;
-    this.material = new THREE.SpriteMaterial({ map: normal, transparent: true, alphaTest: 0.35 });
+    // A camera-facing tile leans back as far as it is tall, so beside a wall behind it its head would
+    // sink into the wall block. Figures are drawn over the terrain instead, as in the flat 2D view;
+    // the figures themselves are still sorted back to front.
+    this.material = new THREE.SpriteMaterial({ map: normal, transparent: true, alphaTest: 0.35, depthTest: false });
     this.sprite = new THREE.Sprite(this.material);
     this.sprite.center.set(0.5, 0.04);
     this.sprite.renderOrder = 2;
