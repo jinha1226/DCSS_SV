@@ -388,25 +388,27 @@
 
 ## 7. 다음에 쓸 구현계획서 (순서)
 
-| 순서 | 파일(예정) | 내용 | 크기 |
-| --- | --- | --- | --- |
-| 1 | `plans/2026-10-13-phase1a-fighter-and-species.md` | 전사, 종족 3 | 진행 중 |
-| 1.5 | `plans/2026-10-13-skill-training-by-use.md` | 갑옷 무게로 갑옷·회피 비중, 주문 시전 분리, 공격 기술은 최근 피해 비율로, 머리 위 경험치 알림 | M |
-| 2 | `plans/2026-10-13-phase1b-magic-overhaul.md` | 원작 주문 이름·설명, 원소탄 학파·직업, 배워서 영구 보유 + 자동 공격 칸, 지팡이는 위력 보너스, Blink | L |
-| 2.5 | `plans/2026-10-13-weapon-families.md` | 무기 계열 특성(도끼 휘두르기, 장병기 2칸, 단검 기습), 원본 수치·지연, 새 무기 | M |
-| 2.7 | `plans/…-map-vaults.md` | `.des` 볼트 변환기, 층 생성기 배치, 볼트 둘러보기 (많이 넣는다) | L |
-| 3 | `plans/…-monsters-early.md` | 던전·짐승굴·오크 몬스터, 초반 유니크, 설명문 | L |
-| 3.5 | `plans/…-portals.md` | 하수도, 얼음 동굴 포털 | M |
-| 4 | `plans/…-save-and-records.md` | 저장/이어하기, 판 기록 | M |
-| 5 | `plans/…-gods-first-four.md` | 트로그, 오카와루, 베후멧, 마흘렙 | L |
-| 6 | `plans/…-settings.md` | 설정 화면, URL 스위치 이전 | S |
-| 7 | `plans/…-i18n.md` | 문구 키, ko/en, 글꼴 | M |
-| 8 | `plans/…-tutorial.md` | 안내 층, 첫 만남 풍선, 사망 조언 | M |
-| 9 | `plans/…-items-wands-scrolls.md` | 완드, 두루마리, 물약 | M |
-| 10 | `plans/…-sound.md` | 효과음, 음악 | M |
-| 11 | `plans/…-monsters-branches.md` | 나머지 브랜치 몬스터 | L |
-| 12 | `plans/…-itch-release.md` | 빌드, 페이지, 피드백 창구 | S |
-| 13 | `plans/…-steam-wrapper.md` | 데스크톱 포장, Steamworks | L |
+| 순서 | 파일(예정) | 내용 | 크기 | Codex 모델 |
+| --- | --- | --- | --- | --- |
+| 1 | `plans/2026-10-13-phase1a-fighter-and-species.md` | 전사, 종족 3 | 완료 | (완료) |
+| 1.5 | `plans/2026-10-13-skill-training-by-use.md` | 갑옷 무게로 갑옷·회피 비중, 주문 시전 분리, 공격 기술은 최근 피해 비율로, 머리 위 경험치 알림 | M | luna |
+| 2 | `plans/2026-10-13-phase1b-magic-overhaul.md` | 원작 주문 이름·설명, 원소탄 학파·직업, 배워서 영구 보유 + 자동 공격 칸, 지팡이는 위력 보너스, Blink | L | **6.1-sol** |
+| 2.5 | `plans/2026-10-13-weapon-families.md` | 무기 계열 특성(도끼 휘두르기, 장병기 2칸, 단검 기습), 원본 수치·지연, 새 무기 | M | luna → 막히면 sol |
+| 2.7 | `plans/…-map-vaults.md` | `.des` 볼트 변환기, 층 생성기 배치, 볼트 둘러보기 (많이 넣는다) | L | **6.1-sol** (high 검토) |
+| 3 | `plans/…-monsters-early.md` | 던전·짐승굴·오크 몬스터, 초반 유니크, 설명문 | L | **6.1-sol** |
+| 3.5 | `plans/…-portals.md` | 하수도, 얼음 동굴 포털 | M | luna |
+| 4 | `plans/…-save-and-records.md` | 저장/이어하기, 판 기록 | M | **6.1-sol** (high 검토) |
+| 5 | `plans/…-gods-first-four.md` | 트로그, 오카와루, 베후멧, 마흘렙 | L | **6.1-sol** |
+| 6 | `plans/…-settings.md` | 설정 화면, URL 스위치 이전 | S | luna |
+| 7 | `plans/…-i18n.md` | 문구 키, ko/en, 글꼴 | M | luna |
+| 8 | `plans/…-tutorial.md` | 안내 층, 첫 만남 풍선, 사망 조언 | M | luna |
+| 9 | `plans/…-items-wands-scrolls.md` | 완드, 두루마리, 물약 | M | luna |
+| 10 | `plans/…-sound.md` | 효과음, 음악 | M | luna |
+| 11 | `plans/…-monsters-branches.md` | 나머지 브랜치 몬스터 | L | luna |
+| 12 | `plans/…-itch-release.md` | 빌드, 페이지, 피드백 창구 | S | luna |
+| 13 | `plans/…-steam-wrapper.md` | 데스크톱 포장, Steamworks | L | **6.1-sol** |
+
+**Codex 모델 기준**: 범위가 좁고 계획서가 자세한 작업은 `gpt-6-luna`, 여러 시스템을 함께 바꾸는 큰 작업(데이터 변환+구조 변경+UI)은 `gpt-6.1-sol`, sol이 두 번 이상 실패하면 `gpt-6-astra`. 추론 강도는 `medium`이 기본이고, 실수가 비싼 작업(볼트 변환기, 저장)은 `high`를 검토한다. 실행 예: `codex exec -m gpt-6.1-sol -c model_reasoning_effort=medium ...`
 
 각 계획서는 지금까지의 형식(요구사항, 현재 코드, 구현 방향, 테스트, 완료 조건)을 따르고, 원본 자료 위치를 명시한다.
 
