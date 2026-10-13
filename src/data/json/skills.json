@@ -213,10 +213,6 @@
         "perLevel": 0.45
       },
       {
-        "effect": "blade.haste",
-        "perLevel": -0.01
-      },
-      {
         "effect": "blade.parry",
         "level": 2,
         "text": "적의 공격을 가끔 받아넘긴다",
@@ -317,10 +313,6 @@
       {
         "effect": "ranged.damage",
         "perLevel": 0.45
-      },
-      {
-        "effect": "ranged.haste",
-        "perLevel": -0.012
       },
       {
         "effect": "ranged.range",

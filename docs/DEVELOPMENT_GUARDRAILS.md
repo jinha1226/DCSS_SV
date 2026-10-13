@@ -52,6 +52,7 @@ If tools cannot execute tests, do NOT claim tests passed or functionality comple
 
 ## 6. Standing project rules (carried over from CODEX_PROMPT.md §2)
 - DCSS is a reference only. Tiles are the only copied assets; never copy DCSS code, vault files or description text. Design numbers and generation ourselves.
+  - Exception (user decision, 2026-10-13): monster speed and action energy, and weapon base delays, follow DCSS values converted to seconds through `dungeon.json` `dcssTime` (see `src/data/dcssTime.ts`). Record the DCSS value in the data (`dcssSpeed`, `dcssEnergy`, `delay`), never a hand-tuned speed.
 - Every added tile is checked against `TILES_UNDER_UNKNOWN_LICENSE.md` in <https://github.com/crawl/tiles>, recorded in docs/TILES.md, then packed with `npm run tiles`. `assets/tiles` holds original DCSS PNGs only.
 - Structure: `src/sim` is rules only and never touches DOM or canvas. Numbers live in `src/data` (JSON); behaviour lives in code and is linked by name. Drawing in `src/view`, input in `src/input`, DOM UI in `src/ui`, entry point in `src/app`.
 - Files stay under 500 lines (ESLint enforces). Do not cram code onto one line; run `npm run format` before every push. Never disable the format check or add sources to `.prettierignore`.

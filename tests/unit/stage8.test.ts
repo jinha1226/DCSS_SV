@@ -1,7 +1,8 @@
+import { heroAttackSeconds } from '../../src/data/dcssTime';
 import { describe, expect, it } from 'vitest';
 import { plainAxe, plainBow } from '../../src/data/items';
 import { DUNGEON } from '../../src/data/packs';
-import { bowTarget } from '../../src/sim/combat';
+import { bowTarget, weaponEvery } from '../../src/sim/combat';
 import { hurtHero } from '../../src/sim/effects';
 import { acceptPickup, collectGround } from '../../src/sim/equipment';
 import { Cell, carve, makeGrid, setCell } from '../../src/sim/grid';
@@ -120,11 +121,12 @@ describe('automatic bow fire', () => {
 });
 
 describe('bow skill', () => {
-  it('adds damage and speed every level and range at two', () => {
+  it('adds damage every level, DCSS delay speed, and range at two', () => {
     const w = hunter();
     w.hero.skills.ranged = 2;
     expect(effectValue(w, 'ranged.damage')).toBeCloseTo(0.9);
-    expect(effectValue(w, 'ranged.haste')).toBeCloseTo(-0.024);
+    // DCSS: each skill level takes half an aut off the bow's delay (shortbow 14 aut).
+    expect(weaponEvery(w)).toBeCloseTo(heroAttackSeconds(14 - 1));
     expect(effectValue(w, 'ranged.range')).toBe(1);
   });
 

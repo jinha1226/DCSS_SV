@@ -1,3 +1,4 @@
+import { heroAttackSeconds } from './dcssTime';
 import itemsRaw from './json/items.json';
 import { itemDefinition } from './itemCatalog';
 import { hasTile, type TileName } from './tiles';
@@ -34,6 +35,9 @@ export interface WeaponBase {
   readonly name: string;
   readonly tile: TileName;
   readonly damage: number;
+  /** DCSS base attack delay in aut (10 is one turn). */
+  readonly delay: number;
+  /** Seconds per attack at skill 0, from `delay`. */
   readonly every: number;
   readonly range: number;
   readonly knock: number;
@@ -77,6 +81,8 @@ export interface WeaponItem {
   readonly name: string;
   readonly tile: TileName;
   readonly damage: number;
+  /** DCSS base attack delay in aut. Absent on magic weapons, which attack with spells. */
+  readonly delay?: number;
   readonly every: number;
   readonly range: number;
   readonly knock: number;
@@ -128,7 +134,8 @@ export const WEAPONS: readonly WeaponBase[] = rows
       name: text(row, 'name'),
       tile: tile(row),
       damage: number(row, 'damage'),
-      every: number(row, 'every'),
+      delay: number(row, 'delay'),
+      every: heroAttackSeconds(number(row, 'delay')),
       range: number(row, 'range'),
       knock: number(row, 'knock'),
       hands,
@@ -260,6 +267,7 @@ export function plainWeapon(id: string, uid = id): WeaponItem {
     name: weapon.name,
     tile: weapon.tile,
     damage: weapon.damage,
+    delay: weapon.delay,
     every: weapon.every,
     range: weapon.range,
     knock: weapon.knock,

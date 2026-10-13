@@ -21,5 +21,12 @@
   "spellRequirementStep": 3,
   "magicTierMaxLevel": [3, 6, 9],
   "magicDropChance": 0.25,
-  "superhotSlow": 0.06
+  "superhotSlow": 0.06,
+  "dcssTime": {
+    "note": "DCSS 1턴(속도 10, 행동 비용 10)을 실시간으로 바꾸는 값. monsterMove는 칸/초, monsterAttack과 heroAttack은 한 행동의 초, minRest는 젖히기 뒤 최소 쉬는 시간",
+    "monsterMove": 4.4,
+    "monsterAttack": 1.3,
+    "heroAttack": 0.46,
+    "minRest": 0.15
+  }
 }

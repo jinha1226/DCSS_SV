@@ -91,9 +91,9 @@ export function finishMonsterAttack(context: MonsterContext): void {
   } else if (m.attackMode === 'item' && m.queuedItem && (m.itemUses[m.queuedItem] ?? 0) > 0) {
     if (activateItem(w, m.queuedItem, 'monster', m)) m.itemUses[m.queuedItem]!--;
   }
-  // Keep the legacy windup/recovery timings unless an equipped item defines
-  // a different cadence. The same item definition can equip a player.
-  m.rest = m.weapon ? m.weapon.every : m.stats.rest;
+  // DCSS: a monster's attack rate comes from its speed and action energy, not from the
+  // weapon it carries. Shots and spells use their own energy (missile, spell).
+  m.rest = m.attackMode === 'ranged' ? m.stats.restMissile : m.attackMode === 'spell' ? m.stats.restSpell : m.stats.rest;
   m.queuedSpell = undefined;
   m.queuedItem = undefined;
   if (m.stats.flits && m.attackMode === 'melee') {

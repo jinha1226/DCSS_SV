@@ -7,11 +7,10 @@
     "xp": 1,
     "hp": 5,
     "radius": 0.4,
-    "speed": 4.8,
+    "dcssSpeed": 10,
     "damage": 2,
     "reach": 0.55,
     "windup": 0.3,
-    "rest": 0.7,
     "notice": 6,
     "resists": {}
   },
@@ -23,11 +22,10 @@
     "xp": 2,
     "hp": 6,
     "radius": 0.38,
-    "speed": 7.6,
+    "dcssSpeed": 30,
     "damage": 2,
     "reach": 0.55,
     "windup": 0.18,
-    "rest": 0.5,
     "notice": 5,
     "flits": 0.8,
     "resists": {}
@@ -40,11 +38,10 @@
     "xp": 2,
     "hp": 8,
     "radius": 0.42,
-    "speed": 6,
+    "dcssSpeed": 14,
     "damage": 3,
     "reach": 0.55,
     "windup": 0.3,
-    "rest": 0.8,
     "notice": 8,
     "resists": {}
   },
@@ -56,11 +53,10 @@
     "xp": 3,
     "hp": 12,
     "radius": 0.45,
-    "speed": 4.4,
+    "dcssSpeed": 10,
     "damage": 5,
     "reach": 0.6,
     "windup": 0.4,
-    "rest": 0.9,
     "notice": 6,
     "resists": {}
   },
@@ -72,11 +68,10 @@
     "xp": 3,
     "hp": 9,
     "radius": 0.42,
-    "speed": 4.2,
+    "dcssSpeed": 10,
     "damage": 4,
     "reach": 0.55,
     "windup": 0.45,
-    "rest": 1.7,
     "notice": 7,
     "throws": {
       "range": 7,
@@ -98,11 +93,13 @@
     "xp": 3,
     "hp": 8,
     "radius": 0.4,
-    "speed": 5.6,
+    "dcssSpeed": 13,
+    "dcssEnergy": {
+      "swim": 6
+    },
     "damage": 3,
     "reach": 0.55,
     "windup": 0.25,
-    "rest": 1,
     "notice": 4,
     "poison": 4,
     "resists": {}
@@ -115,11 +112,10 @@
     "xp": 5,
     "hp": 16,
     "radius": 0.46,
-    "speed": 4.4,
+    "dcssSpeed": 10,
     "damage": 6,
     "reach": 1.5,
     "windup": 0.5,
-    "rest": 1.1,
     "notice": 7,
     "resists": {}
   },
@@ -131,11 +127,13 @@
     "xp": 15,
     "hp": 60,
     "radius": 0.48,
-    "speed": 3.2,
+    "dcssSpeed": 10,
+    "dcssEnergy": {
+      "attack": 15
+    },
     "damage": 18,
     "reach": 0.75,
     "windup": 0.85,
-    "rest": 1.4,
     "notice": 5,
     "resists": {}
   },
@@ -147,11 +145,10 @@
     "xp": 7,
     "hp": 22,
     "radius": 0.43,
-    "speed": 6.1,
+    "dcssSpeed": 17,
     "damage": 6,
     "reach": 0.7,
     "windup": 0.6,
-    "rest": 1.2,
     "notice": 9,
     "resists": {},
     "flits": 0.3
@@ -164,11 +161,10 @@
     "xp": 17,
     "hp": 52,
     "radius": 0.43,
-    "speed": 3.8,
+    "dcssSpeed": 10,
     "damage": 11,
     "reach": 0.7,
     "windup": 0.6,
-    "rest": 1.2,
     "notice": 9,
     "resists": {},
     "armour": 2
@@ -181,11 +177,13 @@
     "xp": 28,
     "hp": 85,
     "radius": 0.43,
-    "speed": 3.6,
+    "dcssSpeed": 10,
+    "dcssEnergy": {
+      "swim": 6
+    },
     "damage": 16,
     "reach": 0.7,
     "windup": 0.6,
-    "rest": 1.2,
     "notice": 9,
     "resists": {
       "poison": 1
@@ -200,11 +198,13 @@
     "xp": 18,
     "hp": 55,
     "radius": 0.43,
-    "speed": 3,
+    "dcssSpeed": 10,
+    "dcssEnergy": {
+      "move": 14
+    },
     "damage": 12,
     "reach": 0.7,
     "windup": 0.6,
-    "rest": 1.2,
     "notice": 9,
     "resists": {
       "poison": 2
@@ -220,11 +220,13 @@
     "xp": 13,
     "hp": 40,
     "radius": 0.43,
-    "speed": 3.2,
+    "dcssSpeed": 10,
+    "dcssEnergy": {
+      "move": 14
+    },
     "damage": 7,
     "reach": 0.7,
     "windup": 0.6,
-    "rest": 1.2,
     "notice": 9,
     "resists": {
       "poison": 2
@@ -246,11 +248,13 @@
     "xp": 21,
     "hp": 62,
     "radius": 0.43,
-    "speed": 4.2,
+    "dcssSpeed": 10,
+    "dcssEnergy": {
+      "swim": 7
+    },
     "damage": 12,
     "reach": 0.7,
     "windup": 0.6,
-    "rest": 1.2,
     "notice": 9,
     "resists": {
       "fire": 3,
@@ -269,11 +273,10 @@
     "xp": 13,
     "hp": 38,
     "radius": 0.43,
-    "speed": 6.3,
+    "dcssSpeed": 15,
     "damage": 8,
     "reach": 0.7,
     "windup": 0.6,
-    "rest": 1.2,
     "notice": 9,
     "resists": {
       "poison": 2
@@ -289,11 +292,13 @@
     "xp": 10,
     "hp": 31,
     "radius": 0.43,
-    "speed": 5,
+    "dcssSpeed": 12,
+    "dcssEnergy": {
+      "spell": 20
+    },
     "damage": 5,
     "reach": 0.7,
     "windup": 0.6,
-    "rest": 1.2,
     "notice": 9,
     "resists": {
       "poison": 2
@@ -314,11 +319,10 @@
     "xp": 15,
     "hp": 45,
     "radius": 0.43,
-    "speed": 5,
+    "dcssSpeed": 10,
     "damage": 9,
     "reach": 0.7,
     "windup": 0.6,
-    "rest": 1.2,
     "notice": 9,
     "resists": {
       "poison": 2
@@ -334,11 +338,13 @@
     "xp": 19,
     "hp": 58,
     "radius": 0.43,
-    "speed": 3,
+    "dcssSpeed": 10,
+    "dcssEnergy": {
+      "swim": 14
+    },
     "damage": 12,
     "reach": 0.7,
     "windup": 0.6,
-    "rest": 1.2,
     "notice": 9,
     "resists": {
       "cold": 3,
@@ -358,11 +364,13 @@
     "xp": 17,
     "hp": 50,
     "radius": 0.43,
-    "speed": 5,
+    "dcssSpeed": 10,
+    "dcssEnergy": {
+      "swim": 6
+    },
     "damage": 11,
     "reach": 1.5,
     "windup": 0.6,
-    "rest": 1.2,
     "notice": 9,
     "resists": {},
     "waterNative": true
@@ -375,11 +383,13 @@
     "xp": 14,
     "hp": 43,
     "radius": 0.43,
-    "speed": 4.6,
+    "dcssSpeed": 10,
+    "dcssEnergy": {
+      "swim": 6
+    },
     "damage": 10,
     "reach": 0.7,
     "windup": 0.6,
-    "rest": 1.2,
     "notice": 9,
     "resists": {},
     "waterNative": true,
@@ -402,11 +412,13 @@
     "xp": 16,
     "hp": 47,
     "radius": 0.43,
-    "speed": 4.6,
+    "dcssSpeed": 10,
+    "dcssEnergy": {
+      "swim": 6
+    },
     "damage": 7,
     "reach": 0.7,
     "windup": 0.6,
-    "rest": 1.2,
     "notice": 9,
     "resists": {},
     "waterNative": true,

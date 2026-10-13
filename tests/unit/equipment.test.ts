@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { heroAttackSeconds } from '../../src/data/dcssTime';
 import { plainAxe } from '../../src/data/items';
 import { applyWeaponBrand, emberBurst, tickBrands } from '../../src/sim/brands';
 import { heroStrikes } from '../../src/sim/combat';
@@ -17,10 +18,10 @@ const grant = (w: ReturnType<typeof arena>, id: string, times = 1): void => {
 };
 
 describe('axe equipment', () => {
-  it('uses the three exact base damage and swing intervals', () => {
-    expect(plainAxe('hand_axe')).toMatchObject({ damage: 6, every: 0.6, hands: 1 });
-    expect(plainAxe('war_axe')).toMatchObject({ damage: 8, every: 0.75, hands: 1 });
-    expect(plainAxe('battle_axe')).toMatchObject({ damage: 11, every: 0.9, hands: 2 });
+  it('uses the three exact base damages and DCSS delays (13, 15, 17 aut) for swing intervals', () => {
+    expect(plainAxe('hand_axe')).toMatchObject({ damage: 6, delay: 13, every: heroAttackSeconds(13), hands: 1 });
+    expect(plainAxe('war_axe')).toMatchObject({ damage: 8, delay: 15, every: heroAttackSeconds(15), hands: 1 });
+    expect(plainAxe('battle_axe')).toMatchObject({ damage: 11, delay: 17, every: heroAttackSeconds(17), hands: 2 });
   });
   it('turns shield off and removes its card while a two handed axe is held', () => {
     const w = arena();

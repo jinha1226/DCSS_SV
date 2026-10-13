@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DCSS_TIME } from '../../src/data/dcssTime';
 import { HERO } from '../../src/data/hero';
 import { MONSTERS, POISON, monsterKind } from '../../src/data/monsters';
 import { DUNGEON, PACKS } from '../../src/data/packs';
@@ -27,11 +28,26 @@ describe('the monster roster', () => {
     }
   });
 
-  it('are slower than the hero, all but the bat', () => {
+  it('walk at their DCSS speed: 10 is the base pace, and move energy slows or quickens it', () => {
     for (const m of MONSTERS) {
-      if (m.id === 'bat') expect(m.stats.speed).toBeGreaterThan(HERO.speed);
-      else expect(m.stats.speed, m.id).toBeLessThan(HERO.speed);
+      const move = monsterKind(m.id).stats.dcssSpeed;
+      expect(m.stats.speed, m.id).toBeGreaterThan(0);
+      if (m.id === 'goblin') expect(m.stats.speed).toBeCloseTo(DCSS_TIME.monsterMove);
+      if (m.id === 'naga') expect(m.stats.speed).toBeCloseTo((DCSS_TIME.monsterMove * move) / 14);
     }
+    expect(stats('lair_wolf').speed).toBeCloseTo((DCSS_TIME.monsterMove * 17) / 10);
+  });
+
+  it('are slower than the hero, except the ones DCSS makes faster than a walking player', () => {
+    const faster = MONSTERS.filter((m) => m.stats.speed >= HERO.speed).map((m) => m.id);
+    expect(faster.sort()).toEqual(['bat', 'lair_wolf', 'wolf_spider']);
+  });
+
+  it('strike once per DCSS action: an ogre (attack energy 15) waits half again as long as a goblin', () => {
+    const cycle = (id: string): number => stats(id).windup + stats(id).rest;
+    expect(cycle('goblin')).toBeCloseTo(DCSS_TIME.monsterAttack);
+    expect(cycle('ogre')).toBeCloseTo(DCSS_TIME.monsterAttack * 1.5);
+    expect(cycle('jackal')).toBeCloseTo(Math.max(DCSS_TIME.monsterAttack * (10 / 14), stats('jackal').windup + DCSS_TIME.minRest));
   });
 
   it('are tougher on deeper floors', () => {

@@ -5,6 +5,7 @@ import { hasTile, type TileName } from './tiles';
 import { spellData } from './spells';
 import { itemDefinition } from './itemCatalog';
 import { weaponBase } from './items';
+import { monsterTiming, readEnergy } from './dcssTime';
 import speciesRaw from './json/species.json';
 
 export interface MonsterStats {
@@ -16,6 +17,14 @@ export interface MonsterStats {
   readonly reach: number;
   readonly windup: number;
   readonly rest: number;
+  /** Rest after a thrown or fired shot, from DCSS missile energy. */
+  readonly restMissile: number;
+  /** Rest after a spell, from DCSS spell energy. */
+  readonly restSpell: number;
+  /** Speed multiplier in water for water-native monsters, from DCSS swim energy. */
+  readonly swimScale: number;
+  /** DCSS speed (10 is normal); kept so tests can check the conversion. */
+  readonly dcssSpeed: number;
   readonly notice: number;
   readonly throws?: { readonly range: number; readonly keep: number; readonly speed: number; readonly item?: string };
   readonly weapon?: string;
@@ -115,15 +124,20 @@ export const MONSTERS: readonly MonsterKind[] = monstersRaw.map((row) => {
   const combinedResists = { ...speciesResists, ...resists };
   const mana = typeof resources.mana === 'number' ? resources.mana : species?.mana;
   const manaRegen = typeof resources.manaRegen === 'number' ? resources.manaRegen : species?.manaRegen;
+  const timing = monsterTiming(row.id, row.dcssSpeed, readEnergy(row.id, 'dcssEnergy' in row ? row.dcssEnergy : undefined), row.windup);
   const stats: MonsterStats = {
     hp: row.hp,
     xp: row.xp,
     radius: row.radius,
-    speed: row.speed,
+    speed: timing.speed,
     damage: row.damage,
     reach: row.reach,
     windup: row.windup,
-    rest: row.rest,
+    rest: timing.rest,
+    restMissile: timing.restMissile,
+    restSpell: timing.restSpell,
+    swimScale: timing.swimScale,
+    dcssSpeed: row.dcssSpeed,
     notice: row.notice,
     resists: combinedResists,
     ...(typeof speciesId === 'string' ? { species: speciesId } : {}),

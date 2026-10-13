@@ -385,7 +385,7 @@ function walkMonsters(w: World, dt: number): void {
       }
     }
     const terrain = cellAt(w.grid, Math.floor(m.x), Math.floor(m.y));
-    const terrainScale = terrain === Cell.Water && !m.stats.waterNative ? 0.7 : 1;
+    const terrainScale = terrain !== Cell.Water ? 1 : m.stats.waterNative ? m.stats.swimScale : 0.7;
     const dx = (want.vx * terrainScale + m.kx) * dt + sx,
       dy = (want.vy * terrainScale + m.ky) * dt + sy;
     m.kx *= fade;

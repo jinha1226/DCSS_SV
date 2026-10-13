@@ -1,3 +1,4 @@
+import { heroAttackSeconds, weaponDelay } from '../data/dcssTime';
 import { EQUIPMENT } from '../data/items';
 import { POISON } from '../data/monsters';
 import { DUNGEON } from '../data/packs';
@@ -200,10 +201,15 @@ function makeArrow(w: World, target: Monster): Shot {
     stun: effectValue(w, 'ranged.stun'),
   };
 }
+/** Seconds per attack with the held weapon: DCSS delay minus half an aut per skill level, to its minimum. */
+export function weaponEvery(w: World): number {
+  const weapon = w.weapon;
+  if (weapon.delay === undefined) return weapon.every;
+  return heroAttackSeconds(weaponDelay(weapon.delay, skillLevel(w, weapon.family)));
+}
 function bowCooldown(w: World): number {
-  const skill = Math.max(-0.6, effectValue(w, 'ranged.haste'));
   const randart = Math.min(0.5, weaponOption(w.weapon, 'haste'));
-  return Math.max(0.18, w.weapon.every * (1 + skill) * (1 - randart) * (w.hero.haste > 0 ? 0.7 : 1));
+  return Math.max(0.18, weaponEvery(w) * (1 - randart) * (w.hero.haste > 0 ? 0.7 : 1));
 }
 function shootNow(w: World): void {
   const targets = bowTargets(w);
@@ -349,9 +355,7 @@ export function heroStrikes(w: World, dt: number, wantsThrow: boolean, throwAt?:
       h.axeSwings = next;
       const haste = Math.min(0.5, weaponOption(w.weapon, 'haste'));
       h.swing =
-        kill && hasEffect(w, isBlade ? 'blade.reset' : 'axe.reset')
-          ? 0
-          : w.weapon.every * (1 - haste) * (1 + (isBlade ? effectValue(w, 'blade.haste') : 0)) * (w.hero.haste > 0 ? 0.7 : 1);
+        kill && hasEffect(w, isBlade ? 'blade.reset' : 'axe.reset') ? 0 : weaponEvery(w) * (1 - haste) * (w.hero.haste > 0 ? 0.7 : 1);
       noise(w, DUNGEON.loud);
     } else h.swing = 0;
   }
