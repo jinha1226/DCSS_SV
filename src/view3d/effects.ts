@@ -21,11 +21,17 @@ export class Effects {
   private readonly glow = glowTexture();
   private readonly flares: Flare[] = [];
   private readonly circles: THREE.Group[] = [];
+  private readonly targetMarker = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.25, 4), new THREE.MeshBasicMaterial({ color: 0xffffff }));
   private readonly shotMeshes = new Map<object, THREE.Object3D>();
   private readonly clouds = new Map<object, THREE.Mesh>();
   private readonly visuals = new Map<object, THREE.Object3D>();
 
-  constructor(private readonly particles: Particles) {}
+  constructor(private readonly particles: Particles) {
+    this.targetMarker.rotation.z = Math.PI;
+    this.targetMarker.renderOrder = 4;
+    this.targetMarker.visible = false;
+    this.group.add(this.targetMarker);
+  }
 
   // ---------- magic circles ----------
 
@@ -56,20 +62,27 @@ export class Effects {
     const count = style ? targets.length : 0;
     while (this.circles.length < count) this.circles.push(this.makeCircle());
     const colour = new THREE.Color(style?.colour ?? '#ffffff');
+    const hasFocus = Boolean(style && focus);
     this.circles.forEach((g, i) => {
       const m = targets[i];
       g.visible = Boolean(style && m && i < count);
       if (!g.visible || !m || !style) return;
       const radius = Math.max(0.55, style.radius(m));
-      const bright = m === focus ? 1.35 : 1;
-      const pulse = 1 + Math.sin(time * 5 + i) * 0.04;
+      const focused = m === focus;
+      const bright = hasFocus ? (focused ? 1.6 : 0.55) : 1;
+      const pulse = 1 + Math.sin(time * 5 + i) * (focused ? 0.1 : 0.04);
       g.position.set(m.x, 0.04, m.y);
-      g.scale.setScalar(radius * 2 * pulse);
+      g.scale.setScalar(radius * 2 * pulse * (focused ? 1.15 : 1));
       const { outer, inner, pool } = g.userData as Record<string, THREE.Mesh>;
       outer!.rotation.z = time * 0.6;
       inner!.rotation.z = -time * 1.1;
       for (const mesh of [outer!, inner!, pool!]) (mesh.material as THREE.MeshBasicMaterial).color.copy(colour).multiplyScalar(bright);
     });
+    this.targetMarker.visible = Boolean(style && focus);
+    if (style && focus) {
+      this.targetMarker.position.set(focus.x, 1.4 + Math.sin(time * 6) * 0.06, focus.y);
+      (this.targetMarker.material as THREE.MeshBasicMaterial).color.set(style.colour);
+    }
   }
 
   // ---------- one-off flares ----------

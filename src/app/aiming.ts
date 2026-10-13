@@ -1,23 +1,20 @@
-import { selfSpell, spellData } from '../data/spells';
-import { throwAimTarget, throwCandidates } from '../sim/combat';
-import { spellAtPoint, spellCandidates } from '../sim/spells';
+import { spellData } from '../data/spells';
+import { throwCandidates } from '../sim/combat';
+import { spellCandidates } from '../sim/spells';
 import type { Monster, World } from '../sim/world';
 import type { SpellButtons } from '../ui/spellButtons';
 import { cellPixels } from '../view/render';
 import type { World3D } from '../view3d/world3d';
+import { aimConfirm, aimDrag, aimHover, aimPress, aimRelease, startAim, type Aim, type AimResult, type AimState } from './aimState';
 
-export type Aim = { readonly kind: 'spell'; readonly id: string } | { readonly kind: 'throw' };
-
-export interface AimResult {
-  readonly spell?: { readonly id: string; readonly x: number; readonly y: number };
-  readonly throwAt?: { readonly x: number; readonly y: number };
-}
+export type { Aim } from './aimState';
 
 export interface Aiming {
   readonly current: Aim | undefined;
   readonly focus: Monster | undefined;
   begin(aim: Aim): void;
   cancel(): void;
+  confirm(): void;
   take(): AimResult;
 }
 
@@ -64,83 +61,144 @@ export function makeAiming(
   getWorld: () => World | undefined,
   spellButtons: SpellButtons,
 ): Aiming {
-  let current: Aim | undefined;
-  let focus: Monster | undefined;
+  let state: AimState | undefined;
+  let activePointer: number | undefined;
   let queued: AimResult = {};
 
+  const clearPointer = (): void => {
+    const pointer = activePointer;
+    activePointer = undefined;
+    if (pointer === undefined) return;
+    try {
+      if (canvas.hasPointerCapture(pointer)) canvas.releasePointerCapture(pointer);
+    } catch {
+      // Browsers may release capture before the pointerup listener runs.
+    }
+  };
   const finish = (): void => {
-    current = undefined;
-    focus = undefined;
+    state = undefined;
+    clearPointer();
     spellButtons.cancelTarget();
   };
   const cancel = (): void => {
     queued = {};
     finish();
   };
-
-  canvas.addEventListener('pointermove', (event) => {
-    const w = getWorld();
-    const point = floorPoint(event);
-    if (!w || !current || !point) {
-      focus = undefined;
-      return;
-    }
-    focus = current.kind === 'throw' ? throwAimTarget(w, point.x, point.y) : spellAtPoint(w, spellData(current.id), point.x, point.y);
-  });
+  const swallow = (event: PointerEvent): void => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  };
 
   canvas.addEventListener(
-    'pointerdown',
+    'pointermove',
     (event) => {
+      if (!state) return;
+      swallow(event);
+      if (activePointer !== undefined && event.pointerId !== activePointer) return;
       const w = getWorld();
-      if (!w || !current) return;
-      if (event.pointerType === 'mouse' && event.button !== 0) {
-        cancel();
-      } else {
-        const point = floorPoint(event);
-        if (!point) return;
-        if (current.kind === 'throw') {
-          queued = { throwAt: point };
-          finish();
-        } else {
-          const spell = spellData(current.id);
-          if (selfSpell(spell)) return;
-          const target = spellAtPoint(w, spell, point.x, point.y);
-          if (!target) return;
-          queued = { spell: { id: spell.id, x: target.x, y: target.y } };
-          finish();
-        }
-      }
-      event.preventDefault();
-      event.stopImmediatePropagation();
+      const point = floorPoint(event);
+      if (!w || !point) return;
+      state = activePointer === undefined ? aimHover(w, state, point) : aimDrag(w, state, point);
     },
     true,
   );
 
-  canvas.addEventListener('contextmenu', (event) => {
-    if (current) cancel();
-    event.preventDefault();
-  });
+  canvas.addEventListener(
+    'pointerdown',
+    (event) => {
+      if (!state) return;
+      swallow(event);
+      if (event.pointerType === 'mouse' && event.button !== 0) {
+        cancel();
+        return;
+      }
+      if (activePointer !== undefined) return;
+      const w = getWorld();
+      const point = floorPoint(event);
+      if (!w || !point) return;
+      activePointer = event.pointerId;
+      try {
+        canvas.setPointerCapture(event.pointerId);
+      } catch {
+        // A pointer that cannot be captured still aims while it stays over the canvas.
+      }
+      state = aimPress(w, state, point);
+    },
+    true,
+  );
+
+  canvas.addEventListener(
+    'pointerup',
+    (event) => {
+      if (!state) return;
+      swallow(event);
+      if (event.pointerId !== activePointer) return;
+      const w = getWorld();
+      const point = floorPoint(event);
+      if (w && point) state = aimDrag(w, state, point);
+      const result = w ? aimRelease(w, state) : undefined;
+      if (result) {
+        queued = result;
+        finish();
+      } else {
+        state = { ...state, pressing: false };
+        clearPointer();
+      }
+    },
+    true,
+  );
+
+  canvas.addEventListener(
+    'pointercancel',
+    (event) => {
+      if (!state) return;
+      swallow(event);
+      if (event.pointerId !== activePointer) return;
+      state = { ...state, pressing: false };
+      clearPointer();
+    },
+    true,
+  );
+
+  canvas.addEventListener(
+    'contextmenu',
+    (event) => {
+      if (state) {
+        cancel();
+        event.stopImmediatePropagation();
+      }
+      event.preventDefault();
+    },
+    true,
+  );
   window.addEventListener('keydown', (event) => {
-    if (!current || event.defaultPrevented || event.key !== 'Escape') return;
+    if (!state || event.defaultPrevented || event.key !== 'Escape') return;
     cancel();
     event.preventDefault();
   });
 
   return {
     get current() {
-      return current;
+      return state?.aim;
     },
     get focus() {
-      return focus;
+      return state?.focus;
     },
     begin(aim) {
       queued = {};
-      current = aim;
-      focus = undefined;
+      clearPointer();
+      const w = getWorld();
+      state = w ? startAim(w, aim) : undefined;
       if (aim.kind === 'spell') spellButtons.beginTarget(aim.id);
       else spellButtons.cancelTarget();
     },
     cancel,
+    confirm() {
+      const w = getWorld();
+      if (!w || !state) return;
+      queued = aimConfirm(w, state) ?? {};
+      finish();
+    },
     take() {
       const result = queued;
       queued = {};

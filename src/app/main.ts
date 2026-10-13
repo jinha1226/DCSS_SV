@@ -228,6 +228,8 @@ async function start(): Promise<void> {
         return;
       }
       const paused = ledger.open || inventory.open || skillBar.expanded || gameLog.expanded;
+      const key = keyPush(keys);
+      const moving = Math.hypot(stick.x + key.x, stick.y + key.y) > 0.3;
       const pressedSpell = spellButtons.takePress();
       if (pressedSpell && !paused) {
         const selectedSpell = spellData(pressedSpell);
@@ -235,8 +237,11 @@ async function start(): Promise<void> {
           aim.cancel();
           queuedSpell = { id: pressedSpell, x: world.hero.x, y: world.hero.y };
         } else if (timeMode.superhot) {
-          if (aim.current?.kind === 'spell' && aim.current.id === pressedSpell) aim.cancel();
-          else aim.begin({ kind: 'spell', id: pressedSpell });
+          if (aim.current?.kind === 'spell' && aim.current.id === pressedSpell) aim.confirm();
+          else {
+            stick.cancel();
+            aim.begin({ kind: 'spell', id: pressedSpell });
+          }
         } else {
           aim.cancel();
           const spell = spellData(pressedSpell);
@@ -249,26 +254,28 @@ async function start(): Promise<void> {
       const spaceThrow = keys.takeTap('Space');
       const jThrow = keys.takeTap('KeyJ');
       const throwPressed = buttonThrow || spaceThrow || jThrow;
-      let quickThrow = false;
+      let automaticThrow = false;
       if (!paused && throwPressed && world.openSkills.has('throwing') && world.ammo > 0 && world.hero.throwing <= 0) {
         if (aim.current?.kind === 'throw') {
-          quickThrow = true;
+          aim.confirm();
+        } else if (moving) {
           aim.cancel();
+          automaticThrow = true;
         } else {
+          stick.cancel();
           aim.begin({ kind: 'throw' });
         }
       }
-      const key = keyPush(keys);
       const mx = stick.x + key.x;
       const my = stick.y + key.y;
-      if (aim.current?.kind === 'throw' && Math.hypot(mx, my) > 0.3) aim.cancel();
-      stick.enabled = aim.current?.kind !== 'spell';
+      if (aim.current && Math.hypot(key.x, key.y) > 0.3) aim.cancel();
+      stick.enabled = !aim.current;
       const aimed = aim.take();
       const targeting = Boolean(aim.current);
       const input: Input = {
         mx: targeting ? 0 : mx,
         my: targeting ? 0 : my,
-        throw: targeting ? false : quickThrow,
+        throw: targeting ? false : automaticThrow || aimed.throw === true,
         ...(aimed.throwAt ? { throwAt: aimed.throwAt } : {}),
         hop: targeting ? false : hop.held || keys.has('ShiftLeft') || keys.has('KeyK'),
         ...(aimed.spell || queuedSpell ? { spell: aimed.spell ?? queuedSpell } : {}),

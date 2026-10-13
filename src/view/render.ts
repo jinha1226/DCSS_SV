@@ -28,6 +28,7 @@ export interface View {
   /** The hero's walk, made from its standing tile. */
   readonly heroWalk: WalkSheet;
   readonly targetingSpell?: SpellData;
+  readonly focus?: Monster;
   readonly throwAim?: { readonly targets: readonly Monster[]; readonly focus?: Monster };
   /** The layered 8-facing hero (?sprite=haven); the DCSS tile walk is used when absent. */
   readonly heroSprite?: { readonly sprites: HeroSprites; readonly pose: HeroPose };
@@ -295,14 +296,29 @@ export function drawWorld(ctx: CanvasRenderingContext2D, atlas: Atlas, w: World,
   }
   if (view.targetingSpell || view.throwAim) {
     const targets = view.throwAim?.targets ?? spellCandidates(w, view.targetingSpell!);
+    const focus = view.throwAim?.focus ?? view.focus;
+    const colour = view.throwAim ? '#ffff55' : view.targetingSpell!.colour;
     for (const target of targets) {
       const tx = ox + target.x * px;
       const ty = oy + target.y * px;
-      ctx.strokeStyle = view.throwAim ? '#ffff55' : view.targetingSpell!.colour;
-      ctx.lineWidth = Math.max(2, px * (target === view.throwAim?.focus ? 0.11 : 0.075));
+      const focused = target === focus;
+      ctx.save();
+      if (focus && !focused) ctx.globalAlpha *= 0.55;
+      ctx.strokeStyle = colour;
+      ctx.lineWidth = Math.max(2, px * (focused ? 0.12 : 0.075));
       ctx.beginPath();
-      ctx.arc(tx, ty, px * 0.48, 0, Math.PI * 2);
+      ctx.arc(tx, ty, px * (focused ? 0.56 : 0.48), 0, Math.PI * 2);
       ctx.stroke();
+      if (focused) {
+        ctx.fillStyle = colour;
+        ctx.beginPath();
+        ctx.moveTo(tx - px * 0.14, ty - px * 0.82);
+        ctx.lineTo(tx + px * 0.14, ty - px * 0.82);
+        ctx.lineTo(tx, ty - px * 0.6);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
     }
   } else {
     const target = bowTarget(w) ?? throwTarget(w);
