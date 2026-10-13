@@ -167,6 +167,74 @@ rltiles 기준 상대 경로 `p`(예: `mon/animals/rat.png`)는 다음 중 하�
   - CC0 전문 링크는 유지한다.
 - `docs/IMPLEMENTATION_2RUNE.md`에 기존 형식으로 항목을 추가한다.
 
+### 3.7 브랜치별 바닥·벽 타일 적용 (사용자 추가 요청)
+
+> 각 브랜치 던전들 타일 재적용하고 살펴볼 수 있는 데모 페이지가 있으면 좋겠어.
+
+**현재**
+
+- 2D(`src/view/look.ts`): 모든 브랜치가 `LOOK.dcss` 하나를 쓴다(`floor/grey_dirt` + `wall/brick_brown`).
+- 3D(`world3d.ts:275`): `branch === 'Dungeon'`일 때만 DCSS 타일 바닥(`TileGround`)을 쓴다. 다른 브랜치는 KayKit 모델 바닥(`dungeon.ts`의 THEMES)을 쓴다.
+  - THEMES에는 Dungeon, Lair, Swamp만 있고 나머지는 Dungeon으로 떨어진다.
+
+**DCSS 원본의 브랜치 기본 타일**
+
+출처는 `crawl-ref/source/tileview.cc`의 `tile_default_flv`이다. 파일 목록은 `rltiles/dc-floor.txt`와 `dc-wall.txt`의 enum 정의(같은 줄의 별칭 포함)에서 찾았다. 2.3 규칙으로 Claude가 확인한 결과는 아래와 같다.
+
+| 브랜치 | 바닥 (rltiles 경로 접두어, 장수) | 벽 | 라이선스 |
+| --- | --- | --- | --- |
+| Dungeon | `dngn/floor/grey_dirt*` (지금 것 유지) | 원본 `brick_dark_1_*`은 **전부 제외(96/96)**. 지금의 `brick_brown*` 유지 | 통과 |
+| Lair | `dngn/floor/lair*` 16 | `dngn/wall/lair*` 8 | 통과 |
+| Orc | `dngn/floor/orc*` 8 | `dngn/wall/orc*` 12 | 통과 |
+| Temple | `dngn/floor/floor_vines*` 7 | `dngn/wall/wall_vines*` 7 | 통과 |
+| Snake | `dngn/floor/mosaic*` 16 | `dngn/wall/snake*` 10 | 통과 |
+| Spider | `dngn/floor/spider*` 12 | 원본 `dngn/wall/spider*`는 **전부 제외(Bloax)**. 대신 `dngn/wall/wall_stone_spider*` 4 | 대체 후 통과 |
+| Swamp | `dngn/floor/swamp*` 4 | `dngn/wall/lab-rock*` 4 (DCSS의 WALL_SWAMP 별칭) | 통과 |
+| Shoals | `dngn/floor/sand*` 8 | `dngn/wall/shoals_wall*` 4 | 통과 |
+| Vaults | `dngn/floor/rect_gray*` 4 | `dngn/wall/vault*` 4 | 통과 |
+| Zot | `dngn/floor/tomb*` 4 | DCSS는 `zot_blue*`를 `%hue 240 50`으로 노랗게 바꾼 WALL_ZOT_YELLOW를 쓴다. 아래 참고 | 통과 |
+
+- 정확한 파일 목록은 enum 정의에서 가져온다. 접두어 glob(`lair*`)만으로는 `lair_*` 같은 다른 계열이 섞일 수 있다. 실제로 쓸 이름은 `assets/dcss-include.json`이나 코드 상수에 **명시적으로** 적는다.
+  - 예: `tileSet('dcss/dngn/floor/lair')`가 `lair0`–`lair15`를 찾는 기존 숫자 규칙을 그대로 쓸 수 있으면 그것으로 충분하다.
+  - 숫자 규칙이 맞지 않는 계열(`spider00` 두 자리, `sand1`부터 시작, `shoals_wall1`부터 시작 등)은 tileSet을 확장한다(0/1 시작, 두 자리 허용). 또는 이름 배열을 직접 적는다.
+- Zot 벽: import 스크립트가 `zot_blue0–3`에 DCSS의 `%hue 240 50`을 적용해 `assets/dcss/derived/wall/zot_yellow0–3.png`를 만든다.
+  - DCSS 규칙은 색상환에서 hue 240 근처의 픽셀을 50으로 옮기는 것이다. `rltiles/tool`의 구현을 읽고 따른다.
+  - 원본이 CC0이므로 파생물도 쓸 수 있다. 출처는 index.json에 `derivedFrom`으로 적는다.
+  - 이것이 복잡하면 `dngn/wall/wall_metal_zot*`(4장, 통과)로 대신하고 보고한다.
+
+**적용**
+
+- `src/view/look.ts`에 브랜치별 Look 표(`BRANCH_LOOK: Record<Branch, Look>`)를 만든다.
+  - `back` 색은 브랜치 분위기에 맞춰 어둡게 정한다(예: Swamp 진녹갈, Shoals 진청).
+  - 기존 `LOOKS`(dcss/bright 전환 스위치)는 Dungeon에만 적용한다.
+- 2D `render.ts`와 3D `TileGround`가 현재 층의 브랜치(`w.dungeonGraph.nodes.get(w.depth)?.branch`)로 Look을 고른다. 층이 바뀌면 다시 만든다. TileGround는 `ensure()`에서 이미 층 변경을 감지하므로 Look을 바꿔 끼울 수 있게 한다.
+- `world3d.ts:275`의 조건을 바꿔 **모든 브랜치**에서 타일 바닥을 쓴다(`ground === 'tiles'` 설정일 때). KayKit 바닥은 `ground` 설정이 models일 때만 쓴다.
+- 브랜치 입구·출구 계단(`stairTile.ts`)과 물(`waterSurface`)은 그대로 둔다.
+
+### 3.8 브랜치 데모 페이지 `branches.html`
+
+- spells.html처럼 별도 페이지로 만들고, **빌드 입력에도 넣는다**(배포본에서 사용자가 볼 수 있게).
+- 구성
+  - 위쪽(가로 화면은 왼쪽)에 브랜치 버튼 10개(던전, 뱀굴, 오크 광산, 사원, 뱀 소굴, 거미 둥지, 늪, 해안, 금고, 조트)를 둔다. 이름은 기존 한국어 표기가 있으면 그것을 쓴다.
+  - 가운데는 **실제 게임 생성기로 만든 그 브랜치의 층 하나**를 보여 준다.
+    - `makeWorld`에 그 브랜치 노드의 depth를 주어 만들거나, 그 브랜치 첫 층으로 이동시킨다.
+    - 몬스터는 그 브랜치 출현 몬스터를 배치하되 움직이지 않고 공격하지 않는다(spells 데모의 STILL과 무적 처리 참고).
+  - 주인공은 키보드(WASD)와 터치 스틱으로 걸어 다니며 층을 둘러볼 수 있다. 시야는 전체 공개(또는 데모 스위치로 전체 공개 토글)이다.
+  - 2D/3D 전환 버튼을 둔다.
+  - 아래쪽(가로 화면은 오른쪽) 패널
+    - 그 브랜치의 바닥 타일과 벽 타일 전 변형을 썸네일(64px)과 `dcss/...` 이름으로 보여 준다.
+    - 그 브랜치 몬스터의 타일, 이름, 출처 경로를 보여 준다. 대체(2010판·대체 벽)인 것은 표시한다.
+  - "다시 생성" 버튼(시드 변경)을 둔다.
+- 코드는 `src/demo/branches.ts`에 둔다. 게임과 같은 렌더러(`World3D`, `drawWorld`)를 쓴다. 게임 코드를 데모 전용으로 바꾸지 않는다.
+- 휴대폰 세로(390×844)에서도 쓸 수 있어야 한다. 버튼 높이는 44px 이상이다.
+- 개발용 `tiles.html`(3.5)은 그대로 둔다. `branches.html`에서 링크해도 된다.
+
+### 3.9 추가 테스트
+
+- `BRANCH_LOOK`의 모든 브랜치가 floor·wall을 1장 이상 가지고, 모든 이름이 `hasTile`이다.
+- Look에 쓰인 `dcss/...` 이름이 3.3 라이선스 판정을 통과한다.
+- 몬스터 데이터의 모든 `tile`이 시트에 있다(`hasTile`).
+
 ## 4. 범위 밖
 
 - 손으로 고른 층의 기존 이름을 `dcss/...`로 옮기는 일은 하지 않는다.
@@ -178,10 +246,12 @@ rltiles 기준 상대 경로 `p`(예: `mon/animals/rat.png`)는 다음 중 하�
 - `tiles.html`에서 검색·복사·표시가 되는지 본다.
 - 게임에서 브랜치 몬스터 몇 종이 제 그림으로 나오는지 본다. 데모 스테이지나 디버그로 소환해서 확인한다.
 - 교체된 2010 그림(주인공 미노타우로스, 쥐, 도끼, 계단, 반지, 사슬갑옷)을 화면에서 본다.
-- 시트 크기(`public/tiles.png`)가 크게 늘지 않았는지 본다.
+- 시트 크기(`public/tiles.png`)가 크게 늘지 않았는지 본다. 브랜치 타일 추가로 약 150장이 늘어나는 것은 예상 범위다.
+- `branches.html`에서 10개 브랜치를 PC와 휴대폰 크기로 각각 2D/3D 스크린샷한다.
 
 ## 6. 완료 조건
 
+- `branches.html`이 빌드 결과에 포함된다.
 - `npm run tiles:import ...`(실행 결과 포함), `npm run tiles`, `npm run format`, `npm run check`, `npx vite build`가 통과한다.
 - **git 커밋은 하지 말고 변경을 작업 트리에 남긴다.** `npm ci`는 실행하지 않는다.
 - 계획과 다르게 판단한 부분, 2010 대체 파일 크기 문제, 추가로 걸린 타일은 마지막 메시지에 적는다.
