@@ -8,7 +8,7 @@
 | --- | --- |
 | [DEVELOPMENT_GUARDRAILS.md](DEVELOPMENT_GUARDRAILS.md) | 작업 규칙과 불변 조건. 코드를 고치기 전에 반드시 읽는다 |
 | [IMPLEMENTATION_2RUNE.md](IMPLEMENTATION_2RUNE.md) | 현재 로드맵(24층·2룬, 01~08 단계)과 진행·검증 기록 |
-| [SKILL_TRAINING.md](SKILL_TRAINING.md) | 현재 성장 기획: 스킬 20개(상한 15), 주손/보조손, 장비 기반 훈련, 레벨업 보상(두루마리·획득). §6에 사용자가 정할 것. 구현계획은 [plans/2026-10-13-level15-and-scroll-rewards.md](plans/2026-10-13-level15-and-scroll-rewards.md) |
+| [SKILL_TRAINING.md](SKILL_TRAINING.md) | 현재 성장 기획: 스킬 20개(상한 27), 주손/보조손, 장비 기반 훈련, 레벨업 보상(부위 강화·획득). §6에 사용자가 정할 것. 구현계획은 [plans/2026-10-13-level27-slot-enhancement.md](plans/2026-10-13-level27-slot-enhancement.md) |
 | [IMPL_EQUIPMENT_TRAINING.md](IMPL_EQUIPMENT_TRAINING.md) | 위 기획의 구현 지시서와 "이번 범위가 아닌 것" |
 | [MAGIC_DESIGN.md](MAGIC_DESIGN.md) | 마법 설계 초안: 7학파 × 9마법, 새 동작 묶음, 정할 것 |
 | [AUTOMATIC_GROWTH.md](AUTOMATIC_GROWTH.md) | 자동 성장 1차 설계. 겹치는 부분은 SKILL_TRAINING.md가 우선 |

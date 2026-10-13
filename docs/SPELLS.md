@@ -50,7 +50,7 @@
 - `enabled`: 동작이 구현된 마법만 `true`. 켜진 마법은 `projectile`, `beam`, `burst`, `cloud`, `utility`(effect `blink`, `guard`) 중 하나여야 한다. 예약 모양: `chain`, `cone`, `aura`, `buff`, `mark`, `storm`, `delayed`, `field`, `terrain`, `summon`, `construct`, `debuff`, `teleport`.
 - `element`: `fire`, `cold`, `electric`, `poison`, `negative`. 없으면 물리(갑옷 적용).
 - `monsterMana`: 몬스터가 낼 MP. 없으면 `mana`.
-- 필요 학파 레벨: `requirement ?? max(0, 2 × (level − 2))`. 계수는 `dungeon.json`의 `spellRequirementStep`(숙련 상한 15에 맞춰 2).
+- 필요 학파 레벨: `requirement ?? max(0, 3 × (level − 2))`. 계수는 `dungeon.json`의 `spellRequirementStep`(3).
 - `onHit: { effect, power?, duration?, damage? }`: 맞힌 몬스터에 거는 부가 효과. effect는 `slow`(power=느려지는 비율), `stun`, `confuse`, `vulnerable`(power=추가 피해 비율), `rot`(power=갑옷 감소, damage=초당 피해), `poison`·`burn`(power=초당 피해), `knockback`·`pull`(power=미는 속도), `drain`(power=회복 비율).
 - `buff`: 자신에게. effect `armour`(power=갑옷), `speed`(power=이동 속도 비율). `debuff`: 대상 주변 `radius` 안. effect `freeze`(기절), `confuse`, `rot`.
 - 기본 `damage`가 없거나 0인 마법은 학파 레벨이 올라도 피해가 0이다.
