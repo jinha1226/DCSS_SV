@@ -345,6 +345,7 @@
 | --- | --- | --- | --- |
 | 1 | `plans/2026-10-13-phase1a-fighter-and-species.md` | 전사, 종족 3 | 진행 중 |
 | 2 | `plans/…-phase1b-magic-overhaul.md` | 원소탄 학파·기술, DCSS 주문 교체, Blink, Conjurer | L |
+| 2.5 | `plans/2026-10-13-weapon-families.md` | 무기 계열 특성(도끼 휘두르기, 장병기 2칸, 단검 기습), 원본 수치·지연, 새 무기 | M |
 | 3 | `plans/…-monsters-early.md` | 던전·짐승굴·오크 몬스터, 초반 유니크, 설명문 | L |
 | 4 | `plans/…-save-and-records.md` | 저장/이어하기, 판 기록 | M |
 | 5 | `plans/…-gods-first-four.md` | 트로그, 오카와루, 베후멧, 마흘렙 | L |
