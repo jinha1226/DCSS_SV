@@ -31,8 +31,79 @@ DCSS의 `LICENSE`는 타일 대부분이 CC0라고 밝히면서, 오래된 타�
 
 파일 이름과 그림은 원본 그대로다.
 
+## DCSS 타일 라이브러리 (`assets/dcss`)
+
+2026-10-13부터 DCSS에서 재사용할 수 있는 타일을 **전부** `assets/dcss/` 아래에 들여 두었다. 폴더와 파일 이름은 원본 `rltiles` 그대로이고, 게임에서의 이름은 `dcss/` + 경로(확장자 없음)다. 예: `dcss/mon/animals/wolf`.
+
+- 가져온 곳: crawl/crawl `871aabe2082cb5819a4ec044ea8f840388598ff4` (2026-10-13)의 `crawl-ref/source/rltiles` 전체, `UNUSED/` 포함
+- 라이선스 목록: crawl/tiles `a6ea1655db5c044829d9eea19a232fa6fcac87b0`의 `TILES_UNDER_UNKNOWN_LICENSE.md` (사본: `assets/dcss/unknown-license.txt`)
+- 결과: 7,810장(+파생 4장)을 들였고, 937장은 뺐다(`assets/dcss/excluded.json`에 이유와 함께). `assets/dcss/index.json`에 이름과 크기가 있다.
+
+### 빼는 규칙 (`tools/tileLicense.mjs`)
+
+rltiles 기준 경로가 다음 중 하나면 쓰지 않는다.
+
+1. 목록의 경로와 같다(작가별 "연락이 될 때까지 제외" 목록, nethack 유래 목록).
+2. 파일 이름이 2010년 목록(경로 없이 이름만 있는 부분)에 있다.
+3. 파일 이름이 목록의 옛 `dc-*` 폴더 항목의 이름과 같다(지금 폴더 구조로 대응시킬 수 없어 보수적으로 막는다).
+
+`tests/unit/tileLicense.test.ts`가 라이브러리와 시트의 모든 `dcss/` 타일이 이 규칙을 통과하는지 검사한다.
+
+### 파생 타일
+
+- `dcss/derived/wall/zot_yellow0`–`3`: DCSS가 빌드할 때 `zot_blue`에 `%hue 240 50`을 걸어 만드는 노란 조트 벽. 들여올 때 같은 계산으로 만든다.
+
+### 시트에는 쓰는 것만
+
+7,800장을 한 장에 묶으면 너무 무겁다. `npm run tiles`는 `assets/tiles` 전부와 함께, 아래에 해당하는 `dcss/` 타일만 시트에 넣는다(`tools/tileSelection.mjs`).
+
+- `src/**/*.ts`, `src/**/*.json`에 따옴표로 적힌 `dcss/...` 이름
+- `assets/dcss-include.json`의 항목. `#`으로 끝나면 번호 변형 전부(`dcss/dngn/floor/lair#` → `lair0`–`lair15`)
+
+없는 이름을 적거나 32×32가 아닌 타일을 적으면 `npm run tiles`가 멈춘다.
+
+### 브랜치별 바닥·벽 (`src/view/look.ts`의 `BRANCH_LOOK`)
+
+DCSS `tileview.cc`의 `tile_default_flv`를 따른다.
+
+| 브랜치 | 바닥 | 벽 |
+| --- | --- | --- |
+| Dungeon | `floor/grey_dirt` (손으로 고른 층) | `wall/brick_brown`. DCSS 원본 `brick_dark_1`은 전부 제외라 쓰지 않는다 |
+| Lair | `dngn/floor/lair` 16 | `dngn/wall/lair` 8 |
+| Orc | `dngn/floor/orc` 8 | `dngn/wall/orc` 12 |
+| Temple | `dngn/floor/floor_vines` 7 | `dngn/wall/wall_vines` 7 |
+| Snake | `dngn/floor/mosaic` 16 | `dngn/wall/snake` 10 |
+| Spider | `dngn/floor/spider` 12 | `dngn/wall/wall_stone_spider` 4. 원본 `dngn/wall/spider`는 전부 제외(Bloax) |
+| Swamp | `dngn/floor/swamp` 4 | `dngn/wall/lab-rock` 4 |
+| Shoals | `dngn/floor/sand` 8 | `dngn/wall/shoals_wall` 4 |
+| Vaults | `dngn/floor/rect_gray` 4 | `dngn/wall/vault` 4 |
+| Zot | `dngn/floor/tomb` 4 | `derived/wall/zot_yellow` 4 |
+
+`branches.html`(브랜치 둘러보기)에서 브랜치마다 실제로 생성된 층과 쓰인 타일을 볼 수 있다.
+
+### 브랜치 몬스터
+
+브랜치 전용 몬스터 13종은 각자의 DCSS 타일을 쓴다(`src/data/json/monsters.json`). 늪 비룡은 현행 타일이 제외 목록(Bloax)에 있어서, 2010 배포본(`releases/Ancient/Oct-5-2010/dc-mon/swamp_drake.png`)의 그림을 `assets/tiles/mon/swamp_drake.png`로 들였다.
+
+### 남은 일: 이미 쓰던 타일 중 제외 목록에 걸리는 것
+
+예전 도입 때는 2010년 이름 목록하고만 대조해서, 아래 손으로 고른 타일이 지금 판 기준으로 제외 목록(경로 일치)에 걸린다. 2010 배포본에 같은 이름의 이전 그림(32×32)이 있어 바꿀 수 있다. 교체 여부는 사용자 결정을 기다린다.
+
+`hero/minotaur`, `player/base/minotaur_m`, `item/war_axe1`, `item/battle_axe1`, `item/armour/chain_mail1`, `mon/rat`, `player/body/chainmail`, `player/body/leather_armour`, `feat/stone_stairs_down`, `feat/stone_stairs_up`, `item/ring/diamond`, `item/ring/silver`
+
+### 다시 들여오기
+
+DCSS와 crawl/tiles를 받은 뒤:
+
+```
+npm run tiles:import -- <crawl>/crawl-ref/source/rltiles <crawl/tiles> <crawl 커밋> <tiles 커밋>
+npm run tiles
+```
+
 ## 타일을 더하는 법
 
+- 라이브러리에 있는 타일: 코드나 데이터에 `dcss/...` 이름을 적고 `npm run tiles`를 돌린다. 이름은 `branches.html`의 목록이나 `assets/dcss/index.json`에서 찾는다.
+- 그림을 고치거나 이름을 바꿔 쓰려면:
 1. 원본에서 32×32 PNG를 `assets/tiles/<폴더>/`에 넣는다.
-2. 위의 목록과 대조하고, 이 문서의 표에 적는다.
+2. 위의 규칙으로 대조하고, 이 문서의 표에 적는다.
 3. `npm run tiles`를 돌린다. `public/tiles.png`(한 장으로 묶은 것)와 `src/data/tiles.gen.ts`(이름 목록)가 다시 만들어진다.

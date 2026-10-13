@@ -17,9 +17,12 @@ export function hasTile(name: string): name is TileName {
   return INDEX.has(name);
 }
 
-/** Every variant of a tile that comes numbered: "floor/grey_dirt" gives grey_dirt0, grey_dirt1, ... */
+/**
+ * Every variant of a tile that comes numbered, in number order: "floor/grey_dirt" gives grey_dirt0,
+ * grey_dirt1, ...; DCSS sets that start at 1 or use two digits ("spider00") are found the same way.
+ */
 export function tileSet(prefix: string): TileName[] {
-  const out: TileName[] = [];
-  for (let i = 0; hasTile(`${prefix}${i}`); i++) out.push(`${prefix}${i}` as TileName);
-  return out;
+  return TILE_NAMES.filter((n) => n.startsWith(prefix) && /^\d+$/.test(n.slice(prefix.length))).sort(
+    (a, b) => Number(a.slice(prefix.length)) - Number(b.slice(prefix.length)),
+  );
 }

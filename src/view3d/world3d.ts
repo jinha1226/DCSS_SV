@@ -102,7 +102,7 @@ export class World3D {
     private readonly quality: 'high' | 'low',
     /** 'tiles' stands DCSS tiles on the 3D floor; 'models' uses the rigged KayKit and Quaternius figures. */
     private readonly figures: 'tiles' | 'models' = 'tiles',
-    /** The DCSS look whose floor and wall tiles build the Dungeon branch; without it every floor is KayKit. */
+    /** The DCSS look the Dungeon branch is built in (other branches use their own); without it every floor is KayKit. */
     look?: FloorLook,
   ) {
     if (look) this.tileGround = new TileGround(atlas, look, glowTexture());
@@ -259,7 +259,8 @@ export class World3D {
     }
   }
 
-  private clearFloor(): void {
+  /** Forgets the figures, effects and remains of the floor being left (or of a world being replaced). */
+  clearFloor(): void {
     for (const c of this.creatures.values()) c.actor?.dispose();
     this.creatures.clear();
     this.effects.clearFloor();
@@ -270,9 +271,8 @@ export class World3D {
   /** Draws one frame. `between` blends the last two steps of the rules; `dt` is real seconds since the last frame. */
   render(w: World, view: View3D, fx: Fx, between: number, dt: number, overlayCtx: CanvasRenderingContext2D): void {
     this.time += dt;
-    // The Dungeon branch is drawn in DCSS tiles (being tried on these floors first); other branches in KayKit.
-    const branch = w.dungeonGraph.nodes.get(w.depth)?.branch;
-    const ground = this.tileGround && branch === 'Dungeon' ? this.tileGround : this.kaykit;
+    // Every branch is drawn in its own DCSS tiles when the tile ground is on; otherwise in KayKit.
+    const ground = this.tileGround ?? this.kaykit;
     if (ground !== this.dungeon) {
       this.dungeon = ground;
       // Flat DCSS tiles want even, bright light like the 2D view; the KayKit kit reads better moodier.

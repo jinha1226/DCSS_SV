@@ -1,31 +1,20 @@
 import { createHash } from 'node:crypto';
-import { readdirSync, readFileSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+// @ts-expect-error plain JS shared with the packer
+import { selectTiles } from '../../tools/tileSelection.mjs';
 import { MONSTERS } from '../../src/data/monsters';
 import { ATLAS_COLS, SHEET_VERSION, TILE_SIZE, hasTile, tileRect, tileSet } from '../../src/data/tiles';
 import { TILE_NAMES } from '../../src/data/tiles.gen';
-import { LOOK } from '../../src/view/look';
+import { BRANCH_LOOK, LOOK } from '../../src/view/look';
 
 const root = join(__dirname, '../..');
 
-function tileFiles(dir: string): string[] {
-  return readdirSync(dir, { withFileTypes: true })
-    .flatMap((e) => (e.isDirectory() ? tileFiles(join(dir, e.name)) : [join(dir, e.name)]))
-    .filter((f) => f.endsWith('.png'));
-}
-
 describe('the tile sheet', () => {
-  it('lists exactly the tiles under assets/tiles (run `npm run tiles` after changing them)', () => {
-    const src = join(root, 'assets/tiles');
-    const onDisk = tileFiles(src)
-      .map((f) =>
-        relative(src, f)
-          .replace(/\\/g, '/')
-          .replace(/\.png$/, ''),
-      )
-      .sort();
-    expect([...TILE_NAMES]).toEqual(onDisk);
+  it('lists exactly assets/tiles and the DCSS tiles the game names (run `npm run tiles` after changing them)', () => {
+    const expected = (selectTiles(root) as { name: string }[]).map((t) => t.name);
+    expect([...TILE_NAMES]).toEqual(expected);
   });
 
   it('is as large as the list says', () => {
@@ -49,6 +38,9 @@ describe('the tile sheet', () => {
     expect(tileSet('floor/grey_dirt')).toHaveLength(8);
     expect(tileSet('floor/grey_dirt')[0]).toBe('floor/grey_dirt0');
     expect(tileSet('floor/nothing')).toEqual([]);
+    expect(tileSet('dcss/dngn/floor/spider')[0]).toBe('dcss/dngn/floor/spider00');
+    expect(tileSet('dcss/dngn/floor/sand')).toHaveLength(8);
+    expect(tileSet('dcss/dngn/floor/lair')[10]).toBe('dcss/dngn/floor/lair10');
   });
 });
 
@@ -60,7 +52,7 @@ describe('what is drawn', () => {
   });
 
   it('has floor and wall tiles for every look', () => {
-    for (const look of Object.values(LOOK)) {
+    for (const look of [...Object.values(LOOK), ...Object.values(BRANCH_LOOK)]) {
       expect(look.floor.length).toBeGreaterThan(0);
       expect(look.wall.length).toBeGreaterThan(0);
     }

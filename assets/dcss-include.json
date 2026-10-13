@@ -1,0 +1,20 @@
+[
+  "dcss/dngn/floor/lair#",
+  "dcss/dngn/wall/lair#",
+  "dcss/dngn/floor/orc#",
+  "dcss/dngn/wall/orc#",
+  "dcss/dngn/floor/floor_vines#",
+  "dcss/dngn/wall/wall_vines#",
+  "dcss/dngn/floor/mosaic#",
+  "dcss/dngn/wall/snake#",
+  "dcss/dngn/floor/spider#",
+  "dcss/dngn/wall/wall_stone_spider#",
+  "dcss/dngn/floor/swamp#",
+  "dcss/dngn/wall/lab-rock#",
+  "dcss/dngn/floor/sand#",
+  "dcss/dngn/wall/shoals_wall#",
+  "dcss/dngn/floor/rect_gray#",
+  "dcss/dngn/wall/vault#",
+  "dcss/dngn/floor/tomb#",
+  "dcss/derived/wall/zot_yellow#"
+]

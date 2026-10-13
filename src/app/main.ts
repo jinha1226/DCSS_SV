@@ -29,7 +29,7 @@ import { makeThrowButton } from '../ui/throwButton';
 import { makeTimeModeButton } from '../ui/timeModeButton';
 import { loadAtlas } from '../view/atlas';
 import { Fx } from '../view/fx';
-import { LOOK } from '../view/look';
+import { LOOK, lookFor } from '../view/look';
 import { drawMiniMap } from '../view/minimap';
 import { drawWorld } from '../view/render';
 import { composeDoll, DOLL_CUT, dollLayers } from '../view/doll';
@@ -350,7 +350,7 @@ async function start(): Promise<void> {
           world,
           {
             cols: viewCols,
-            look: LOOK[switches.look],
+            look: lookFor(world.dungeonGraph.nodes.get(world.depth)?.branch, LOOK[switches.look]),
             dpr,
             heroWalk,
             ...(heroSprites ? { heroSprite: { sprites: heroSprites, pose: heroPose } } : {}),

@@ -1,23 +1,17 @@
-// Packs every tile under assets/tiles into one sheet.
+// Packs the game's tiles into one sheet: all of assets/tiles, and the DCSS library tiles the game names
+// (see tileSelection.mjs).
 //   public/tiles.png        the sheet
 //   src/data/tiles.gen.ts   where each tile sits in it
-// A tile's name is its path under assets/tiles without ".png", e.g. "mon/goblin".
-// Run with `npm run tiles` after adding or removing a tile.
+// A tile's name is its path under assets/tiles without ".png", e.g. "mon/goblin", or "dcss/" + its DCSS path.
+// Run with `npm run tiles` after adding or removing a tile, or naming a new DCSS tile in the code.
 import { createHash } from 'node:crypto';
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import UPNG from 'upng-js';
+import { selectTiles, SIZE } from './tileSelection.mjs';
 
 const root = new URL('..', import.meta.url).pathname;
-const src = join(root, 'assets/tiles');
-const SIZE = 32;
 const COLS = 16;
-
-function walk(dir) {
-  return readdirSync(dir, { withFileTypes: true })
-    .flatMap((e) => (e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)]))
-    .filter((f) => f.endsWith('.png'));
-}
 
 /** A tile file as plain RGBA bytes, whatever kind of PNG it was saved as. */
 function readTile(file, name) {
@@ -30,21 +24,13 @@ function readTile(file, name) {
   return new Uint8Array(UPNG.toRGBA8(png)[0]);
 }
 
-const nameOf = (file) =>
-  relative(src, file)
-    .replace(/\\/g, '/')
-    .replace(/\.png$/, '');
-// Sorted by tile name, not file path: "scroll" must come before "scroll-blue" as the test expects.
-const files = walk(src).sort((a, b) => (nameOf(a) < nameOf(b) ? -1 : nameOf(a) > nameOf(b) ? 1 : 0));
+const files = selectTiles(root);
 const rows = Math.ceil(files.length / COLS);
 const width = COLS * SIZE;
 const sheet = new Uint8Array(width * rows * SIZE * 4);
 const names = [];
 
-files.forEach((file, i) => {
-  const name = relative(src, file)
-    .replace(/\\/g, '/')
-    .replace(/\.png$/, '');
+files.forEach(({ name, file }, i) => {
   const tile = readTile(file, name);
   const left = (i % COLS) * SIZE;
   const top = Math.floor(i / COLS) * SIZE;

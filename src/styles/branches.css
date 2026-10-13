@@ -1,0 +1,86 @@
+/* Branch gallery: the floor fills the stage, the panel lists the branch's tiles. */
+.branch-stage canvas {
+  position: absolute;
+  inset: 0;
+}
+.branch-stage canvas[hidden] {
+  display: none;
+}
+.branch-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 12px 16px;
+  overflow: auto;
+  border-top: 1px solid var(--line);
+  background: var(--panel);
+}
+.branch-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.branch-tab {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--raised);
+  color: var(--ink);
+}
+.branch-tab.on {
+  border-color: var(--accent);
+  color: #fff3d0;
+  box-shadow: inset 0 -3px 0 var(--accent);
+}
+.branch-tools {
+  display: flex;
+  gap: 6px;
+}
+.branch-tools .demo-toggle {
+  min-height: 44px;
+}
+.branch-info h2 {
+  margin: 4px 0 2px;
+  font-size: 17px;
+}
+.branch-info h3 {
+  margin: 12px 0 6px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+.branch-note {
+  display: block;
+  margin: 2px 0;
+  color: #e0b25a;
+  font-size: 12px;
+}
+.branch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 8px;
+}
+.branch-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 6px 4px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #0d0b09;
+}
+.branch-card figcaption {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.25;
+  text-align: center;
+  word-break: break-all;
+}
+.branch-tile {
+  width: 64px;
+  height: 64px;
+  image-rendering: pixelated;
+}

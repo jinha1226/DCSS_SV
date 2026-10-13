@@ -193,3 +193,13 @@
 - 자동 검증: `npm run check`(53개 파일·335개 테스트)와 빌드가 통과했다. Claude가 PC(1280×800)와 휴대폰(390×844, DSF 3)에서 부위 선택 창·획득 카드를 Playwright로 확인했다. 인물 그림 위치, 버튼 글꼴, 획득 카드의 종류별 대표 그림을 보완했다.
 - 봇 측정(30판): main과 동일하게 클리어 0/30. 도끼 봇 평균 레벨 14.7→15.9, 처치 240→245; 바라치 사냥꾼 레벨 22.2→22.5.
 - 상태: **자동 테스트·브라우저 VERIFIED / 실제 휴대폰 플레이 UNVERIFIED**.
+
+### DCSS CC0 타일 라이브러리·브랜치 타일·브랜치 둘러보기 (2026-10-13)
+
+- 영향 범위: `assets/dcss`(7,810장+파생 4장), `tools/importDcssTiles.mjs`·`tileLicense.mjs`·`tileSelection.mjs`, `packTiles.mjs`, `src/data/tiles.ts`(`tileSet` 번호 규칙 일반화), `src/view/look.ts`(`BRANCH_LOOK`, `lookFor`), 2D·3D 바닥, `monsters.json`, `branches.html`·`src/demo/branches.ts`.
+- 기능: 라이선스 목록 3부분을 모두 적용한 전체 라이브러리. 시트에는 코드·데이터·include 목록이 이름을 대는 타일만 들어간다(168→317장). 브랜치 10곳이 DCSS 기본 바닥·벽으로 그려지고, 3D도 모든 브랜치가 타일 바닥을 쓴다. 브랜치 몬스터 13종이 자기 타일을 쓴다.
+- 3D 타일 바닥은 층 번호 대신 층 지도(grid) 객체로 다시 지을지 판단한다(같은 번호의 새 세계에서도 다시 지음). `World3D.clearFloor`는 공개로 바꿨다.
+- 개발 서버가 라이브러리 파일을 감시하지 않도록 `server.watch.ignored`에 `assets/dcss`를 넣었다.
+- 자동 검증: `npm run check` 통과(55개 파일·346개 테스트), 빌드 통과. `tileLicense.test.ts`가 제외 규칙을 지킨다.
+- 브라우저 확인: Claude가 `branches.html`에서 10개 브랜치 3D(1280×800)와 휴대폰 2D(390×844)를 확인했다.
+- 남은 일: 기존 손으로 고른 타일 12장의 2010판 교체(사용자 결정 대기). 실제 휴대폰 플레이는 미검증이다.

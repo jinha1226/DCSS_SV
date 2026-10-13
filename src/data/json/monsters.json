@@ -140,7 +140,7 @@
   {
     "id": "lair_wolf",
     "name": "늑대",
-    "tile": "mon/jackal",
+    "tile": "dcss/mon/animals/wolf",
     "role": "브랜치 전용",
     "xp": 7,
     "hp": 22,
@@ -156,7 +156,7 @@
   {
     "id": "lair_yak",
     "name": "야크",
-    "tile": "mon/ogre",
+    "tile": "dcss/mon/animals/yak",
     "role": "브랜치 전용",
     "xp": 17,
     "hp": 52,
@@ -172,7 +172,7 @@
   {
     "id": "hydra",
     "name": "히드라",
-    "tile": "mon/ogre",
+    "tile": "dcss/mon/dragons/hydra1",
     "role": "브랜치 전용",
     "xp": 28,
     "hp": 85,
@@ -193,7 +193,7 @@
   {
     "id": "naga",
     "name": "나가",
-    "tile": "mon/gnoll",
+    "tile": "dcss/mon/demihumanoids/naga/naga",
     "role": "브랜치 전용",
     "xp": 18,
     "hp": 55,
@@ -215,7 +215,7 @@
   {
     "id": "naga_mage",
     "name": "나가 마법사",
-    "tile": "mon/kobold",
+    "tile": "dcss/mon/demihumanoids/naga/naga_mage",
     "role": "브랜치 전용",
     "xp": 13,
     "hp": 40,
@@ -243,7 +243,7 @@
   {
     "id": "salamander",
     "name": "살라맨더",
-    "tile": "mon/gnoll",
+    "tile": "dcss/mon/demihumanoids/salamander",
     "role": "브랜치 전용",
     "xp": 21,
     "hp": 62,
@@ -268,7 +268,7 @@
   {
     "id": "wolf_spider",
     "name": "늑대거미",
-    "tile": "mon/adder",
+    "tile": "dcss/mon/animals/wolf_spider",
     "role": "브랜치 전용",
     "xp": 13,
     "hp": 38,
@@ -287,7 +287,7 @@
   {
     "id": "orb_spider",
     "name": "구체거미",
-    "tile": "mon/kobold",
+    "tile": "dcss/mon/animals/orb_spider",
     "role": "브랜치 전용",
     "xp": 10,
     "hp": 31,
@@ -314,7 +314,7 @@
   {
     "id": "swamp_drake",
     "name": "늪 비룡",
-    "tile": "mon/jackal",
+    "tile": "mon/swamp_drake",
     "role": "브랜치 전용",
     "xp": 15,
     "hp": 45,
@@ -333,7 +333,7 @@
   {
     "id": "bog_body",
     "name": "늪 시체",
-    "tile": "mon/gnoll",
+    "tile": "dcss/mon/undead/bog_body",
     "role": "브랜치 전용",
     "xp": 19,
     "hp": 58,
@@ -359,7 +359,7 @@
   {
     "id": "merfolk",
     "name": "머포크",
-    "tile": "mon/gnoll",
+    "tile": "dcss/mon/demihumanoids/merfolk/merfolk",
     "role": "브랜치 전용",
     "xp": 17,
     "hp": 50,
@@ -378,7 +378,7 @@
   {
     "id": "merfolk_javelineer",
     "name": "머포크 투창병",
-    "tile": "mon/kobold",
+    "tile": "dcss/mon/demihumanoids/merfolk/merfolk_javelineer",
     "role": "브랜치 전용",
     "xp": 14,
     "hp": 43,
@@ -407,7 +407,7 @@
   {
     "id": "merfolk_aquamancer",
     "name": "머포크 수술사",
-    "tile": "mon/goblin",
+    "tile": "dcss/mon/demihumanoids/merfolk/merfolk_aquamancer",
     "role": "브랜치 전용",
     "xp": 16,
     "hp": 47,

@@ -4,7 +4,7 @@ import { Cell, cellAt, type Grid } from '../sim/grid';
 import { cellNoise } from '../sim/rng';
 import type { World } from '../sim/world';
 import type { Atlas } from '../view/atlas';
-import type { Look } from '../view/look';
+import { lookFor, type Look } from '../view/look';
 import { stairTile } from '../view/stairTile';
 import { open, REMEMBERED, updateWaterSight, wallCaps, waterSurface, type GroundView } from './dungeon';
 
@@ -66,15 +66,21 @@ export class TileGround implements GroundView {
   private byCell: Placed[][] = [];
   private shown = new Uint8Array(0);
   private flames: { sprite: THREE.Sprite; cell: number; phase: number }[] = [];
-  private builtFor = -1;
+  /** The floor map last built; a new map (another floor, or a new world) means building again. */
+  private builtFor?: Grid;
   private water?: THREE.Mesh;
   private readonly colour = new THREE.Color();
 
+  /** The tiles of the floor now built: its branch's, or the Dungeon look. */
+  private look: Look;
+
   constructor(
     atlas: Atlas,
-    private readonly look: Look,
+    /** The look the Dungeon branch is drawn in; other branches have their own (see BRANCH_LOOK). */
+    private readonly dungeonLook: Look,
     private readonly flameTexture: THREE.Texture,
   ) {
+    this.look = dungeonLook;
     this.texture = new THREE.Texture(atlas.image);
     this.texture.magFilter = THREE.NearestFilter;
     this.texture.minFilter = THREE.NearestFilter;
@@ -84,8 +90,9 @@ export class TileGround implements GroundView {
   }
 
   async ensure(w: World): Promise<boolean> {
-    if (w.depth === this.builtFor) return false;
-    this.builtFor = w.depth;
+    if (w.grid === this.builtFor) return false;
+    this.builtFor = w.grid;
+    this.look = lookFor(w.dungeonGraph.nodes.get(w.depth)?.branch, this.dungeonLook);
     this.build(w);
     return true;
   }
