@@ -1178,6 +1178,38 @@
     "tile": "item/ring/silver"
   },
   {
+    "id": "robe",
+    "kind": "armour",
+    "name": "로브",
+    "tile": "item/armour/robe1",
+    "enabled": true,
+    "useMode": "equip",
+    "stackable": false,
+    "depthWeights": [2, 1, 0],
+    "effects": [
+      {
+        "id": "armour",
+        "power": 1
+      }
+    ]
+  },
+  {
+    "id": "animal_skin",
+    "kind": "armour",
+    "name": "짐승 가죽 갑옷",
+    "tile": "item/armour/animal_skin1",
+    "enabled": true,
+    "useMode": "equip",
+    "stackable": false,
+    "depthWeights": [2, 1, 0],
+    "effects": [
+      {
+        "id": "armour",
+        "power": 1
+      }
+    ]
+  },
+  {
     "id": "leather_armour",
     "kind": "armour",
     "name": "가죽 갑옷",

@@ -17,7 +17,8 @@ import { tickHop, tryHop } from './hop';
 import { thinkMonster } from './monster';
 import { fillFloor, lingering } from './packs';
 import { cellNoise, makeRng, type Rng } from './rng';
-import { initializeItemKnowledge } from './identification';
+import { identifyItem, initializeItemKnowledge } from './identification';
+import { addConsumable, type ConsumableId } from './consumables';
 import { heroSpeed, openStartingSkills } from './skills';
 import { castAt, stepSpells } from './spells';
 import type { FloorState, Input, Stairs, World } from './types';
@@ -177,7 +178,10 @@ export function makeWorld(options: WorldOptions = {}): World {
     seed,
     weapon,
     inventory: [],
-    gear: heroDef.startingOffhand ? { offhand: heroDef.startingOffhand } : {},
+    gear: {
+      ...(heroDef.startingOffhand ? { offhand: heroDef.startingOffhand } : {}),
+      ...(heroDef.startingArmour ? { armour: heroDef.startingArmour } : {}),
+    },
     gearEnchantment: {},
     cursedGear: new Set<string>(),
     identifiedItems: new Set<string>(),
@@ -216,6 +220,11 @@ export function makeWorld(options: WorldOptions = {}): World {
     won: false,
   };
   initializeItemKnowledge(world);
+  // The job's starting consumables, known from the start as in DCSS.
+  for (const item of heroDef.startingItems) {
+    addConsumable(world, item.id as ConsumableId, item.count);
+    identifyItem(world, item.id);
+  }
   openStartingSkills(world);
   enter(world, floor, options.monsters !== false);
   return world;

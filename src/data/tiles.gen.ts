@@ -1,7 +1,7 @@
 // Written by tools/packTiles.mjs. Do not edit by hand.
 export const TILE_SIZE = 32;
 export const ATLAS_COLS = 16;
-export const SHEET_VERSION = '979d7ec6da';
+export const SHEET_VERSION = '33283e3a05';
 export const TILE_NAMES = [
   'feat/stone_stairs_down',
   'feat/stone_stairs_up',
@@ -27,12 +27,14 @@ export const TILE_NAMES = [
   'hero/deep_elf_m',
   'hero/minotaur',
   'item/amulet/sapphire',
+  'item/armour/animal_skin1',
   'item/armour/boots1',
   'item/armour/chain_mail1',
   'item/armour/cloak2',
   'item/armour/glove1',
   'item/armour/headgear/helmet1',
   'item/armour/leather_armour1',
+  'item/armour/robe1',
   'item/armour/shields/buckler1',
   'item/armour/shields/kite_shield1',
   'item/battle_axe1',

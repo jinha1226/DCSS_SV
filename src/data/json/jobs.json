@@ -8,7 +8,8 @@
       "axe": 1,
       "fighting": 1,
       "dodging": 1
-    }
+    },
+    "startingArmour": "animal_skin"
   },
   {
     "id": "hunter",
@@ -19,7 +20,8 @@
       "ranged": 2,
       "fighting": 1,
       "dodging": 1
-    }
+    },
+    "startingArmour": "leather_armour"
   },
   {
     "id": "spellblade",
@@ -32,7 +34,14 @@
       "fighting": 1,
       "dodging": 1
     },
-    "startingOffhand": "spellbook_hexes_0"
+    "startingOffhand": "spellbook_hexes_0",
+    "startingArmour": "leather_armour",
+    "startingItems": [
+      {
+        "id": "scroll_blink",
+        "count": 1
+      }
+    ]
   },
   {
     "id": "fire_mage",
@@ -43,7 +52,14 @@
       "fire": 1,
       "fighting": 1,
       "dodging": 1
-    }
+    },
+    "startingArmour": "robe",
+    "startingItems": [
+      {
+        "id": "potion_magic",
+        "count": 1
+      }
+    ]
   },
   {
     "id": "ice_mage",
@@ -54,7 +70,14 @@
       "ice": 1,
       "fighting": 1,
       "dodging": 1
-    }
+    },
+    "startingArmour": "robe",
+    "startingItems": [
+      {
+        "id": "potion_magic",
+        "count": 1
+      }
+    ]
   },
   {
     "id": "air_mage",
@@ -65,7 +88,14 @@
       "air": 1,
       "fighting": 1,
       "dodging": 1
-    }
+    },
+    "startingArmour": "robe",
+    "startingItems": [
+      {
+        "id": "potion_magic",
+        "count": 1
+      }
+    ]
   },
   {
     "id": "earth_mage",
@@ -76,7 +106,14 @@
       "earth": 1,
       "fighting": 1,
       "dodging": 1
-    }
+    },
+    "startingArmour": "robe",
+    "startingItems": [
+      {
+        "id": "potion_magic",
+        "count": 1
+      }
+    ]
   },
   {
     "id": "summoner",
@@ -87,7 +124,14 @@
       "summoning": 1,
       "fighting": 1,
       "dodging": 1
-    }
+    },
+    "startingArmour": "robe",
+    "startingItems": [
+      {
+        "id": "potion_magic",
+        "count": 1
+      }
+    ]
   },
   {
     "id": "hexer",
@@ -98,7 +142,8 @@
       "hexes": 1,
       "fighting": 1,
       "dodging": 1
-    }
+    },
+    "startingArmour": "robe"
   },
   {
     "id": "necromancer",
@@ -109,6 +154,13 @@
       "necromancy": 1,
       "fighting": 1,
       "dodging": 1
-    }
+    },
+    "startingArmour": "robe",
+    "startingItems": [
+      {
+        "id": "potion_magic",
+        "count": 1
+      }
+    ]
   }
 ]

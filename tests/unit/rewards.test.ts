@@ -35,9 +35,10 @@ describe('level-up item reward integration', () => {
   it('puts awarded armour in the bag without silently equipping it', () => {
     const w = levelUp(202);
     const offer = w.rewardChoices!.find((card) => card.kind === 'gear')!;
+    const worn = { ...w.gear };
     expect(chooseReward(w, offer.id)).toBe(true);
     expect(w.inventory.some((entry) => entry.kind === 'gear' && entry.id === offer.itemId)).toBe(true);
-    expect(Object.values(w.gear)).toHaveLength(0);
+    expect(w.gear).toEqual(worn);
   });
 
   it('stacks awarded consumables and identifies the chosen item', () => {

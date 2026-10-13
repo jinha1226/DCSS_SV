@@ -29,6 +29,7 @@ const OUTFIT: Readonly<Record<string, string>> = {
 };
 
 const WORN: Readonly<Record<string, string>> = {
+  animal_skin: 'player/body/animal_skin',
   leather_armour: 'player/body/leather_armour',
   chain_mail: 'player/body/chainmail',
   helmet_iron: 'player/head/iron1',
@@ -87,7 +88,9 @@ export function layersFor(
     gear.cloak ? WORN[gear.cloak] : undefined,
     BASE[species],
     gear.boots ? WORN[gear.boots] : undefined,
-    (gear.armour && WORN[gear.armour]) || (job ? OUTFIT[job] : undefined),
+    (gear.armour && gear.armour !== 'robe' && WORN[gear.armour]) ||
+      (job ? OUTFIT[job] : undefined) ||
+      (gear.armour === 'robe' ? 'player/body/robe_brown' : undefined),
     gear.gloves ? WORN[gear.gloves] : undefined,
     weapon ? wielded(weapon) : undefined,
     offhand ? (WORN[offhand] ?? (offhand.startsWith('spellbook') ? 'player/hand2/orb1' : undefined)) : undefined,

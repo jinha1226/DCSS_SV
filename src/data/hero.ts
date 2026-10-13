@@ -35,6 +35,10 @@ export interface HeroDefinition {
   readonly aptitudes: Readonly<Record<string, Aptitude>>;
   readonly startingWeapon: string;
   readonly startingOffhand?: string;
+  /** Body armour worn from the start, as in the DCSS job's kit. */
+  readonly startingArmour?: string;
+  /** Consumables carried from the start, already identified. */
+  readonly startingItems: readonly { readonly id: string; readonly count: number }[];
   readonly startingAmmo: number;
   readonly startingSkills: Readonly<Record<string, number>>;
 }
@@ -64,6 +68,10 @@ function job(id: string): JobRow {
   if ('startingOffhand' in row && typeof row.startingOffhand === 'string' && itemDefinition(row.startingOffhand).kind !== 'spellbook') {
     throw new Error('jobs.json: ' + row.id + '.startingOffhand: 마법서가 아님');
   }
+  if ('startingArmour' in row && typeof row.startingArmour === 'string' && itemDefinition(row.startingArmour).kind !== 'armour') {
+    throw new Error('jobs.json: ' + row.id + '.startingArmour: 갑옷이 아님');
+  }
+  for (const item of ('startingItems' in row ? row.startingItems : undefined) ?? []) itemDefinition(item.id);
   for (const skill of Object.keys(row.startingSkills)) {
     if (!SKILLS.some((entry) => entry.id === skill)) {
       throw new Error('jobs.json: ' + id + '.startingSkills: 없는 스킬 ' + skill);
@@ -101,6 +109,8 @@ export function heroFor(speciesId = 'minotaur', jobId = 'berserker'): HeroDefini
     aptitudes: s.aptitudes as Readonly<Record<string, Aptitude>>,
     startingWeapon: j.startingWeapon,
     ...('startingOffhand' in j ? { startingOffhand: j.startingOffhand } : {}),
+    ...('startingArmour' in j ? { startingArmour: j.startingArmour } : {}),
+    startingItems: ('startingItems' in j ? j.startingItems : undefined) ?? [],
     startingAmmo: j.startingAmmo,
     startingSkills,
   };
