@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { WeaponItem } from '../data/items';
 import type { TileName } from '../data/tiles';
+import type { World } from '../sim/types';
 import { MODEL_SCALE, ownMaterials, type ModelLibrary } from './models';
 
 export const RIG_CLIPS = 'anims/rig_medium.glb';
@@ -246,6 +247,8 @@ export interface HeroLook {
   readonly cloak: boolean;
   /** The DCSS doll layers for figures drawn as tiles. */
   readonly layers?: readonly TileName[];
+  /** The world as it is now, for figures painted from it every frame. */
+  readonly world?: World;
 }
 
 /** Which held model a weapon shows as, and whether it is held in both hands. */

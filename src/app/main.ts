@@ -20,6 +20,7 @@ import { makeLayoutButton } from '../ui/layoutButton';
 import { makeInventorySheets } from '../ui/inventorySheets';
 import { makeHopButton } from '../ui/hopButton';
 import { makePickupToast, screenFromUnit } from '../ui/pickupToast';
+import { HeroSpriteFigure } from '../view3d/heroSpriteFigure';
 import { tileFigureHeight } from '../view3d/tileFigures';
 import { makeSkillBar } from '../ui/skillBar';
 import { makeSkillPicker } from '../ui/skillPicker';
@@ -114,7 +115,10 @@ async function start(): Promise<void> {
     heroWalk = undefined;
     heroDoll = '';
     Object.assign(heroPose, makeHeroPose());
-    if (world3d) void world3d.prepare(character.species, character.job);
+    if (world3d) {
+      const sprites = heroSprites;
+      void world3d.prepare(character.species, character.job, sprites ? () => new HeroSpriteFigure(sprites, heroPose) : undefined);
+    }
     world = makeWorld({
       species: character.species,
       job: character.job,

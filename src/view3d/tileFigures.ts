@@ -7,6 +7,8 @@ import type { Figure, HeroFigure, HeroLook } from './actors';
 
 /** How tall a tile figure stands, in cells: a little over one, like a DCSS tile seen from the side. */
 export const TILE_HEIGHT = 1.12;
+/** The hero stands taller than other tiles, so it reads clearly among them. */
+export const HERO_HEIGHT = TILE_HEIGHT * 1.3;
 const BIG: Readonly<Record<string, number>> = { ogre: 1.45, hydra: 1.4, lair_yak: 1.3, swamp_drake: 1.25 };
 const FLASH = 0.16;
 /**
@@ -241,6 +243,7 @@ export function makeMonsterTile(atlas: Atlas, kind: string, tile: TileName): Til
 }
 
 export function tileFigureHeight(kind: string): number {
+  if (kind === 'hero') return HERO_HEIGHT;
   return BIG[kind] ?? TILE_HEIGHT;
 }
 
@@ -253,7 +256,7 @@ export class HeroTile extends TileFigure implements HeroFigure {
 
   constructor(private readonly atlas: Atlas) {
     const blank = frames(document.createElement('canvas'), 0, 0, TILE_SIZE * WALK_FRAMES, TILE_SIZE);
-    super(blank, blank.clone(), TILE_HEIGHT);
+    super(blank, blank.clone(), HERO_HEIGHT);
     this.hurtTexture = blank.clone();
     this.frameCount = WALK_FRAMES;
   }

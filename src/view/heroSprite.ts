@@ -176,3 +176,9 @@ export function drawHeroSprite(
   const row = pose.swing >= 0 ? swingRow(meta, pose.swing / swingSeconds(sprites, w)) : 0;
   draw(`weapon_${model}`, row);
 }
+
+/** Draws the hero's current frame at the top-left of a frame-sized canvas, at the sprites' own size. */
+export function drawHeroFrame(ctx: CanvasRenderingContext2D, sprites: HeroSprites, pose: HeroPose, w: World): void {
+  const [feetX, feetY] = sprites.meta.feet;
+  drawHeroSprite(ctx, sprites, pose, w, feetX, feetY - TILE_SIZE * FEET_DROP, TILE_SIZE);
+}

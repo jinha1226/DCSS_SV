@@ -157,13 +157,14 @@ export class World3D {
   }
 
   /** Makes the hero figure for this species and job before the first frame. */
-  async prepare(species: string, job: string): Promise<void> {
+  /** Makes the hero's figure; `makeHero` swaps in another tile-style figure (e.g. a layered sprite set). */
+  async prepare(species: string, job: string, makeHero?: () => HeroFigure): Promise<void> {
     const key = `${species}|${job}`;
     if (this.hero && this.heroKey === key) return;
     this.hero?.dispose();
     this.heroKey = key;
     if (this.figures === 'tiles') {
-      this.hero = new HeroTile(this.atlas);
+      this.hero = makeHero?.() ?? new HeroTile(this.atlas);
     } else {
       this.hero = await HeroActor.create(this.models, job);
     }
@@ -344,6 +345,7 @@ export class World3D {
       helmet: Boolean(w.gear.helmet),
       cloak: Boolean(w.gear.cloak),
       layers: dollLayers(w),
+      world: w,
     });
     let x = h.px + (h.x - h.px) * between;
     let y = h.py + (h.y - h.py) * between;
