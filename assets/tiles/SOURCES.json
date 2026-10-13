@@ -1,0 +1,847 @@
+{
+ "dngn/gateways/enter_lair": {
+  "from": "crawl",
+  "path": "dngn/gateways/enter_lair.png",
+  "sha1": "b253b55b3d752fe532dce1270178259db2249b37"
+ },
+ "dngn/gateways/enter_orc": {
+  "from": "crawl",
+  "path": "dngn/gateways/enter_orc.png",
+  "sha1": "877d4ee395ab36d788b311287db0798bbfd47a0d"
+ },
+ "dngn/gateways/enter_snake": {
+  "from": "crawl",
+  "path": "dngn/gateways/enter_snake.png",
+  "sha1": "ec8ab1666de533ff77883431a4197cefe74c8776"
+ },
+ "dngn/gateways/enter_spider": {
+  "from": "crawl",
+  "path": "dngn/gateways/enter_spider.png",
+  "sha1": "6450b557268ff7e8469595a4920df70b09622dd0"
+ },
+ "dngn/gateways/enter_vaults_closed": {
+  "from": "crawl",
+  "path": "dngn/gateways/enter_vaults_closed.png",
+  "sha1": "d6d4f60dc80e9184821937b2528c8146aaf2caf6"
+ },
+ "dngn/gateways/enter_vaults_open": {
+  "from": "crawl",
+  "path": "dngn/gateways/enter_vaults_open.png",
+  "sha1": "73854fed86eccb1e9d9242219a3cbc5d98c757d0"
+ },
+ "dngn/gateways/enter_zot_closed": {
+  "from": "crawl",
+  "path": "dngn/gateways/enter_zot_closed.png",
+  "sha1": "54fcdffdfb6e4570169be90696e8d23fd8d2d7b8"
+ },
+ "dngn/gateways/enter_zot_open": {
+  "from": "crawl",
+  "path": "dngn/gateways/enter_zot_open.png",
+  "sha1": "8e0a279ae450eeafd876369386923d5183e0bf25"
+ },
+ "dngn/gateways/return_zot": {
+  "from": "crawl",
+  "path": "dngn/gateways/return_zot.png",
+  "sha1": "eaf0a28fea3306249813b364a209801b9bbcad6f"
+ },
+ "feat/stone_stairs_down": {
+  "from": "ancient-2010",
+  "path": "dc-dngn/gateways/stone_stairs_down.png",
+  "sha1": "261aee3108b19bd279fdb6a1e65ab6474b19da9d"
+ },
+ "feat/stone_stairs_up": {
+  "from": "ancient-2010",
+  "path": "dc-dngn/gateways/stone_stairs_up.png",
+  "sha1": "53a8037b51f1638ca20e5247273fe24857ebdbfc"
+ },
+ "floor/grey_dirt0": {
+  "from": "crawl",
+  "path": "dngn/floor/grey_dirt0.png",
+  "sha1": "1e9f33d49375476255650a761072719e587180cd"
+ },
+ "floor/grey_dirt1": {
+  "from": "crawl",
+  "path": "dngn/floor/grey_dirt1.png",
+  "sha1": "3ab9d342a57183d1e7fa02dcd23712b7965ef2ea"
+ },
+ "floor/grey_dirt2": {
+  "from": "crawl",
+  "path": "dngn/floor/grey_dirt2.png",
+  "sha1": "2496d8258178c4c1ec8f25e14e55c6e273166f11"
+ },
+ "floor/grey_dirt3": {
+  "from": "crawl",
+  "path": "dngn/floor/grey_dirt3.png",
+  "sha1": "54f2bb3e319fb0723a805cd6807bbb698f0b56e8"
+ },
+ "floor/grey_dirt4": {
+  "from": "crawl",
+  "path": "dngn/floor/grey_dirt4.png",
+  "sha1": "000035c9d6e4bccc04980ce379d0962577403afc"
+ },
+ "floor/grey_dirt5": {
+  "from": "crawl",
+  "path": "dngn/floor/grey_dirt5.png",
+  "sha1": "e5f452d158b11da9573ff1c09513b2dd2824e96d"
+ },
+ "floor/grey_dirt6": {
+  "from": "crawl",
+  "path": "dngn/floor/grey_dirt6.png",
+  "sha1": "fe2d0cf1720869cea89ac76f91432d2ad57e890f"
+ },
+ "floor/grey_dirt7": {
+  "from": "crawl",
+  "path": "dngn/floor/grey_dirt7.png",
+  "sha1": "6766c2928a21ff1c6b04bed22ddb90711b5cff12"
+ },
+ "floor/limestone0": {
+  "from": "crawl",
+  "path": "dngn/floor/limestone0.png",
+  "sha1": "bb6cc6700aeb2b17cdec3a8fd686d52bf5f53a64"
+ },
+ "floor/limestone1": {
+  "from": "crawl",
+  "path": "dngn/floor/limestone1.png",
+  "sha1": "fae83a2de96421ab948a8bb34c6df363a677dcf2"
+ },
+ "floor/limestone2": {
+  "from": "crawl",
+  "path": "dngn/floor/limestone2.png",
+  "sha1": "a985213470417e0616b299f66f21fc43fce3766f"
+ },
+ "floor/limestone3": {
+  "from": "crawl",
+  "path": "dngn/floor/limestone3.png",
+  "sha1": "fd6a36b03dabb40e3b91d8f3aff41455f648ebd1"
+ },
+ "floor/limestone4": {
+  "from": "crawl",
+  "path": "dngn/floor/limestone4.png",
+  "sha1": "e885794d00eec99fc6269e12f22bd495e245770c"
+ },
+ "floor/limestone5": {
+  "from": "crawl",
+  "path": "dngn/floor/limestone5.png",
+  "sha1": "912cb3cfdef124943373e65f0c67f8bfd2aa26e5"
+ },
+ "floor/limestone6": {
+  "from": "crawl",
+  "path": "dngn/floor/limestone6.png",
+  "sha1": "04a31ddef82f1d9f3c5354a2f310946134fd7a0a"
+ },
+ "floor/limestone7": {
+  "from": "crawl",
+  "path": "dngn/floor/limestone7.png",
+  "sha1": "3ffe8b8a1cb437279a26a0c57ad815b66c6353dd"
+ },
+ "floor/limestone8": {
+  "from": "crawl",
+  "path": "dngn/floor/limestone8.png",
+  "sha1": "97b1b50b63584e924f7bc02292cdb62c65539046"
+ },
+ "floor/limestone9": {
+  "from": "crawl",
+  "path": "dngn/floor/limestone9.png",
+  "sha1": "86a2472af8c0d7eba9df58ae1c7e189dc80b0269"
+ },
+ "hero/barachi": {
+  "from": "crawl",
+  "path": "mon/demihumanoids/barachi.png",
+  "sha1": "0fcd23814e52e1a42941ddcbec36ad469b54e7bb"
+ },
+ "hero/deep_elf_m": {
+  "from": "crawl",
+  "path": "player/base/deep_elf_m.png",
+  "sha1": "5fd87079c99c719b95f95573767d7281f7e5c743"
+ },
+ "hero/minotaur": {
+  "from": "ancient-2010",
+  "path": "dc-mon/minotaur.png",
+  "sha1": "7a05f7c4c99db7aa4181bc362397cc830997add8"
+ },
+ "item/amulet/sapphire": {
+  "from": "crawl",
+  "path": "item/amulet/sapphire.png",
+  "sha1": "3f0fcd24642f03211fa5b8ebbec4c4ee4a765779"
+ },
+ "item/armour/animal_skin1": {
+  "from": "crawl",
+  "path": "item/armour/animal_skin1.png",
+  "sha1": "003d5ff877f6c237e37e9cd5136be1c4f5ab70d9"
+ },
+ "item/armour/boots1": {
+  "from": "crawl",
+  "path": "item/armour/boots1.png",
+  "sha1": "e2259a995f2eda54a7fde9c356ce86dc0dd82e0f"
+ },
+ "item/armour/chain_mail1": {
+  "from": "ancient-2010",
+  "path": "item/armour/chain_mail1.png",
+  "sha1": "0565165534c61c89407508b47cb86be460240d67"
+ },
+ "item/armour/cloak2": {
+  "from": "crawl",
+  "path": "item/armour/cloak2.png",
+  "sha1": "5fb8089125b48c959981307a56dbd506c59dcf55"
+ },
+ "item/armour/glove1": {
+  "from": "crawl",
+  "path": "item/armour/glove1.png",
+  "sha1": "aca9a0305a5245804313daa3208fb1975e16cde4"
+ },
+ "item/armour/headgear/helmet1": {
+  "from": "crawl",
+  "path": "item/armour/headgear/helmet1.png",
+  "sha1": "b09f6c5b47cc94988a617d8e4f84812ac0ddad23"
+ },
+ "item/armour/leather_armour1": {
+  "from": "crawl",
+  "path": "item/armour/leather_armour1.png",
+  "sha1": "49ed486ad0640b4499d4f82a782552b6b40bf2cf"
+ },
+ "item/armour/robe1": {
+  "from": "crawl",
+  "path": "item/armour/robe1.png",
+  "sha1": "38d3782c5181595d10ece39a8b49f24a1723cbc9"
+ },
+ "item/armour/shields/buckler1": {
+  "from": "crawl",
+  "path": "item/armour/shields/buckler1.png",
+  "sha1": "a8bdbeca3093f869d2cec45acefadfae189e2f8a"
+ },
+ "item/armour/shields/kite_shield1": {
+  "from": "crawl",
+  "path": "item/armour/shields/kite_shield1.png",
+  "sha1": "10c5ade2a87c63990ec5fd7f10ff5598ed386b0e"
+ },
+ "item/battle_axe1": {
+  "from": "ancient-2010",
+  "path": "item/weapon/battle_axe1.png",
+  "sha1": "972929de207bb575949447b08f4c48be6a3cef34"
+ },
+ "item/book/book_of_the_dead": {
+  "from": "crawl",
+  "path": "item/book/book_of_the_dead.png",
+  "sha1": "cd0c23f1382fc31e45699cdce67acb5878bb989d"
+ },
+ "item/book/dark_brown": {
+  "from": "crawl",
+  "path": "item/book/dark_brown.png",
+  "sha1": "5839232bf5ea25c97e727192b6ca0ca6d9651b14"
+ },
+ "item/book/light_blue": {
+  "from": "crawl",
+  "path": "item/book/light_blue.png",
+  "sha1": "63ae306e6893c821f2b5b87199c4fe4c68036f73"
+ },
+ "item/book/purple": {
+  "from": "crawl",
+  "path": "item/book/purple.png",
+  "sha1": "7cc1ee6d32ff79af1f86c02f421d99b4e900f636"
+ },
+ "item/book/red": {
+  "from": "crawl",
+  "path": "item/book/red.png",
+  "sha1": "677ba2d002c60f0b0e1ed3d9b825ace070028015"
+ },
+ "item/book/white": {
+  "from": "crawl",
+  "path": "item/book/white.png",
+  "sha1": "71bc1b8c526a85243973aa5807b65ba78d02a821"
+ },
+ "item/boomerang1": {
+  "from": "crawl",
+  "path": "item/weapon/ranged/boomerang1.png",
+  "sha1": "34bc95f7341f64ed3d413f70622f3646c59cf016"
+ },
+ "item/broad_axe1": {
+  "from": "ancient-2010",
+  "path": "item/weapon/broad_axe1.png",
+  "sha1": "610f1d849a6ae2c97c33b3215551a57220a3cc35"
+ },
+ "item/executioner_axe1": {
+  "from": "ancient-2010",
+  "path": "item/weapon/executioner_axe1.png",
+  "sha1": "a22ceae5244ddda1989eac0fe73beaff1f106bfe"
+ },
+ "item/gold": {
+  "from": "crawl",
+  "path": "item/gold/10.png",
+  "sha1": "0313c0ed3b88036ea315bd92d5fca522e9d80e8a"
+ },
+ "item/greatsword1": {
+  "from": "crawl",
+  "path": "item/weapon/greatsword1.png",
+  "sha1": "edf0a4d8839a894abcf7a2bdf88136b666893283"
+ },
+ "item/hand_axe1": {
+  "from": "crawl",
+  "path": "item/weapon/hand_axe1.png",
+  "sha1": "42da838b658767ac2fe5908b7ff616782a4cd309"
+ },
+ "item/long_sword1": {
+  "from": "crawl",
+  "path": "item/weapon/long_sword1.png",
+  "sha1": "6ff71e8efa588d55bc32db55ca4311db456218f5"
+ },
+ "item/longbow1": {
+  "from": "crawl",
+  "path": "item/weapon/ranged/longbow1.png",
+  "sha1": "d5559cb0da13b8a3a44b1af528bb4ebd60701413"
+ },
+ "item/longbow2": {
+  "from": "crawl",
+  "path": "item/weapon/ranged/longbow2.png",
+  "sha1": "aa74ac61da54dff08afe9504380569e384b22fa6"
+ },
+ "item/orcbow1": {
+  "from": "crawl",
+  "path": "item/weapon/ranged/orcbow1.png",
+  "sha1": "7fbb9af71065308a0ba0c91a47ec055551ecbc40"
+ },
+ "item/potion/black": {
+  "from": "crawl",
+  "path": "item/potion/black.png",
+  "sha1": "43a7cd0b641b733a07b1fac74515c46216771e74"
+ },
+ "item/potion/brilliant_blue": {
+  "from": "crawl",
+  "path": "item/potion/brilliant_blue.png",
+  "sha1": "8a79fc3c1552cce55d5069248de5d0184dc57a20"
+ },
+ "item/potion/brown": {
+  "from": "crawl",
+  "path": "item/potion/brown.png",
+  "sha1": "f5418af6fca97dc339f03131b83f7efc6e2e19be"
+ },
+ "item/potion/cloudy": {
+  "from": "crawl",
+  "path": "item/potion/cloudy.png",
+  "sha1": "d3fdd9c52fbe50b3f8c9bf3107ce1ef01aca870b"
+ },
+ "item/potion/cyan": {
+  "from": "crawl",
+  "path": "item/potion/cyan.png",
+  "sha1": "ebb9c6947d70d30d2d48839de149b2fe1d8d47a3"
+ },
+ "item/potion/emerald": {
+  "from": "crawl",
+  "path": "item/potion/emerald.png",
+  "sha1": "74306ec0ad5b6d3e0c00da8ba27abfec7511d144"
+ },
+ "item/potion/golden": {
+  "from": "crawl",
+  "path": "item/potion/golden.png",
+  "sha1": "cd6f9472d3b15e9763855aba16370d321894c592"
+ },
+ "item/potion/murky": {
+  "from": "crawl",
+  "path": "item/potion/murky.png",
+  "sha1": "a47e959f337ce7af65a3c85ea458e0aa0d0851a5"
+ },
+ "item/potion/orange": {
+  "from": "crawl",
+  "path": "item/potion/orange.png",
+  "sha1": "e3d9dc10d579a6ea1c0a410f9a45ed9ace8837bd"
+ },
+ "item/potion/pink": {
+  "from": "crawl",
+  "path": "item/potion/pink.png",
+  "sha1": "04abab8ee2f89e00fd8ac7211e57478eebd2cefd"
+ },
+ "item/potion/purple_red": {
+  "from": "crawl",
+  "path": "item/potion/purple_red.png",
+  "sha1": "d3bf1b27fc8de7701188f68be40ff98a30d22fbe"
+ },
+ "item/potion/ruby": {
+  "from": "crawl",
+  "path": "item/potion/ruby.png",
+  "sha1": "c9d1fc1a94a7d0f552f65b054c3f90f4eeff1dbe"
+ },
+ "item/potion/silver": {
+  "from": "crawl",
+  "path": "item/potion/silver.png",
+  "sha1": "20ed6f3af7c1820e9245117f704ec36d15f8a6a0"
+ },
+ "item/potion/white": {
+  "from": "crawl",
+  "path": "item/potion/white.png",
+  "sha1": "2f003db6b7a1319635b17b6082e4c77d3a1358cc"
+ },
+ "item/ring/diamond": {
+  "from": "ancient-2010",
+  "path": "item/ring/diamond.png",
+  "sha1": "f7fc491a9efaa861f1195a29de2b841388aaf259"
+ },
+ "item/ring/ruby": {
+  "from": "crawl",
+  "path": "item/ring/ruby.png",
+  "sha1": "72c7aa90f3be13151fc1ab7ade6e22e57840a98b"
+ },
+ "item/ring/silver": {
+  "from": "ancient-2010",
+  "path": "item/ring/silver.png",
+  "sha1": "8cc41613aa4e45bdc1398af4c12a927e7b8fe008"
+ },
+ "item/rod/rod01": {
+  "from": "crawl",
+  "path": "item/rod/rod01.png",
+  "sha1": "358e7ea6378fbb11906e6b21959096c009e8aac2"
+ },
+ "item/rod/rod02": {
+  "from": "crawl",
+  "path": "item/rod/rod02.png",
+  "sha1": "36c44e16697136e7b28915a562191a37740e6e16"
+ },
+ "item/rod/rod03": {
+  "from": "crawl",
+  "path": "item/rod/rod03.png",
+  "sha1": "61882a051b9d8f88ba883f739ae609056fc599f0"
+ },
+ "item/rod/rod04": {
+  "from": "crawl",
+  "path": "item/rod/rod04.png",
+  "sha1": "b73f162e7eeeb0017216424e647fd18177751b1c"
+ },
+ "item/rod/rod05": {
+  "from": "crawl",
+  "path": "item/rod/rod05.png",
+  "sha1": "7186c451f44a413898832c8e89db9544f7cb9805"
+ },
+ "item/scroll/scroll-blue": {
+  "from": "crawl",
+  "path": "item/scroll/scroll-blue.png",
+  "sha1": "a04c7fae721a633753f7890066259c5f2c423fd1"
+ },
+ "item/scroll/scroll-cyan": {
+  "from": "crawl",
+  "path": "item/scroll/scroll-cyan.png",
+  "sha1": "5d34b8c431d6fe986309a8c049c7c8043e4d46ef"
+ },
+ "item/scroll/scroll-green": {
+  "from": "crawl",
+  "path": "item/scroll/scroll-green.png",
+  "sha1": "078e6c7df9bf48d98a18589b2b25cdc6e5cfe4ce"
+ },
+ "item/scroll/scroll-grey": {
+  "from": "crawl",
+  "path": "item/scroll/scroll-grey.png",
+  "sha1": "f7d92b49456dee123907af653d68f846052dda23"
+ },
+ "item/scroll/scroll-purple": {
+  "from": "crawl",
+  "path": "item/scroll/scroll-purple.png",
+  "sha1": "c578e4a1c331eed9619aa62dde649de48abec9f5"
+ },
+ "item/scroll/scroll-red": {
+  "from": "crawl",
+  "path": "item/scroll/scroll-red.png",
+  "sha1": "23b434a4f8eec926784603c55f13de226f5cef8d"
+ },
+ "item/scroll/scroll-yellow": {
+  "from": "crawl",
+  "path": "item/scroll/scroll-yellow.png",
+  "sha1": "e18e2c85a1477ffc0fd3c07cbb49f41053308702"
+ },
+ "item/scroll/scroll": {
+  "from": "crawl",
+  "path": "item/scroll/scroll.png",
+  "sha1": "63c74504aa9030eea11e82d3f140e20d70bb1abc"
+ },
+ "item/shortbow1": {
+  "from": "crawl",
+  "path": "item/weapon/ranged/shortbow1.png",
+  "sha1": "d7750a14b44b4c124f332c860f5aec244b2ec4a7"
+ },
+ "item/staff/staff01": {
+  "from": "crawl",
+  "path": "item/staff/staff01.png",
+  "sha1": "d42d5a85fefb6237b2ce5b80a5a8081eb1f8a837"
+ },
+ "item/staff/staff02": {
+  "from": "crawl",
+  "path": "item/staff/staff02.png",
+  "sha1": "874283817ec93865d813ad84d7b92790e3003592"
+ },
+ "item/staff/staff03": {
+  "from": "crawl",
+  "path": "item/staff/staff03.png",
+  "sha1": "495862bbc9d3999261bd1e97df49866bde65acae"
+ },
+ "item/staff/staff04": {
+  "from": "crawl",
+  "path": "item/staff/staff04.png",
+  "sha1": "2cccaa87bafd876e457790644420b161d1f68f19"
+ },
+ "item/staff/staff05": {
+  "from": "crawl",
+  "path": "item/staff/staff05.png",
+  "sha1": "f5ca5c1bfdfc1791bba506033640d5e2d8cbe154"
+ },
+ "item/stone": {
+  "from": "crawl",
+  "path": "item/weapon/ranged/stone.png",
+  "sha1": "9245272408986187870a14635cdf76149fa98dd8"
+ },
+ "item/wand/gem_brass": {
+  "from": "crawl",
+  "path": "item/wand/gem_brass.png",
+  "sha1": "bb09817a253cf77426bb7f39e638e8783bddd385"
+ },
+ "item/war_axe1": {
+  "from": "ancient-2010",
+  "path": "item/weapon/war_axe1.png",
+  "sha1": "d0d8d168ceaf7c304a35fe6a90ced2182434dc7c"
+ },
+ "misc/blood/blood_puddle_red": {
+  "from": "crawl",
+  "path": "misc/blood/blood_puddle_red.png",
+  "sha1": "1136976e6171b019c1e25b01367f76ff1d32b71d"
+ },
+ "misc/blood/blood_puddle_red1": {
+  "from": "crawl",
+  "path": "misc/blood/blood_puddle_red1.png",
+  "sha1": "49dc601299760fa4ecdd13ab9c2d72e464dd40ac"
+ },
+ "misc/blood/blood_puddle_red2": {
+  "from": "crawl",
+  "path": "misc/blood/blood_puddle_red2.png",
+  "sha1": "480f11e96119f466677d50840d65cbeb33824394"
+ },
+ "misc/blood/blood_puddle_red3": {
+  "from": "crawl",
+  "path": "misc/blood/blood_puddle_red3.png",
+  "sha1": "b8760e41825231ea20c04ecdf409d2482d220313"
+ },
+ "misc/blood/blood_puddle_red4": {
+  "from": "crawl",
+  "path": "misc/blood/blood_puddle_red4.png",
+  "sha1": "3407e23a80078ce6e3460288efc16903831a1362"
+ },
+ "misc/blood/blood_red00": {
+  "from": "crawl",
+  "path": "misc/blood/blood_red00.png",
+  "sha1": "708310be98b8866898b235982d7fb76580580370"
+ },
+ "misc/blood/blood_red01": {
+  "from": "crawl",
+  "path": "misc/blood/blood_red01.png",
+  "sha1": "03559ba9c9bb922b472cdd09249bc9795ba21f3c"
+ },
+ "misc/blood/blood_red02": {
+  "from": "crawl",
+  "path": "misc/blood/blood_red02.png",
+  "sha1": "62bc9a9442a8f5e2d4f16c732c510a5f48f9deeb"
+ },
+ "misc/blood/blood_red03": {
+  "from": "crawl",
+  "path": "misc/blood/blood_red03.png",
+  "sha1": "86f89d633c7dfa324796a57fa92e012e9927441b"
+ },
+ "misc/blood/blood_red04": {
+  "from": "crawl",
+  "path": "misc/blood/blood_red04.png",
+  "sha1": "e0a4f7b1c7e2d91acba75e86952126eb93f9c2b1"
+ },
+ "misc/blood/blood_red05": {
+  "from": "crawl",
+  "path": "misc/blood/blood_red05.png",
+  "sha1": "919cedb7df55d8c5ba2eeb63600f7eee39641fc9"
+ },
+ "misc/blood/blood_red06": {
+  "from": "crawl",
+  "path": "misc/blood/blood_red06.png",
+  "sha1": "7ddab15178accff436abc5d13c9a98adc059e59c"
+ },
+ "misc/blood/blood_red07": {
+  "from": "crawl",
+  "path": "misc/blood/blood_red07.png",
+  "sha1": "f2c8d229cffdddbcc91fc0cf8d0c4305886ed54d"
+ },
+ "misc/blood/blood_red08": {
+  "from": "crawl",
+  "path": "misc/blood/blood_red08.png",
+  "sha1": "02daeb18f04f27a7b4fac173156921f70f8d502a"
+ },
+ "misc/blood/blood_red09": {
+  "from": "crawl",
+  "path": "misc/blood/blood_red09.png",
+  "sha1": "91f06acbab495c6002c9737dd82c2a4684f35708"
+ },
+ "mon/adder": {
+  "from": "crawl",
+  "path": "mon/animals/adder.png",
+  "sha1": "1761096ccc039836fe960a8bd728eac394d4a833"
+ },
+ "mon/bat": {
+  "from": "crawl",
+  "path": "mon/animals/bat.png",
+  "sha1": "dff45a4936cf6820cb9d729fcc0078db92cdfa52"
+ },
+ "mon/gnoll": {
+  "from": "crawl",
+  "path": "mon/humanoids/gnoll.png",
+  "sha1": "3566c0271f11b8269c55ed64c03c0975ce2294d6"
+ },
+ "mon/goblin": {
+  "from": "crawl",
+  "path": "mon/humanoids/goblin.png",
+  "sha1": "ae8990047c0fb7bb33dbb68d6ee31a3e10ea06e8"
+ },
+ "mon/jackal": {
+  "from": "crawl",
+  "path": "mon/animals/jackal.png",
+  "sha1": "293f524c7c1e24ac88c60a92bf7f7a25d7bd5a46"
+ },
+ "mon/kobold": {
+  "from": "crawl",
+  "path": "mon/humanoids/kobold.png",
+  "sha1": "d67d8fd403ca44bf615364ea6a972e8fde641226"
+ },
+ "mon/ogre": {
+  "from": "crawl",
+  "path": "mon/humanoids/ogre.png",
+  "sha1": "bbf75634dccd710bee8830f0fc4fce93a2f0a6e5"
+ },
+ "mon/rat": {
+  "from": "ancient-2010",
+  "path": "dc-mon/animals/rat.png",
+  "sha1": "0a4ccd0edca6f96b3e8806608bf67a115765a508"
+ },
+ "mon/swamp_drake": {
+  "from": "ancient-2010",
+  "path": "dc-mon/swamp_drake.png",
+  "sha1": "b8b0a8a96ead4df30bd91e0e30a108a56a466f3a"
+ },
+ "player/base/deep_elf_m": {
+  "from": "crawl",
+  "path": "player/base/deep_elf_m.png",
+  "sha1": "5fd87079c99c719b95f95573767d7281f7e5c743"
+ },
+ "player/base/frog_m": {
+  "from": "crawl",
+  "path": "player/base/frog_m.png",
+  "sha1": "34dd494a90d2ff5bf460a83e9240ac7418014270"
+ },
+ "player/base/minotaur_m": {
+  "from": "ancient-2010",
+  "path": "player/base/minotaur_m.png",
+  "sha1": "bf73363a89422d5a04e5ae6f6d11e5c470fefb13"
+ },
+ "player/body/animal_skin": {
+  "from": "crawl",
+  "path": "player/body/animal_skin.png",
+  "sha1": "38d8d40b8b4f45d1248cec7ca39f91287903c849"
+ },
+ "player/body/chainmail": {
+  "from": "ancient-2010",
+  "path": "player/body/chainmail.png",
+  "sha1": "19b24ac24fde30c9ee069802635655c3af2a7090"
+ },
+ "player/body/leather_armour": {
+  "from": "ancient-2010",
+  "path": "player/body/leather_armour.png",
+  "sha1": "fe06a18236667bd235c4e2b201c93d6a45824d2a"
+ },
+ "player/body/leather_jacket": {
+  "from": "crawl",
+  "path": "player/body/leather_jacket.png",
+  "sha1": "e7dbe79c486ce417f9cec3eddd521b8c7de3feb2"
+ },
+ "player/body/leather_red": {
+  "from": "crawl",
+  "path": "player/body/leather_red.png",
+  "sha1": "ff1ec2e78a0927f4e6acd04e96109ea138ea0f16"
+ },
+ "player/body/robe_black": {
+  "from": "crawl",
+  "path": "player/body/robe_black.png",
+  "sha1": "761372d97363625f63f2ccac95dfa78599318fdc"
+ },
+ "player/body/robe_blue": {
+  "from": "crawl",
+  "path": "player/body/robe_blue.png",
+  "sha1": "850db18ff9e4ba65db3435b59ad22cda16962213"
+ },
+ "player/body/robe_brown": {
+  "from": "crawl",
+  "path": "player/body/robe_brown.png",
+  "sha1": "a9f743a346c3e405ebf61ccc98101a12797305e5"
+ },
+ "player/body/robe_clouds": {
+  "from": "crawl",
+  "path": "player/body/robe_clouds.png",
+  "sha1": "a010e651ef360080ae1a4cfdb2fcb03f2045f065"
+ },
+ "player/body/robe_green": {
+  "from": "crawl",
+  "path": "player/body/robe_green.png",
+  "sha1": "fc26dfb2ce3971f65b700e8d9cef8d0ef931870a"
+ },
+ "player/body/robe_purple": {
+  "from": "crawl",
+  "path": "player/body/robe_purple.png",
+  "sha1": "749f89beb8a28f22ebfeaa508138edc81a4f3c10"
+ },
+ "player/body/robe_red": {
+  "from": "crawl",
+  "path": "player/body/robe_red.png",
+  "sha1": "6378560d0f614431520446608d9bc1bbdfc5f296"
+ },
+ "player/boots/short_brown": {
+  "from": "crawl",
+  "path": "player/boots/short_brown.png",
+  "sha1": "168ee14b63aeff63d3d17836fa5566d6d4bc495b"
+ },
+ "player/cloak/gray": {
+  "from": "crawl",
+  "path": "player/cloak/gray.png",
+  "sha1": "21a61a5db582834cd6daae8c0001f1d3bd12e430"
+ },
+ "player/gloves/glove_brown": {
+  "from": "crawl",
+  "path": "player/gloves/glove_brown.png",
+  "sha1": "5d2274d2c7ed992542bc044f2a197fdcc892d50e"
+ },
+ "player/hair/elf_black": {
+  "from": "crawl",
+  "path": "player/hair/elf_black.png",
+  "sha1": "cb4457dece28777fa4c0d600d99494916872182b"
+ },
+ "player/hand1/axe_executioner": {
+  "from": "crawl",
+  "path": "player/hand1/axe_executioner.png",
+  "sha1": "c99fb5b37ddf0d7a5c9b2f4796330cc8fc91e3dc"
+ },
+ "player/hand1/battleaxe": {
+  "from": "crawl",
+  "path": "player/hand1/battleaxe.png",
+  "sha1": "6282340baf1dfea8c265edeed88a9ab6b841b677"
+ },
+ "player/hand1/bow": {
+  "from": "crawl",
+  "path": "player/hand1/bow.png",
+  "sha1": "936c0079e532709e4d20ecb5395f67567bc4c1fe"
+ },
+ "player/hand1/great_sword": {
+  "from": "crawl",
+  "path": "player/hand1/great_sword.png",
+  "sha1": "93c124d27761d407d571ae89343b7ca8ab654299"
+ },
+ "player/hand1/hand_axe": {
+  "from": "crawl",
+  "path": "player/hand1/hand_axe.png",
+  "sha1": "d550f624ffc6f4f4de1167ba33dfee450836df29"
+ },
+ "player/hand1/long_sword_slant": {
+  "from": "crawl",
+  "path": "player/hand1/long_sword_slant.png",
+  "sha1": "43b97a117f342c7c63c299f1bfe316d479effe1a"
+ },
+ "player/hand1/orcbow1": {
+  "from": "crawl",
+  "path": "player/hand1/orcbow1.png",
+  "sha1": "d41768eb127eee5c16c9d059518eee8bfb8f6b92"
+ },
+ "player/hand1/shortbow": {
+  "from": "crawl",
+  "path": "player/hand1/shortbow.png",
+  "sha1": "6d2ee6afe88f135798841c2e178aed199031b965"
+ },
+ "player/hand1/staff_fork": {
+  "from": "crawl",
+  "path": "player/hand1/staff_fork.png",
+  "sha1": "3fcd595181ebe50c022473cd3c6f636357c4519b"
+ },
+ "player/hand1/staff_mage": {
+  "from": "crawl",
+  "path": "player/hand1/staff_mage.png",
+  "sha1": "2d641f29100f90c2215199da3c2cd02c139bccbd"
+ },
+ "player/hand1/war_axe": {
+  "from": "crawl",
+  "path": "player/hand1/war_axe.png",
+  "sha1": "6f710b57f7258638aa747fe5a35741f62ded9b9c"
+ },
+ "player/hand2/buckler_round": {
+  "from": "crawl",
+  "path": "player/hand2/buckler_round.png",
+  "sha1": "ebb79a9168e3ba2ed17690545e10bf3fdf708765"
+ },
+ "player/hand2/kite_shield_kite1": {
+  "from": "crawl",
+  "path": "player/hand2/kite_shield_kite1.png",
+  "sha1": "5ea295dc9f3a0194b95c90a17b6a3b6979825c7e"
+ },
+ "player/hand2/orb1": {
+  "from": "crawl",
+  "path": "player/hand2/orb1.png",
+  "sha1": "e9dbbf0a3dc1c7cd79da249d4e66ffecf8ff20fa"
+ },
+ "player/head/iron1": {
+  "from": "ancient-2010",
+  "path": "player/head/iron1.png",
+  "sha1": "add911646f372363ce52c48fff6e2f019fcad1b7"
+ },
+ "wall/brick_brown0": {
+  "from": "crawl",
+  "path": "dngn/wall/brick_brown0.png",
+  "sha1": "59895776c747e71a74e2002a06f5d1280e49e939"
+ },
+ "wall/brick_brown1": {
+  "from": "crawl",
+  "path": "dngn/wall/brick_brown1.png",
+  "sha1": "98b4178c45ec852ab18033adbc1f1e9541b18411"
+ },
+ "wall/brick_brown2": {
+  "from": "crawl",
+  "path": "dngn/wall/brick_brown2.png",
+  "sha1": "705a2b4e438ce88c5def17c4810c42dbbecc5f5d"
+ },
+ "wall/brick_brown3": {
+  "from": "crawl",
+  "path": "dngn/wall/brick_brown3.png",
+  "sha1": "083a6aec05cad3a168ca6893b06f6fb195f8b0ff"
+ },
+ "wall/brick_brown4": {
+  "from": "crawl",
+  "path": "dngn/wall/brick_brown4.png",
+  "sha1": "ed308692e8c8be2a9cd3343da1bf43f256094ade"
+ },
+ "wall/brick_brown5": {
+  "from": "crawl",
+  "path": "dngn/wall/brick_brown5.png",
+  "sha1": "6e18529f60cc266b20b934f8d417cfedd988eab8"
+ },
+ "wall/brick_brown6": {
+  "from": "crawl",
+  "path": "dngn/wall/brick_brown6.png",
+  "sha1": "b21ce0380f8e85607f7e7b44bdcfb0967c3799a2"
+ },
+ "wall/brick_brown7": {
+  "from": "crawl",
+  "path": "dngn/wall/brick_brown7.png",
+  "sha1": "6bb0d178ae98e0965f1b168e893d6155dbdc3943"
+ },
+ "wall/brick_gray0": {
+  "from": "crawl",
+  "path": "dngn/wall/brick_gray0.png",
+  "sha1": "605a39e04803de60892566a515ec965d9aed2394"
+ },
+ "wall/brick_gray1": {
+  "from": "crawl",
+  "path": "dngn/wall/brick_gray1.png",
+  "sha1": "a0c97ff012d01b64bc39d11b4a47fcaa4f4ae34e"
+ },
+ "wall/brick_gray2": {
+  "from": "crawl",
+  "path": "dngn/wall/brick_gray2.png",
+  "sha1": "ee867dcffc59d53692424713cee6dcfa5585605f"
+ },
+ "wall/brick_gray3": {
+  "from": "crawl",
+  "path": "dngn/wall/brick_gray3.png",
+  "sha1": "299dcb6b101f3f58ac9c01e7a84fce4dfc435a47"
+ }
+}

@@ -112,6 +112,7 @@ async function start(): Promise<void> {
   let branch: Branch = (BRANCHES.find(([b]) => b === query.get('branch'))?.[0] ?? 'Lair') as Branch;
   let seed = 1;
   let world!: World;
+  let firstOpen = true;
   let fx = new Fx();
   let heroWalk: WalkSheet | undefined;
   let heroDoll = '';
@@ -152,7 +153,11 @@ async function start(): Promise<void> {
   const open = (next: Branch, from = 1): void => {
     branch = next;
     seed = seedWith(branch, from);
-    world = makeWorld({ seed, depth: firstFloor(seed, branch), items: false });
+    // ?depth=4 opens that floor of the dungeon graph instead, e.g. one with a branch entrance on it.
+    const asked = Number(query.get('depth'));
+    const depth = firstOpen && makeDungeonGraph(seed).nodes.has(asked) ? asked : firstFloor(seed, branch);
+    firstOpen = false;
+    world = makeWorld({ seed, depth, items: false });
     // The hero starts on the way back up; like after taking stairs, it must step off before they work.
     world.stairsArmed = false;
     fx = new Fx();
@@ -228,6 +233,14 @@ async function start(): Promise<void> {
   };
 
   open(branch);
+  // For checking by script: the world on show.
+  Object.assign(window, {
+    __branches: {
+      get world() {
+        return world;
+      },
+    },
+  });
   let dpr = 1;
   let last = performance.now();
   let owed = 0;

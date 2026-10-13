@@ -85,11 +85,13 @@ DCSS `tileview.cc`의 `tile_default_flv`를 따른다.
 
 브랜치 전용 몬스터 13종은 각자의 DCSS 타일을 쓴다(`src/data/json/monsters.json`). 늪 비룡은 현행 타일이 제외 목록(Bloax)에 있어서, 2010 배포본(`releases/Ancient/Oct-5-2010/dc-mon/swamp_drake.png`)의 그림을 `assets/tiles/mon/swamp_drake.png`로 들였다.
 
-### 남은 일: 이미 쓰던 타일 중 제외 목록에 걸리는 것
+### 이미 쓰던 타일 중 제외 목록에 걸린 것: 2010판으로 교체 (2026-10-13)
 
-예전 도입 때는 2010년 이름 목록하고만 대조해서, 아래 손으로 고른 타일이 지금 판 기준으로 제외 목록(경로 일치)에 걸린다. 2010 배포본에 같은 이름의 이전 그림(32×32)이 있어 바꿀 수 있다. 교체 여부는 사용자 결정을 기다린다.
+예전 도입 때는 2010년 이름 목록하고만 대조해서, 아래 손으로 고른 타일이 지금 판 기준으로 제외 목록에 걸렸다. 모두 같은 이름을 유지한 채 crawl/tiles의 2010 CC0 배포본(`releases/Ancient/Oct-5-2010/`)의 이전 그림으로 바꿨다.
 
-`hero/minotaur`, `player/base/minotaur_m`, `item/war_axe1`, `item/battle_axe1`, `item/armour/chain_mail1`, `mon/rat`, `player/body/chainmail`, `player/body/leather_armour`, `feat/stone_stairs_down`, `feat/stone_stairs_up`, `item/ring/diamond`, `item/ring/silver`
+`hero/minotaur`, `player/base/minotaur_m`, `player/head/iron1`, `item/war_axe1`, `item/battle_axe1`, `item/broad_axe1`, `item/executioner_axe1`, `item/armour/chain_mail1`, `mon/rat`, `player/body/chainmail`, `player/body/leather_armour`, `feat/stone_stairs_down`, `feat/stone_stairs_up`, `item/ring/diamond`, `item/ring/silver`, `mon/swamp_drake`(새로 들임)
+
+`assets/tiles/SOURCES.json`에 손으로 고른 타일 하나하나의 출처(현행 DCSS 경로 또는 2010 배포본 경로)와 SHA-1이 있다. `tests/unit/tileLicense.test.ts`가 파일과 출처가 바이트 단위로 맞는지, 현행 DCSS 출처가 제외 규칙을 통과하는지 검사한다. 타일을 더하거나 바꾸면 이 파일도 고친다.
 
 ### 다시 들여오기
 

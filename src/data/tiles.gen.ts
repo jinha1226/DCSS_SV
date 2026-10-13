@@ -1,7 +1,7 @@
 // Written by tools/packTiles.mjs. Do not edit by hand.
 export const TILE_SIZE = 32;
 export const ATLAS_COLS = 16;
-export const SHEET_VERSION = '2645effba0';
+export const SHEET_VERSION = '86063baae8';
 export const TILE_NAMES = [
   'dcss/derived/wall/zot_yellow0',
   'dcss/derived/wall/zot_yellow1',
