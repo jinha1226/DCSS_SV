@@ -19,6 +19,7 @@ import { makeHud } from '../ui/hud';
 import { makeLayoutButton } from '../ui/layoutButton';
 import { makeInventorySheets } from '../ui/inventorySheets';
 import { makeHopButton } from '../ui/hopButton';
+import { makeCredits } from '../ui/credits';
 import { makePickupToast, screenFromUnit } from '../ui/pickupToast';
 import { HeroSpriteFigure } from '../view3d/heroSpriteFigure';
 import { tileFigureHeight } from '../view3d/tileFigures';
@@ -192,6 +193,7 @@ async function start(): Promise<void> {
   const timeMode = makeTimeModeButton(hud.menuSlot);
   const gameLog = makeGameLog(root);
   const pickups = makePickupToast(root);
+  const credits = makeCredits(root);
   const menuAction = (label: string, action: () => void): void => {
     const button = document.createElement('button');
     button.type = 'button';
@@ -212,6 +214,7 @@ async function start(): Promise<void> {
   menuAction('✦ 스킬', () => ledger.openTab('skills'));
   menuAction('▤ 게임 로그', () => gameLog.openHistory());
   menuAction('▭ 화면 구성 전환', () => layout.toggle());
+  menuAction('ⓘ 크레딧', () => credits.open());
 
   const requested = CHARACTERS.find((character) => character.id === switches.who || character.name === switches.who);
   if (requested) begin(requested);

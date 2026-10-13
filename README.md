@@ -27,3 +27,7 @@ npm run bench    # 봇이 여러 판을 돌려 난이도를 잰다
 ```
 
 주소 스위치: `?speed=5.5` 1초에 걷는 칸 수(기본 6.5), `?look=bright` 바닥과 벽 타일, `?seed=` 같은 판 다시 보기, `?floor=2` 2층에서 시작, `?debug` 안쪽 상태(`window.__sv`). 게임 화면 줌은 핀치와 휠로 조절한다.
+
+## 라이선스
+
+코드는 GPL-3.0-or-later다([LICENSE](LICENSE)). Dungeon Crawl Stone Soup(GPL-2.0-or-later)의 규칙과 설명문을 바탕으로 한다. 타일, 3D 모델, 글꼴의 출처와 라이선스는 [docs/CREDITS.md](docs/CREDITS.md)에 있다.

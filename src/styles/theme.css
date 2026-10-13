@@ -1010,3 +1010,53 @@ button:focus-visible {
   color: #ff6a55;
   font-weight: 700;
 }
+
+/* ---------- credits: where the borrowed parts come from ---------- */
+
+.credits-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.credits-backdrop[hidden] {
+  display: none;
+}
+
+.credits-sheet {
+  width: min(100%, 460px);
+  max-height: 85svh;
+  overflow: auto;
+  padding: 18px 20px 16px;
+  border: 1px solid var(--line);
+  background: #14110e;
+  color: #e8e2d0;
+  font: 13px/1.5 var(--mono);
+}
+
+.credits-sheet h2 {
+  margin: 0 0 10px;
+  font-family: var(--title);
+  color: var(--gold-hi);
+}
+
+.credits-sheet dt {
+  margin-top: 10px;
+  color: var(--gold-hi);
+  font-weight: 700;
+}
+
+.credits-sheet dd {
+  margin: 2px 0 0;
+}
+
+.credits-close {
+  min-height: 44px;
+  width: 100%;
+  margin-top: 16px;
+  font-family: inherit;
+}
